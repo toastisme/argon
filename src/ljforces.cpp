@@ -18,22 +18,23 @@ namespace lj{
     {
         box_dimensions.push_back(0);
         box_dimensions.push_back(0);
-        setConsts(10.0, 10.0, 3.0, 0.01, 1.0);
+        setConsts(10.0, 10.0, 3.0, 0.01, 1.0, 1.0, 1.0, 0.0, 0.0);
     }
-    
-	LJContainer::LJContainer(double _boxl, double _boxw, double _rcutoff, double _dt, double _T) : N(0), epot(0.0), ekin(0.0)	{
-		setConsts(_boxl, _boxw, _rcutoff, _dt, _T);
-	}
 	
 	int const LJContainer::getN() { return N; }
 	double const LJContainer::getEPot() { return epot; }
 	double const LJContainer::getEKin() { return ekin; }
     double const LJContainer::getT() { return T; }
+    double const LJContainer::getgAmp(){return gAmp;}
+    double const LJContainer::getgAlpha(){return gAlpha;}
+    double const LJContainer::getgex0(){return gex0;}
+    double const LJContainer::getgey0(){return gey0;}
+    
     std::vector<double> const LJContainer::getBox() { return box_dimensions; }
 	
-	std::vector<double> const LJContainer::getPos(int i) { return positions[i]; }
-	std::vector<double> const LJContainer::getVel(int i) { return velocities[i]; }
-	std::vector<double> const LJContainer::getForces(int i) { return forces[i]; }
+    std::vector<double> const LJContainer::getPos(int i) { return positions[i]; }
+    std::vector<double> const LJContainer::getVel(int i) { return velocities[i]; }
+    std::vector<double> const LJContainer::getForces(int i) { return forces[i]; }
     std::vector<double> const LJContainer::getPreviousPositions(int npart, int nstep) { return previousPositions[nstep][npart]; }
 	
 	void LJContainer::setPos(int i, double x, double y)
@@ -49,7 +50,7 @@ namespace lj{
 	}
     
 	
-	void LJContainer::setConsts(double _boxl, double _boxw, double _rcutoff, double _dt, double _T)
+	void LJContainer::setConsts(double _boxl, double _boxw, double _rcutoff, double _dt, double _T, double _gAmp, double _gAlpha, double _gex0, double _gey0)
 	{
         if ( _boxw > 0 ) { box_dimensions[0] = _boxw;}
         else { box_dimensions[0] = 10.0; }
@@ -61,6 +62,10 @@ namespace lj{
 	else { dt = 0.001; }
         if ( _T > 0) { T = _T; }
         else { T = 1.0; }
+        gAmp = _gAmp;
+        gAlpha = _gAlpha;
+        gex0 = _gex0;
+        gey0 = _gey0;
 	}
 	
 	void LJContainer::addParticle(double x, double y, double vx, double vy)
@@ -84,6 +89,20 @@ namespace lj{
 			forces.pop_back();
 		}
 	}
+    
+    void LJContainer::externalForce(){
+        
+        for (int i = 0; i < N; i++){
+            double x = positions[i][0];
+            double y = positions[i][1];
+            forces[i][0] -= 2*(x-gex0)*gAlpha*gAmp*exp(-gAlpha*(pow(x - gex0,2)+pow(y - gey0,2)));
+            forces[i][1] -= 2*(y-gey0)*gAlpha*gAmp*exp(-gAlpha*(pow(x - gex0,2)+pow(y - gey0,2)));
+            epot += gAmp*exp(-gAlpha*(pow(x,2)+pow(y,2)));
+        }
+        
+    }
+    
+
 	
 	void LJContainer::forcesEnergies(int nthreads)
 	{
@@ -116,7 +135,7 @@ namespace lj{
 				for (int k = 0; k < 2; k++) forces[j][k] += ftemps[i][j][k];
 			}
 		}
-		
+        externalForce();
 	}
 	
 	void LJContainer::forcesThread(int start, int end, std::vector<std::vector<double> > &ftemp,
