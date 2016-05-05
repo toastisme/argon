@@ -3,13 +3,17 @@
 #include "ofMain.h"
 #include "ljforces.hpp"
 
+#define N_THREADS 1
+
 class ofApp : public ofBaseApp{
 
 	public:
 		void setup();
 		void update();
 		void draw();
-
+    
+        void drawData(string name, double value);
+    
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -24,5 +28,8 @@ class ofApp : public ofBaseApp{
 		
     private:
         lj::LJContainer theSystem;
+        int thermCounter;
+        ofTrueTypeFont drawFont;
+        float drawDataHeight;
     
 };
