@@ -21,10 +21,11 @@ void randomiseVelocity(vector<double> &vel, double T) {
     }
 }
 
-void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, float scale){
+void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, bool selected){
     double gA = g.getgAmp(), galpha = g.getgAlpha();
     double gx = ofMap(g.getgex0(), 0, boxw, 0, ofGetWidth());
     double gy = ofMap(g.getgey0(), 0, boxl, 0, ofGetHeight());
+    double scale = g.getScale();
     
     int N_CIRCLES = 10;
     double colourSpacing = 60/double(N_CIRCLES);
@@ -32,8 +33,11 @@ void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, float scale){
     
     ofSetCircleResolution(100);
     
+    int red = 0;
+    if (selected) red = 200;
+    
     for (int n = 0; n < N_CIRCLES; n++){
-        ofSetColor(0,(190+colourSpacing*n)*scale,255);
+        ofSetColor(red,(190+colourSpacing*n)*scale,255);
         ofDrawCircle(gx, gy, (log(0.2+contourSpacing*n)/galpha)*abs(gA));
     }
 
@@ -47,13 +51,10 @@ void ofApp::setup(){
     double TIMESTEP = 0.005;
     int N_PARTICLES = 50;
     double TEMPERATURE = 2.0;
-    double GAMP = 50.0;
-    double GALPHA =0.3;
-    double GEX0 = 7.5;
-    double GEY0 = 5.0;
     
     audioOn = true;
     thermCounter = 0;
+    selectedGaussian = -1; // No gaussian selected
     drawFont.loadFont("verdana.ttf", 32);
     //shader.load("shadersGL3/shader");
     
@@ -84,7 +85,6 @@ void ofApp::setup(){
     // Set up the system
     
     theSystem.setConsts(BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP, TEMPERATURE);
-    theSystem.addGaussian(GAMP, GALPHA, GEX0, GEY0);
     
     // intialise the system + previous positions
     theSystem.forcesEnergies(N_THREADS);
@@ -119,7 +119,8 @@ void ofApp::update(){
     
     if (audioOn) {
         scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
-        theSystem.updateGaussian(0, 50 - scaledVol*100, 1.1 - scaledVol, theSystem.getGaussianX0(0), theSystem.getGaussianY0(0));
+        if ( selectedGaussian > -1)
+            theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 1.1 - scaledVol, theSystem.getGaussianX0(selectedGaussian), theSystem.getGaussianY0(selectedGaussian), scaledVol);
     }
     
     thermCounter++;
@@ -127,9 +128,16 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    vector<double> BOX_SIZE = theSystem.getBox();
+    vector<double> BOX_SIZE;
+    BOX_SIZE.push_back(theSystem.getWidth());
+    BOX_SIZE.push_back(theSystem.getHeight());
     
-    drawGaussian(theSystem.getGaussian(0), BOX_SIZE[0], BOX_SIZE[1], scaledVol);
+    for (int g = 0; g < theSystem.getNGaussians(); g++){
+        if ( g == selectedGaussian)
+            drawGaussian(theSystem.getGaussian(g), BOX_SIZE[0], BOX_SIZE[1], true);
+        else
+            drawGaussian(theSystem.getGaussian(g), BOX_SIZE[0], BOX_SIZE[1], false);
+    }
     
     double posx, posy;
     double pospx, pospy;
@@ -212,8 +220,16 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    if (key == 'a' || key == 'A')
+    if (key == 'a' || key == 'A') // Audio on/off
         audioOn = !audioOn;
+    else if (key == 'g' || key == 'G') // Change gaussian
+        selectedGaussian = (selectedGaussian+1)%theSystem.getNGaussians();
+    else if (key == 'k' || key == 'K') // Kill gaussian
+        if (selectedGaussian > -1) {
+            theSystem.removeGaussian(selectedGaussian);
+            selectedGaussian--;
+        }
+    
 }
 
 //--------------------------------------------------------------
@@ -233,7 +249,14 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+    double GAMP = 50.0;
+    double GALPHA =0.3;
+    
+    double scaled_x = x * theSystem.getWidth()/ofGetWidth();
+    double scaled_y = y * theSystem.getHeight()/ofGetHeight();
+    
+    theSystem.addGaussian(GAMP, GALPHA, scaled_x, scaled_y);
+    selectedGaussian = theSystem.getNGaussians() - 1;
 }
 
 //--------------------------------------------------------------

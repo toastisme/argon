@@ -27,7 +27,8 @@ namespace lj{
     double const LJContainer::getT() { return T; }
     int const LJContainer::getNGaussians() { return gaussians.size(); }
     
-    std::vector<double> const LJContainer::getBox() { return box_dimensions; }
+    double const LJContainer::getWidth() { return box_dimensions[0]; }
+    double const LJContainer::getHeight() { return box_dimensions[1]; }
 	
     std::vector<double> const LJContainer::getPos(int i) { return positions[i]; }
     std::vector<double> const LJContainer::getVel(int i) { return velocities[i]; }
@@ -86,7 +87,7 @@ namespace lj{
     Gaussian& LJContainer::getGaussian(int i) { return gaussians[i]; }
     
     void LJContainer::addGaussian(double gAmp, double gAlpha, double gex0, double gey0){
-        Gaussian newGaussian(gAmp, gAlpha, gex0, gey0);
+        Gaussian newGaussian(gAmp, gAlpha, gex0, gey0, 1.0);
         gaussians.push_back(newGaussian);
         if (gaussians.size() > 4) removeGaussian();
     }
@@ -96,8 +97,8 @@ namespace lj{
         gaussians.erase(gaussians.begin()+i, gaussians.begin()+i+1);
     }
     
-    void LJContainer::updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0){
-        gaussians[i].setParams(gAmp, gAlpha, gex0, gey0);
+    void LJContainer::updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0, double scale){
+        gaussians[i].setParams(gAmp, gAlpha, gex0, gey0, scale);
     }
     
     double LJContainer::getGaussianAlpha(int i) { return gaussians[i].getgAlpha(); }

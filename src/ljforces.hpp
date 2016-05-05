@@ -36,7 +36,8 @@ namespace lj{
         double const getT();
         int const getNGaussians();
         
-        std::vector<double> const getBox();
+        double const getWidth();
+        double const getHeight();
 		std::vector<double> const getPos(int i);
 		std::vector<double> const getVel(int i);
 		std::vector<double> const getForces(int i);
@@ -54,7 +55,7 @@ namespace lj{
         Gaussian& getGaussian(int i);
         void addGaussian(double gAmp, double gAlpha, double gex0, double gey0);
         void removeGaussian(int i = 0);
-        void updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0);
+        void updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0, double _scale);
         double getGaussianAlpha(int i);
         double getGaussianAmp(int i);
         double getGaussianX0(int i);

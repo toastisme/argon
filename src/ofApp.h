@@ -14,7 +14,7 @@ class ofApp : public ofBaseApp{
 		void draw();
     
         void drawData(string name, double value);
-        void drawGaussian(Gaussian& g, double boxw, double boxl, float scale);
+        void drawGaussian(Gaussian& g, double boxw, double boxl, bool selected);
     
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -42,6 +42,7 @@ class ofApp : public ofBaseApp{
     private:
         lj::LJContainer theSystem;
         int thermCounter;
+        int selectedGaussian;
         ofTrueTypeFont drawFont;
         float drawDataHeight;
     
