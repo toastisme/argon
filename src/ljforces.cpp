@@ -16,16 +16,17 @@ namespace lj{
 
     LJContainer::LJContainer()
     {
-        setConsts(10.0, 10.0, 3.0, 0.01);
+        setConsts(10.0, 10.0, 3.0, 0.01, 1.0);
     }
     
-	LJContainer::LJContainer(double _boxl, double _boxw, double _rcutoff, double _dt) : N(0), epot(0.0), ekin(0.0)	{
-		setConsts(_boxl, _boxw, _rcutoff, _dt);
+	LJContainer::LJContainer(double _boxl, double _boxw, double _rcutoff, double _dt, double _T) : N(0), epot(0.0), ekin(0.0)	{
+		setConsts(_boxl, _boxw, _rcutoff, _dt, _T);
 	}
 	
 	int const LJContainer::getN() { return N; }
 	double const LJContainer::getEPot() { return epot; }
 	double const LJContainer::getEKin() { return ekin; }
+    double const LJContainer::getT() { return T; }
     std::vector<double> const LJContainer::getBox() { return box_dimensions; }
 	
 	std::vector<double> const LJContainer::getPos(int i) { return positions[i]; }
@@ -45,7 +46,7 @@ namespace lj{
 	}
     
 	
-	void LJContainer::setConsts(double _boxl, double _boxw, double _rcutoff, double _dt)
+	void LJContainer::setConsts(double _boxl, double _boxw, double _rcutoff, double _dt, double _T)
 	{
         if ( _boxw > 0 ) { box_dimensions.push_back(_boxw);}
         else { box_dimensions.push_back(10.0); }
@@ -57,6 +58,8 @@ namespace lj{
 	else { dt = 0.001; }
         box_dimensions.push_back(_boxw);
         box_dimensions.push_back(_boxl);
+        if ( _T > 0) { T = _T; }
+        else { T = 1.0; }
 	}
 	
 	void LJContainer::addParticle(double x, double y, double vx, double vy)
@@ -194,7 +197,7 @@ namespace lj{
 		}
 	}
 	
-	void LJContainer::andersen(double T, double freq)
+	void LJContainer::andersen(double freq)
 	{
 		std::random_device rd;
 		std::mt19937 mt(rd());

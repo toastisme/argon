@@ -14,12 +14,29 @@ void ofApp::setup(){
     double CUTOFF = 3.0;
     double TIMESTEP = 0.01;
     int N_PARTICLES = 15;
+    double TEMPERATURE = 2.0;
     thermCounter = 0;
     drawFont.loadFont("verdana.ttf", 32);
     
-    for (int i = 0; i < N_PARTICLES; i++) theSystem.addParticle((i+5)/2, ofRandom(1, 9), 0, 0);
+    int nx = ceil(BOX_WIDTH/(sqrt(N_PARTICLES)));
+    int ny = ceil(BOX_LENGTH/(sqrt(N_PARTICLES)));
+    double xspacing = BOX_WIDTH/(nx + 1.0);
+    double yspacing = BOX_LENGTH/(ny + 1.0);
     
-    theSystem.setConsts(BOX_WIDTH, BOX_LENGTH, CUTOFF, TIMESTEP);
+    std::cout << xspacing << " " << yspacing << " " << nx << " " << ny << "\n";
+    
+    int i = 1, j = 1;
+    for (int n = 0; n < N_PARTICLES; n++){
+        if (i % nx == 0) {
+            j++;
+            i = 0;
+        }
+        
+        theSystem.addParticle(i*xspacing, j*yspacing, 0, 0);
+        i++;
+    }
+    
+    theSystem.setConsts(BOX_WIDTH, BOX_LENGTH, CUTOFF, TIMESTEP, TEMPERATURE);
     
     theSystem.forcesEnergies(N_THREADS);
     
@@ -30,7 +47,7 @@ void ofApp::setup(){
 void ofApp::update(){
     theSystem.integrate(N_THREADS);
     if (thermCounter % 10 == 0) {
-        theSystem.andersen(1.0, 0.1);
+        theSystem.andersen(0.1);
     }
     thermCounter++;
     drawDataHeight = ofGetHeight() - 5;
@@ -42,14 +59,23 @@ void ofApp::draw(){
     vector<double> BOX_SIZE = theSystem.getBox();
     float radius = 35;
     double posx, posy;
+    double velx, vely;
+
     
     ofFill();
     vector<double> tempPos;
+    vector<double> tempVel;
+    double v_avg = 0.25*sqrt(3*theSystem.getN()*theSystem.getT()) ;
+    
+    
     for (int i = 0; i < theSystem.getN(); i++){
         tempPos = theSystem.getPos(i);
+        tempVel = theSystem.getVel(i);
         posx = ofMap(tempPos[0], 0, BOX_SIZE[0], 0, ofGetWidth());
         posy = ofMap(tempPos[1], 0, BOX_SIZE[1], 0, ofGetHeight());
-        ofSetColor(ofRandom(0, 255), 200, ofRandom(0, 255));
+        velx = ofMap(tempVel[0], 0, v_avg, 0, 255);
+        vely = ofMap(tempVel[1], 0, v_avg, 0, 255);
+        ofSetColor(150, velx, vely);
         ofDrawCircle(posx, posy, radius);
     }
     
