@@ -55,8 +55,8 @@ namespace lj{
 	else { rcutoff = 3.0; }
 	if ( _dt > 0 ) { dt = _dt; }
 	else { dt = 0.001; }
-        box_dimensions.push_back(boxw);
-        box_dimensions.push_back(boxl);
+        box_dimensions.push_back(_boxw);
+        box_dimensions.push_back(_boxl);
 	}
 	
 	void LJContainer::addParticle(double x, double y, double vx, double vy)
@@ -166,7 +166,6 @@ namespace lj{
 		// Update positions and half-update velocities
 		for (int i = 0; i < N; i++){
 			for (int k = 0; k < 2; k++){
-<<<<<<< HEAD
 				positions[i][k] += dt*velocities[i][k] + dt2*forces[i][k];
                 velocities[i][k] += 0.5*dt*forces[i][k];
                 if (positions[i][k] > box_dimensions[k]){

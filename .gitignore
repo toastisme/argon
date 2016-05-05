@@ -1,12 +1,13 @@
 # xcode files
 
-**/*.xconfig
+**/*.xcconfig
 **/*.xcodeproj/**
 openFrameworks-Info.plist
 
 # binaries
 
 bin/**
+!bin/data/**
 
 # temp files
 
