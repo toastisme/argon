@@ -1,0 +1,14 @@
+# xcode files
+
+**/*.xcconfig
+**/*.xcodeproj/**
+openFrameworks-Info.plist
+
+# binaries
+
+bin/**
+
+# temp files
+
+*.swp
+*~
