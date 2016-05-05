@@ -7,6 +7,20 @@ void ofApp::drawData(string name, double value) {
     drawDataHeight -= drawFont.stringHeight(drawstr) + 5;
 }
 
+void randomiseVelocity(vector<double> &vel, double T) {
+    double sigma = sqrt(T);
+    
+    for (int i = 0; i < vel.size(); ++i) {
+        double randr = ofRandom(1);
+        double randt = ofRandom(1);
+        
+        randr = sqrt(-2.0 * log(randr));
+        randt = sin(2 * PI * randt);
+        
+        vel[i] = sigma * randr * randt;
+    }
+}
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     double BOX_WIDTH = 15.0;
@@ -28,12 +42,14 @@ void ofApp::setup(){
     
     int i = 0, j = 0;
     double posx, posy;
+    vector<double> vel = {0, 0};
     for (int n = 0; n < N_PARTICLES; ++n){
         posx = xspacing * (i + 0.5);
         posy = yspacing * (j + 0.5);
         
         printf("%d %d %lf %lf\n", i, j, posx, posy);
-        theSystem.addParticle(posx, posy, 0, 0);
+        randomiseVelocity(vel, TEMPERATURE);
+        theSystem.addParticle(posx, posy, vel[0], vel[1]);
         
         ++i;
         i = i % n_grid_x;
@@ -46,22 +62,15 @@ void ofApp::setup(){
     // intialise the system + previous positions
     theSystem.forcesEnergies(N_THREADS);
     
-    for (int i = 0; i < theSystem.getN(); ++i) {
-        prevPos.push_back(theSystem.getPos(i));
+    for (int i = 0; i < 20; ++i) {
+        theSystem.integrate(N_THREADS);
     }
-    theSystem.integrate(N_THREADS);
     
     ofBackground(255, 255, 255);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    // update
-    prevPrevPos = prevPos;
-    for (int i = 0; i < theSystem.getN(); ++i) {
-        prevPos[i] = theSystem.getPos(i);
-    }
-    
     theSystem.integrate(N_THREADS);
     if (thermCounter % 10 == 0) {
         theSystem.andersen(0.1);
@@ -75,36 +84,50 @@ void ofApp::update(){
 void ofApp::draw(){
     vector<double> BOX_SIZE = theSystem.getBox();
     double posx, posy;
-    double posprevx, posprevy;
-    double posprevprevx, posprevprevy;
+    double pospx, pospy;
+    double posppx, posppy;
     double velx, vely;
     double accx, accy;
 
     
     ofFill();
     vector<double> tempPos;
+    vector<double> tempPosPrev;
+    vector<double> tempPosPrevPrev;
     vector<double> tempVel;
     vector<double> tempAcc;
     double v_avg = 0.25*sqrt(3*theSystem.getN()*theSystem.getT()) ;
     
-    
     for (int i = 0; i < theSystem.getN(); i++){
         tempPos = theSystem.getPos(i);
+        tempPosPrev = theSystem.getPreviousPositions(i, 15);
+        tempPosPrevPrev = theSystem.getPreviousPositions(i, 10);
         tempVel = theSystem.getVel(i);
         tempAcc = theSystem.getForces(i);
+        
         posx = ofMap(tempPos[0], 0, BOX_SIZE[0], 0, ofGetWidth());
         posy = ofMap(tempPos[1], 0, BOX_SIZE[1], 0, ofGetHeight());
+        
+        pospx = ofMap(tempPosPrev[0], 0, BOX_SIZE[0], 0, ofGetWidth());
+        pospy = ofMap(tempPosPrev[1], 0, BOX_SIZE[1], 0, ofGetHeight());
+        
+        posppx = ofMap(tempPosPrevPrev[0], 0, BOX_SIZE[0], 0, ofGetWidth());
+        posppy = ofMap(tempPosPrevPrev[1], 0, BOX_SIZE[1], 0, ofGetHeight());
+        
         velx = ofMap(abs(tempVel[0]), 0, v_avg, 0, 255);
         vely = ofMap(abs(tempVel[1]), 0, v_avg, 0, 255);
+        
         accx = ofMap(log(1.0+abs(tempAcc[0])), 0, 10, 20, 50);
         accy = ofMap(log(1.0+abs(tempAcc[1])), 0, 10, 20, 50);
+        
         ofSetColor(150, velx, vely);
+        
         ofDrawEllipse(posx, posy, accx, accy);
+        ofDrawEllipse(pospx, pospy, accx * 0.8, accy * 0.8);
+        ofDrawEllipse(posppx, posppy, accx * 0.4, accy * 0.4);
     }
-    printf("\n");
     
     ofSetColor(0, 0, 0);
-    tempPos = theSystem.getPos(1);
     
     drawData("E Kin", theSystem.getEKin());
     drawData("E Pot", theSystem.getEPot());
