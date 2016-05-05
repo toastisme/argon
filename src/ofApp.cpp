@@ -2,12 +2,19 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-
+    double BOX_SIZE = 10.0;
+    double CUTOFF = 3.0;
+    double TIMESTEP = 0.01;
+    
+    theSystem.setConsts(BOX_SIZE, CUTOFF, TIMESTEP);
+    theSystem.addParticle(1, 1, 0, 0);
+    theSystem.addParticle(2, 2, 0, 0);
+    theSystem.forcesEnergies(1);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
+    
 }
 
 //--------------------------------------------------------------
