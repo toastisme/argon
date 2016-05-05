@@ -35,6 +35,7 @@ void ofApp::setup(){
     double GEY0 = 5.0;
     thermCounter = 0;
     drawFont.loadFont("verdana.ttf", 32);
+    //shader.load("shadersGL3/shader");
     
     double box_ratio = BOX_WIDTH / BOX_LENGTH;
     int n_grid_x = ceil(sqrt(N_PARTICLES * box_ratio));
@@ -69,7 +70,7 @@ void ofApp::setup(){
         theSystem.integrate(N_THREADS);
     }
     
-    ofBackground(255, 255, 255);
+    ofBackground(0, 0, 0);
 }
 
 //--------------------------------------------------------------
@@ -97,14 +98,25 @@ void ofApp::draw(){
     double gy = ofMap(theSystem.getgey0(), 0, BOX_SIZE[1], 0, ofGetHeight());
     
 
-    
-    ofSetColor(0,0,255);
-    ofNoFill();
-    ofDrawCircle(gx, gy, (log(0.9)/galpha)*gA);
-    ofDrawCircle(gx, gy, (log(0.6)/galpha)*gA);
-    ofDrawCircle(gx, gy, (log(0.4)/galpha)*gA);
+    ofSetCircleResolution(100);
+    ofSetColor(0,190,255);
+    //ofNoFill();
     ofDrawCircle(gx, gy, (log(0.2)/galpha)*gA);
-
+    ofSetColor(0,200,255);
+    ofDrawCircle(gx, gy, (log(0.3)/galpha)*gA);
+    ofSetColor(0,210,255);
+    ofDrawCircle(gx, gy, (log(0.4)/galpha)*gA);
+    ofSetColor(0,220,255);
+    ofDrawCircle(gx, gy, (log(0.5)/galpha)*gA);
+    ofSetColor(0,230,255);
+    ofDrawCircle(gx, gy, (log(0.6)/galpha)*gA);
+    ofSetColor(0,240,255);
+    ofDrawCircle(gx, gy, (log(0.7)/galpha)*gA);
+    ofSetColor(0,250,255);
+    ofDrawCircle(gx, gy, (log(0.8)/galpha)*gA);
+    ofSetColor(0,255,255);
+    
+    
     
     ofFill();
     vector<double> tempPos;
