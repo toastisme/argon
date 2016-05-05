@@ -25,7 +25,18 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		
+    
+        void audioIn(float * input, int bufferSize, int nChannels);
+    
+        vector <float> left;
+        vector <float> right;
+    
+        float smoothedVol;
+        float scaledVol;
+        bool audioOn;
+
+		ofSoundStream soundStream;
+    
     private:
         lj::LJContainer theSystem;
         int thermCounter;

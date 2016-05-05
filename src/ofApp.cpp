@@ -27,12 +27,14 @@ void ofApp::setup(){
     double BOX_LENGTH = 10.0;
     double CUTOFF = 3.0;
     double TIMESTEP = 0.005;
-    int N_PARTICLES = 10;
+    int N_PARTICLES = 50;
     double TEMPERATURE = 2.0;
     double GAMP = 50.0;
     double GALPHA =0.3;
     double GEX0 = 7.5;
     double GEY0 = 5.0;
+    
+    audioOn = true;
     thermCounter = 0;
     drawFont.loadFont("verdana.ttf", 32);
     //shader.load("shadersGL3/shader");
@@ -43,7 +45,7 @@ void ofApp::setup(){
     double xspacing = BOX_WIDTH  / (n_grid_x);
     double yspacing = BOX_LENGTH / (n_grid_y);
     
-    std::cout << xspacing << " " << yspacing << " " << n_grid_x << " " << n_grid_y << "\n";
+    // Set up grid
     
     int i = 0, j = 0;
     double posx, posy;
@@ -61,6 +63,8 @@ void ofApp::setup(){
         if (i == 0) ++j;
     }
     
+    // Set up the system
+    
     theSystem.setConsts(BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP, TEMPERATURE, GAMP, GALPHA, GEX0, GEY0);
     
     // intialise the system + previous positions
@@ -70,18 +74,36 @@ void ofApp::setup(){
         theSystem.integrate(N_THREADS);
     }
     
+    // Setup the sound
+    int bufferSize = 256;
+    
+    left.assign(bufferSize, 0.0);
+    right.assign(bufferSize, 0.0);
+    
+    smoothedVol     = 0.0;
+    scaledVol		= 0.0;
+    
+    soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
+    
     ofBackground(0, 0, 0);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     theSystem.integrate(N_THREADS);
+    drawDataHeight = ofGetHeight() - 5;
+
+    //lets scale the vol up to a 0-1 range, and thermostat
     if (thermCounter % 10 == 0) {
         theSystem.andersen(0.1);
     }
+    
+    scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
+    if (audioOn)
+        theSystem.setgParams(50 - scaledVol*100, 1.1 - scaledVol, theSystem.getgex0(), theSystem.getgey0());
+    else
+        scaledVol = 1.0;
     thermCounter++;
-    drawDataHeight = ofGetHeight() - 5;
-
 }
 
 //--------------------------------------------------------------
@@ -99,22 +121,22 @@ void ofApp::draw(){
     
 
     ofSetCircleResolution(100);
-    ofSetColor(0,190,255);
+    ofSetColor(0,190*scaledVol,255);
     //ofNoFill();
-    ofDrawCircle(gx, gy, (log(0.2)/galpha)*gA);
-    ofSetColor(0,200,255);
-    ofDrawCircle(gx, gy, (log(0.3)/galpha)*gA);
-    ofSetColor(0,210,255);
-    ofDrawCircle(gx, gy, (log(0.4)/galpha)*gA);
-    ofSetColor(0,220,255);
-    ofDrawCircle(gx, gy, (log(0.5)/galpha)*gA);
-    ofSetColor(0,230,255);
-    ofDrawCircle(gx, gy, (log(0.6)/galpha)*gA);
-    ofSetColor(0,240,255);
-    ofDrawCircle(gx, gy, (log(0.7)/galpha)*gA);
-    ofSetColor(0,250,255);
-    ofDrawCircle(gx, gy, (log(0.8)/galpha)*gA);
-    ofSetColor(0,255,255);
+    ofDrawCircle(gx, gy, (log(0.2)/galpha)*abs(gA));
+    ofSetColor(0,200*scaledVol,255);
+    ofDrawCircle(gx, gy, (log(0.3)/galpha)*abs(gA));
+    ofSetColor(0,210*scaledVol,255);
+    ofDrawCircle(gx, gy, (log(0.4)/galpha)*abs(gA));
+    ofSetColor(0,220*scaledVol,255);
+    ofDrawCircle(gx, gy, (log(0.5)/galpha)*abs(gA));
+    ofSetColor(0,230*scaledVol,255);
+    ofDrawCircle(gx, gy, (log(0.6)/galpha)*abs(gA));
+    ofSetColor(0,240*scaledVol,255);
+    ofDrawCircle(gx, gy, (log(0.7)/galpha)*abs(gA));
+    ofSetColor(0,250*scaledVol,255);
+    ofDrawCircle(gx, gy, (log(0.8)/galpha)*abs(gA));
+    ofSetColor(0,255*scaledVol,255);
     
     
     
@@ -148,7 +170,7 @@ void ofApp::draw(){
         accx = ofMap(log(1.0+abs(tempAcc[0])), 0, 10, 20, 50);
         accy = ofMap(log(1.0+abs(tempAcc[1])), 0, 10, 20, 50);
         
-        ofSetColor(150, velx, vely);
+        ofSetColor(velx+vely, 0, 150);
         
         ofDrawEllipse(posx, posy, accx, accy);
         ofDrawEllipse(pospx, pospy, accx * 0.8, accy * 0.8);
@@ -157,13 +179,43 @@ void ofApp::draw(){
     
     ofSetColor(0, 0, 0);
     
-    drawData("E Kin", theSystem.getEKin());
-    drawData("E Pot", theSystem.getEPot());
+    //drawData("E Kin", theSystem.getEKin());
+    //drawData("E Pot", theSystem.getEPot());
 }
+
+//--------------------------------------------------------------------
+void ofApp::audioIn(float * input, int bufferSize, int nChannels){
+    
+    float curVol = 0.0;
+    
+    // samples are "interleaved"
+    int numCounted = 0;
+    
+    //lets go through each sample and calculate the root mean square which is a rough way to calculate volume
+    for (int i = 0; i < bufferSize; i++){
+        left[i]		= input[i*2]*0.5;
+        right[i]	= input[i*2+1]*0.5;
+        
+        curVol += left[i] * left[i];
+        curVol += right[i] * right[i];
+        numCounted+=2;
+    }
+    
+    //this is how we get the mean of rms :)
+    curVol /= (float)numCounted;
+    
+    // this is how we get the root of rms :)
+    curVol = sqrt( curVol );
+    
+    smoothedVol *= 0.93;
+    smoothedVol += 0.07 * curVol;
+    
+}
+
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+    audioOn = !audioOn;
 }
 
 //--------------------------------------------------------------

@@ -36,6 +36,9 @@ namespace lj{
         double const getgAlpha();
         double const getgex0();
         double const getgey0();
+        
+        void setgParams(double _gAmp, double _gAlpha, double _gex0, double _gey0);
+        
         std::vector<double> const getBox();
 		std::vector<double> const getPos(int i);
 		std::vector<double> const getVel(int i);

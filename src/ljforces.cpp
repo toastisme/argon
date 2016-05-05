@@ -36,6 +36,13 @@ namespace lj{
     std::vector<double> const LJContainer::getVel(int i) { return velocities[i]; }
     std::vector<double> const LJContainer::getForces(int i) { return forces[i]; }
     std::vector<double> const LJContainer::getPreviousPositions(int npart, int nstep) { return previousPositions[nstep][npart]; }
+    
+    void LJContainer::setgParams(double _gAmp, double _gAlpha, double _gex0, double _gey0){
+        gAmp = _gAmp;
+        gAlpha = _gAlpha;
+        gex0 = _gex0;
+        gey0 = _gey0;
+    }
 	
 	void LJContainer::setPos(int i, double x, double y)
 	{
