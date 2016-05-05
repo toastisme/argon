@@ -6,8 +6,7 @@ openFrameworks-Info.plist
 
 # binaries
 
-bin/**
-!bin/data/**
+**/*.app/**
 
 # temp files
 
