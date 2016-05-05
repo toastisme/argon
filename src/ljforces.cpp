@@ -16,11 +16,11 @@ namespace lj{
 
     LJContainer::LJContainer()
     {
-        setConsts(10.0, 3.0, 0.01);
+        setConsts(10.0, 10.0, 3.0, 0.01);
     }
     
-	LJContainer::LJContainer(double _box, double _rcutoff, double _dt) : N(0), epot(0.0), ekin(0.0)	{
-		setConsts(_box, _rcutoff, _dt);
+	LJContainer::LJContainer(double _boxl, double _boxw, double _rcutoff, double _dt) : N(0), epot(0.0), ekin(0.0)	{
+        setConsts(_boxl, _boxw, _rcutoff, _dt);
 	}
 	
 	int const LJContainer::getN() { return N; }
@@ -42,15 +42,20 @@ namespace lj{
 		velocities[i][0] = vx;
 		velocities[i][1] = vy;
 	}
+    
 	
-	void LJContainer::setConsts(double _box, double _rcutoff, double _dt)
+	void LJContainer::setConsts(double _boxl, double _boxw, double _rcutoff, double _dt)
 	{
-		if ( _box > 0 ) { box = _box; }
-		else { box = 10.0; }
+		if ( _boxl > 0 ) { boxl = _boxl; }
+		else { boxl = 10.0; }
+        if ( _boxw > 0 ) { boxw = _boxw; }
+        else { boxw = 10.0}
 		if ( _rcutoff > 0 ) { rcutoff = _rcutoff; }
 		else { rcutoff = 3.0; }
 		if ( _dt > 0 ) { dt = _dt; }
 		else { dt = 0.001; }
+        box_dimensions.push_back(boxw);
+        box_dimensions.push_back(boxl);
 	}
 	
 	void LJContainer::addParticle(double x, double y, double vx, double vy)
@@ -92,7 +97,7 @@ namespace lj{
 			ftemps.push_back(forces);
 		}
 		while (counter < nthreads){
-			thrds[counter] = std::thread(&LJContainer::forcesThread, *this, start, end, std::ref(ftemps[counter]), std::ref(etemps[counter]), positions, rcutoff, N, box);
+			thrds[counter] = std::thread(&LJContainer::forcesThread, *this, start, end, std::ref(ftemps[counter]), std::ref(etemps[counter]), positions, rcutoff, N, boxl, boxw);
 			start = end;
 			end += spacing;
 			if (end > N-1) { end = N-1; }
@@ -111,7 +116,7 @@ namespace lj{
 	
 	void LJContainer::forcesThread(int start, int end, std::vector<std::vector<double> > &ftemp,
 								   double &eptemp, std::vector<std::vector<double> > postemp,
-								   double rcut, int npart, double lbox)
+								   double rcut, int npart)
 	{		
 		// Calculate some useful quantities
 		double rcut2 = rcut*rcut;
@@ -135,7 +140,6 @@ namespace lj{
 				for (int k = 0; k < 2; k++){
 					// Compute rij, account for periodic boundaries
 					rij[k] = postemp[j][k] - ipos[k];
-					rij[k] = rij[k] - lbox*double(round(rij[k]/lbox));
 					d2 += rij[k]*rij[k];
 				}
 				if (d2 < rcut2) {
@@ -161,9 +165,17 @@ namespace lj{
 		// Update positions and half-update velocities
 		for (int i = 0; i < N; i++){
 			for (int k = 0; k < 2; k++){
-				positions[i][k] += dt*velocities[i][k] + dt2*forces[i][k];
-				positions[i][k] -= box*double(floor(positions[i][k]/box));
-				velocities[i][k] += 0.5*dt*forces[i][k];
+				positions[i][k] += dt*velocities[i][k] + dt2*forces[i][k]; //Velocity Verlet
+                if (positions[i][k] > box_dimensions[k]){
+                    double difference = positions[i][k] - box_dimensions[k];
+                    positions[i][k] -= difference;
+                    velocities[i][k] += 0.5*dt*forces[i][k];
+                    velocities[i][k] *= -1;
+                }
+				//positions[i][k] -= box*double(floor(positions[i][k]/box));
+                else{
+                    velocities[i][k] += 0.5*dt*forces[i][k];
+                }
 			}
 		}
 		
