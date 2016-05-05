@@ -1,6 +1,6 @@
 # xcode files
 
-**/*.xcconfig
+**/*.xconfig
 **/*.xcodeproj/**
 openFrameworks-Info.plist
 
