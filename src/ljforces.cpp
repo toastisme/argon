@@ -18,17 +18,14 @@ namespace lj{
     {
         box_dimensions.push_back(0);
         box_dimensions.push_back(0);
-        setConsts(10.0, 10.0, 3.0, 0.01, 1.0, 1.0, 1.0, 0.0, 0.0);
+        setConsts(10.0, 10.0, 3.0, 0.01, 1.0);
     }
 	
 	int const LJContainer::getN() { return N; }
 	double const LJContainer::getEPot() { return epot; }
 	double const LJContainer::getEKin() { return ekin; }
     double const LJContainer::getT() { return T; }
-    double const LJContainer::getgAmp(){return gAmp;}
-    double const LJContainer::getgAlpha(){return gAlpha;}
-    double const LJContainer::getgex0(){return gex0;}
-    double const LJContainer::getgey0(){return gey0;}
+    int const LJContainer::getNGaussians() { return gaussians.size(); }
     
     std::vector<double> const LJContainer::getBox() { return box_dimensions; }
 	
@@ -37,13 +34,6 @@ namespace lj{
     std::vector<double> const LJContainer::getForces(int i) { return forces[i]; }
     std::vector<double> const LJContainer::getPreviousPositions(int npart, int nstep) { return previousPositions[nstep][npart]; }
     
-    void LJContainer::setgParams(double _gAmp, double _gAlpha, double _gex0, double _gey0){
-        gAmp = _gAmp;
-        gAlpha = _gAlpha;
-        gex0 = _gex0;
-        gey0 = _gey0;
-    }
-	
 	void LJContainer::setPos(int i, double x, double y)
 	{
 		positions[i][0] = x;
@@ -57,7 +47,7 @@ namespace lj{
 	}
     
 	
-	void LJContainer::setConsts(double _boxl, double _boxw, double _rcutoff, double _dt, double _T, double _gAmp, double _gAlpha, double _gex0, double _gey0)
+	void LJContainer::setConsts(double _boxl, double _boxw, double _rcutoff, double _dt, double _T)
 	{
         if ( _boxw > 0 ) { box_dimensions[0] = _boxw;}
         else { box_dimensions[0] = 10.0; }
@@ -69,10 +59,6 @@ namespace lj{
 	else { dt = 0.001; }
         if ( _T > 0) { T = _T; }
         else { T = 1.0; }
-        gAmp = _gAmp;
-        gAlpha = _gAlpha;
-        gex0 = _gex0;
-        gey0 = _gey0;
 	}
 	
 	void LJContainer::addParticle(double x, double y, double vx, double vy)
@@ -97,14 +83,43 @@ namespace lj{
 		}
 	}
     
+    Gaussian& LJContainer::getGaussian(int i) { return gaussians[i]; }
+    
+    void LJContainer::addGaussian(double gAmp, double gAlpha, double gex0, double gey0){
+        Gaussian newGaussian(gAmp, gAlpha, gex0, gey0);
+        gaussians.push_back(newGaussian);
+        if (gaussians.size() > 4) removeGaussian();
+    }
+    
+    void LJContainer::removeGaussian(int i){
+        // Remove ith gaussian (first by default)
+        gaussians.erase(gaussians.begin()+i, gaussians.begin()+i+1);
+    }
+    
+    void LJContainer::updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0){
+        gaussians[i].setParams(gAmp, gAlpha, gex0, gey0);
+    }
+    
+    double LJContainer::getGaussianAlpha(int i) { return gaussians[i].getgAlpha(); }
+    double LJContainer::getGaussianAmp(int i) { return gaussians[i].getgAmp(); }
+    double LJContainer::getGaussianX0(int i) { return gaussians[i].getgex0(); }
+    double LJContainer::getGaussianY0(int i) { return gaussians[i].getgey0(); }
+    
+    
     void LJContainer::externalForce(){
         
-        for (int i = 0; i < N; i++){
-            double x = positions[i][0];
-            double y = positions[i][1];
-            forces[i][0] -= 2*(x-gex0)*gAlpha*gAmp*exp(-gAlpha*(pow(x - gex0,2)+pow(y - gey0,2)));
-            forces[i][1] -= 2*(y-gey0)*gAlpha*gAmp*exp(-gAlpha*(pow(x - gex0,2)+pow(y - gey0,2)));
-            epot += gAmp*exp(-gAlpha*(pow(x,2)+pow(y,2)));
+        std::vector<double> forceEnergy;
+        for (int g = 0; g < gaussians.size(); g++){
+            for (int i = 0; i < N; i++){
+                double x = positions[i][0];
+                double y = positions[i][1];
+                
+                forceEnergy = gaussians[g].calcForceEnergy(x, y);
+                
+                forces[i][0] += forceEnergy[0];
+                forces[i][1] += forceEnergy[1];
+                epot += forceEnergy[2];
+            }
         }
         
     }

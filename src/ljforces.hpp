@@ -13,6 +13,7 @@
 #define LJFORCES_HEADER_DEF
 
 #include <vector>
+#include "gaussian.hpp"
 
 namespace lj{
 	class LJContainer
@@ -22,7 +23,8 @@ namespace lj{
         std::vector<std::vector <double> > positions, velocities, forces;
         std::vector<std::vector <std::vector <double> > > previousPositions;
         std::vector<double> box_dimensions;
-        double epot, ekin, rcutoff, dt, T, gAmp, gAlpha, gex0, gey0;
+        std::vector<Gaussian> gaussians;
+        double epot, ekin, rcutoff, dt, T;
 	public:
         LJContainer(); // Default constructor
         
@@ -32,12 +34,7 @@ namespace lj{
 		double const getEPot();
 		double const getEKin();
         double const getT();
-        double const getgAmp();
-        double const getgAlpha();
-        double const getgex0();
-        double const getgey0();
-        
-        void setgParams(double _gAmp, double _gAlpha, double _gex0, double _gey0);
+        int const getNGaussians();
         
         std::vector<double> const getBox();
 		std::vector<double> const getPos(int i);
@@ -47,12 +44,21 @@ namespace lj{
 		//Setters
 		void setPos(int i, double x, double y);
 		void setVel(int i, double vx, double vy);
-		void setConsts(double _boxl, double _boxw, double _rcutoff, double _dt, double _T, double _gAmp, double _gAlpha, double _gex0, double _gey0);
-	
+        void setConsts(double _boxl, double _boxw, double _rcutoff, double _dt, double _T);
+        
 		// Routines
 		void addParticle(double x, double y,
 						 double vx, double vy);
 		void removeParticle();
+        
+        Gaussian& getGaussian(int i);
+        void addGaussian(double gAmp, double gAlpha, double gex0, double gey0);
+        void removeGaussian(int i = 0);
+        void updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0);
+        double getGaussianAlpha(int i);
+        double getGaussianAmp(int i);
+        double getGaussianX0(int i);
+        double getGaussianY0(int i);
 	
 		void forcesEnergies(int nthreads);
         void externalForce();

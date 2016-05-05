@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ljforces.hpp"
+#include "gaussian.hpp"
 
 #define N_THREADS 1
 
@@ -13,6 +14,7 @@ class ofApp : public ofBaseApp{
 		void draw();
     
         void drawData(string name, double value);
+        void drawGaussian(Gaussian& g, double boxw, double boxl, float scale);
     
 		void keyPressed(int key);
 		void keyReleased(int key);

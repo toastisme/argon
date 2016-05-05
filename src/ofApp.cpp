@@ -21,6 +21,24 @@ void randomiseVelocity(vector<double> &vel, double T) {
     }
 }
 
+void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, float scale){
+    double gA = g.getgAmp(), galpha = g.getgAlpha();
+    double gx = ofMap(g.getgex0(), 0, boxw, 0, ofGetWidth());
+    double gy = ofMap(g.getgey0(), 0, boxl, 0, ofGetHeight());
+    
+    int N_CIRCLES = 10;
+    double colourSpacing = 60/double(N_CIRCLES);
+    double contourSpacing = 0.8/double(N_CIRCLES);
+    
+    ofSetCircleResolution(100);
+    
+    for (int n = 0; n < N_CIRCLES; n++){
+        ofSetColor(0,(190+colourSpacing*n)*scale,255);
+        ofDrawCircle(gx, gy, (log(0.2+contourSpacing*n)/galpha)*abs(gA));
+    }
+
+}
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     double BOX_WIDTH = 15.0;
@@ -65,7 +83,8 @@ void ofApp::setup(){
     
     // Set up the system
     
-    theSystem.setConsts(BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP, TEMPERATURE, GAMP, GALPHA, GEX0, GEY0);
+    theSystem.setConsts(BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP, TEMPERATURE);
+    theSystem.addGaussian(GAMP, GALPHA, GEX0, GEY0);
     
     // intialise the system + previous positions
     theSystem.forcesEnergies(N_THREADS);
@@ -100,7 +119,7 @@ void ofApp::update(){
     
     scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
     if (audioOn)
-        theSystem.setgParams(50 - scaledVol*100, 1.1 - scaledVol, theSystem.getgex0(), theSystem.getgey0());
+        theSystem.updateGaussian(0, 50 - scaledVol*100, 1.1 - scaledVol, theSystem.getGaussianX0(0), theSystem.getGaussianY0(0));
     else
         scaledVol = 1.0;
     thermCounter++;
@@ -109,36 +128,14 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     vector<double> BOX_SIZE = theSystem.getBox();
+    
+    drawGaussian(theSystem.getGaussian(0), BOX_SIZE[0], BOX_SIZE[1], scaledVol);
+    
     double posx, posy;
     double pospx, pospy;
     double posppx, posppy;
     double velx, vely;
     double accx, accy;
-    
-    double gA = theSystem.getgAmp(), galpha = theSystem.getgAlpha();
-    double gx = ofMap(theSystem.getgex0(), 0, BOX_SIZE[0], 0, ofGetWidth());
-    double gy = ofMap(theSystem.getgey0(), 0, BOX_SIZE[1], 0, ofGetHeight());
-    
-
-    ofSetCircleResolution(100);
-    ofSetColor(0,190*scaledVol,255);
-    //ofNoFill();
-    ofDrawCircle(gx, gy, (log(0.2)/galpha)*abs(gA));
-    ofSetColor(0,200*scaledVol,255);
-    ofDrawCircle(gx, gy, (log(0.3)/galpha)*abs(gA));
-    ofSetColor(0,210*scaledVol,255);
-    ofDrawCircle(gx, gy, (log(0.4)/galpha)*abs(gA));
-    ofSetColor(0,220*scaledVol,255);
-    ofDrawCircle(gx, gy, (log(0.5)/galpha)*abs(gA));
-    ofSetColor(0,230*scaledVol,255);
-    ofDrawCircle(gx, gy, (log(0.6)/galpha)*abs(gA));
-    ofSetColor(0,240*scaledVol,255);
-    ofDrawCircle(gx, gy, (log(0.7)/galpha)*abs(gA));
-    ofSetColor(0,250*scaledVol,255);
-    ofDrawCircle(gx, gy, (log(0.8)/galpha)*abs(gA));
-    ofSetColor(0,255*scaledVol,255);
-    
-    
     
     ofFill();
     vector<double> tempPos;
