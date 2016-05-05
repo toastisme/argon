@@ -13,37 +13,41 @@ void ofApp::setup(){
     double BOX_LENGTH = 10.0;
     double CUTOFF = 3.0;
     double TIMESTEP = 0.01;
-    int N_PARTICLES = 15;
+    int N_PARTICLES = 100;
     double TEMPERATURE = 2.0;
     thermCounter = 0;
     drawFont.loadFont("verdana.ttf", 32);
     
-    int nx = ceil(BOX_WIDTH/(sqrt(N_PARTICLES)));
-    int ny = ceil(BOX_LENGTH/(sqrt(N_PARTICLES)));
-    double xspacing = BOX_WIDTH/(nx + 1.0);
-    double yspacing = BOX_LENGTH/(ny + 1.0);
+    double box_ratio = BOX_WIDTH / BOX_LENGTH;
+    int n_grid_x = ceil(sqrt(N_PARTICLES * box_ratio));
+    int n_grid_y = ceil(sqrt(N_PARTICLES / box_ratio));
+    double xspacing = BOX_WIDTH  / (n_grid_x);
+    double yspacing = BOX_LENGTH / (n_grid_y);
     
-    std::cout << xspacing << " " << yspacing << " " << nx << " " << ny << "\n";
+    std::cout << xspacing << " " << yspacing << " " << n_grid_x << " " << n_grid_y << "\n";
     
-    int i = 1, j = 1;
-    for (int n = 0; n < N_PARTICLES; n++){
-        if (i % nx == 0) {
-            j++;
-            i = 0;
-        }
+    int i = 0, j = 0;
+    double posx, posy;
+    for (int n = 0; n < N_PARTICLES; ++n){
+        posx = xspacing * (i + 0.5);
+        posy = yspacing * (j + 0.5);
         
-        theSystem.addParticle(i*xspacing, j*yspacing, 0, 0);
-        i++;
+        printf("%d %d %lf %lf\n", i, j, posx, posy);
+        theSystem.addParticle(posx, posy, 0, 0);
+        
+        ++i;
+        i = i % n_grid_x;
+        if (i == 0) ++j;
     }
     
-    theSystem.setConsts(BOX_WIDTH, BOX_LENGTH, CUTOFF, TIMESTEP, TEMPERATURE);
+    theSystem.setConsts(BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP, TEMPERATURE);
     
     
     // intialise the system + previous positions
     theSystem.forcesEnergies(N_THREADS);
     
     for (int i = 0; i < theSystem.getN(); ++i) {
-        prevPos[i] = theSystem.getPos(i);
+        prevPos.push_back(theSystem.getPos(i));
     }
     theSystem.integrate(N_THREADS);
     
@@ -70,7 +74,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     vector<double> BOX_SIZE = theSystem.getBox();
-    float radius = 35;
+    float radius = 5;
     double posx, posy;
     double posprevx, posprevy;
     double posprevprevx, posprevprevy;
@@ -87,22 +91,17 @@ void ofApp::draw(){
         tempPos = theSystem.getPos(i);
         tempVel = theSystem.getVel(i);
         
+        printf("%lf %lf %lf %lf\n", tempPos[0], tempPos[1], BOX_SIZE[0], BOX_SIZE[1]);
+        
         posx = ofMap(tempPos[0], 0, BOX_SIZE[0], 0, ofGetWidth());
         posy = ofMap(tempPos[1], 0, BOX_SIZE[1], 0, ofGetHeight());
         ofDrawCircle(posx, posy, radius);
-        
-        posprevx = ofMap(prevPos[i][0], 0, BOX_SIZE[0], 0, ofGetWidth());
-        posprevy = ofMap(prevPos[i][1], 0, BOX_SIZE[0], 0, ofGetWidth());
-        ofDrawCircle(posprevx, posprevy, radius);
-        
-        posprevprevx = ofMap(prevPrevPos[i][0], 0, BOX_SIZE[0], 0, ofGetWidth());
-        posprevprevy = ofMap(prevPrevPos[i][1], 0, BOX_SIZE[0], 0, ofGetWidth());
-        ofDrawCircle(posprevprevx, posprevprevy, radius);
         
         velx = ofMap(tempVel[0], 0, v_avg, 0, 255);
         vely = ofMap(tempVel[1], 0, v_avg, 0, 255);
         ofSetColor(150, velx, vely);
     }
+    printf("\n");
     
     ofSetColor(0, 0, 0);
     tempPos = theSystem.getPos(1);
