@@ -44,7 +44,7 @@ void ofApp::setup(){
     double BOX_WIDTH = 15.0;
     double BOX_LENGTH = 10.0;
     double CUTOFF = 3.0;
-    double TIMESTEP = 0.005;
+    double TIMESTEP = 0.01;
     int N_PARTICLES = 50;
     double TEMPERATURE = 2.0;
     double GAMP = 50.0;
@@ -117,11 +117,11 @@ void ofApp::update(){
         theSystem.andersen(0.1);
     }
     
-    scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
-    if (audioOn)
+    if (audioOn) {
+        scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
         theSystem.updateGaussian(0, 50 - scaledVol*100, 1.1 - scaledVol, theSystem.getGaussianX0(0), theSystem.getGaussianY0(0));
-    else
-        scaledVol = 1.0;
+    }
+    
     thermCounter++;
 }
 
@@ -212,7 +212,8 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    audioOn = !audioOn;
+    if (key == 'a' || key == 'A')
+        audioOn = !audioOn;
 }
 
 //--------------------------------------------------------------
