@@ -20,6 +20,7 @@ namespace lj{
 	private:
 		int N; // Number of particles
         std::vector<std::vector <double> > positions, velocities, forces;
+        std::vector<std::vector <std::vector <double> > > previousPositions;
         std::vector<double> box_dimensions;
 		double epot, ekin, rcutoff, dt, T;
 	public:
@@ -36,6 +37,7 @@ namespace lj{
 		std::vector<double> const getPos(int i);
 		std::vector<double> const getVel(int i);
 		std::vector<double> const getForces(int i);
+        std::vector<double> const getPreviousPositions(int npart, int nstep);
 		//Setters
 		void setPos(int i, double x, double y);
 		void setVel(int i, double vx, double vy);

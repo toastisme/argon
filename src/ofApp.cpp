@@ -74,32 +74,32 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     vector<double> BOX_SIZE = theSystem.getBox();
-    float radius = 5;
     double posx, posy;
     double posprevx, posprevy;
     double posprevprevx, posprevprevy;
     double velx, vely;
+    double accx, accy;
 
     
     ofFill();
     vector<double> tempPos;
     vector<double> tempVel;
+    vector<double> tempAcc;
     double v_avg = 0.25*sqrt(3*theSystem.getN()*theSystem.getT()) ;
     
     
     for (int i = 0; i < theSystem.getN(); i++){
         tempPos = theSystem.getPos(i);
         tempVel = theSystem.getVel(i);
-        
-        printf("%lf %lf %lf %lf\n", tempPos[0], tempPos[1], BOX_SIZE[0], BOX_SIZE[1]);
-        
+        tempAcc = theSystem.getForces(i);
         posx = ofMap(tempPos[0], 0, BOX_SIZE[0], 0, ofGetWidth());
         posy = ofMap(tempPos[1], 0, BOX_SIZE[1], 0, ofGetHeight());
-        ofDrawCircle(posx, posy, radius);
-        
-        velx = ofMap(tempVel[0], 0, v_avg, 0, 255);
-        vely = ofMap(tempVel[1], 0, v_avg, 0, 255);
+        velx = ofMap(abs(tempVel[0]), 0, v_avg, 0, 255);
+        vely = ofMap(abs(tempVel[1]), 0, v_avg, 0, 255);
+        accx = ofMap(log(1.0+abs(tempAcc[0])), 0, 10, 20, 50);
+        accy = ofMap(log(1.0+abs(tempAcc[1])), 0, 10, 20, 50);
         ofSetColor(150, velx, vely);
+        ofDrawEllipse(posx, posy, accx, accy);
     }
     printf("\n");
     

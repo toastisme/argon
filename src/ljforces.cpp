@@ -34,6 +34,7 @@ namespace lj{
 	std::vector<double> const LJContainer::getPos(int i) { return positions[i]; }
 	std::vector<double> const LJContainer::getVel(int i) { return velocities[i]; }
 	std::vector<double> const LJContainer::getForces(int i) { return forces[i]; }
+    std::vector<double> const LJContainer::getPreviousPositions(int npart, int nstep) { return previousPositions[nstep][npart]; }
 	
 	void LJContainer::setPos(int i, double x, double y)
 	{
@@ -53,13 +54,11 @@ namespace lj{
         if ( _boxw > 0 ) { box_dimensions[0] = _boxw;}
         else { box_dimensions[0] = 10.0; }
         if ( _boxl > 0 ) { box_dimensions[1] = _boxl;}
-        else { box_dimensions[1] = 10.0; }
+        else { box_dimensions[1] = box_dimensions[0]; }
 	if ( _rcutoff > 0 ) { rcutoff = _rcutoff; }
 	else { rcutoff = 3.0; }
 	if ( _dt > 0 ) { dt = _dt; }
 	else { dt = 0.001; }
-        //box_dimensions.push_back(_boxw);
-        //box_dimensions.push_back(_boxl);
         if ( _T > 0) { T = _T; }
         else { T = 1.0; }
 	}
@@ -197,6 +196,11 @@ namespace lj{
 			}
 			ekin += 0.5*temp;
 		}
+        
+        if (previousPositions.size() == 20){
+            previousPositions.erase(previousPositions.begin(), previousPositions.begin()+1);
+        }
+        previousPositions.push_back(positions);
 	}
 	
 	void LJContainer::andersen(double freq)
