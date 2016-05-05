@@ -44,7 +44,7 @@ void ofApp::setup(){
     double BOX_WIDTH = 15.0;
     double BOX_LENGTH = 10.0;
     double CUTOFF = 3.0;
-    double TIMESTEP = 0.01;
+    double TIMESTEP = 0.005;
     int N_PARTICLES = 50;
     double TEMPERATURE = 2.0;
     double GAMP = 50.0;
@@ -167,7 +167,7 @@ void ofApp::draw(){
         accx = ofMap(log(1.0+abs(tempAcc[0])), 0, 10, 20, 50);
         accy = ofMap(log(1.0+abs(tempAcc[1])), 0, 10, 20, 50);
         
-        ofSetColor(velx+vely, 0, 150);
+        ofSetColor((velx+vely)/2.0, 0, 200);
         
         ofDrawEllipse(posx, posy, accx, accy);
         ofDrawEllipse(pospx, pospy, accx * 0.8, accy * 0.8);
