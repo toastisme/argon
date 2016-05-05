@@ -32,4 +32,6 @@ class ofApp : public ofBaseApp{
         ofTrueTypeFont drawFont;
         float drawDataHeight;
     
+    vector<vector<double>> prevPos;
+    vector<vector<double>> prevPrevPos;
 };

@@ -38,13 +38,26 @@ void ofApp::setup(){
     
     theSystem.setConsts(BOX_WIDTH, BOX_LENGTH, CUTOFF, TIMESTEP, TEMPERATURE);
     
+    
+    // intialise the system + previous positions
     theSystem.forcesEnergies(N_THREADS);
+    
+    for (int i = 0; i < theSystem.getN(); ++i) {
+        prevPos[i] = theSystem.getPos(i);
+    }
+    theSystem.integrate(N_THREADS);
     
     ofBackground(255, 255, 255);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    // update
+    prevPrevPos = prevPos;
+    for (int i = 0; i < theSystem.getN(); ++i) {
+        prevPos[i] = theSystem.getPos(i);
+    }
+    
     theSystem.integrate(N_THREADS);
     if (thermCounter % 10 == 0) {
         theSystem.andersen(0.1);
@@ -59,6 +72,8 @@ void ofApp::draw(){
     vector<double> BOX_SIZE = theSystem.getBox();
     float radius = 35;
     double posx, posy;
+    double posprevx, posprevy;
+    double posprevprevx, posprevprevy;
     double velx, vely;
 
     
@@ -71,12 +86,22 @@ void ofApp::draw(){
     for (int i = 0; i < theSystem.getN(); i++){
         tempPos = theSystem.getPos(i);
         tempVel = theSystem.getVel(i);
+        
         posx = ofMap(tempPos[0], 0, BOX_SIZE[0], 0, ofGetWidth());
         posy = ofMap(tempPos[1], 0, BOX_SIZE[1], 0, ofGetHeight());
+        ofDrawCircle(posx, posy, radius);
+        
+        posprevx = ofMap(prevPos[i][0], 0, BOX_SIZE[0], 0, ofGetWidth());
+        posprevy = ofMap(prevPos[i][1], 0, BOX_SIZE[0], 0, ofGetWidth());
+        ofDrawCircle(posprevx, posprevy, radius);
+        
+        posprevprevx = ofMap(prevPrevPos[i][0], 0, BOX_SIZE[0], 0, ofGetWidth());
+        posprevprevy = ofMap(prevPrevPos[i][1], 0, BOX_SIZE[0], 0, ofGetWidth());
+        ofDrawCircle(posprevprevx, posprevprevy, radius);
+        
         velx = ofMap(tempVel[0], 0, v_avg, 0, 255);
         vely = ofMap(tempVel[1], 0, v_avg, 0, 255);
         ofSetColor(150, velx, vely);
-        ofDrawCircle(posx, posy, radius);
     }
     
     ofSetColor(0, 0, 0);
