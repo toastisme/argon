@@ -12,9 +12,13 @@ void ofApp::setup(){
     double BOX_WIDTH = 15.0;
     double BOX_LENGTH = 10.0;
     double CUTOFF = 3.0;
-    double TIMESTEP = 0.01;
-    int N_PARTICLES = 15;
+    double TIMESTEP = 0.005;
+    int N_PARTICLES = 10;
     double TEMPERATURE = 2.0;
+    double GAMP = 50.0;
+    double GALPHA =0.3;
+    double GEX0 = 7.5;
+    double GEY0 = 5.0;
     thermCounter = 0;
     drawFont.loadFont("verdana.ttf", 32);
     
@@ -36,7 +40,7 @@ void ofApp::setup(){
         i++;
     }
     
-    theSystem.setConsts(BOX_WIDTH, BOX_LENGTH, CUTOFF, TIMESTEP, TEMPERATURE);
+    theSystem.setConsts(BOX_WIDTH, BOX_LENGTH, CUTOFF, TIMESTEP, TEMPERATURE, GAMP, GALPHA, GEX0, GEY0);
     
     theSystem.forcesEnergies(N_THREADS);
     
@@ -60,6 +64,19 @@ void ofApp::draw(){
     float radius = 35;
     double posx, posy;
     double velx, vely;
+    
+    double gA = theSystem.getgAmp(), galpha = theSystem.getgAlpha();
+    double gx = ofMap(theSystem.getgex0(), 0, BOX_SIZE[0], 0, ofGetWidth());
+    double gy = ofMap(theSystem.getgey0(), 0, BOX_SIZE[1], 0, ofGetHeight());
+    
+
+    
+    ofSetColor(0,0,255);
+    ofNoFill();
+    ofDrawCircle(gx, gy, (log(0.9)/galpha)*gA);
+    ofDrawCircle(gx, gy, (log(0.6)/galpha)*gA);
+    ofDrawCircle(gx, gy, (log(0.4)/galpha)*gA);
+    ofDrawCircle(gx, gy, (log(0.2)/galpha)*gA);
 
     
     ofFill();

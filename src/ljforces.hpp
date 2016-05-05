@@ -21,10 +21,9 @@ namespace lj{
 		int N; // Number of particles
         std::vector<std::vector <double> > positions, velocities, forces;
         std::vector<double> box_dimensions;
-		double epot, ekin, rcutoff, dt, T;
+        double epot, ekin, rcutoff, dt, T, gAmp, gAlpha, gex0, gey0;
 	public:
         LJContainer(); // Default constructor
-		LJContainer(double _boxl, double _boxw, double _rcutoff, double _dt, double _T); // Constructor
         
 		// Accessors
 		// Getters
@@ -32,6 +31,10 @@ namespace lj{
 		double const getEPot();
 		double const getEKin();
         double const getT();
+        double const getgAmp();
+        double const getgAlpha();
+        double const getgex0();
+        double const getgey0();
         std::vector<double> const getBox();
 		std::vector<double> const getPos(int i);
 		std::vector<double> const getVel(int i);
@@ -39,7 +42,7 @@ namespace lj{
 		//Setters
 		void setPos(int i, double x, double y);
 		void setVel(int i, double vx, double vy);
-		void setConsts(double _boxl, double _boxw, double _rcutoff, double _dt, double _T);
+		void setConsts(double _boxl, double _boxw, double _rcutoff, double _dt, double _T, double _gAmp, double _gAlpha, double _gex0, double _gey0);
 	
 		// Routines
 		void addParticle(double x, double y,
@@ -47,6 +50,7 @@ namespace lj{
 		void removeParticle();
 	
 		void forcesEnergies(int nthreads);
+        void externalForce();
 		void forcesThread(int start, int end, std::vector<std::vector<double> >& ftemp,
 						  double& etemp, std::vector<std::vector<double> > postemp,
 						  double rcut, int npart);
