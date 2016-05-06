@@ -33,8 +33,9 @@ void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, bool selected){
     double fwhm = 2 * sqrt(log(2) / galpha);
     double maxslope = galpha * gA * fwhm * exp(- galpha * fwhm * fwhm);
     
-    double xscale = ofGetWidth() / boxw;
-    double yscale = ofGetHeight() / boxl;
+    double scaleFactor = 2.3;
+    double xscale = scaleFactor * ofGetWidth() / boxw;
+    double yscale = scaleFactor * ofGetHeight() / boxl;
     
     int red = 0;
     if (selected) red = 200;
@@ -42,7 +43,7 @@ void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, bool selected){
     int n_circles = 50;
     
     for (int i = 1; i < n_circles; ++i) {
-        r = 2 * ofMap(i, 0, n_circles, 0, r_max);
+        r = ofMap(i, 0, n_circles, 0, r_max);
         transp = galpha * gA * r * exp(- galpha * r * r) / 40;
         transp = ofMap(transp, 0, maxslope, 0, 255);
         ofSetColor(red, 190 * scale, 255, transp);
