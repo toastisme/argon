@@ -20,8 +20,8 @@ void ofApp::randomiseVelocity(vector<double> &vel, double T) {
     }
 }
 
-void ofApp::setupSystem(lj::LJContainer system, int numParticles, double temperature, double box_length, double box_width, double cutoff, double timestep) {
-    system.clearSystem();
+void ofApp::setupSystem(int numParticles, double temperature, double box_length, double box_width, double cutoff, double timestep) {
+    theSystem.clearSystem();
     theSystem.setConsts(box_length, box_width, cutoff, timestep);
     theSystem.setTemp(temperature);
     
@@ -172,12 +172,12 @@ void ofApp::drawGraph()
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    double BOX_WIDTH = 15.0;
-    double BOX_LENGTH = BOX_WIDTH / ofGetWidth() * ofGetHeight();
-    double CUTOFF = 3.0;
-    double TIMESTEP = 0.01;
+    BOX_WIDTH = 15.0;
+    BOX_LENGTH = BOX_WIDTH / ofGetWidth() * ofGetHeight();
+    CUTOFF = 3.0;
+    TIMESTEP = 0.01;
     N_PARTICLES = 50;
-    double TEMPERATURE = 0.5;
+    TEMPERATURE = 0.5;
 
     playbutton.load("play-btn.png");
     
@@ -186,7 +186,7 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     
     // intitialise the system
-    setupSystem(theSystem, N_PARTICLES, TEMPERATURE, BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP);
+    setupSystem(N_PARTICLES, TEMPERATURE, BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP);
     
     audioOn = true;
     helpOn = false;
@@ -222,21 +222,21 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    theSystem.integrate(N_THREADS);
-    drawDataHeight = ofGetHeight() - 5;
+    if (playOn) {
+        theSystem.integrate(N_THREADS);
 
-    //lets scale the vol up to a 0-1 range, and thermostat
-    if (thermCounter % 10 == 0) {
-        theSystem.andersen(1.0);
+        //lets scale the vol up to a 0-1 range, and thermostat
+        if (thermCounter % 10 == 0) {
+            theSystem.berendsen(1.0);
+        }
+        thermCounter++;
+        
+        if (audioOn) {
+            scaledVol = ofMap(smoothedVol, 0.0, sensitivity, 0.0, 1.0, true);
+            if ( selectedGaussian > -1)
+                theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 0.8 - 0.5*scaledVol, theSystem.getGaussianX0(selectedGaussian), theSystem.getGaussianY0(selectedGaussian), scaledVol);
+        }
     }
-    
-    if (audioOn) {
-        scaledVol = ofMap(smoothedVol, 0.0, sensitivity, 0.0, 1.0, true);
-        if ( selectedGaussian > -1)
-            theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 0.8 - 0.5*scaledVol, theSystem.getGaussianX0(selectedGaussian), theSystem.getGaussianY0(selectedGaussian), scaledVol);
-    }
-    
-    thermCounter++;
 }
 
 //--------------------------------------------------------------
@@ -402,13 +402,13 @@ void ofApp::keyPressed(int key){
         helpOn = !helpOn;
     }
     else if (key == 'r' || key == 'R') {
-        //setupSystem(theSystem, N_PARTICLES, TEMPERATURE, BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP);
+        setupSystem(N_PARTICLES, TEMPERATURE, BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP);
     }
     else if (key == 'p' || key == 'P') {
         playOn = !playOn;
     }
     if (helpOn == true){
-        if (key == OF_KEY_SHIFT)  // Switch slider
+        if (key == OF_KEY_TAB)  // Switch slider
             selectedSlider = (selectedSlider+1)%3;
         if (key == OF_KEY_RIGHT){
             switch(selectedSlider) {

@@ -17,7 +17,7 @@ class ofApp : public ofBaseApp{
         void drawGaussian(Gaussian& g, double boxw, double boxl, bool selected);
         void drawGraph();
         void randomiseVelocity(vector<double> &vel, double T);
-        void setupSystem(lj::LJContainer system, int numParticles, double temperature, double box_length, double box_width, double cutoff, double timestep);
+        void setupSystem(int numParticles, double temperature, double box_length, double box_width, double cutoff, double timestep);
         void drawUI();
     
 		void keyPressed(int key);
@@ -54,7 +54,14 @@ class ofApp : public ofBaseApp{
         int thermCounter;
         int selectedGaussian;
         int selectedSlider;
+    
         int N_PARTICLES;
+        double BOX_WIDTH;
+        double BOX_LENGTH;
+        double CUTOFF;
+        double TIMESTEP;
+        double TEMPERATURE;
+    
         ofTrueTypeFont drawFont;
         float drawDataHeight;
         double firstEKin, firstEPot;
