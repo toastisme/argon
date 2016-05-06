@@ -22,9 +22,11 @@ namespace lj{
 		int N; // Number of particles
         std::vector<std::vector <double> > positions, velocities, forces;
         std::vector<std::vector <std::vector <double> > > previousPositions;
+        std::vector<double> prevEPot, prevEKin;
         std::vector<double> box_dimensions;
         std::vector<Gaussian> gaussians;
-        double epot, ekin, rcutoff, dt, T;
+        double epot, ekin, rcutoff, dt, T, maxEKin, maxEPot;
+        int enCounter;
 	public:
         LJContainer(); // Default constructor
         
@@ -35,6 +37,7 @@ namespace lj{
 		double const getEKin();
         double const getT();
         int const getNGaussians();
+        int const getNEnergies();
         
         double const getWidth();
         double const getHeight();
@@ -42,6 +45,10 @@ namespace lj{
 		std::vector<double> const getVel(int i);
 		std::vector<double> const getForces(int i);
         std::vector<double> const getPreviousPositions(int npart, int nstep);
+        double const getPreviousEpot(int i);
+        double const getPreviousEkin(int i);
+        double const getMaxEkin();
+        double const getMaxEpot();
 		//Setters
 		void setPos(int i, double x, double y);
 		void setVel(int i, double vx, double vy);

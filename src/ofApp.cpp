@@ -51,6 +51,42 @@ void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, bool selected){
     }
 }
 
+void ofApp::drawGraph()
+{
+    // Draw `window'
+    float winLeft = ofGetWidth()/6;
+    float winTop = ofGetHeight()/6;
+    float winWidth = 2*ofGetWidth()/3;
+    float winHeight = 2*ofGetHeight()/3;
+    float xOffset = 1.1*winLeft;
+    float yOffset = 7*winHeight/6;
+    float ekinScale = theSystem.getMaxEkin();//8*theSystem.getN()*theSystem.getT();
+    float epotScale = theSystem.getMaxEpot();//8*firstEPot;
+    //ofFill();
+    //ofSetColor(255, 255, 255, 100);
+    //ofDrawRectangle(winLeft, winTop, winWidth, winHeight);
+    
+    // Draw graph
+    float radius = 3;
+    float ekin, epot;
+    
+    for (int i = 0; i < theSystem.getNEnergies(); i++){
+        ofSetColor(255, 0, 0);
+        ekin = ofMap(theSystem.getPreviousEkin(i), firstEKin, ekinScale, 0, 0.9*winHeight, true);
+        ofDrawCircle(xOffset + 5*i, yOffset - ekin, radius);
+        
+        ofSetColor(0, 0, 255);
+        epot = ofMap(fabs(theSystem.getPreviousEpot(i)), firstEPot, epotScale, 0, 0.9*winHeight, true);
+        ofDrawCircle(xOffset + 5*i, yOffset - epot, radius);
+    }
+    
+    ofSetColor(255, 0, 0);
+    drawFont.drawString("Kinetic energy", 0.05*ofGetWidth(), 0.1*ofGetHeight());
+    ofSetColor(0, 0, 255);
+    drawFont.drawString("Potential energy", 0.05*ofGetWidth(), 0.15*ofGetHeight() );
+    
+}
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     double BOX_WIDTH = 15.0;
@@ -62,12 +98,14 @@ void ofApp::setup(){
     
     // initialise openFrameworks stuff
     ofSetCircleResolution(100);
+    ofSetFrameRate(60);
     
     audioOn = true;
     loganOn = false;
+    graphOn = false;
     thermCounter = 0;
     selectedGaussian = -1; // No gaussian selected
-    drawFont.loadFont("verdana.ttf", 32);
+    drawFont.loadFont("verdana.ttf", 14);
     //shader.load("shadersGL3/shader");
     
     double box_ratio = BOX_WIDTH / BOX_LENGTH;
@@ -100,6 +138,8 @@ void ofApp::setup(){
     
     // intialise the system + previous positions
     theSystem.forcesEnergies(N_THREADS);
+    firstEKin = theSystem.getEKin();
+    firstEPot = fabs(theSystem.getEPot());
     
     for (int i = 0; i < 20; ++i) {
         theSystem.integrate(N_THREADS);
@@ -151,6 +191,7 @@ void ofApp::draw(){
     BOX_SIZE.push_back(theSystem.getHeight());
     
     ofFill();
+    if (graphOn) drawGraph();
     
     for (int g = 0; g < theSystem.getNGaussians(); g++){
         if ( g == selectedGaussian)
@@ -242,6 +283,8 @@ void ofApp::draw(){
     
     ofSetColor(0, 0, 0);
     
+    //if (graphOn) drawGraph();
+    
     //drawData("E Kin", theSystem.getEKin());
     //drawData("E Pot", theSystem.getEPot());
 }
@@ -296,6 +339,9 @@ void ofApp::keyPressed(int key){
     }
     else if (key == 'l' || key == 'L') {
         loganOn = !loganOn;
+    }
+    else if (key == 'e' || key == 'E') {
+        graphOn = !graphOn;
     }
 }
 
