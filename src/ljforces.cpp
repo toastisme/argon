@@ -18,7 +18,7 @@ namespace lj{
     {
         box_dimensions.push_back(0);
         box_dimensions.push_back(0);
-        setConsts(10.0, 10.0, 3.0, 0.01, 1.0);
+        setConsts(10.0, 10.0, 3.0, 0.01);
         maxEKin = 0.0;
         maxEPot = 0.0;
         enCounter = 0;
@@ -57,7 +57,7 @@ namespace lj{
 	}
     
 	
-	void LJContainer::setConsts(double _boxl, double _boxw, double _rcutoff, double _dt, double _T)
+	void LJContainer::setConsts(double _boxl, double _boxw, double _rcutoff, double _dt)
 	{
         if ( _boxw > 0 ) { box_dimensions[0] = _boxw;}
         else { box_dimensions[0] = 10.0; }
@@ -66,10 +66,26 @@ namespace lj{
 	if ( _rcutoff > 0 ) { rcutoff = _rcutoff; }
 	else { rcutoff = 3.0; }
 	if ( _dt > 0 ) { dt = _dt; }
-	else { dt = 0.001; }
-        if ( _T > 0) { T = _T; }
-        else { T = 1.0; }
-	}
+        else { dt = 0.001; }}
+
+    
+    void LJContainer::setTemp(double _T){
+        if ( _T > 0){
+            T = _T;
+        }
+        else{
+            T = 1.0;
+        }
+    }
+    
+    void LJContainer::setParticles(int _N){
+        if ( _N > 0){
+            N = _N;
+        }
+        else{
+            N = 10;
+        }
+    }
 	
 	void LJContainer::addParticle(double x, double y, double vx, double vy)
 	{
