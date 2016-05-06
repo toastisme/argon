@@ -14,9 +14,10 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
     
-        void drawData(string name, double value);
+        void drawData(string name, double value, int x, int y);
         void drawGaussian(Gaussian& g, double boxw, double boxl, bool selected);
         void drawGraph();
+        void drawUI();
     
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -37,8 +38,9 @@ class ofApp : public ofBaseApp{
     
         float smoothedVol;
         float scaledVol;
+        float sensitivity;
 
-        bool audioOn, helpOn, loganOn, graphOn;
+        bool audioOn, helpOn, loganOn, graphOn, playOn;
 
         ofSoundStream soundStream;
 //        ofxFloatSlider temperature2;
@@ -51,6 +53,8 @@ class ofApp : public ofBaseApp{
         lj::LJContainer theSystem;
         int thermCounter;
         int selectedGaussian;
+        int selectedSlider;
+        int N_PARTICLES;
         ofTrueTypeFont drawFont;
         float drawDataHeight;
         double firstEKin, firstEPot;

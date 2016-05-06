@@ -278,8 +278,10 @@ namespace lj{
             prevEKin.push_back(ekin);
             prevEPot.push_back(epot);
             
-            maxEKin = (ekin > maxEKin ? ekin : maxEKin);
-            maxEPot = (fabs(epot) > maxEPot ? fabs(epot) : maxEPot);
+            std::vector<double>::iterator EKMAX = std::max_element(prevEKin.begin(), prevEKin.end());
+            std::vector<double>::iterator EPMAX = std::max_element(prevEPot.begin(), prevEPot.end());
+            maxEKin = prevEKin[std::distance(prevEKin.begin(), EKMAX)];
+            maxEPot = prevEPot[std::distance(prevEPot.begin(), EPMAX)];
         }
         
         enCounter++;
