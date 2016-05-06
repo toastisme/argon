@@ -403,6 +403,7 @@ void ofApp::keyPressed(int key){
     }
     else if (key == 'r' || key == 'R') {
         //setupSystem(theSystem, N_PARTICLES, TEMPERATURE, BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP);
+    }
     else if (key == 'p' || key == 'P') {
         playOn = !playOn;
     }
