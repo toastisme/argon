@@ -35,9 +35,10 @@ class ofApp : public ofBaseApp{
     
         float smoothedVol;
         float scaledVol;
-        bool audioOn;
+        bool audioOn, loganOn;
 
 		ofSoundStream soundStream;
+        ofImage loganLeft, loganRight;
     
     private:
         lj::LJContainer theSystem;

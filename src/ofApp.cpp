@@ -38,7 +38,7 @@ void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, bool selected){
     
     for (int n = 0; n < N_CIRCLES; n++){
         ofSetColor(red,(190+colourSpacing*n)*scale,255);
-        ofDrawCircle(gx, gy, (log(0.2+contourSpacing*n)/galpha)*abs(gA));
+        ofDrawCircle(gx, gy, (log(0.2+contourSpacing*n)/galpha)*50);
     }
 
 }
@@ -48,11 +48,12 @@ void ofApp::setup(){
     double BOX_WIDTH = 15.0;
     double BOX_LENGTH = 10.0;
     double CUTOFF = 3.0;
-    double TIMESTEP = 0.005;
+    double TIMESTEP = 0.01;
     int N_PARTICLES = 50;
-    double TEMPERATURE = 2.0;
+    double TEMPERATURE = 0.1;
     
     audioOn = true;
+    loganOn = false;
     thermCounter = 0;
     selectedGaussian = -1; // No gaussian selected
     drawFont.loadFont("verdana.ttf", 32);
@@ -105,6 +106,10 @@ void ofApp::setup(){
     soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
     
     ofBackground(0, 0, 0);
+    
+    // Setup Logan image
+    loganLeft.load("david-logan-posing-left.png");
+    loganRight.load("david-logan-posing-right.png");
 }
 
 //--------------------------------------------------------------
@@ -114,13 +119,13 @@ void ofApp::update(){
 
     //lets scale the vol up to a 0-1 range, and thermostat
     if (thermCounter % 10 == 0) {
-        theSystem.andersen(0.1);
+        theSystem.andersen(1.0);
     }
     
     if (audioOn) {
         scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
         if ( selectedGaussian > -1)
-            theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 1.1 - scaledVol, theSystem.getGaussianX0(selectedGaussian), theSystem.getGaussianY0(selectedGaussian), scaledVol);
+            theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 0.8 - 0.5*scaledVol, theSystem.getGaussianX0(selectedGaussian), theSystem.getGaussianY0(selectedGaussian), scaledVol);
     }
     
     thermCounter++;
@@ -177,9 +182,17 @@ void ofApp::draw(){
         
         ofSetColor((velx+vely)/2.0, 0, 200);
         
-        ofDrawEllipse(posx, posy, accx, accy);
-        ofDrawEllipse(pospx, pospy, accx * 0.8, accy * 0.8);
-        ofDrawEllipse(posppx, posppy, accx * 0.4, accy * 0.4);
+        if (loganOn){
+            if (tempVel[0] >= 0)
+                loganRight.draw(posx, posy, accx*2, accy*2);
+            else
+                loganLeft.draw(posx, posy, accx*2, accy*2);
+        }
+        else {
+            ofDrawEllipse(posx, posy, accx, accy);
+            ofDrawEllipse(pospx, pospy, accx * 0.8, accy * 0.8);
+            ofDrawEllipse(posppx, posppy, accx * 0.4, accy * 0.4);
+        }
     }
     
     ofSetColor(0, 0, 0);
@@ -220,16 +233,21 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    if (key == 'a' || key == 'A') // Audio on/off
+    if (key == 'a' || key == 'A') { // Audio on/off
         audioOn = !audioOn;
-    else if (key == 'g' || key == 'G') // Change gaussian
+    }
+    else if (key == 'g' || key == 'G') { // Change gaussian
         selectedGaussian = (selectedGaussian+1)%theSystem.getNGaussians();
-    else if (key == 'k' || key == 'K') // Kill gaussian
+    }
+    else if (key == 'k' || key == 'K'){ // Kill gaussian
         if (selectedGaussian > -1) {
             theSystem.removeGaussian(selectedGaussian);
             selectedGaussian--;
         }
-    
+    }
+    else if (key == 'l' || key == 'L') {
+        loganOn = !loganOn;
+    }
 }
 
 //--------------------------------------------------------------
