@@ -53,8 +53,8 @@ void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, bool selected){
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    double BOX_WIDTH = 10.24;
-    double BOX_LENGTH = 7.68;
+    double BOX_WIDTH = 15.0;
+    double BOX_LENGTH = BOX_WIDTH / ofGetWidth() * ofGetHeight();
     double CUTOFF = 3.0;
     double TIMESTEP = 0.01;
     int N_PARTICLES = 50;
