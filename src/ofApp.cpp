@@ -1,10 +1,9 @@
 #include "ofApp.h"
 
-void ofApp::drawData(string name, double value) {
+void ofApp::drawData(string name, double value, int x, int y) {
     char drawstr[255];
     sprintf(drawstr, "%s %lf", name.c_str(), value);
-    drawFont.drawString(drawstr, ofGetWidth() - 550, ofGetHeight() - 109);
-    drawDataHeight -= drawFont.stringHeight(drawstr) + 5;
+    drawFont.drawString(drawstr, x, y);
 }
 
 void ofApp::randomiseVelocity(vector<double> &vel, double T) {
@@ -90,6 +89,51 @@ void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, bool selected){
     }
 }
 
+void ofApp::drawUI()
+{
+    ofSetColor(255, 255, 255, 100);
+    //Controls window
+    ofDrawRectangle(0, ofGetHeight() - 150, ofGetWidth(), 150);
+    ofSetColor(255, 255, 240);
+    drawFont.drawString(" key commands: \n audio on/off: 'a' \n change gaussian: 'g' \n remove gaussian: 'k'" ,ofGetWidth() - 270,ofGetHeight()-110);
+    
+    int slider1, slider2, slider3;
+    slider1 = (selectedSlider == 0 ? 0 : 1);
+    slider2 = (selectedSlider == 1 ? 0 : 1);
+    slider3 = (selectedSlider == 2 ? 0 : 1);
+    
+    ofSetColor(255, 255*slider1, 240*slider1);
+    drawFont.drawString(" temperature:", ofGetWidth() - 1000, ofGetHeight() - 110);
+    
+    ofSetColor(255, 255*slider2, 240*slider2);
+    drawFont.drawString(" particles:", ofGetWidth() - 1000, ofGetHeight() - 88);
+    
+    ofSetColor(255, 255*slider3, 240*slider3);
+    drawFont.drawString(" sensitivity:", ofGetWidth() - 1000, ofGetHeight() - 63);
+    
+    ofSetColor(255, 255, 240);
+    
+    //Temperature slider
+    ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 122, 250, 10);
+    
+    //Parameter values
+    drawData(" ", theSystem.getT()*120, ofGetWidth()-550, ofGetHeight() - 109);
+    drawData(" ", N_PARTICLES, ofGetWidth()-550, ofGetHeight() - 87);
+    drawData(" ", sensitivity, ofGetWidth()-550, ofGetHeight() - 62);
+    
+    //Particle slider
+    ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 100, 250, 10);
+    //Sensitivity slider
+    ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 75, 250, 10);
+    ofSetColor(0,0,0);
+    ofDrawRectangle((ofGetWidth() - 800) + 30*theSystem.getT(), ofGetHeight() - 122, 5, 10);
+    ofDrawRectangle((ofGetWidth() - 800) + N_PARTICLES, ofGetHeight() - 100, 5, 10);
+    ofDrawRectangle((ofGetWidth() - 800) + 2000*sensitivity, ofGetHeight() - 75, 5, 10);
+    //buttons
+    if (playOn) ofSetColor(0, 255, 0);
+    playbutton.draw(ofGetWidth() - 380, ofGetHeight() - 130, 50, 50);
+}
+
 void ofApp::drawGraph()
 {
     // Draw `window'
@@ -132,8 +176,8 @@ void ofApp::setup(){
     double BOX_LENGTH = BOX_WIDTH / ofGetWidth() * ofGetHeight();
     double CUTOFF = 3.0;
     double TIMESTEP = 0.01;
-    int N_PARTICLES = 50;
-    double TEMPERATURE = 0.1;
+    N_PARTICLES = 50;
+    double TEMPERATURE = 0.5;
 
     playbutton.load("play-btn.png");
     
@@ -148,11 +192,13 @@ void ofApp::setup(){
     helpOn = false;
     loganOn = false;
     graphOn = false;
+    playOn = true;
 
     thermCounter = 0;
     selectedGaussian = -1; // No gaussian selected
+    selectedSlider = 0;
     drawFont.loadFont("verdana.ttf", 14);
-    
+    sensitivity = 0.04;
     
     // Setup the sound
     int bufferSize = 256;
@@ -185,7 +231,7 @@ void ofApp::update(){
     }
     
     if (audioOn) {
-        scaledVol = ofMap(smoothedVol, 0.0, 0.04, 0.0, 1.0, true);
+        scaledVol = ofMap(smoothedVol, 0.0, sensitivity, 0.0, 1.0, true);
         if ( selectedGaussian > -1)
             theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 0.8 - 0.5*scaledVol, theSystem.getGaussianX0(selectedGaussian), theSystem.getGaussianY0(selectedGaussian), scaledVol);
     }
@@ -290,34 +336,7 @@ void ofApp::draw(){
         }
     }
     if (helpOn == true){
-        ofSetColor(255, 255, 255, 100);
-        //Controls window
-        ofDrawRectangle(0, ofGetHeight() - 150, ofGetWidth(), 150);
-        ofSetColor(255, 255, 240);
-        drawFont.drawString(" key commands: \n audio on/off: 'a' \n change gaussian: 'g' \n remove gaussian: 'k'" ,ofGetWidth() - 270,ofGetHeight()-110);
-        
-        drawFont.drawString(" temperature:", ofGetWidth() - 1000, ofGetHeight() - 110);
-        drawFont.drawString(" particles:", ofGetWidth() - 1000, ofGetHeight() - 88);
-        drawFont.drawString(" sensitivity:", ofGetWidth() - 1000, ofGetHeight() - 63);
-        //Temperature slider
-        ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 122, 250, 10);
-        
-        //Parameter values
-        drawData(" ", theSystem.getT());
-        
-        //Particle slider
-        ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 100, 250, 10);
-        //Sensitivity slider
-        ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 75, 250, 10);
-        ofSetColor(0,0,0);
-        ofDrawRectangle((ofGetWidth() - 800) + theSystem.getT(), ofGetHeight() - 122, 5, 10);
-        ofDrawRectangle((ofGetWidth() - 800) + theSystem.getN(), ofGetHeight() - 100, 5, 10);
-        ofDrawRectangle((ofGetWidth() - 800), ofGetHeight() - 75, 5, 10);
-        //buttons
-        playbutton.draw(ofGetWidth() - 380, ofGetHeight() - 130, 50, 50);
-        
-
-        
+        drawUI();
     }
     else if (helpOn == false){
         ofSetColor(255, 255, 240);
@@ -384,13 +403,51 @@ void ofApp::keyPressed(int key){
     }
     else if (key == 'r' || key == 'R') {
         //setupSystem(theSystem, N_PARTICLES, TEMPERATURE, BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP);
+    else if (key == 'p' || key == 'P') {
+        playOn = !playOn;
     }
     if (helpOn == true){
+        if (key == OF_KEY_SHIFT)  // Switch slider
+            selectedSlider = (selectedSlider+1)%3;
         if (key == OF_KEY_RIGHT){
-            theSystem.setTemp(theSystem.getT()+1);
+            switch(selectedSlider) {
+                case 0: { // Temperature
+                    theSystem.setTemp(theSystem.getT()+0.4);
+                    break;
+                }
+                case 1: { // N particles
+                    if ( !playOn ) {
+                        N_PARTICLES += 10;
+                    }
+                    break;
+                }
+                case 2: { // Sensitivity
+                    sensitivity += 0.005;
+                    break;
+                }
+                default:
+                {}
+            }
         }
         else if (key == OF_KEY_LEFT){
-            theSystem.setTemp(theSystem.getT()-1);
+            switch(selectedSlider) {
+                case 0: { // Temperature
+                    theSystem.setTemp(theSystem.getT()-0.4);
+                    break;
+                }
+                case 1: { // N particles
+                    if ( !playOn ) {
+                        N_PARTICLES -= 10;
+                    }
+                    break;
+                }
+                case 2: { // Sensitivity
+                    sensitivity -= 0.005;
+                    break;
+                }
+                default:
+                {}
+            }
         }
     }
 }
