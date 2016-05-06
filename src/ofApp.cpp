@@ -7,7 +7,7 @@ void ofApp::drawData(string name, double value) {
     drawDataHeight -= drawFont.stringHeight(drawstr) + 5;
 }
 
-void randomiseVelocity(vector<double> &vel, double T) {
+void ofApp::randomiseVelocity(vector<double> &vel, double T) {
     double sigma = sqrt(T);
     
     for (int i = 0; i < vel.size(); ++i) {
@@ -18,6 +18,45 @@ void randomiseVelocity(vector<double> &vel, double T) {
         randt = sin(2 * PI * randt);
         
         vel[i] = sigma * randr * randt;
+    }
+}
+
+void ofApp::setupSystem(lj::LJContainer system, int numParticles, double temperature, double box_length, double box_width, double cutoff, double timestep) {
+    system.clearSystem();
+    theSystem.setConsts(box_length, box_width, cutoff, timestep);
+    theSystem.setTemp(temperature);
+    
+    int i = 0, j = 0;
+    double posx, posy;
+    vector<double> vel = {0, 0};
+    
+    double box_ratio = box_width / box_length;
+    int n_grid_x = ceil(sqrt(numParticles * box_ratio));
+    int n_grid_y = ceil(sqrt(numParticles / box_ratio));
+    double xspacing = box_width  / (n_grid_x);
+    double yspacing = box_length / (n_grid_y);
+    
+    // grid particles
+    for (int n = 0; n < numParticles; ++n){
+        posx = xspacing * (i + 0.5);
+        posy = yspacing * (j + 0.5);
+        
+        printf("%d %d %lf %lf\n", i, j, posx, posy);
+        randomiseVelocity(vel, temperature);
+        theSystem.addParticle(posx, posy, vel[0], vel[1]);
+        
+        ++i;
+        i = i % n_grid_x;
+        if (i == 0) ++j;
+    }
+    
+    // intialise the system + previous positions
+    theSystem.forcesEnergies(N_THREADS);
+    firstEKin = theSystem.getEKin();
+    firstEPot = fabs(theSystem.getEPot());
+    
+    for (int i = 0; i < 20; ++i) {
+        theSystem.integrate(N_THREADS);
     }
 }
 
@@ -102,6 +141,9 @@ void ofApp::setup(){
     ofSetCircleResolution(100);
     ofSetFrameRate(60);
     
+    // intitialise the system
+    setupSystem(theSystem, N_PARTICLES, TEMPERATURE, BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP);
+    
     audioOn = true;
     helpOn = false;
     loganOn = false;
@@ -110,46 +152,7 @@ void ofApp::setup(){
     thermCounter = 0;
     selectedGaussian = -1; // No gaussian selected
     drawFont.loadFont("verdana.ttf", 14);
-    //shader.load("shadersGL3/shader");
     
-    double box_ratio = BOX_WIDTH / BOX_LENGTH;
-    int n_grid_x = ceil(sqrt(N_PARTICLES * box_ratio));
-    int n_grid_y = ceil(sqrt(N_PARTICLES / box_ratio));
-    double xspacing = BOX_WIDTH  / (n_grid_x);
-    double yspacing = BOX_LENGTH / (n_grid_y);
-    
-    // Set up grid
-    
-    int i = 0, j = 0;
-    double posx, posy;
-    vector<double> vel = {0, 0};
-    for (int n = 0; n < N_PARTICLES; ++n){
-        posx = xspacing * (i + 0.5);
-        posy = yspacing * (j + 0.5);
-        
-        printf("%d %d %lf %lf\n", i, j, posx, posy);
-        randomiseVelocity(vel, TEMPERATURE);
-        theSystem.addParticle(posx, posy, vel[0], vel[1]);
-        
-        ++i;
-        i = i % n_grid_x;
-        if (i == 0) ++j;
-    }
-    
-    // Set up the system
-
-    theSystem.setConsts(BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP);
-    theSystem.setTemp(TEMPERATURE);
-    theSystem.setParticles(N_PARTICLES);
-    
-    // intialise the system + previous positions
-    theSystem.forcesEnergies(N_THREADS);
-    firstEKin = theSystem.getEKin();
-    firstEPot = fabs(theSystem.getEPot());
-    
-    for (int i = 0; i < 20; ++i) {
-        theSystem.integrate(N_THREADS);
-    }
     
     // Setup the sound
     int bufferSize = 256;
@@ -161,8 +164,6 @@ void ofApp::setup(){
     scaledVol		= 0.0;
     
     soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
-    
-    drawFont.loadFont("Verdana.ttf", 14);
     
     ofBackground(0, 0, 0);
     
@@ -184,7 +185,7 @@ void ofApp::update(){
     }
     
     if (audioOn) {
-        scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
+        scaledVol = ofMap(smoothedVol, 0.0, 0.04, 0.0, 1.0, true);
         if ( selectedGaussian > -1)
             theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 0.8 - 0.5*scaledVol, theSystem.getGaussianX0(selectedGaussian), theSystem.getGaussianY0(selectedGaussian), scaledVol);
     }
@@ -380,6 +381,9 @@ void ofApp::keyPressed(int key){
     }
     else if (key == 'h' || key == 'H'){
         helpOn = !helpOn;
+    }
+    else if (key == 'r' || key == 'R') {
+        //setupSystem(theSystem, N_PARTICLES, TEMPERATURE, BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP);
     }
     if (helpOn == true){
         if (key == OF_KEY_RIGHT){

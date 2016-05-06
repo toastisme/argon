@@ -17,6 +17,8 @@ class ofApp : public ofBaseApp{
         void drawData(string name, double value);
         void drawGaussian(Gaussian& g, double boxw, double boxl, bool selected);
         void drawGraph();
+        void randomiseVelocity(vector<double> &vel, double T);
+        void setupSystem(lj::LJContainer system, int numParticles, double temperature, double box_length, double box_width, double cutoff, double timestep);
     
 		void keyPressed(int key);
 		void keyReleased(int key);

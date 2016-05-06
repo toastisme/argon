@@ -44,6 +44,7 @@ namespace lj{
     double const LJContainer::getMaxEkin() { return maxEKin; }
     double const LJContainer::getMaxEpot() { return maxEPot; }
     
+    
 	void LJContainer::setPos(int i, double x, double y)
 	{
 		positions[i][0] = x;
@@ -300,5 +301,16 @@ namespace lj{
 			}
 		}
 	}
+    
+    void LJContainer::clearSystem()
+    {
+        positions.clear();
+        velocities.clear();
+        forces.clear();
+        previousPositions.clear();
+        prevEKin.clear();
+        prevEPot.clear();
+        N = 0;
+    }
 
 }

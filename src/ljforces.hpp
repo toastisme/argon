@@ -76,6 +76,8 @@ namespace lj{
 						  double rcut, int npart);
 		void integrate(int nthreads);
 		void andersen(double freq);
+        
+        void clearSystem();
 	};
 }
 
