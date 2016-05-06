@@ -45,8 +45,9 @@ namespace lj{
 		//Setters
 		void setPos(int i, double x, double y);
 		void setVel(int i, double vx, double vy);
-        void setConsts(double _boxl, double _boxw, double _rcutoff, double _dt, double _T);
-        
+        void setConsts(double _boxl, double _boxw, double _rcutoff, double _dt);
+        void setTemp(double _T);
+        void setParticles(int _N);
 		// Routines
 		void addParticle(double x, double y,
 						 double vx, double vy);

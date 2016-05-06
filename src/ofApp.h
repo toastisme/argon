@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ljforces.hpp"
 #include "gaussian.hpp"
+#include "ofxGui.h"
 
 #define N_THREADS 1
 
@@ -36,8 +37,11 @@ class ofApp : public ofBaseApp{
         float smoothedVol;
         float scaledVol;
         bool audioOn;
+        bool helpOn;
 
 		ofSoundStream soundStream;
+        ofxFloatSlider temperature2;
+        ofImage playbutton;
     
     private:
         lj::LJContainer theSystem;
