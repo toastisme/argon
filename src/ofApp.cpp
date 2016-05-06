@@ -379,7 +379,7 @@ void ofApp::keyPressed(int key){
     if (key == 'a' || key == 'A') { // Audio on/off
         audioOn = !audioOn;
     }
-    else if (key == 'g' || key == 'G') { // Change gaussian
+    else if ((key == 'g' || key == 'G') && theSystem.getNGaussians() > 0) { // Change gaussian
         selectedGaussian = (selectedGaussian+1)%theSystem.getNGaussians();
     } else if (key == 'k' || key == 'K') { // Kill gaussian
         if (selectedGaussian > 0) {
