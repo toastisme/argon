@@ -19,6 +19,9 @@ namespace lj{
         box_dimensions.push_back(0);
         box_dimensions.push_back(0);
         setConsts(10.0, 10.0, 3.0, 0.01, 1.0);
+        maxEKin = 0.0;
+        maxEPot = 0.0;
+        enCounter = 0;
     }
 	
 	int const LJContainer::getN() { return N; }
@@ -26,6 +29,7 @@ namespace lj{
 	double const LJContainer::getEKin() { return ekin; }
     double const LJContainer::getT() { return T; }
     int const LJContainer::getNGaussians() { return gaussians.size(); }
+    int const LJContainer::getNEnergies() { return prevEKin.size(); }
     
     double const LJContainer::getWidth() { return box_dimensions[0]; }
     double const LJContainer::getHeight() { return box_dimensions[1]; }
@@ -34,6 +38,11 @@ namespace lj{
     std::vector<double> const LJContainer::getVel(int i) { return velocities[i]; }
     std::vector<double> const LJContainer::getForces(int i) { return forces[i]; }
     std::vector<double> const LJContainer::getPreviousPositions(int npart, int nstep) { return previousPositions[nstep][npart]; }
+    
+    double const LJContainer::getPreviousEkin(int i) { return prevEKin[i]; }
+    double const LJContainer::getPreviousEpot(int i) { return prevEPot[i]; }
+    double const LJContainer::getMaxEkin() { return maxEKin; }
+    double const LJContainer::getMaxEpot() { return maxEPot; }
     
 	void LJContainer::setPos(int i, double x, double y)
 	{
@@ -243,6 +252,21 @@ namespace lj{
             previousPositions.erase(previousPositions.begin(), previousPositions.begin()+1);
         }
         previousPositions.push_back(positions);
+        
+        if (enCounter % 5 == 0){
+            if (prevEKin.size() == 120) {
+                prevEKin.erase(prevEKin.begin(), prevEKin.begin()+1);
+                prevEPot.erase(prevEPot.begin(), prevEPot.begin()+1);
+            }
+
+            prevEKin.push_back(ekin);
+            prevEPot.push_back(epot);
+            
+            maxEKin = (ekin > maxEKin ? ekin : maxEKin);
+            maxEPot = (fabs(epot) > maxEPot ? fabs(epot) : maxEPot);
+        }
+        
+        enCounter++;
 	}
 	
 	void LJContainer::andersen(double freq)

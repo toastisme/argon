@@ -15,6 +15,7 @@ class ofApp : public ofBaseApp{
     
         void drawData(string name, double value);
         void drawGaussian(Gaussian& g, double boxw, double boxl, bool selected);
+        void drawGraph();
     
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -35,7 +36,7 @@ class ofApp : public ofBaseApp{
     
         float smoothedVol;
         float scaledVol;
-        bool audioOn, loganOn;
+        bool audioOn, loganOn, graphOn;
 
 		ofSoundStream soundStream;
         ofImage loganLeft, loganRight;
@@ -46,5 +47,6 @@ class ofApp : public ofBaseApp{
         int selectedGaussian;
         ofTrueTypeFont drawFont;
         float drawDataHeight;
+        double firstEKin, firstEPot;
     
 };
