@@ -300,5 +300,16 @@ namespace lj{
 			}
 		}
 	}
+    
+    void LJContainer::berendsen(double freq){
+        double v_avg = 0.25*sqrt(3*N*T);
+        double lambda = sqrt(1+(dt/freq)*((T/v_avg)-1));
+        for (int i = 0; i < N; i++){
+            for (int k = 0; k < 2; k++){
+                velocities[i][k]*=lambda;
+            }
+        
+        }
+    }
 
 }
