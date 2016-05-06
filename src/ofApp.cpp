@@ -26,31 +26,41 @@ void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, bool selected){
     double gx = ofMap(g.getgex0(), 0, boxw, 0, ofGetWidth());
     double gy = ofMap(g.getgey0(), 0, boxl, 0, ofGetHeight());
     double scale = g.getScale();
+    double transp;
     
-    int N_CIRCLES = 10;
-    double colourSpacing = 60/double(N_CIRCLES);
-    double contourSpacing = 0.8/double(N_CIRCLES);
+    double r;
+    double r_max = max(boxw, boxl) / 5.0;
+    double fwhm = 2 * sqrt(log(2) / galpha);
+    double maxslope = galpha * gA * fwhm * exp(- galpha * fwhm * fwhm);
     
-    ofSetCircleResolution(100);
+    double xscale = ofGetWidth() / boxw;
+    double yscale = ofGetHeight() / boxl;
     
     int red = 0;
     if (selected) red = 200;
     
-    for (int n = 0; n < N_CIRCLES; n++){
-        ofSetColor(red,(190+colourSpacing*n)*scale,255);
-        ofDrawCircle(gx, gy, (log(0.2+contourSpacing*n)/galpha)*abs(gA));
+    int n_circles = 20;
+    
+    for (int i = 1; i < n_circles; ++i) {
+        r = 2 * ofMap(i, 0, n_circles, 0, r_max);
+        transp = galpha * gA * r * exp(- galpha * r * r) / 40;
+        transp = ofMap(transp, 0, maxslope, 0, 255);
+        ofSetColor(red, 190 * scale, 255, transp);
+        ofDrawEllipse(gx, gy, r * xscale, r * yscale);
     }
-
 }
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    double BOX_WIDTH = 15.0;
-    double BOX_LENGTH = 10.0;
+    double BOX_WIDTH = 10.24;
+    double BOX_LENGTH = 7.68;
     double CUTOFF = 3.0;
     double TIMESTEP = 0.005;
     int N_PARTICLES = 50;
     double TEMPERATURE = 2.0;
+    
+    // initialise openFrameworks stuff
+    ofSetCircleResolution(100);
     
     audioOn = true;
     thermCounter = 0;
@@ -132,6 +142,8 @@ void ofApp::draw(){
     BOX_SIZE.push_back(theSystem.getWidth());
     BOX_SIZE.push_back(theSystem.getHeight());
     
+    ofFill();
+    
     for (int g = 0; g < theSystem.getNGaussians(); g++){
         if ( g == selectedGaussian)
             drawGaussian(theSystem.getGaussian(g), BOX_SIZE[0], BOX_SIZE[1], true);
@@ -145,7 +157,6 @@ void ofApp::draw(){
     double velx, vely;
     double accx, accy;
     
-    ofFill();
     vector<double> tempPos;
     vector<double> tempPosPrev;
     vector<double> tempPosPrevPrev;
@@ -224,11 +235,17 @@ void ofApp::keyPressed(int key){
         audioOn = !audioOn;
     else if (key == 'g' || key == 'G') // Change gaussian
         selectedGaussian = (selectedGaussian+1)%theSystem.getNGaussians();
-    else if (key == 'k' || key == 'K') // Kill gaussian
-        if (selectedGaussian > -1) {
+    else if (key == 'k' || key == 'K') { // Kill gaussian
+        if (selectedGaussian > 0) {
             theSystem.removeGaussian(selectedGaussian);
             selectedGaussian--;
+        } else if (selectedGaussian == 0) {
+            theSystem.removeGaussian(selectedGaussian);
+            if (theSystem.getNGaussians() == 0) {
+                selectedGaussian = -1;
+            }
         }
+    }
     
 }
 
