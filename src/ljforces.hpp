@@ -78,6 +78,7 @@ namespace lj{
 		void andersen(double freq);
         
         void clearSystem();
+        void berendsen(double freq);
 	};
 }
 
