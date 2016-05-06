@@ -39,6 +39,7 @@ class ofApp : public ofBaseApp{
 
 		ofSoundStream soundStream;
         ofImage loganLeft, loganRight;
+        int loganShiftx, loganShifty;
     
     private:
         lj::LJContainer theSystem;

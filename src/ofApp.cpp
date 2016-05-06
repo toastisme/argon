@@ -120,6 +120,8 @@ void ofApp::setup(){
     // Setup Logan image
     loganLeft.load("david-logan-posing-left.png");
     loganRight.load("david-logan-posing-right.png");
+    loganShiftx = loganLeft.getWidth() / 2;
+    loganShifty = loganLeft.getHeight() / 4;
 }
 
 //--------------------------------------------------------------
@@ -159,20 +161,29 @@ void ofApp::draw(){
     double posx, posy;
     double pospx, pospy;
     double posppx, posppy;
+    double pospppx, pospppy;
     double velx, vely;
     double accx, accy;
     
     vector<double> tempPos;
     vector<double> tempPosPrev;
     vector<double> tempPosPrevPrev;
+    vector<double> tempPosPrevPrevPrev;
     vector<double> tempVel;
     vector<double> tempAcc;
+    
+    double trailSize;
+    double hue;
+    ofColor particleColor;
+    ofColor trailColor;
+    
     double v_avg = 0.25*sqrt(3*theSystem.getN()*theSystem.getT()) ;
     
     for (int i = 0; i < theSystem.getN(); i++){
         tempPos = theSystem.getPos(i);
         tempPosPrev = theSystem.getPreviousPositions(i, 15);
         tempPosPrevPrev = theSystem.getPreviousPositions(i, 10);
+        tempPosPrevPrevPrev = theSystem.getPreviousPositions(i, 5);
         tempVel = theSystem.getVel(i);
         tempAcc = theSystem.getForces(i);
         
@@ -185,24 +196,46 @@ void ofApp::draw(){
         posppx = ofMap(tempPosPrevPrev[0], 0, BOX_SIZE[0], 0, ofGetWidth());
         posppy = ofMap(tempPosPrevPrev[1], 0, BOX_SIZE[1], 0, ofGetHeight());
         
+        pospppx = ofMap(tempPosPrevPrevPrev[0], 0, BOX_SIZE[0], 0, ofGetWidth());
+        pospppy = ofMap(tempPosPrevPrevPrev[1], 0, BOX_SIZE[1], 0, ofGetHeight());
+        
         velx = ofMap(abs(tempVel[0]), 0, v_avg, 0, 255);
         vely = ofMap(abs(tempVel[1]), 0, v_avg, 0, 255);
         
         accx = ofMap(log(1.0+abs(tempAcc[0])), 0, 10, 20, 50);
         accy = ofMap(log(1.0+abs(tempAcc[1])), 0, 10, 20, 50);
+        trailSize = (accx + accy) / 4.0;
         
-        ofSetColor((velx+vely)/2.0, 0, 200);
+        hue = ofMap((velx + vely) / 2, 0, 300, 170, 210, true);
+        particleColor.setHsb(hue, 255, 255);
         
+        trailColor.set(particleColor);
+        
+        // draw trail
+        if (!loganOn) {
+            trailColor.a = 100;
+            ofSetColor(trailColor);
+            ofDrawCircle(pospppx, pospppy, trailSize * 0.25);
+            
+            trailColor.a = 150;
+            ofSetColor(trailColor);
+            ofDrawCircle(posppx, posppy, trailSize * 0.5);
+            
+            trailColor.a = 200;
+            ofSetColor(trailColor);
+            ofDrawCircle(pospx, pospy, trailSize * 0.75);
+        }
+        
+        // draw particle
+        ofSetColor(particleColor);
         if (loganOn){
             if (tempVel[0] >= 0)
-                loganRight.draw(posx, posy, accx*2, accy*2);
+                loganRight.draw(posx - loganShiftx, posy - loganShifty, accx*2, accy*2);
             else
-                loganLeft.draw(posx, posy, accx*2, accy*2);
+                loganLeft.draw(posx - loganShiftx, posy - loganShifty, accx*2, accy*2);
         }
         else {
             ofDrawEllipse(posx, posy, accx, accy);
-            ofDrawEllipse(pospx, pospy, accx * 0.8, accy * 0.8);
-            ofDrawEllipse(posppx, posppy, accx * 0.4, accy * 0.4);
         }
     }
     
