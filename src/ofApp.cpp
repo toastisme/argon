@@ -174,7 +174,7 @@ void ofApp::setup(){
     BOX_WIDTH = 15.0;
     BOX_LENGTH = BOX_WIDTH / ofGetWidth() * ofGetHeight();
     CUTOFF = 3.0;
-    TIMESTEP = 0.01;
+    TIMESTEP = 0.001;
     N_PARTICLES = 50;
     TEMPERATURE = 0.5;
 
@@ -221,13 +221,15 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     if (playOn) {
-        theSystem.integrate(N_THREADS);
+        for (int i = 0; i < 10; ++i) {
+            theSystem.integrate(N_THREADS);
 
-        //lets scale the vol up to a 0-1 range, and thermostat
-        if (thermCounter % 10 == 0) {
-            theSystem.berendsen(1.0);
+            //lets scale the vol up to a 0-1 range, and thermostat
+            if (thermCounter % 10 == 0) {
+                theSystem.berendsen(1.0);
+            }
+            thermCounter++;
         }
-        thermCounter++;
         
         if (audioOn) {
             scaledVol = ofMap(smoothedVol, 0.0, sensitivity, 0.0, 1.0, true);
@@ -242,6 +244,8 @@ void ofApp::draw(){
     vector<double> BOX_SIZE;
     BOX_SIZE.push_back(theSystem.getWidth());
     BOX_SIZE.push_back(theSystem.getHeight());
+    
+    drawData("framerate", ofGetFrameRate(), 5, 25);
     
     ofFill();
     ofSetCircleResolution(10);
