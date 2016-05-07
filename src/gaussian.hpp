@@ -10,6 +10,7 @@
 #define gaussian_hpp
 
 #include <vector>
+#include <array>
 
 class Gaussian
 {
@@ -30,6 +31,7 @@ public:
     void setParams(double _gAmp, double _gAlpha, double _gex0, double _gey0, double _scale);
     
     std::vector<double> calcForceEnergy(double x, double y);
+    void calcForceEnergy(double x, double y, std::array<double, 3> &forceEnergy);
     
 };
 

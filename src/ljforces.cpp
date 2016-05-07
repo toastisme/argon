@@ -135,13 +135,14 @@ namespace lj{
     
     void LJContainer::externalForce()
     {
-        std::vector<double> forceEnergy;
+        std::array<double, 3> forceEnergy;
+        double x, y;
         for (int g = 0; g < gaussians.size(); g++){
             for (int i = 0; i < N; i++){
-                double x = positions[i][0];
-                double y = positions[i][1];
+                x = positions[i][0];
+                y = positions[i][1];
                 
-                forceEnergy = gaussians[g].calcForceEnergy(x, y);
+                gaussians[g].calcForceEnergy(x, y, forceEnergy);
                 
                 forces[i][0] += forceEnergy[0];
                 forces[i][1] += forceEnergy[1];
