@@ -40,7 +40,6 @@ void ofApp::setupSystem(int numParticles, double temperature, double box_length,
         posx = xspacing * (i + 0.5);
         posy = yspacing * (j + 0.5);
         
-        printf("%d %d %lf %lf\n", i, j, posx, posy);
         randomiseVelocity(vel, temperature);
         theSystem.addParticle(posx, posy, vel[0], vel[1]);
         
@@ -182,7 +181,6 @@ void ofApp::setup(){
     playbutton.load("play-btn.png");
     
     // initialise openFrameworks stuff
-    ofSetCircleResolution(100);
     ofSetFrameRate(60);
     
     // intitialise the system
@@ -246,13 +244,17 @@ void ofApp::draw(){
     BOX_SIZE.push_back(theSystem.getHeight());
     
     ofFill();
+    ofSetCircleResolution(10);
     if (graphOn) drawGraph();
     
-    for (int g = 0; g < theSystem.getNGaussians(); g++){
-        if ( g == selectedGaussian)
-            drawGaussian(theSystem.getGaussian(g), BOX_SIZE[0], BOX_SIZE[1], true);
-        else
-            drawGaussian(theSystem.getGaussian(g), BOX_SIZE[0], BOX_SIZE[1], false);
+    // draw gaussians, with selected on top
+    if (theSystem.getNGaussians() > 0) {
+        ofSetCircleResolution(50);
+        for (int g = 0; g < theSystem.getNGaussians(); g++){
+            if (g != selectedGaussian)
+                drawGaussian(theSystem.getGaussian(g), BOX_SIZE[0], BOX_SIZE[1], false);
+        }
+        drawGaussian(theSystem.getGaussian(selectedGaussian), BOX_SIZE[0], BOX_SIZE[1], true);
     }
     
     double posx, posy;
@@ -308,6 +310,8 @@ void ofApp::draw(){
         
         trailColor.set(particleColor);
         
+        ofSetCircleResolution(20);
+
         // draw trail
         if (!loganOn) {
             trailColor.a = 100;
