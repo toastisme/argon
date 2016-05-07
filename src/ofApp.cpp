@@ -59,33 +59,62 @@ void ofApp::setupSystem(int numParticles, double temperature, double box_length,
 }
 
 void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, bool selected){
-    double gA = g.getgAmp(), galpha = g.getgAlpha();
-    double gx = ofMap(g.getgex0(), 0, boxw, 0, ofGetWidth());
-    double gy = ofMap(g.getgey0(), 0, boxl, 0, ofGetHeight());
-    double scale = g.getScale();
-    double transp;
+    double gA = g.getgAmp();
+    double galpha = g.getgAlpha();
+    double gx = g.getgex0();
+    double gy = g.getgey0();
+    double volume = g.getScale();
+    //double gx = ofMap(g.getgex0(), 0, boxw, 0, ofGetWidth());
+    //double gy = ofMap(g.getgey0(), 0, boxl, 0, ofGetHeight());
     
-    double r;
-    double r_max = max(boxw, boxl) / 5.0;
-    double fwhm = 2 * sqrt(log(2) / galpha);
-    double maxslope = galpha * gA * fwhm * exp(- galpha * fwhm * fwhm);
+    double xscale = ofGetWidth() / boxw;
+    double yscale = ofGetHeight() / boxl;
     
-    double scaleFactor = 2.3;
-    double xscale = scaleFactor * ofGetWidth() / boxw;
-    double yscale = scaleFactor * ofGetHeight() / boxl;
+    ofColor color;
+    //float hue = ofMap(gA, -50, 50, 20, 55);
+    float hue = 200;
+    float saturation = gA > 0 ? 255 : 0;
+    float brightness = 128;
     
-    int red = 0;
-    if (selected) red = 200;
-    
-    int n_circles = 50;
-    
-    for (int i = 1; i < n_circles; ++i) {
-        r = ofMap(i, 0, n_circles, 0, r_max);
-        transp = galpha * gA * r * exp(- galpha * r * r) / 40;
-        transp = ofMap(transp, 0, maxslope, 0, 255);
-        ofSetColor(red, 190 * scale, 255, transp);
-        ofDrawEllipse(gx, gy, r * xscale, r * yscale);
+    if (selected) {
+        brightness *= 2.0f;
     }
+    
+    color.setHsb(hue, saturation, brightness);
+    color.a = ofMap(abs(gA), 0, 50, 100, 255);
+    ofSetColor(color);
+    
+    //double scale = g.getScale();
+    //double transp;
+    
+    //double r;
+    //double r_max = max(boxw, boxl) / 5.0;
+    //double fwhm = 2 * sqrt(log(2) / galpha);
+    //double maxslope = galpha * gA * fwhm * exp(- galpha * fwhm * fwhm);
+    
+    
+    //int red = 0;
+    //if (selected) red = 200;
+    //ofSetColor(red, 190 * scale, 255);
+    
+    double scaleFactor = 2.5;
+    double width  = scaleFactor * xscale / galpha;
+    double height = scaleFactor * yscale / galpha;
+    
+    double x = gx * xscale - width / 2;
+    double y = gy * yscale - height / 2;
+    
+    circGradient.draw(x, y, width, height);
+    
+    //int n_circles = 50;
+    
+    //for (int i = 1; i < n_circles; ++i) {
+    //    r = ofMap(i, 0, n_circles, 0, r_max);
+    //    transp = galpha * gA * r * exp(- galpha * r * r) / 40;
+    //    transp = ofMap(transp, 0, maxslope, 0, 255);
+    //    ofSetColor(red, 190 * scale, 255, transp);
+    //    ofDrawEllipse(gx, gy, r * xscale, r * yscale);
+    //}
 }
 
 void ofApp::drawUI()
@@ -174,10 +203,11 @@ void ofApp::setup(){
     BOX_WIDTH = 15.0;
     BOX_LENGTH = BOX_WIDTH / ofGetWidth() * ofGetHeight();
     CUTOFF = 3.0;
-    TIMESTEP = 0.001;
+    TIMESTEP = 0.002;
     N_PARTICLES = 50;
     TEMPERATURE = 0.5;
 
+    circGradient.load("circ_gradient.png");
     playbutton.load("play-btn.png");
     
     // initialise openFrameworks stuff
@@ -215,13 +245,13 @@ void ofApp::setup(){
     loganLeft.load("david-logan-posing-left.png");
     loganRight.load("david-logan-posing-right.png");
     loganShiftx = loganLeft.getWidth() / 2;
-    loganShifty = loganLeft.getHeight() / 4;
+    loganShifty = loganLeft.getHeight() / 2;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     if (playOn) {
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 5; ++i) {
             theSystem.integrate(N_THREADS);
 
             //lets scale the vol up to a 0-1 range, and thermostat

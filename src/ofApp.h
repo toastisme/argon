@@ -42,6 +42,8 @@ class ofApp : public ofBaseApp{
         float sensitivity;
 
         bool audioOn, helpOn, loganOn, graphOn, playOn;
+    
+        ofImage circGradient;
 
         ofSoundStream soundStream;
         ofImage playbutton;
