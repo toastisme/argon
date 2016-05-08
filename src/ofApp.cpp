@@ -125,6 +125,8 @@ void ofApp::drawUI()
     drawFont.drawString("Show energies 'e'" ,ofGetWidth() - 225,ofGetHeight()-50);
     drawFont.drawString("Pause 'p'" ,ofGetWidth() - 190,ofGetHeight()-30);
     drawFont.drawString("Reset 'r'" ,ofGetWidth() - 190,ofGetHeight()-10);
+    drawFont.drawString("Change slider 'tab'", 50, ofGetHeight() - 30);
+    drawFont.drawString("Move slider up/down 'left/right arrow'", 250, ofGetHeight()-30);
     
     //Highlight the selected parameter
     int slider1, slider2, slider3;
@@ -316,7 +318,7 @@ void ofApp::draw(){
     ofColor particleColor;
     ofColor trailColor;
     
-    double v_avg = 0.25*sqrt(3*theSystem.getN()*theSystem.getT()) ;
+    double v_avg = theSystem.getVAvg(); // Get average velocity for scaling purposes
     
     for (int i = 0; i < theSystem.getN(); i++){
         tempPos = theSystem.getPos(i);
@@ -338,8 +340,8 @@ void ofApp::draw(){
         pospppx = ofMap(tempPosPrevPrevPrev[0], 0, BOX_SIZE[0], 0, ofGetWidth());
         pospppy = ofMap(tempPosPrevPrevPrev[1], 0, BOX_SIZE[1], 0, ofGetHeight());
         
-        velx = ofMap(abs(tempVel[0]), 0, v_avg, 0, 255);
-        vely = ofMap(abs(tempVel[1]), 0, v_avg, 0, 255);
+        velx = ofMap(abs(tempVel[0]), 0, 1.5*v_avg, 0, 255);
+        vely = ofMap(abs(tempVel[1]), 0, 1.5*v_avg, 0, 255);
         
         accx = ofMap(log(1.0+abs(tempAcc[0])), 0, 10, 20, 50);
         accy = ofMap(log(1.0+abs(tempAcc[1])), 0, 10, 20, 50);

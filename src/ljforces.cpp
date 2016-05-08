@@ -30,6 +30,7 @@ namespace lj{
     double const LJContainer::getT() { return T; }
     int const LJContainer::getNGaussians() { return gaussians.size(); }
     int const LJContainer::getNEnergies() { return prevEKin.size(); }
+    double const LJContainer::getVAvg() { return v_avg; }
     
     double const LJContainer::getWidth() { return box_dimensions[0]; }
     double const LJContainer::getHeight() { return box_dimensions[1]; }
@@ -310,7 +311,7 @@ namespace lj{
 
     void LJContainer::berendsen(double freq){
         //Calculate the average velocity
-        double v_avg = 0;
+        v_avg = 0;
         for (int i = 0; i < N; i++){
             for (int k = 0; k < 2; k++){
                 v_avg += abs(velocities[i][k]);

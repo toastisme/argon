@@ -25,7 +25,7 @@ namespace lj{
         std::vector<double> prevEPot, prevEKin;
         std::vector<double> box_dimensions;
         std::vector<Gaussian> gaussians;
-        double epot, ekin, rcutoff, dt, T, maxEKin, maxEPot;
+        double epot, ekin, rcutoff, dt, T, maxEKin, maxEPot, v_avg;
         int enCounter;
 	public:
         LJContainer(); // Default constructor
@@ -38,6 +38,7 @@ namespace lj{
         double const getT();
         int const getNGaussians();
         int const getNEnergies();
+        double const getVAvg();
         
         double const getWidth();
         double const getHeight();
