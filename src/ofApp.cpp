@@ -1,9 +1,16 @@
 #include "ofApp.h"
 
-void ofApp::drawData(string name, double value, int x, int y) {
+
+void ofApp::drawData(string name, double value, int x, int y, int length) { //Converts data as int to string
     char drawstr[255];
     sprintf(drawstr, "%s %lf", name.c_str(), value);
-    drawFont.drawString(drawstr, x, y);
+    stringstream convert_to_string;
+    string drawstr_string;
+    convert_to_string << drawstr;
+    convert_to_string  >> drawstr_string;
+    string data_string = drawstr_string.substr(0, length);
+    
+    drawFont.drawString(data_string, x, y);
 }
 
 void ofApp::randomiseVelocity(vector<double> &vel, double T) {
@@ -60,10 +67,10 @@ void ofApp::setupSystem(int numParticles, double temperature, double box_length,
 }
 
 void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, bool selected){
-    double gA = g.getgAmp(), galpha = g.getgAlpha();
-    double gx = ofMap(g.getgex0(), 0, boxw, 0, ofGetWidth());
-    double gy = ofMap(g.getgey0(), 0, boxl, 0, ofGetHeight());
-    double scale = g.getScale();
+    double gA = g.getgAmp(), galpha = g.getgAlpha(); // amplitude and alpha variables
+    double gx = ofMap(g.getgex0(), 0, boxw, 0, ofGetWidth()); // x values of the visualisation
+    double gy = ofMap(g.getgey0(), 0, boxl, 0, ofGetHeight()); // y values of the visualisation
+    double scale = g.getScale(); // scale factor
     double transp;
     
     double r;
@@ -91,25 +98,48 @@ void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, bool selected){
 
 void ofApp::drawUI()
 {
-    ofSetColor(255, 255, 255, 100);
+    ofSetColor(255, 255, 255, 30);
     //Controls window
     ofDrawRectangle(0, ofGetHeight() - 150, ofGetWidth(), 150);
     ofSetColor(255, 255, 240);
-    drawFont.drawString(" key commands: \n audio on/off: 'a' \n change gaussian: 'g' \n remove gaussian: 'k'" ,ofGetWidth() - 270,ofGetHeight()-110);
+    drawFont.loadFont("Montserrat-Bold.ttf", 12);
+    drawFont.drawString("Key Commands" ,ofGetWidth() - 230,ofGetHeight()-130);
+    drawFont.loadFont("Montserrat-Bold.ttf", 10);
+    drawFont.drawString("Audio        /         'a'" ,ofGetWidth() - 225,ofGetHeight()-110);
     
+    //Highlight audio on/off
+    if (audioOn){
+        drawFont.drawString("off" ,ofGetWidth() - 153,ofGetHeight()-110);
+        ofSetColor(0, 200, 0);
+        drawFont.drawString("on" ,ofGetWidth() - 178,ofGetHeight()-110);
+        
+    }
+    else{
+        drawFont.drawString("on" ,ofGetWidth() - 178,ofGetHeight()-110);
+        ofSetColor(255, 0, 0);
+        drawFont.drawString("off" ,ofGetWidth() - 153,ofGetHeight()-110);
+    }
+    ofSetColor(255, 255, 240);
+    drawFont.drawString("Change gaussian 'g'" ,ofGetWidth() - 230,ofGetHeight()-90);
+    drawFont.drawString("Remove gaussian 'k'" ,ofGetWidth() - 230,ofGetHeight()-70);
+    drawFont.drawString("Show energies 'e'" ,ofGetWidth() - 225,ofGetHeight()-50);
+    drawFont.drawString("Pause 'p'" ,ofGetWidth() - 190,ofGetHeight()-30);
+    drawFont.drawString("Reset 'r'" ,ofGetWidth() - 190,ofGetHeight()-10);
+    
+    //Highlight the selected parameter
     int slider1, slider2, slider3;
     slider1 = (selectedSlider == 0 ? 0 : 1);
     slider2 = (selectedSlider == 1 ? 0 : 1);
     slider3 = (selectedSlider == 2 ? 0 : 1);
-    
+    drawFont.loadFont("Montserrat-Bold.ttf", 12);
     ofSetColor(255, 255*slider1, 240*slider1);
-    drawFont.drawString(" temperature:", ofGetWidth() - 1000, ofGetHeight() - 110);
+    drawFont.drawString(" Temperature (K):", ofGetWidth() - 1000, ofGetHeight() - 110);
     
     ofSetColor(255, 255*slider2, 240*slider2);
-    drawFont.drawString(" particles:", ofGetWidth() - 1000, ofGetHeight() - 88);
+    drawFont.drawString(" Particles:", ofGetWidth() - 1000, ofGetHeight() - 88);
     
     ofSetColor(255, 255*slider3, 240*slider3);
-    drawFont.drawString(" sensitivity:", ofGetWidth() - 1000, ofGetHeight() - 63);
+    drawFont.drawString(" Sensitivity:", ofGetWidth() - 1000, ofGetHeight() - 63);
     
     ofSetColor(255, 255, 240);
     
@@ -117,21 +147,32 @@ void ofApp::drawUI()
     ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 122, 250, 10);
     
     //Parameter values
-    drawData(" ", theSystem.getT()*120, ofGetWidth()-550, ofGetHeight() - 109);
-    drawData(" ", N_PARTICLES, ofGetWidth()-550, ofGetHeight() - 87);
-    drawData(" ", sensitivity, ofGetWidth()-550, ofGetHeight() - 62);
+    drawData(" ", theSystem.getT()*120, ofGetWidth()-545, ofGetHeight() - 109, 5); // Temperature
+    drawData(" ", N_PARTICLES, ofGetWidth()-545, ofGetHeight() - 87, 5); // Number of particles
+    drawData(" ", sensitivity, ofGetWidth()-545, ofGetHeight() - 62, 5); // Sensitivity
     
     //Particle slider
     ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 100, 250, 10);
     //Sensitivity slider
     ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 75, 250, 10);
+    //Slider cursors
     ofSetColor(0,0,0);
     ofDrawRectangle((ofGetWidth() - 800) + 30*theSystem.getT(), ofGetHeight() - 122, 5, 10);
     ofDrawRectangle((ofGetWidth() - 800) + N_PARTICLES, ofGetHeight() - 100, 5, 10);
-    ofDrawRectangle((ofGetWidth() - 800) + 2000*sensitivity, ofGetHeight() - 75, 5, 10);
+    ofDrawRectangle((ofGetWidth() - 810) + 1900*sensitivity, ofGetHeight() - 75, 5, 10);
+    
     //buttons
-    if (playOn) ofSetColor(0, 255, 0);
-    playbutton.draw(ofGetWidth() - 380, ofGetHeight() - 130, 50, 50);
+    if (playOn) {
+        pausebutton.draw(ofGetWidth() - 350, ofGetHeight() - 132, 55, 55);
+        ofSetColor(0, 200, 0);
+        playbutton.draw(ofGetWidth() - 420, ofGetHeight() - 130, 50, 50);
+        
+    }
+    else{
+        playbutton.draw(ofGetWidth() - 420, ofGetHeight() - 130, 50, 50);
+        ofSetColor(0,230,255);
+        pausebutton.draw(ofGetWidth() - 350, ofGetHeight() - 132, 55, 55);
+    }
 }
 
 void ofApp::drawGraph()
@@ -154,18 +195,18 @@ void ofApp::drawGraph()
     float ekin, epot;
     
     for (int i = 0; i < theSystem.getNEnergies(); i++){
-        ofSetColor(255, 0, 0);
+        ofSetColor(200, 0, 0);
         ekin = ofMap(theSystem.getPreviousEkin(i), firstEKin, ekinScale, 0, 0.9*winHeight, true);
         ofDrawCircle(xOffset + 5*i, yOffset - ekin, radius);
         
-        ofSetColor(0, 0, 255);
+        ofSetColor(255, 255, 255);
         epot = ofMap(fabs(theSystem.getPreviousEpot(i)), firstEPot, epotScale, 0, 0.9*winHeight, true);
         ofDrawCircle(xOffset + 5*i, yOffset - epot, radius);
     }
     
-    ofSetColor(255, 0, 0);
+    ofSetColor(200, 0, 0);
     drawFont.drawString("Kinetic energy", 0.05*ofGetWidth(), 0.1*ofGetHeight());
-    ofSetColor(0, 0, 255);
+    ofSetColor(255, 255, 255);
     drawFont.drawString("Potential energy", 0.05*ofGetWidth(), 0.15*ofGetHeight() );
     
 }
@@ -175,11 +216,12 @@ void ofApp::setup(){
     BOX_WIDTH = 15.0;
     BOX_LENGTH = BOX_WIDTH / ofGetWidth() * ofGetHeight();
     CUTOFF = 3.0;
-    TIMESTEP = 0.01;
+    TIMESTEP = 0.005;
     N_PARTICLES = 50;
     TEMPERATURE = 0.5;
 
-    playbutton.load("play-btn.png");
+    playbutton.load("play-btn2.png");
+    pausebutton.load("pause-btn2.png");
     
     // initialise openFrameworks stuff
     ofSetCircleResolution(100);
@@ -197,7 +239,7 @@ void ofApp::setup(){
     thermCounter = 0;
     selectedGaussian = -1; // No gaussian selected
     selectedSlider = 0;
-    drawFont.loadFont("verdana.ttf", 14);
+    drawFont.loadFont("Montserrat-Bold.ttf", 14);
     sensitivity = 0.04;
     
     // Setup the sound
@@ -413,17 +455,21 @@ void ofApp::keyPressed(int key){
         if (key == OF_KEY_RIGHT){
             switch(selectedSlider) {
                 case 0: { // Temperature
-                    theSystem.setTemp(theSystem.getT()+0.4);
+                    if (((theSystem.getT()*120) + 10.0) <= 980){ //Bounds the upper end of the temperature slider
+                        theSystem.setTemp(theSystem.getT()+(10/120.0));
+                    }
                     break;
                 }
                 case 1: { // N particles
-                    if ( !playOn ) {
-                        N_PARTICLES += 10;
+                    if (N_PARTICLES + 5 <= 245) { //Bounds the upper end of the particle slider
+                        N_PARTICLES += 5;
                     }
                     break;
                 }
                 case 2: { // Sensitivity
-                    sensitivity += 0.005;
+                    if (sensitivity + 0.005 < 0.140){ //Bounds the upper end of the sensitivity slider
+                        sensitivity += 0.005;
+                    }
                     break;
                 }
                 default:
@@ -433,17 +479,21 @@ void ofApp::keyPressed(int key){
         else if (key == OF_KEY_LEFT){
             switch(selectedSlider) {
                 case 0: { // Temperature
-                    theSystem.setTemp(theSystem.getT()-0.4);
+                    if ((theSystem.getT() - (10/120.0)) > 0){ //Bounds the lower end of the temperature slider
+                        theSystem.setTemp(theSystem.getT()-(10/120.0));
+                    }
                     break;
                 }
                 case 1: { // N particles
-                    if ( !playOn ) {
-                        N_PARTICLES -= 10;
+                    if ((N_PARTICLES - 5) >= 0 ) { //Bounds the lower end of the particle slider
+                        N_PARTICLES -= 5;
                     }
                     break;
                 }
                 case 2: { // Sensitivity
-                    sensitivity -= 0.005;
+                    if (sensitivity - 0.005 >= 0.000){ //Bounds the lower end of the sensitivity slider
+                        sensitivity -= 0.005;
+                    }
                     break;
                 }
                 default:

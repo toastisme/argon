@@ -71,12 +71,8 @@ namespace lj{
 
     
     void LJContainer::setTemp(double _T){
-        if ( _T > 0){
             T = _T;
-        }
-        else{
-            T = 1.0;
-        }
+
     }
     
     void LJContainer::setParticles(int _N){
@@ -312,12 +308,21 @@ namespace lj{
         N = 0;
     }
 
-    void LJContainer::berendsen(double freq)
-    {
-        double v_avg = 0.25*sqrt(3*N*T);
-        double lambda = sqrt(1+(dt/freq)*((T/v_avg)-1));
+    void LJContainer::berendsen(double freq){
+        //Calculate the average velocity
+        double v_avg = 0;
         for (int i = 0; i < N; i++){
             for (int k = 0; k < 2; k++){
+                v_avg += abs(velocities[i][k]);
+            }
+        }
+        v_avg /= N;
+        
+        //Calculate scaling factor (lambda)
+        double lambda = sqrt(1+((dt/freq)*((T/v_avg)-1)));
+        for (int i = 0; i < N; i++){
+            for (int k = 0; k < 2; k++){
+                //Scale the velocity of each particle
                 velocities[i][k]*=lambda;
             }
         }
