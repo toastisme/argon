@@ -7,23 +7,36 @@
 #include <string>
 
 
-#define N_THREADS 1
+#define N_THREADS 1 // Number of threads to be used in the forces calculations
 
 class ofApp : public ofBaseApp{
 
 public:
-    void setup();
+    
+    void setup(); // Constructor for app
+    
+    // Infinite loop
     void update();
     void draw();
 
+    // Custom drawing routines
+    // Draw strings from floating point data
     void drawData(string name, double value, int x, int y, int length);
     void drawData(string name, double value, int x, int y);
+    // Draw the Gaussian external potentials
     void drawGaussian(Gaussian& g, double boxw, double boxl, bool selected);
+    // Draw the kinetic/potential energy graphs
     void drawGraph();
-    void randomiseVelocity(vector<double> &vel, double T);
-    void setupSystem(int numParticles, double temperature, double box_length, double box_width, double cutoff, double timestep);
+    // Draw the user interface components
     void drawUI();
+    
+    // Routines to setup the system
+    // Assign random initial velocities from an appropriate Maxwell distribution
+    void randomiseVelocity(vector<double> &vel, double T);
+    // Set the parameters for the system
+    void setupSystem(int numParticles, double temperature, double box_length, double box_width, double cutoff, double timestep);
 
+    // Events
     void keyPressed(int key);
     void keyReleased(int key);
     void mouseMoved(int x, int y );
@@ -35,42 +48,62 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-
     void audioIn(float * input, int bufferSize, int nChannels);
 
-    vector <float> left;
-    vector <float> right;
-
-    float smoothedVol;
-    float scaledVol;
-    float sensitivity;
-
-    bool audioOn, helpOn, loganOn, graphOn, playOn;
-
-    ofImage circGradient;
-
-    ofSoundStream soundStream;
-    ofImage playbutton;
-    ofImage pausebutton;
-
-    ofImage loganLeft, loganRight;
-    int loganShiftx, loganShifty;
-
 private:
-    lj::LJContainer theSystem;
-    int thermCounter;
-    int selectedGaussian;
-    int selectedSlider;
-
+   
+    lj::LJContainer theSystem; // The MD simulation system
+    
+    // Parameters for theSystem - REDUNDANT
     int N_PARTICLES;
     double BOX_WIDTH;
     double BOX_LENGTH;
     double CUTOFF;
     double TIMESTEP;
     double TEMPERATURE;
-
-    ofTrueTypeFont drawFont;
-    float drawDataHeight;
+    
+    // Keep track of very first kinetic/potential energies
+    // for graph drawing purposes - it may be prudent to
+    // instead keep minEKin and minEPot values in LJContainer
+    // along with maxEKin and maxEPot
     double firstEKin, firstEPot;
+
+    // Counters
+    // Keep track of the number of timesteps, so that
+    // we do not thermostat every integration step -
+    // REDUNDANT due to enCounter in LJContainer
+    int thermCounter;
+    // Keep track of which Gaussian potential is selected
+    // a value of -1 implies there are no Gaussians
+    int selectedGaussian;
+    // Keep track of which UI control slider is selected
+    int selectedSlider;
+    
+    // Font and images needed for UI
+    ofTrueTypeFont drawFont;
+    ofImage playbutton;
+    ofImage pausebutton;
+    ofImage circGradient;
+    
+    // Audio data
+    ofSoundStream soundStream; // Audio input stream
+    // Left and right audio channel amplitudes
+    vector <float> left;
+    vector <float> right;
+    float smoothedVol; // Average volume, smoothed out
+    float scaledVol; // Volume rescaled between 0 and 1
+    float sensitivity; // Sensitivity of Gaussians to changes in volume
+    
+    // Logical variables
+    bool audioOn; // Is audio input turned on?
+    bool helpOn; // Is the UI showing?
+    bool loganOn; // Is secret-Logan-mode turned on?
+    bool graphOn; // Are the energy graphs showing?
+    bool playOn; // Is the simulation playing?
+    
+    
+    // ~Trivial~ variables
+    ofImage loganLeft, loganRight;
+    int loganShiftx, loganShifty;
 
 };
