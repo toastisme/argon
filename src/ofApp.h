@@ -11,65 +11,66 @@
 
 class ofApp : public ofBaseApp{
 
-	public:
-		void setup();
-		void update();
-		void draw();
-    
-        void drawData(string name, double value, int x, int y, int length);
-        void drawGaussian(Gaussian& g, double boxw, double boxl, bool selected);
-        void drawGraph();
-        void randomiseVelocity(vector<double> &vel, double T);
-        void setupSystem(int numParticles, double temperature, double box_length, double box_width, double cutoff, double timestep);
-        void drawUI();
-    
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
-    
-        void audioIn(float * input, int bufferSize, int nChannels);
-    
-        vector <float> left;
-        vector <float> right;
-    
-        float smoothedVol;
-        float scaledVol;
-        float sensitivity;
+public:
+    void setup();
+    void update();
+    void draw();
 
-        bool audioOn, helpOn, loganOn, graphOn, playOn;
-    
-        ofImage circGradient;
+    void drawData(string name, double value, int x, int y, int length);
+    void drawData(string name, double value, int x, int y);
+    void drawGaussian(Gaussian& g, double boxw, double boxl, bool selected);
+    void drawGraph();
+    void randomiseVelocity(vector<double> &vel, double T);
+    void setupSystem(int numParticles, double temperature, double box_length, double box_width, double cutoff, double timestep);
+    void drawUI();
 
-        ofSoundStream soundStream;
-        ofImage playbutton;
-        ofImage pausebutton;
+    void keyPressed(int key);
+    void keyReleased(int key);
+    void mouseMoved(int x, int y );
+    void mouseDragged(int x, int y, int button);
+    void mousePressed(int x, int y, int button);
+    void mouseReleased(int x, int y, int button);
+    void mouseEntered(int x, int y);
+    void mouseExited(int x, int y);
+    void windowResized(int w, int h);
+    void dragEvent(ofDragInfo dragInfo);
+    void gotMessage(ofMessage msg);
 
-        ofImage loganLeft, loganRight;
-        int loganShiftx, loganShifty;
-    
-    private:
-        lj::LJContainer theSystem;
-        int thermCounter;
-        int selectedGaussian;
-        int selectedSlider;
-    
-        int N_PARTICLES;
-        double BOX_WIDTH;
-        double BOX_LENGTH;
-        double CUTOFF;
-        double TIMESTEP;
-        double TEMPERATURE;
-    
-        ofTrueTypeFont drawFont;
-        float drawDataHeight;
-        double firstEKin, firstEPot;
-    
+    void audioIn(float * input, int bufferSize, int nChannels);
+
+    vector <float> left;
+    vector <float> right;
+
+    float smoothedVol;
+    float scaledVol;
+    float sensitivity;
+
+    bool audioOn, helpOn, loganOn, graphOn, playOn;
+
+    ofImage circGradient;
+
+    ofSoundStream soundStream;
+    ofImage playbutton;
+    ofImage pausebutton;
+
+    ofImage loganLeft, loganRight;
+    int loganShiftx, loganShifty;
+
+private:
+    lj::LJContainer theSystem;
+    int thermCounter;
+    int selectedGaussian;
+    int selectedSlider;
+
+    int N_PARTICLES;
+    double BOX_WIDTH;
+    double BOX_LENGTH;
+    double CUTOFF;
+    double TIMESTEP;
+    double TEMPERATURE;
+
+    ofTrueTypeFont drawFont;
+    float drawDataHeight;
+    double firstEKin, firstEPot;
+
 };
