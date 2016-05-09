@@ -3,6 +3,9 @@
 #include "ofMain.h"
 #include "ljforces.hpp"
 #include "gaussian.hpp"
+#include <sstream>
+#include <string>
+
 
 #define N_THREADS 1
 
@@ -13,7 +16,7 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
     
-        void drawData(string name, double value, int x, int y);
+        void drawData(string name, double value, int x, int y, int length);
         void drawGaussian(Gaussian& g, double boxw, double boxl, bool selected);
         void drawGraph();
         void randomiseVelocity(vector<double> &vel, double T);
@@ -47,6 +50,7 @@ class ofApp : public ofBaseApp{
 
         ofSoundStream soundStream;
         ofImage playbutton;
+        ofImage pausebutton;
 
         ofImage loganLeft, loganRight;
         int loganShiftx, loganShifty;
