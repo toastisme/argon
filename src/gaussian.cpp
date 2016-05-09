@@ -45,7 +45,10 @@ std::vector<double> Gaussian::calcForceEnergy(double x, double y){
 }
 
 void Gaussian::calcForceEnergy(double x, double y, std::array<double, 3> &forceEnergy){
-    forceEnergy[0] = gAmp*exp(-gAlpha*(pow(x - gex0,2)+pow(y - gey0,2)));
-    forceEnergy[1] = -2*(x-gex0)*gAlpha*forceEnergy[0];
-    forceEnergy[2] = -2*(y-gey0)*gAlpha*forceEnergy[0];
+    //epot
+    forceEnergy[2] = gAmp*exp(-gAlpha*(pow(x - gex0,2)+pow(y - gey0,2)));
+    
+    //force
+    forceEnergy[0] = -2*(x-gex0)*gAlpha*forceEnergy[2];
+    forceEnergy[1] = -2*(y-gey0)*gAlpha*forceEnergy[2];
 }
