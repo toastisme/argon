@@ -80,7 +80,7 @@ namespace lj{
         // Return struct of dynamical variables of particle i
         coord const getPos(int i);
         coord const getVel(int i);
-        coord const getForces(int i);
+        coord const getForce(int i);
         
         // Return position struct of particle i nstep frames ago
         coord const getPos(int i, int nstep);

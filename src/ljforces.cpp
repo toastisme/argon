@@ -73,7 +73,7 @@ namespace lj {
     // Safety checks could be added, but index checking is usually slow
     coord const LJContainer::getPos(int i) { return positions[i]; }
     coord const LJContainer::getVel(int i) { return velocities[i]; }
-    coord const LJContainer::getForces(int i) { return forces[i]; }
+    coord const LJContainer::getForce(int i) { return forces[i]; }
     
     // Return the (x, y) position vector of particle npart, from nstep timesteps previously
     coord const LJContainer::getPos(int npart, int nstep) { return prevPositions[nstep][npart]; }
@@ -463,34 +463,6 @@ namespace lj {
         }
         ekin *= 0.5;
 
-        // Store the last 20 positions matrices
-
-        // FIFO removal of previous position matrix if 20 are already being stored
-        //if (prevPositions.size() == 20){
-        //    prevPositions.erase(prevPositions.begin(), prevPositions.begin()+1);
-        //}
-        //prevPositions.push_back(positions); // Push current positions onto previousPositions
-
-        // Store the previous 600 kinetic and potential energies at intervals of 5 timesteps
-        //if (enCounter % 5 == 0){ // Check 5 timesteps have passed
-
-        //    // FIFO removal of previous kinetic/potential energies if 120 are already being stored
-        //    if (prevEKin.size() == 120) {
-        //        prevEKin.erase(prevEKin.begin(), prevEKin.begin()+1);
-        //        prevEPot.erase(prevEPot.begin(), prevEPot.begin()+1);
-        //    }
-
-        //    // Push back current kinetic/potential energies for graphing
-        //    prevEKin.push_back(ekin);
-        //    prevEPot.push_back(epot);
-
-        //    // Find the maximum elements in prevEKin and prevEPot
-        //    std::deque<double>::iterator EKMAX = std::max_element(prevEKin.begin(), prevEKin.end());
-        //    std::deque<double>::iterator EPMAX = std::max_element(prevEPot.begin(), prevEPot.end());
-        //    maxEKin = prevEKin[std::distance(prevEKin.begin(), EKMAX)];
-        //    maxEPot = prevEPot[std::distance(prevEPot.begin(), EPMAX)];
-        //}
-
         enCounter++; // Incremement the number of timesteps performed
     }
     
@@ -498,17 +470,18 @@ namespace lj {
         ROUTINE savePreviousValues:
             Saves the current position in prevPos and the current energies
             in prevEpot and prevEKin. A maximum of 15 positions and 120
-            energies are kept, using a deque for the FIFO behaviour
+            energies are kept, using a deque for the FIFO behaviour and
+            storing the most recent position / energy at index 0
      */
     void LJContainer::savePreviousValues()
     {
-        prevPositions.push_back(positions);
-        prevEPot.push_back(epot);
-        prevEKin.push_back(ekin);
+        prevPositions.push_front(positions);
+        prevEPot.push_front(epot);
+        prevEKin.push_front(ekin);
         
-        if (prevPositions.size() == 20) prevPositions.pop_front();
-        if (prevEPot.size() == 120) prevEPot.pop_front();
-        if (prevEKin.size() == 120) prevEKin.pop_front();
+        if (prevPositions.size() == 20) prevPositions.pop_back();
+        if (prevEPot.size() == 120) prevEPot.pop_back();
+        if (prevEKin.size() == 120) prevEKin.pop_back();
         
         // Find the maximum elements in prevEKin and prevEPot
         std::deque<double>::iterator EKMAX = std::max_element(prevEKin.begin(), prevEKin.end());

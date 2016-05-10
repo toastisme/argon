@@ -1,52 +1,27 @@
 #include "ofApp.h"
 
 /*
-    ROUTINE drawData:
-        Draws a string name with floating point data value at position x and y. 
- 
-        Overloaded version has extra argument length which sets the length of the floating point displayed.
- */
-void ofApp::drawData(string name, double value, int x, int y) { //Converts data as int to string
-    char drawstr[255];
-    sprintf(drawstr, "%s %lf", name.c_str(), value);
-    drawFont.drawString(drawstr, x, y);
-}
-
-void ofApp::drawData(string name, double value, int x, int y, int length) { //Converts data as int to string
-    //TODO: use iomanip
-    char drawstr[255];
-    sprintf(drawstr, "%s %lf", name.c_str(), value);
-    stringstream convert_to_string;
-    string drawstr_string;
-    convert_to_string << drawstr;
-    convert_to_string  >> drawstr_string;
-    string data_string = drawstr_string.substr(0, length);
-    
-    drawFont.drawString(data_string, x, y);
-}
-
-/*
     ROUTINE box2screen_x:
     ROUTINE box2screen_y:
     ROUTINE box2screen:
-        Scales coordinates from the box dimensions to the window size
+        Scales coordinates from the box dimensions to the window size, measuring
+        positions from a specified (on-screen) origin (defaulting to 0, 0)
  */
-double ofApp::box2screen_x(double x) {
-    return x * ofGetWidth() / theSystem.getWidth();
+double ofApp::box2screen_x(double x, double x0) {
+    return x * ofGetWidth() / theSystem.getWidth() - x0;
 }
 
-double ofApp::box2screen_y(double y) {
-    return y * ofGetHeight() / theSystem.getHeight();
+double ofApp::box2screen_y(double y, double y0) {
+    return y * ofGetWidth() / theSystem.getWidth() - y0;
 }
 
-ofPoint ofApp::box2screen(double x, double y) {
-    return ofPoint(box2screen_x(x), box2screen_y(y));
+ofPoint ofApp::box2screen(double x, double y, double x0, double y0) {
+    return ofPoint(box2screen_x(x, x0), box2screen_y(y, y0));
 }
 
-ofPoint ofApp::box2screen(lj::coord point) {
-    return box2screen(point.x, point.y);
+ofPoint ofApp::box2screen(lj::coord point, lj::coord origin) {
+    return box2screen(point.x, point.y, origin.x, origin.y);
 }
-
 
 /*
     ROUTINE randomiseVelocity:
@@ -100,8 +75,7 @@ void ofApp::setupSystem(int numParticles, double temperature, double box_length,
         randomiseVelocity(vel, temperature);
         theSystem.addParticle(posx, posy, vel[0], vel[1]);
         
-        ++i;
-        i = i % n_grid_x;
+        i = (i + 1) % n_grid_x;
         if (i == 0) ++j;
     }
     
@@ -115,6 +89,57 @@ void ofApp::setupSystem(int numParticles, double temperature, double box_length,
     }
 }
 
+/*
+    ROUTINE drawData:
+        Draws a string name with floating point data value at position x and y. 
+ 
+        Overloaded version has extra argument length which sets the length of the floating point displayed.
+ */
+void ofApp::drawData(string name, double value, int x, int y) { //Converts data as int to string
+    char drawstr[255];
+    sprintf(drawstr, "%s %lf", name.c_str(), value);
+    drawFont.drawString(drawstr, x, y);
+}
+
+void ofApp::drawData(string name, double value, int x, int y, int length) { //Converts data as int to string
+    //TODO: use iomanip
+    char drawstr[255];
+    sprintf(drawstr, "%s %lf", name.c_str(), value);
+    stringstream convert_to_string;
+    string drawstr_string;
+    convert_to_string << drawstr;
+    convert_to_string  >> drawstr_string;
+    string data_string = drawstr_string.substr(0, length);
+    
+    drawFont.drawString(data_string, x, y);
+}
+
+/*
+    ROUTINE drawParticle:
+        Draws a particle, specified by index and a size given either as x and y radii (ellipse)
+        or by a single constant radius (circle).
+        Optional: set the colour before drawing
+        Optional: draws the particle with position nframes frames in the past
+ */
+void ofApp::drawParticle(int index, double radius_x, double radius_y, ofColor color, int nframes) {
+    ofSetColor(color);
+    drawParticle(index, radius_x, radius_y, nframes);
+}
+
+void ofApp::drawParticle(int index, double radius, ofColor color, int nframes) {
+    ofSetColor(color);
+    drawParticle(index, radius, nframes);
+}
+
+void ofApp::drawParticle(int index, double radius_x, double radius_y, int nframes) {
+    lj::coord pos = theSystem.getPos(index, nframes);
+    ofDrawEllipse(box2screen(pos), radius_x * 2, radius_y * 2);
+}
+
+void ofApp::drawParticle(int index, double radius, int nframes) {
+    lj::coord pos = theSystem.getPos(index, nframes);
+    ofDrawCircle(box2screen(pos), radius);
+}
 
 /*
     ROUTINE drawGaussian:
@@ -136,12 +161,13 @@ void ofApp::drawGaussian(Gaussian& g, bool selected){
     
     // Determine the colour of the Gaussian, based on the amplitude
     ofColor color;
-    float hue = 200;
-    float saturation = gA > 0 ? 255 : 0;
-    float brightness = 128;
+    u_char hue = 200;
+    u_char saturation = gA > 0 ? 255 : 0;
+    u_char brightness = 128;
     
+    // Brighten if selected
     if (selected) {
-        brightness *= 2.0f;
+        brightness = 255;
     }
     
     color.setHsb(hue, saturation, brightness);
@@ -159,7 +185,6 @@ void ofApp::drawGaussian(Gaussian& g, bool selected){
     // Draw as circGradient
     circGradient.draw(x, y, width, height);
 }
-
 
 
 /*
@@ -440,105 +465,67 @@ void ofApp::draw(){
         drawGaussian(theSystem.getGaussian(selectedGaussian), true);
     }
     
-    // Set up a load of temporary placeholders
-    // There has to be a cleaner way to do this - this whole section
-    // could probably be factored elsewhere?
-    double posx, posy;
-    double pospx, pospy;
-    double posppx, posppy;
-    double pospppx, pospppy;
-    double velx, vely;
-    double accx, accy;
-    
-    lj::coord tempPos;
-    lj::coord tempPosPrev;
-    lj::coord tempPosPrevPrev;
-    lj::coord tempPosPrevPrevPrev;
+    // Setup temporary placeholders
+    ofColor particleColor;
     lj::coord tempVel;
     lj::coord tempAcc;
     
-    double trailSize;
+    double radius_x;
+    double radius_y;
+    double radius;
+    
     double hue;
-    ofColor particleColor;
-    ofColor trailColor;
     
     double v_avg = theSystem.getVAvg(); // Get average velocity for scaling purposes
+    ofSetCircleResolution(20);
     
-    // Draw all the particles and their trails
-    for (int i = 0; i < theSystem.getN(); i++){
-        tempPos = theSystem.getPos(i);
-        tempPosPrev = theSystem.getPos(i, 15);
-        tempPosPrevPrev = theSystem.getPos(i, 10);
-        tempPosPrevPrevPrev = theSystem.getPos(i, 5);
+    // Draw all the particles and trails
+    for (int i = 0; i < theSystem.getN(); ++i) {
         tempVel = theSystem.getVel(i);
-        tempAcc = theSystem.getForces(i);
+        tempAcc = theSystem.getForce(i);
         
-        posx = ofMap(tempPos.x, 0, theSystem.getWidth(), 0, ofGetWidth());
-        posy = ofMap(tempPos.y, 0, theSystem.getHeight(), 0, ofGetHeight());
-        
-        pospx = ofMap(tempPosPrev.x, 0, theSystem.getWidth(), 0, ofGetWidth());
-        pospy = ofMap(tempPosPrev.y, 0, theSystem.getHeight(), 0, ofGetHeight());
-        
-        posppx = ofMap(tempPosPrevPrev.x, 0, theSystem.getWidth(), 0, ofGetWidth());
-        posppy = ofMap(tempPosPrevPrev.y, 0, theSystem.getHeight(), 0, ofGetHeight());
-        
-        pospppx = ofMap(tempPosPrevPrevPrev.x, 0, theSystem.getWidth(), 0, ofGetWidth());
-        pospppy = ofMap(tempPosPrevPrevPrev.y, 0, theSystem.getHeight(), 0, ofGetHeight());
-        
-        // Scale the velocities of particle i so that they can be mapped onto a colour range
-        velx = ofMap(abs(tempVel.x), 0, 1.5*v_avg, 0, 255);
-        vely = ofMap(abs(tempVel.y), 0, 1.5*v_avg, 0, 255);
-        
-        // Scale the forces so that they can deform the shapes of the ellipses by suitable amounts
-        accx = ofMap(log(1.0+abs(tempAcc.x)), 0, 10, 20, 50);
-        accy = ofMap(log(1.0+abs(tempAcc.y)), 0, 10, 20, 50);
-        
-        // Set the size of the trail depending on the size of the ellipses
-        trailSize = (accx + accy) / 4.0;
-        
-        // Set the hue (colour) of the scaled velocity of the particle
-        hue = ofMap((velx + vely) / 2, 0, 300, 170, 210, true);
+        hue = ofMap(tempVel.x + tempVel.y, 0, 3 * v_avg, 170, 210, true);
         particleColor.setHsb(hue, 255, 255);
         
-        trailColor.set(particleColor);
+        radius_x = ofMap(log(1.0 + abs(tempAcc.x)), 0, 10, 10, 25);
+        radius_y = ofMap(log(1.0 + abs(tempAcc.y)), 0, 10, 10, 25);
+        radius = (radius_x + radius_y) / 2;
         
-        ofSetCircleResolution(20);
-
-        // draw trail
-        if (!loganOn) {
-            trailColor.a = 100;
-            ofSetColor(trailColor);
-            ofDrawCircle(pospppx, pospppy, trailSize * 0.25);
-            
-            trailColor.a = 150;
-            ofSetColor(trailColor);
-            ofDrawCircle(posppx, posppy, trailSize * 0.5);
-            
-            trailColor.a = 200;
-            ofSetColor(trailColor);
-            ofDrawCircle(pospx, pospy, trailSize * 0.75);
-        }
-        
-        // draw particle
-        ofSetColor(particleColor);
-        if (loganOn){
+        if (loganOn) {
+            ofSetColor(particleColor);
+            lj::coord pos = theSystem.getPos(i);
             if (tempVel.x >= 0)
-                loganRight.draw(posx - loganShiftx, posy - loganShifty, accx*2, accy*2);
+                loganRight.draw(box2screen(pos.x, pos.y, loganShiftx, loganShifty), radius_x * 4, radius_y * 4);
             else
-                loganLeft.draw(posx - loganShiftx, posy - loganShifty, accx*2, accy*2);
-        }
-        else {
-            ofDrawEllipse(posx, posy, accx, accy);
+                loganLeft.draw( box2screen(pos.x, pos.y, loganShiftx, loganShifty), radius_x * 4, radius_y * 4);
+        } else {
+            //trail
+            if (theSystem.getNPrevPos() >= 15) {
+                particleColor.a = 100;
+                drawParticle(i, radius * 0.25, particleColor, 14);
+            }
+            if (theSystem.getNPrevPos() >= 10) {
+                particleColor.a = 150;
+                drawParticle(i, radius * 0.5,  particleColor, 9);
+            }
+            if (theSystem.getNPrevPos() >= 5) {
+                particleColor.a = 200;
+                drawParticle(i, radius * 0.75, particleColor, 4);
+            }
+            
+            //particle
+            particleColor.a = 255;
+            drawParticle(i, radius_x, radius_y, particleColor);
         }
     }
     
+    
     // Draw the UI if helpOn, otherwise draw message on how to turn the UI on.
-    if (helpOn == true){
+    if (helpOn) {
         drawUI();
-    }
-    else if (helpOn == false){
+    } else {
         ofSetColor(255, 255, 240);
-        drawFont.drawString("press 'h' for controls", ofGetWidth()-1000, ofGetHeight()-40);
+        drawFont.drawString("press 'h' for controls", 10, ofGetHeight()-10);
     }
 }
 

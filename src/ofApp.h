@@ -9,8 +9,8 @@
 
 #define N_THREADS 1 // Number of threads to be used in the forces calculations
 
-class ofApp : public ofBaseApp{
-
+class ofApp : public ofBaseApp
+{
 public:
     
     void setup(); // Constructor for app
@@ -23,6 +23,11 @@ public:
     // Draw strings from floating point data
     void drawData(string name, double value, int x, int y, int length);
     void drawData(string name, double value, int x, int y);
+    // Draw a particle
+    void drawParticle(int index, double radius_x, double radius_y, ofColor color, int nframes = 0);
+    void drawParticle(int index, double radius, ofColor color, int nframes = 0);
+    void drawParticle(int index, double radius_x, double radius_y, int nframes = 0);
+    void drawParticle(int index, double radius, int nframes = 0);
     // Draw the Gaussian external potentials
     void drawGaussian(Gaussian& g, bool selected);
     // Draw the kinetic/potential energy graphs
@@ -32,10 +37,10 @@ public:
     
     // Routines to setup the system
     // Convert box coordinates to screen coordinates
-    double box2screen_x(double x);
-    double box2screen_y(double y);
-    ofPoint box2screen(double x, double y);
-    ofPoint box2screen(lj::coord point);
+    double box2screen_x(double x, double x0 = 0.0);
+    double box2screen_y(double y, double y0 = 0.0);
+    ofPoint box2screen(double x, double y, double x0 = 0.0, double y0 = 0.0);
+    ofPoint box2screen(lj::coord point, lj::coord origin = {0.0, 0.0});
     // Assign random initial velocities from an appropriate Maxwell distribution
     void randomiseVelocity(vector<double> &vel, double T);
     // Set the parameters for the system
