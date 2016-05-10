@@ -13,6 +13,7 @@
 #define LJFORCES_HEADER_DEF
 
 #include <vector>
+#include <deque>
 #include "gaussian.hpp"
 
 namespace lj{
@@ -30,10 +31,10 @@ namespace lj{
         std::vector <coord> positions, velocities, forces;
         
         // Store the last twenty position matrices for animating trails
-        std::vector<std::vector <coord> > previousPositions;
+        std::deque <std::vector <coord>> prevPositions;
         
-        // Vectors of the potential and kinetic energies for drawing graphs
-        std::vector<double> prevEPot, prevEKin;
+        // Deques of the potential and kinetic energies for drawing graphs
+        std::deque <double> prevEPot, prevEKin;
         
         // Vector of the simulation box dimensions: width, height
         coord box_dimensions;
@@ -58,6 +59,7 @@ namespace lj{
         
         // Return values of private variables
         int const getN();
+        int const getSteps();
         double const getT();
         double const getVAvg();
         
@@ -73,16 +75,19 @@ namespace lj{
         // Return sizes of vectors
         int const getNGaussians();
         int const getNEnergies();
+        int const getNPrevPos();
         
-        // Return vectors of dynamical variables of particle i
+        // Return struct of dynamical variables of particle i
         coord const getPos(int i);
-        coord const getPreviousPositions(int i, int nstep);
         coord const getVel(int i);
         coord const getForces(int i);
         
-        // Return ith member of energy vectors
-        double const getPreviousEpot(int i);
-        double const getPreviousEkin(int i);
+        // Return position struct of particle i nstep frames ago
+        coord const getPos(int i, int nstep);
+        
+        // Return energy nstep frames ago
+        double const getPreviousEpot(int nstep);
+        double const getPreviousEkin(int nstep);
         
         // Get a reference to or details of the ith Gaussian
         Gaussian& getGaussian(int i);
@@ -116,6 +121,12 @@ namespace lj{
         
         // Main MD integration step
         void integrate(int nthreads);
+        
+        // save positions and energies in prevPos, prevEPot, prevEKin
+        void savePreviousValues();
+        
+        // run for nsteps time steps
+        void run(int nsteps, double freq, int nthreads);
 
         // Thermostats
         void andersen(double freq);

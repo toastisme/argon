@@ -24,7 +24,7 @@ public:
     void drawData(string name, double value, int x, int y, int length);
     void drawData(string name, double value, int x, int y);
     // Draw the Gaussian external potentials
-    void drawGaussian(Gaussian& g, double boxw, double boxl, bool selected);
+    void drawGaussian(Gaussian& g, bool selected);
     // Draw the kinetic/potential energy graphs
     void drawGraph();
     // Draw the user interface components
@@ -32,6 +32,8 @@ public:
     
     // Routines to setup the system
     // Convert box coordinates to screen coordinates
+    double box2screen_x(double x);
+    double box2screen_y(double y);
     ofPoint box2screen(double x, double y);
     ofPoint box2screen(lj::coord point);
     // Assign random initial velocities from an appropriate Maxwell distribution

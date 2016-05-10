@@ -26,13 +26,21 @@ void ofApp::drawData(string name, double value, int x, int y, int length) { //Co
 }
 
 /*
+    ROUTINE box2screen_x:
+    ROUTINE box2screen_y:
     ROUTINE box2screen:
         Scales coordinates from the box dimensions to the window size
  */
+double ofApp::box2screen_x(double x) {
+    return x * ofGetWidth() / theSystem.getWidth();
+}
+
+double ofApp::box2screen_y(double y) {
+    return y * ofGetHeight() / theSystem.getHeight();
+}
+
 ofPoint ofApp::box2screen(double x, double y) {
-    double x_scaled = x * ofGetWidth()  / theSystem.getWidth();
-    double y_scaled = y * ofGetHeight() / theSystem.getHeight();
-    return ofPoint(x_scaled, y_scaled);
+    return ofPoint(box2screen_x(x), box2screen_y(y));
 }
 
 ofPoint ofApp::box2screen(lj::coord point) {
@@ -103,31 +111,28 @@ void ofApp::setupSystem(int numParticles, double temperature, double box_length,
     firstEPot = fabs(theSystem.getEPot());
     
     for (int i = 0; i < 20; ++i) {
-        theSystem.integrate(N_THREADS);
+        theSystem.run(5, 0.1, N_THREADS);
     }
 }
 
 
 /*
     ROUTINE drawGaussian:
-        Takes a reference to a Gaussian object, the box width and length (boxw, boxl),
-        and whether this Gaussian is the one currently in focus (selected), and draws
-        the Gaussian as blended concentric circles, coloured by the scaling factor `scale'
-        stored in the Gaussian object, which depends on the audio input.
+        Takes a reference to a Gaussian object and whether this Gaussian is the one
+        currently in focus (selected), and draws the Gaussian as a circular gradient
+        texture, coloured based on the amplitude of the Gaussian
  
  */
-void ofApp::drawGaussian(Gaussian& g, double boxw, double boxl, bool selected){
+void ofApp::drawGaussian(Gaussian& g, bool selected){
     double gA = g.getgAmp();       // amplitude
     double galpha = g.getgAlpha(); // inverse width
     // Centre
     double gx = g.getgex0();
     double gy = g.getgey0();
-    // Volume scaling factor
-    double volume = g.getScale();
     
     // Rescale between box size and window size
-    double xscale = ofGetWidth() / boxw;
-    double yscale = ofGetHeight() / boxl;
+    double xscale = ofGetWidth() / theSystem.getWidth();
+    double yscale = ofGetHeight() / theSystem.getHeight();
     
     // Determine the colour of the Gaussian, based on the amplitude
     ofColor color;
@@ -170,7 +175,7 @@ void ofApp::drawUI()
     ofDrawRectangle(0, ofGetHeight() - 150, ofGetWidth(), 150);
     ofSetColor(255, 255, 240);
     drawFont.loadFont("Montserrat-Bold.ttf", 12);
-    drawFont.drawString("Key Commands" ,ofGetWidth() - 230,ofGetHeight()-130);
+    drawFont.drawString("Key Commands", ofGetWidth() - 230, ofGetHeight()-130);
     drawFont.loadFont("Montserrat-Bold.ttf", 10);
     drawFont.drawString("Audio        /         'a'" ,ofGetWidth() - 225,ofGetHeight()-110);
     
@@ -368,7 +373,6 @@ void ofApp::setup(){
             
             1. Integrates the equations of motion 5 times.
             2. Thermostats (Berendsen) the system every 10 steps.
-            3. Increments the (REDUNDANT) timestep counter, thermCounter.
             4. If the audio input is turned on:
                 - Calculates the smoothed volume scaled between 0 and 1
                 - Updates the amplitude, exponent, and drawing of the selected Gaussian according to 
@@ -379,17 +383,10 @@ void ofApp::update(){
     
     if (playOn) { // If not paused
         
-        // Integrate 5 times, and thermostat every 10 steps
-        for (int i = 0; i < 5; ++i) {
-            theSystem.integrate(N_THREADS);
-
-            //lets scale the vol up to a 0-1 range, and thermostat
-            if (thermCounter % 10 == 0) {
-                theSystem.berendsen(1.0);
-            }
-            thermCounter++; // Increment the timestep counter
-        }
+        // Integrate 5 times with a thermostat frequency of 0.1
+        theSystem.run(5, 0.1, N_THREADS);
         
+        // scale the audio between 0 and 1
         if (audioOn) {
             // Scale smoothedVol between 0 and 1, taking account of the sensitivity
             // to the audioInput.
@@ -425,13 +422,6 @@ void ofApp::update(){
  */
 void ofApp::draw(){
     
-    // This really should be put somewhere else/removed, it seems unnecessary
-    // to make a temporary vector of the box dimensions every frame, when the values
-    // are stored in theSystem?!
-    vector<double> BOX_SIZE;
-    BOX_SIZE.push_back(theSystem.getWidth());
-    BOX_SIZE.push_back(theSystem.getHeight());
-    
     // 1. Draw the frame rate in the top left
     drawData("framerate", ofGetFrameRate(), 5, 25);
     
@@ -443,12 +433,11 @@ void ofApp::draw(){
     
     // 3. Draw gaussians, with selected on top
     if (theSystem.getNGaussians() > 0) {
-        ofSetCircleResolution(50);
         for (int g = 0; g < theSystem.getNGaussians(); g++){
             if (g != selectedGaussian)
-                drawGaussian(theSystem.getGaussian(g), BOX_SIZE[0], BOX_SIZE[1], false);
+                drawGaussian(theSystem.getGaussian(g), false);
         }
-        drawGaussian(theSystem.getGaussian(selectedGaussian), BOX_SIZE[0], BOX_SIZE[1], true);
+        drawGaussian(theSystem.getGaussian(selectedGaussian), true);
     }
     
     // Set up a load of temporary placeholders
@@ -478,23 +467,23 @@ void ofApp::draw(){
     // Draw all the particles and their trails
     for (int i = 0; i < theSystem.getN(); i++){
         tempPos = theSystem.getPos(i);
-        tempPosPrev = theSystem.getPreviousPositions(i, 15);
-        tempPosPrevPrev = theSystem.getPreviousPositions(i, 10);
-        tempPosPrevPrevPrev = theSystem.getPreviousPositions(i, 5);
+        tempPosPrev = theSystem.getPos(i, 15);
+        tempPosPrevPrev = theSystem.getPos(i, 10);
+        tempPosPrevPrevPrev = theSystem.getPos(i, 5);
         tempVel = theSystem.getVel(i);
         tempAcc = theSystem.getForces(i);
         
-        posx = ofMap(tempPos.x, 0, BOX_SIZE[0], 0, ofGetWidth());
-        posy = ofMap(tempPos.y, 0, BOX_SIZE[1], 0, ofGetHeight());
+        posx = ofMap(tempPos.x, 0, theSystem.getWidth(), 0, ofGetWidth());
+        posy = ofMap(tempPos.y, 0, theSystem.getHeight(), 0, ofGetHeight());
         
-        pospx = ofMap(tempPosPrev.x, 0, BOX_SIZE[0], 0, ofGetWidth());
-        pospy = ofMap(tempPosPrev.y, 0, BOX_SIZE[1], 0, ofGetHeight());
+        pospx = ofMap(tempPosPrev.x, 0, theSystem.getWidth(), 0, ofGetWidth());
+        pospy = ofMap(tempPosPrev.y, 0, theSystem.getHeight(), 0, ofGetHeight());
         
-        posppx = ofMap(tempPosPrevPrev.x, 0, BOX_SIZE[0], 0, ofGetWidth());
-        posppy = ofMap(tempPosPrevPrev.y, 0, BOX_SIZE[1], 0, ofGetHeight());
+        posppx = ofMap(tempPosPrevPrev.x, 0, theSystem.getWidth(), 0, ofGetWidth());
+        posppy = ofMap(tempPosPrevPrev.y, 0, theSystem.getHeight(), 0, ofGetHeight());
         
-        pospppx = ofMap(tempPosPrevPrevPrev.x, 0, BOX_SIZE[0], 0, ofGetWidth());
-        pospppy = ofMap(tempPosPrevPrevPrev.y, 0, BOX_SIZE[1], 0, ofGetHeight());
+        pospppx = ofMap(tempPosPrevPrevPrev.x, 0, theSystem.getWidth(), 0, ofGetWidth());
+        pospppy = ofMap(tempPosPrevPrevPrev.y, 0, theSystem.getHeight(), 0, ofGetHeight());
         
         // Scale the velocities of particle i so that they can be mapped onto a colour range
         velx = ofMap(abs(tempVel.x), 0, 1.5*v_avg, 0, 255);

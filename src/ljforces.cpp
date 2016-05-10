@@ -33,38 +33,41 @@ namespace lj {
         ROUTINE clearSystem:
             Cleans out all vectors/matrices, so that the system can be completely
             reset and the simulation started again. This includes setting the number of particles
-            back to zero, as all particles are removed.
+            back to zero, as all particles are removed, and resetting enCounter
      */
     void LJContainer::clearSystem()
     {
         positions.clear();
         velocities.clear();
         forces.clear();
-        previousPositions.clear();
+        prevPositions.clear();
         prevEKin.clear();
         prevEPot.clear();
         N = 0;
+        enCounter = 0;
     }
     
     //----------------------GETTERS--------------------------------
     
     
     // Return values of private variables without altering them
-    int const LJContainer::getN() { return N; }
+    int    const LJContainer::getN() { return N; }
+    int    const LJContainer::getSteps() { return enCounter; }
     double const LJContainer::getEPot() { return epot; }
     double const LJContainer::getEKin() { return ekin; }
     double const LJContainer::getT() { return T; }
     double const LJContainer::getVAvg() { return v_avg; }
-    coord const LJContainer::getBox() { return box_dimensions; }
+    coord  const LJContainer::getBox() { return box_dimensions; }
     double const LJContainer::getWidth() { return box_dimensions.x; }
     double const LJContainer::getHeight() { return box_dimensions.y; }
     double const LJContainer::getMaxEkin() { return maxEKin; }
     double const LJContainer::getMaxEpot() { return maxEPot; }
     
-    // Return sizes of gaussians and energies vectors, i.e. the number of gaussians
-    // and the number of energies stored.
+    // Return sizes of gaussians, prevPos, and energies vectors, i.e. the number
+    // of gaussians, positions and energies stored
     int const LJContainer::getNGaussians() { return gaussians.size(); }
     int const LJContainer::getNEnergies() { return prevEKin.size(); }
+    int const LJContainer::getNPrevPos() { return prevPositions.size(); }
     
     // Return (x, y) vectors of the dynamical variables of particle i
     // Safety checks could be added, but index checking is usually slow
@@ -73,7 +76,7 @@ namespace lj {
     coord const LJContainer::getForces(int i) { return forces[i]; }
     
     // Return the (x, y) position vector of particle npart, from nstep timesteps previously
-    coord const LJContainer::getPreviousPositions(int npart, int nstep) { return previousPositions[nstep][npart]; }
+    coord const LJContainer::getPos(int npart, int nstep) { return prevPositions[nstep][npart]; }
     
     // Return the ith previous kinetic and potential energy
     double const LJContainer::getPreviousEkin(int i) { return prevEKin[i]; }
@@ -463,32 +466,69 @@ namespace lj {
         // Store the last 20 positions matrices
 
         // FIFO removal of previous position matrix if 20 are already being stored
-        if (previousPositions.size() == 20){
-            previousPositions.erase(previousPositions.begin(), previousPositions.begin()+1);
-        }
-        previousPositions.push_back(positions); // Push current positions onto previousPositions
+        //if (prevPositions.size() == 20){
+        //    prevPositions.erase(prevPositions.begin(), prevPositions.begin()+1);
+        //}
+        //prevPositions.push_back(positions); // Push current positions onto previousPositions
 
         // Store the previous 600 kinetic and potential energies at intervals of 5 timesteps
-        if (enCounter % 5 == 0){ // Check 5 timesteps have passed
+        //if (enCounter % 5 == 0){ // Check 5 timesteps have passed
 
-            // FIFO removal of previous kinetic/potential energies if 120 are already being stored
-            if (prevEKin.size() == 120) {
-                prevEKin.erase(prevEKin.begin(), prevEKin.begin()+1);
-                prevEPot.erase(prevEPot.begin(), prevEPot.begin()+1);
-            }
+        //    // FIFO removal of previous kinetic/potential energies if 120 are already being stored
+        //    if (prevEKin.size() == 120) {
+        //        prevEKin.erase(prevEKin.begin(), prevEKin.begin()+1);
+        //        prevEPot.erase(prevEPot.begin(), prevEPot.begin()+1);
+        //    }
 
-            // Push back current kinetic/potential energies for graphing
-            prevEKin.push_back(ekin);
-            prevEPot.push_back(epot);
+        //    // Push back current kinetic/potential energies for graphing
+        //    prevEKin.push_back(ekin);
+        //    prevEPot.push_back(epot);
 
-            // Find the maximum elements in prevEKin and prevEPot
-            std::vector<double>::iterator EKMAX = std::max_element(prevEKin.begin(), prevEKin.end());
-            std::vector<double>::iterator EPMAX = std::max_element(prevEPot.begin(), prevEPot.end());
-            maxEKin = prevEKin[std::distance(prevEKin.begin(), EKMAX)];
-            maxEPot = prevEPot[std::distance(prevEPot.begin(), EPMAX)];
-        }
+        //    // Find the maximum elements in prevEKin and prevEPot
+        //    std::deque<double>::iterator EKMAX = std::max_element(prevEKin.begin(), prevEKin.end());
+        //    std::deque<double>::iterator EPMAX = std::max_element(prevEPot.begin(), prevEPot.end());
+        //    maxEKin = prevEKin[std::distance(prevEKin.begin(), EKMAX)];
+        //    maxEPot = prevEPot[std::distance(prevEPot.begin(), EPMAX)];
+        //}
 
         enCounter++; // Incremement the number of timesteps performed
+    }
+    
+    /*
+        ROUTINE savePreviousValues:
+            Saves the current position in prevPos and the current energies
+            in prevEpot and prevEKin. A maximum of 15 positions and 120
+            energies are kept, using a deque for the FIFO behaviour
+     */
+    void LJContainer::savePreviousValues()
+    {
+        prevPositions.push_back(positions);
+        prevEPot.push_back(epot);
+        prevEKin.push_back(ekin);
+        
+        if (prevPositions.size() == 20) prevPositions.pop_front();
+        if (prevEPot.size() == 120) prevEPot.pop_front();
+        if (prevEKin.size() == 120) prevEKin.pop_front();
+        
+        // Find the maximum elements in prevEKin and prevEPot
+        std::deque<double>::iterator EKMAX = std::max_element(prevEKin.begin(), prevEKin.end());
+        std::deque<double>::iterator EPMAX = std::max_element(prevEPot.begin(), prevEPot.end());
+        maxEKin = prevEKin[std::distance(prevEKin.begin(), EKMAX)];
+        maxEPot = prevEPot[std::distance(prevEPot.begin(), EPMAX)];
+    }
+    
+    /*
+        ROUTINE run:
+            Runs the integrator nsteps times, with a thermostat frequency
+            freq, on nthreads threads. Saves the positions and energies after
+            all nsteps integrations are completed
+     */
+    void LJContainer::run(int nsteps, double freq, int nthreads) {
+        for (int i = 0; i < nsteps; ++i) {
+            integrate(nthreads);
+            berendsen(freq);
+        }
+        savePreviousValues();
     }
     
     
@@ -522,8 +562,8 @@ namespace lj {
         for (int i = 0; i < N; i++)
         {
             if(uDist(mt) < freq*dt){
-                    velocities[i].x = nDist(mt);
-                    velocities[i].y = nDist(mt);
+                velocities[i].x = nDist(mt);
+                velocities[i].y = nDist(mt);
             }
         }
     }
@@ -539,7 +579,7 @@ namespace lj {
         v_avg /= N;
         
         //Calculate scaling factor (lambda)
-        double lambda = sqrt(1+((dt/freq)*((T/v_avg)-1)));
+        double lambda = sqrt(1+((dt*freq)*((T/v_avg)-1)));
         for (int i = 0; i < N; i++){
             //Scale the velocity of each particle
             velocities[i].x *= lambda;
