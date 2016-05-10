@@ -21,8 +21,8 @@ public:
 
     // Custom drawing routines
     // Draw strings from floating point data
-    void drawData(string name, double value, int x, int y, int length);
-    void drawData(string name, double value, int x, int y);
+    void drawData(const ofTrueTypeFont &font, string name, double value, int x, int y, int length);
+    void drawData(const ofTrueTypeFont &font, string name, double value, int x, int y);
     // Draw a particle
     void drawParticle(int index, double radius_x, double radius_y, ofColor color, int nframes = 0);
     void drawParticle(int index, double radius, ofColor color, int nframes = 0);
@@ -70,6 +70,9 @@ private:
     // is reset with 'r' and we can regrid everything
     int numParticles;
     
+    // Thermostat frequency
+    double thermFreq;
+    
     // Keep track of very first kinetic/potential energies
     // for graph drawing purposes - it may be prudent to
     // instead keep minEKin and minEPot values in LJContainer
@@ -84,7 +87,9 @@ private:
     int selectedSlider;
     
     // Font and images needed for UI
-    ofTrueTypeFont drawFont;
+    ofTrueTypeFont uiFont14;
+    ofTrueTypeFont uiFont12;
+    ofTrueTypeFont uiFont10;
     ofImage playbutton;
     ofImage pausebutton;
     ofImage circGradient;

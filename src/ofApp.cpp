@@ -36,6 +36,8 @@ void ofApp::setup(){
     
     // Default values for system parameters
     numParticles = 50;
+    thermFreq = 0.1;
+    
     double TEMPERATURE = 0.5;
     double BOX_WIDTH = 15.0;
     double BOX_HEIGHT = BOX_WIDTH / ofGetWidth() * ofGetHeight();
@@ -59,7 +61,9 @@ void ofApp::setup(){
     loganShifty = loganLeft.getHeight() / 2;
     
     //fonts
-    drawFont.load("Montserrat-Bold.ttf", 14);
+    uiFont14.load("Montserrat-Bold.ttf", 14);
+    uiFont12.load("Montserrat-Bold.ttf", 12);
+    uiFont10.load("Montserrat-Bold.ttf", 10);
     
     // Initialise theSystem
     setupSystem(numParticles, TEMPERATURE, BOX_WIDTH, BOX_HEIGHT, TIMESTEP, CUTOFF);
@@ -132,7 +136,7 @@ void ofApp::update(){
     if (playOn) { // If not paused
         
         // Integrate 5 times with a thermostat frequency of 0.1
-        theSystem.run(5, 0.1, N_THREADS);
+        theSystem.run(5, thermFreq, N_THREADS);
         
         // scale the audio between 0 and 1
         if (audioOn) {
@@ -160,13 +164,13 @@ void ofApp::update(){
  
         Overloaded version has extra argument length which sets the length of the floating point displayed.
  */
-void ofApp::drawData(string name, double value, int x, int y) { //Converts data as int to string
+void ofApp::drawData(const ofTrueTypeFont &font, string name, double value, int x, int y) { //Converts data as int to string
     char drawstr[255];
     sprintf(drawstr, "%s %lf", name.c_str(), value);
-    drawFont.drawString(drawstr, x, y);
+    font.drawString(drawstr, x, y);
 }
 
-void ofApp::drawData(string name, double value, int x, int y, int length) { //Converts data as int to string
+void ofApp::drawData(const ofTrueTypeFont &font, string name, double value, int x, int y, int length) { //Converts data as int to string
     //TODO: use iomanip
     char drawstr[255];
     sprintf(drawstr, "%s %lf", name.c_str(), value);
@@ -176,7 +180,7 @@ void ofApp::drawData(string name, double value, int x, int y, int length) { //Co
     convert_to_string  >> drawstr_string;
     string data_string = drawstr_string.substr(0, length);
     
-    drawFont.drawString(data_string, x, y);
+    font.drawString(data_string, x, y);
 }
 
 /*
@@ -264,44 +268,44 @@ void ofApp::drawUI()
     //Controls window
     ofDrawRectangle(0, ofGetHeight() - 150, ofGetWidth(), 150);
     ofSetColor(255, 255, 240);
-    drawFont.loadFont("Montserrat-Bold.ttf", 12);
-    drawFont.drawString("Key Commands", ofGetWidth() - 230, ofGetHeight()-130);
-    drawFont.loadFont("Montserrat-Bold.ttf", 10);
-    drawFont.drawString("Audio        /         'a'" ,ofGetWidth() - 225,ofGetHeight()-110);
+    //drawFont.loadFont("Montserrat-Bold.ttf", 12);
+    uiFont12.drawString("Key Commands", ofGetWidth() - 230, ofGetHeight()-130);
+    //drawFont.loadFont("Montserrat-Bold.ttf", 10);
+    uiFont10.drawString("Audio        /         'a'" ,ofGetWidth() - 225,ofGetHeight()-110);
     
     //Highlight audio on/off
     if (audioOn) {
-        drawFont.drawString("off" ,ofGetWidth() - 153,ofGetHeight()-110);
+        uiFont10.drawString("off" ,ofGetWidth() - 153,ofGetHeight()-110);
         ofSetColor(0, 200, 0);
-        drawFont.drawString("on" ,ofGetWidth() - 178,ofGetHeight()-110);
+        uiFont10.drawString("on" ,ofGetWidth() - 178,ofGetHeight()-110);
     } else{
-        drawFont.drawString("on" ,ofGetWidth() - 178,ofGetHeight()-110);
+        uiFont10.drawString("on" ,ofGetWidth() - 178,ofGetHeight()-110);
         ofSetColor(255, 0, 0);
-        drawFont.drawString("off" ,ofGetWidth() - 153,ofGetHeight()-110);
+        uiFont10.drawString("off" ,ofGetWidth() - 153,ofGetHeight()-110);
     }
     ofSetColor(255, 255, 240);
-    drawFont.drawString("Change gaussian 'g'" ,ofGetWidth() - 230,ofGetHeight()-90);
-    drawFont.drawString("Remove gaussian 'k'" ,ofGetWidth() - 230,ofGetHeight()-70);
-    drawFont.drawString("Show energies 'e'" ,ofGetWidth() - 225,ofGetHeight()-50);
-    drawFont.drawString("Pause 'p'" ,ofGetWidth() - 190,ofGetHeight()-30);
-    drawFont.drawString("Reset 'r'" ,ofGetWidth() - 190,ofGetHeight()-10);
-    drawFont.drawString("Change slider 'tab'", 50, ofGetHeight() - 30);
-    drawFont.drawString("Move slider up/down 'left/right arrow'", 250, ofGetHeight()-30);
+    uiFont10.drawString("Change gaussian 'g'" ,ofGetWidth() - 230,ofGetHeight()-90);
+    uiFont10.drawString("Remove gaussian 'k'" ,ofGetWidth() - 230,ofGetHeight()-70);
+    uiFont10.drawString("Show energies 'e'" ,ofGetWidth() - 225,ofGetHeight()-50);
+    uiFont10.drawString("Pause 'p'" ,ofGetWidth() - 190,ofGetHeight()-30);
+    uiFont10.drawString("Reset 'r'" ,ofGetWidth() - 190,ofGetHeight()-10);
+    uiFont10.drawString("Change slider 'tab'", 50, ofGetHeight() - 30);
+    uiFont10.drawString("Move slider up/down 'left/right arrow'", 250, ofGetHeight()-30);
     
     //Highlight the selected parameter
     int slider1, slider2, slider3;
     slider1 = (selectedSlider == 0 ? 0 : 1);
     slider2 = (selectedSlider == 1 ? 0 : 1);
     slider3 = (selectedSlider == 2 ? 0 : 1);
-    drawFont.loadFont("Montserrat-Bold.ttf", 12);
+    //drawFont.loadFont("Montserrat-Bold.ttf", 12);
     ofSetColor(255, 255*slider1, 240*slider1);
-    drawFont.drawString(" Temperature (K):", ofGetWidth() - 1000, ofGetHeight() - 110);
+    uiFont12.drawString(" Temperature (K):", ofGetWidth() - 1000, ofGetHeight() - 110);
     
     ofSetColor(255, 255*slider2, 240*slider2);
-    drawFont.drawString(" Particles:", ofGetWidth() - 1000, ofGetHeight() - 88);
+    uiFont12.drawString(" Particles:", ofGetWidth() - 1000, ofGetHeight() - 88);
     
     ofSetColor(255, 255*slider3, 240*slider3);
-    drawFont.drawString(" Sensitivity:", ofGetWidth() - 1000, ofGetHeight() - 63);
+    uiFont12.drawString(" Sensitivity:", ofGetWidth() - 1000, ofGetHeight() - 63);
     
     ofSetColor(255, 255, 240);
     
@@ -309,9 +313,9 @@ void ofApp::drawUI()
     ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 122, 250, 10);
     
     //Parameter values
-    drawData(" ", theSystem.getT()*120, ofGetWidth()-545, ofGetHeight() - 109, 5); // Temperature
-    drawData(" ", numParticles, ofGetWidth()-545, ofGetHeight() - 87, 5); // Number of particles
-    drawData(" ", sensitivity, ofGetWidth()-545, ofGetHeight() - 62, 5); // Sensitivity
+    drawData(uiFont12, " ", theSystem.getT()*120, ofGetWidth()-545, ofGetHeight() - 109, 5); // Temperature
+    drawData(uiFont12, " ", numParticles, ofGetWidth()-545, ofGetHeight() - 87, 5); // Number of particles
+    drawData(uiFont12, " ", sensitivity, ofGetWidth()-545, ofGetHeight() - 62, 5); // Sensitivity
     
     //Particle slider
     ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 100, 250, 10);
@@ -379,9 +383,9 @@ void ofApp::drawGraph()
     
     // Label the two graphs in the top left corner.
     ofSetColor(200, 0, 0);
-    drawFont.drawString("Kinetic energy", 0.05*ofGetWidth(), 0.1*ofGetHeight());
+    uiFont14.drawString("Kinetic energy", 0.05*ofGetWidth(), 0.1*ofGetHeight());
     ofSetColor(255, 255, 255);
-    drawFont.drawString("Potential energy", 0.05*ofGetWidth(), 0.15*ofGetHeight() );
+    uiFont14.drawString("Potential energy", 0.05*ofGetWidth(), 0.15*ofGetHeight() );
     
 }
 
@@ -404,7 +408,7 @@ void ofApp::drawGraph()
 void ofApp::draw(){
     
     // 1. Draw the frame rate in the top left
-    drawData("framerate", ofGetFrameRate(), 5, 25);
+    drawData(uiFont14, "framerate", ofGetFrameRate(), 5, 25);
     
     // Set the resolution and fill settings for drawing the energy graphs if necessary
     ofFill();
@@ -481,7 +485,7 @@ void ofApp::draw(){
         drawUI();
     } else {
         ofSetColor(255, 255, 240);
-        drawFont.drawString("press 'h' for controls", 10, ofGetHeight()-10);
+        uiFont14.drawString("press 'h' for controls", 10, ofGetHeight()-10);
     }
 }
 
