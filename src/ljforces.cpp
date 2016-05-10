@@ -17,13 +17,14 @@ namespace lj {
     /*
         DEFAULT CONSTRUCTOR:
             Initially sets the box dimensions to 10 x 10, the rcutoff to 3,
-            and the timstep to 0.01. Initialises maximum energies, and enCounter,
+            and the timstep to 0.002. Initialises maximum energies, and enCounter,
             to zero.
      */
     LJContainer::LJContainer()
     {
         box_dimensions = {0, 0};
-        setConsts(10.0, 10.0, 3.0, 0.01);
+        rcutoff = 3.0;
+        dt = 0.002;
         maxEKin = 0.0;
         maxEPot = 0.0;
         enCounter = 0;
@@ -57,6 +58,8 @@ namespace lj {
     double const LJContainer::getEKin() { return ekin; }
     double const LJContainer::getT() { return T; }
     double const LJContainer::getVAvg() { return v_avg; }
+    double const LJContainer::getTimestep() { return dt; }
+    double const LJContainer::getCutoff() { return rcutoff; }
     coord  const LJContainer::getBox() { return box_dimensions; }
     double const LJContainer::getWidth() { return box_dimensions.x; }
     double const LJContainer::getHeight() { return box_dimensions.y; }
@@ -84,7 +87,6 @@ namespace lj {
     
     // Return a reference to the ith gaussian in gaussians
     Gaussian& LJContainer::getGaussian(int i) { return gaussians[i]; }
-    
     // Return values of the private variables of the ith gaussian in gaussians
     double LJContainer::getGaussianAlpha(int i) { return gaussians[i].getgAlpha(); }
     double LJContainer::getGaussianAmp(int i) { return gaussians[i].getgAmp(); }
@@ -111,61 +113,63 @@ namespace lj {
         velocities[i].y = vy;
     }
     
-    // Set the parameters - the box dimensions [width, height] to [_boxw, _boxl],
-    // the cutoff radius for the pair potential to rcutoff = _rcutoff,
-    // and the timestep dt = _dt
-    // subject to conditions on the suitability of each number.
-    void LJContainer::setConsts(double _boxl, double _boxw, double _rcutoff, double _dt)
-    {
-        
-        // Width and height should be positive numbers - DEFAULTS TO 10 x 10
-        if ( _boxw > 0 ) { box_dimensions.x = _boxw;}
-        else { box_dimensions.x = 10.0; }
-        if ( _boxl > 0 ) { box_dimensions.y = _boxl;}
-        else { box_dimensions.y = 10.0; }
-        
-        // rcutoff and dt should also be positive; negative radius makes no sense,
-        // and negative timestep would work fine, but seems weird.
-        // DEFAULTS TO rcutoff = 3 AND dt = 0.01
-        if ( _rcutoff > 0 ) { rcutoff = _rcutoff; }
-        else { rcutoff = 3.0; }
-        if ( _dt > 0 ) { dt = _dt; }
-        else { dt = 0.01; }
+    // Set the parameters - the box dimensions, temperature, timestep and
+    // cutoff radius, checking that each is positive. If not, defaults to:
+    // box      - 10 x 10
+    // temp     - 0.5 (60K)
+    // timestep - 0.002
+    // cutoff   - 3
+    void LJContainer::setBox(double box_width, double box_length) {
+        box_dimensions.x = box_width  > 0 ? box_width  : 10.0;
+        box_dimensions.y = box_length > 0 ? box_length : 10.0;
     }
-
-    // Set the temperature to _T
-    // This should probably check that the temperature isn't negative
-    void LJContainer::setTemp(double _T){
-            T = _T;
-
-    }
+    void LJContainer::setTemp(double temperature) { T = temperature > 0 ? temperature : 0.5; }
+    void LJContainer::setTimestep(double timestep) { dt = timestep > 0 ? timestep : 0.002; }
+    void LJContainer::setCutoff(double cutoff) { rcutoff = cutoff > 0 ? cutoff : 3.0; }
     
-    // Set the number of particles - this is redundant due to the number of particles being
-    // counted via the addParticle function
-    void LJContainer::setParticles(int _N){
-        if ( _N > 0){
-            N = _N;
-        }
-        else{
-            N = 10;
+/*
+    ROUTINE setupSystem:
+        Clears the system (removes all particles, and resets all parameters), before resetting the system
+        to have the parameters listed in the arguments. Places the particles on a grid, and gives them random velocities
+        sampled from a Maxwell distribution of the chosen temperature. Calculates the initial forces and energies.
+ */
+    void LJContainer::addParticlesGrid(int numParticles) {
+        int i = 0, j = 0;
+        double posx, posy;
+        
+        double box_ratio = box_dimensions.x / box_dimensions.y;
+        int n_grid_x = ceil(sqrt(numParticles * box_ratio));
+        int n_grid_y = ceil(sqrt(numParticles / box_ratio));
+        double xspacing = box_dimensions.x / n_grid_x;
+        double yspacing = box_dimensions.y / n_grid_y;
+        
+        // grid particles
+        for (int n = 0; n < numParticles; ++n){
+            lj::coord pos;
+            pos.x = xspacing * (i + 0.5);
+            pos.y = yspacing * (j + 0.5);
+            
+            lj::coord vel = randomVel();
+            
+            addParticle(pos, vel);
+            
+            i = (i + 1) % n_grid_x;
+            if (i == 0) ++j;
         }
     }
+
     
     /*
         ROUTINE addParticle:
-            Creates a particle at position (x, y) with velocity (vx, vy)/
+            Creates a particle at position (x, y) with velocity (vx, vy) specified
+            by either four doubles or 2 coord structs
             Appends this to the positions and velocities matrices. 
             If there were N particles, this is now particle i = N+1.
             The particle counter, N, increments.
      */
-    void LJContainer::addParticle(double x, double y, double vx, double vy)
+    void LJContainer::addParticle(coord pos, coord vel)
     {
-        coord pos, vel, acc; // Temporary vectors of variables
-        
-        // Set the values of these vectors - zero acceleration to start with
-        pos.x = x;   pos.y = y;
-        vel.x = vx;  vel.y = vy;
-        acc.x = 0.0; acc.y = 0.0;
+        coord acc = {0.0, 0.0}; // zero initial acceleration
         
         // Push the particle onto the positions, velocities, and forces matrices
         positions.push_back(pos);
@@ -174,6 +178,12 @@ namespace lj {
         
         // Increment the number of particles
         ++N;
+    }
+    
+    void LJContainer::addParticle(double x, double y, double vx, double vy) {
+        coord pos = {x, y};
+        coord vel = {vx, vy};
+        addParticle(pos, vel);
     }
     
     /*
@@ -507,6 +517,9 @@ namespace lj {
     
     //----------------------------------------THERMOSTATS----------------------------------------
     /*
+        ROUTINE random_vel:
+            Returns a random velocity from the Maxwell-Boltzmann distribution
+     
         ANDERSEN:
             Random collisions with the heat bath, so that velocities are sampled from (roughly)
             a Maxwell distribution corresponding to the desired temperature, T.
@@ -521,23 +534,31 @@ namespace lj {
             3/2 NkT = 1/2 mv^2
      */
     
+    coord LJContainer::randomVel()
+    {
+        // Set up random number generator, rd, to sample from:
+        // normal distribution, nDist, mean 0, std. dev. sqrt(T)
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::normal_distribution<double> nDist(0.0, sqrt(T));
+        
+        coord vel;
+        vel.x = nDist(mt);
+        vel.y = nDist(mt);
+        return vel;
+    }
+    
     void LJContainer::andersen(double freq)
     {
         // Set up random number generator, rd, to sample from:
         // uniform distribution, uDist, on [0, 1]
-        // normal distribution, nDist, mean 0, std. dev. sqrt(T)
         std::random_device rd;
         std::mt19937 mt(rd());
         std::uniform_real_distribution<double> uDist(0.0, 1.0);
-        std::normal_distribution<double> nDist(0.0, sqrt(T));
         
         // Randomly select particles to collide with the heat bath
-        for (int i = 0; i < N; i++)
-        {
-            if(uDist(mt) < freq*dt){
-                velocities[i].x = nDist(mt);
-                velocities[i].y = nDist(mt);
-            }
+        for (int i = 0; i < N; i++) {
+            if(uDist(mt) < freq*dt) velocities[i] = randomVel();
         }
     }
 

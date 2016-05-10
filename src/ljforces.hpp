@@ -63,6 +63,9 @@ namespace lj{
         double const getT();
         double const getVAvg();
         
+        double const getTimestep();
+        double const getCutoff();
+        
         coord const getBox();
         double const getWidth();
         double const getHeight();
@@ -99,12 +102,17 @@ namespace lj{
         //Setters
         void setPos(int i, double x, double y);
         void setVel(int i, double vx, double vy);
-        void setConsts(double _boxl, double _boxw, double _rcutoff, double _dt);
-        void setTemp(double _T);
-        void setParticles(int _N);
+        
+        // Set basic system constants
+        void setBox(double box_width, double box_height);
+        void setCutoff(double cutoff);
+        void setTimestep(double timestep);
+        void setTemp(double temperature);
         
         // Add and remove particles
         void addParticle(double x, double y, double vx, double vy);
+        void addParticle(coord pos, coord vel);
+        void addParticlesGrid(int numParticles);
         void removeParticle();
         
         // Add a Gaussian, or remove or update the ith Gaussian
@@ -129,6 +137,7 @@ namespace lj{
         void run(int nsteps, double freq, int nthreads);
 
         // Thermostats
+        coord randomVel();
         void andersen(double freq);
         void berendsen(double freq);
     };

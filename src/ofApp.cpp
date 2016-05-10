@@ -23,71 +23,136 @@ ofPoint ofApp::box2screen(lj::coord point, lj::coord origin) {
     return box2screen(point.x, point.y, origin.x, origin.y);
 }
 
-/*
-    ROUTINE randomiseVelocity:
-        Sets the initial velocities of a velocity vector vel to randomised velocities
-        sampled from a Maxwell distribution corresponding to the temperature T
- */
-//TODO: there's a standard libary function for this, see the andersen thermostat in ljforces.cpp
-void ofApp::randomiseVelocity(vector<double> &vel, double T) {
-    double sigma = sqrt(T); // Std. dev. of normal distribution
-    
-    // Sample random numbers from normal distribution with mean 0 and std. dev. sigma
-    for (int i = 0; i < vel.size(); ++i) {
-        double randr = ofRandom(1);
-        double randt = ofRandom(1);
-        
-        randr = sqrt(-2.0 * log(randr));
-        randt = sin(2 * PI * randt);
-        
-        vel[i] = sigma * randr * randt;
-    }
-}
+//--------------------------------------------------------------
+// SETUP
+//--------------------------------------------------------------
 
+/*
+    ROUTINE setup:
+        Constructor for the app. Sets up the system at the beginning, loads all the assets
+        needed for the app (images and fonts), and initialises the audio input stream.
+ */
+void ofApp::setup(){
+    
+    // Default values for system parameters
+    numParticles = 50;
+    double TEMPERATURE = 0.5;
+    double BOX_WIDTH = 15.0;
+    double BOX_HEIGHT = BOX_WIDTH / ofGetWidth() * ofGetHeight();
+    double TIMESTEP = 0.002;
+    double CUTOFF = 3.0;
+    
+    // openFrameworks initialisation
+    ofSetFrameRate(60);
+    ofBackground(0, 0, 0);
+
+    // Load assets
+    
+    // graphics
+    circGradient.load("circ_gradient.png");
+    playbutton.load("play-btn2.png");
+    pausebutton.load("pause-btn2.png");
+    
+    loganLeft.load("david-logan-posing-left.png");
+    loganRight.load("david-logan-posing-right.png");
+    loganShiftx = loganLeft.getWidth() / 2;
+    loganShifty = loganLeft.getHeight() / 2;
+    
+    //fonts
+    drawFont.load("Montserrat-Bold.ttf", 14);
+    
+    // Initialise theSystem
+    setupSystem(numParticles, TEMPERATURE, BOX_WIDTH, BOX_HEIGHT, TIMESTEP, CUTOFF);
+    
+    // Set the booleans so that the audio input is turned on, as is the simulation,
+    // but the UI, secret-Logan-mode, and energy graphs are off.
+    audioOn = true;
+    helpOn  = false;
+    loganOn = false;
+    graphOn = false;
+    playOn  = true;
+
+    selectedGaussian = -1; // No gaussian selected
+    selectedSlider = 0; // Temperature slider selected
+    
+    // Setup the sound
+    int bufferSize = 256;
+    
+    left.assign(bufferSize, 0.0);
+    right.assign(bufferSize, 0.0);
+    
+    smoothedVol = 0.0;
+    scaledVol   = 0.0;
+    sensitivity = 0.04;
+    
+    soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
+}
 
 /*
     ROUTINE setupSystem:
-        Clears the system (removes all particles, and resets all parameters), before resetting the system
-        to have the parameters listed in the arguments. Places the particles on a grid, and gives them random velocities
-        sampled from a Maxwell distribution of the chosen temperature. Calculates the initial forces and energies
-        before integrating 20 times to begin the simulation. 
+        Sets up and regrids the system. First clears all particles, then sets basic constants. Then, add the
+        particles on a grid, initialise the forces and energies and save initial positions to prevousPositions
  */
-void ofApp::setupSystem(int numParticles, double temperature, double box_length, double box_width, double cutoff, double timestep) {
+void ofApp::setupSystem(int numParticles, double temperature, double box_width, double box_height, double timestep, double cutoff) {
     theSystem.clearSystem();
-    theSystem.setConsts(box_length, box_width, cutoff, timestep);
+    
+    theSystem.setBox(box_width, box_height);
     theSystem.setTemp(temperature);
+    theSystem.setTimestep(timestep);
+    theSystem.setCutoff(cutoff);
     
-    int i = 0, j = 0;
-    double posx, posy;
-    vector<double> vel = {0, 0};
+    theSystem.addParticlesGrid(numParticles);
     
-    double box_ratio = box_width / box_length;
-    int n_grid_x = ceil(sqrt(numParticles * box_ratio));
-    int n_grid_y = ceil(sqrt(numParticles / box_ratio));
-    double xspacing = box_width  / (n_grid_x);
-    double yspacing = box_length / (n_grid_y);
-    
-    // grid particles
-    for (int n = 0; n < numParticles; ++n){
-        posx = xspacing * (i + 0.5);
-        posy = yspacing * (j + 0.5);
-        
-        randomiseVelocity(vel, temperature);
-        theSystem.addParticle(posx, posy, vel[0], vel[1]);
-        
-        i = (i + 1) % n_grid_x;
-        if (i == 0) ++j;
-    }
-    
-    // intialise the system + previous positions
     theSystem.forcesEnergies(N_THREADS);
+    theSystem.savePreviousValues();
     firstEKin = theSystem.getEKin();
     firstEPot = fabs(theSystem.getEPot());
+}
+
+//--------------------------------------------------------------
+// UPDATE
+//--------------------------------------------------------------
+
+/*
+    ROUTINE update: 
+        Part of the infinite update / draw loop.
+        Update the status of the application, before the frame is drawn. 
+ 
+        Currently performs the following tasks, when the simulation is not paused (i.e when playOn):
+            
+            1. Integrates the equations of motion 5 times and thermostats (Berendsen) with a frequency of 0.1
+            2. If the audio input is turned on:
+                - Calculates the smoothed volume scaled between 0 and 1
+                - Updates the amplitude, exponent, and drawing of the selected Gaussian according to 
+                    this volume.
+ 
+ */
+void ofApp::update(){
     
-    for (int i = 0; i < 20; ++i) {
+    if (playOn) { // If not paused
+        
+        // Integrate 5 times with a thermostat frequency of 0.1
         theSystem.run(5, 0.1, N_THREADS);
+        
+        // scale the audio between 0 and 1
+        if (audioOn) {
+            // Scale smoothedVol between 0 and 1, taking account of the sensitivity
+            // to the audioInput.
+            scaledVol = ofMap(smoothedVol, 0.0, sensitivity, 0.0, 1.0, true);
+            
+            // Update the currently selected Gaussian, so that quiet-> loud results in
+            // a change from an attractive, wide Gaussian, to a repulsive, narrow Gaussian.
+            if ( selectedGaussian > -1)
+                theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 0.8 - 0.5*scaledVol,
+                                         theSystem.getGaussianX0(selectedGaussian),
+                                         theSystem.getGaussianY0(selectedGaussian), scaledVol);
+        }
     }
 }
+
+//--------------------------------------------------------------
+// DRAWING
+//--------------------------------------------------------------
 
 /*
     ROUTINE drawData:
@@ -205,13 +270,11 @@ void ofApp::drawUI()
     drawFont.drawString("Audio        /         'a'" ,ofGetWidth() - 225,ofGetHeight()-110);
     
     //Highlight audio on/off
-    if (audioOn){
+    if (audioOn) {
         drawFont.drawString("off" ,ofGetWidth() - 153,ofGetHeight()-110);
         ofSetColor(0, 200, 0);
         drawFont.drawString("on" ,ofGetWidth() - 178,ofGetHeight()-110);
-        
-    }
-    else{
+    } else{
         drawFont.drawString("on" ,ofGetWidth() - 178,ofGetHeight()-110);
         ofSetColor(255, 0, 0);
         drawFont.drawString("off" ,ofGetWidth() - 153,ofGetHeight()-110);
@@ -247,7 +310,7 @@ void ofApp::drawUI()
     
     //Parameter values
     drawData(" ", theSystem.getT()*120, ofGetWidth()-545, ofGetHeight() - 109, 5); // Temperature
-    drawData(" ", N_PARTICLES, ofGetWidth()-545, ofGetHeight() - 87, 5); // Number of particles
+    drawData(" ", numParticles, ofGetWidth()-545, ofGetHeight() - 87, 5); // Number of particles
     drawData(" ", sensitivity, ofGetWidth()-545, ofGetHeight() - 62, 5); // Sensitivity
     
     //Particle slider
@@ -257,7 +320,7 @@ void ofApp::drawUI()
     //Slider cursors
     ofSetColor(0,0,0);
     ofDrawRectangle((ofGetWidth() - 800) + 30*theSystem.getT(), ofGetHeight() - 122, 5, 10);
-    ofDrawRectangle((ofGetWidth() - 800) + N_PARTICLES, ofGetHeight() - 100, 5, 10);
+    ofDrawRectangle((ofGetWidth() - 800) + numParticles, ofGetHeight() - 100, 5, 10);
     ofDrawRectangle((ofGetWidth() - 810) + 1900*sensitivity, ofGetHeight() - 75, 5, 10);
     
     //buttons
@@ -274,8 +337,7 @@ void ofApp::drawUI()
     }
 }
 
-
-/* 
+/*
     ROUTINE drawGraph:
         Draws the kinetic/potential energy graphs as small red/blue circles
         in the background. 
@@ -322,112 +384,6 @@ void ofApp::drawGraph()
     drawFont.drawString("Potential energy", 0.05*ofGetWidth(), 0.15*ofGetHeight() );
     
 }
-
-//--------------------------------------------------------------
-/*
-    ROUTINE setup:
-        Constructor for the app. Sets up the system at the beginning, loads all the assets
-        needed for the app (images and fonts), and initialises the audio input stream.
- */
-void ofApp::setup(){
-    
-    // Default values for system parameters
-    BOX_WIDTH = 15.0;
-    BOX_LENGTH = BOX_WIDTH / ofGetWidth() * ofGetHeight();
-    CUTOFF = 3.0;
-    TIMESTEP = 0.002;
-    N_PARTICLES = 50;
-    TEMPERATURE = 0.5;
-
-    // Load images and fonts for the UI
-    circGradient.load("circ_gradient.png");
-    playbutton.load("play-btn2.png");
-    pausebutton.load("pause-btn2.png");
-    drawFont.loadFont("Montserrat-Bold.ttf", 14);
-    
-    // initialise openFrameworks stuff
-    ofSetFrameRate(60);
-    
-    // intitialise the system
-    setupSystem(N_PARTICLES, TEMPERATURE, BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP);
-    
-    // Set the booleans so that the audio input is turned on, as is the simulation,
-    // but the UI, secret-Logan-mode, and energy graphs are off.
-    audioOn = true;
-    helpOn = false;
-    loganOn = false;
-    graphOn = false;
-    playOn = true;
-
-    // Initialise the timstep counter
-    thermCounter = 0;
-    
-    selectedGaussian = -1; // No gaussian selected
-    
-    selectedSlider = 0; // Temperature slider selected
-    
-    // Setup the sound
-    int bufferSize = 256;
-    
-    left.assign(bufferSize, 0.0);
-    right.assign(bufferSize, 0.0);
-    
-    smoothedVol = 0.0;
-    scaledVol   = 0.0;
-    sensitivity = 0.04;
-    
-    soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
-    
-    // Setup Logan image
-    loganLeft.load("david-logan-posing-left.png");
-    loganRight.load("david-logan-posing-right.png");
-    loganShiftx = loganLeft.getWidth() / 2;
-    loganShifty = loganLeft.getHeight() / 2;
-    
-    // Set the background to black
-    ofBackground(0, 0, 0);
-}
-
-//--------------------------------------------------------------
-/*
-    ROUTINE update: 
-        Part of the infinite update / draw loop.
-        Update the status of the application, before the frame is drawn. 
- 
-        Currently performs the following tasks, when the simulation is not paused (i.e when playOn):
-            
-            1. Integrates the equations of motion 5 times.
-            2. Thermostats (Berendsen) the system every 10 steps.
-            4. If the audio input is turned on:
-                - Calculates the smoothed volume scaled between 0 and 1
-                - Updates the amplitude, exponent, and drawing of the selected Gaussian according to 
-                    this volume.
- 
- */
-void ofApp::update(){
-    
-    if (playOn) { // If not paused
-        
-        // Integrate 5 times with a thermostat frequency of 0.1
-        theSystem.run(5, 0.1, N_THREADS);
-        
-        // scale the audio between 0 and 1
-        if (audioOn) {
-            // Scale smoothedVol between 0 and 1, taking account of the sensitivity
-            // to the audioInput.
-            scaledVol = ofMap(smoothedVol, 0.0, sensitivity, 0.0, 1.0, true);
-            
-            // Update the currently selected Gaussian, so that quiet-> loud results in
-            // a change from an attractive, wide Gaussian, to a repulsive, narrow Gaussian.
-            if ( selectedGaussian > -1)
-                theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 0.8 - 0.5*scaledVol,
-                                         theSystem.getGaussianX0(selectedGaussian),
-                                         theSystem.getGaussianY0(selectedGaussian), scaledVol);
-        }
-    }
-}
-
-//--------------------------------------------------------------
 
 /*
     ROUTINE draw:
@@ -530,6 +486,9 @@ void ofApp::draw(){
 }
 
 //--------------------------------------------------------------------
+// INPUT & EVENT HANDLING
+//--------------------------------------------------------------------
+
 /*
     EVENT audioIn:
         If audio is coming in to the primary input (built-in microphone by default
@@ -627,7 +586,8 @@ void ofApp::keyPressed(int key){
     }
     
     else if (key == 'r' || key == 'R') { // Reset the system to have the current values of the sliders
-        setupSystem(N_PARTICLES, TEMPERATURE, BOX_LENGTH, BOX_WIDTH, CUTOFF, TIMESTEP);
+        lj::coord box = theSystem.getBox();
+        setupSystem(numParticles, theSystem.getT(), box.x, box.y, theSystem.getTimestep(), theSystem.getCutoff());
     }
     
     else if (key == 'p' || key == 'P') { // Pause/restart the simulation
@@ -647,8 +607,8 @@ void ofApp::keyPressed(int key){
                     break;
                 }
                 case 1: { // N particles
-                    if (N_PARTICLES + 5 <= 245) { //Bounds the upper end of the particle slider
-                        N_PARTICLES += 5;
+                    if (numParticles + 5 <= 245) { //Bounds the upper end of the particle slider
+                        numParticles += 5;
                     }
                     break;
                 }
@@ -671,8 +631,8 @@ void ofApp::keyPressed(int key){
                     break;
                 }
                 case 1: { // N particles
-                    if ((N_PARTICLES - 5) >= 0 ) { //Bounds the lower end of the particle slider
-                        N_PARTICLES -= 5;
+                    if ((numParticles - 5) >= 0 ) { //Bounds the lower end of the particle slider
+                        numParticles -= 5;
                     }
                     break;
                 }

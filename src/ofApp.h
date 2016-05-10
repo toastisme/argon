@@ -41,10 +41,12 @@ public:
     double box2screen_y(double y, double y0 = 0.0);
     ofPoint box2screen(double x, double y, double x0 = 0.0, double y0 = 0.0);
     ofPoint box2screen(lj::coord point, lj::coord origin = {0.0, 0.0});
+    
     // Assign random initial velocities from an appropriate Maxwell distribution
-    void randomiseVelocity(vector<double> &vel, double T);
+    //void randomiseVelocity(vector<double> &vel, double T);
+    
     // Set the parameters for the system
-    void setupSystem(int numParticles, double temperature, double box_length, double box_width, double cutoff, double timestep);
+    void setupSystem(int numParticles, double temperature, double box_length, double box_width, double timestep, double cutoff);
 
     // Events
     void keyPressed(int key);
@@ -64,13 +66,9 @@ private:
    
     lj::LJContainer theSystem; // The MD simulation system
     
-    // Parameters for theSystem - REDUNDANT
-    int N_PARTICLES;
-    double BOX_WIDTH;
-    double BOX_LENGTH;
-    double CUTOFF;
-    double TIMESTEP;
-    double TEMPERATURE;
+    // Store the number of particles locally until the system
+    // is reset with 'r' and we can regrid everything
+    int numParticles;
     
     // Keep track of very first kinetic/potential energies
     // for graph drawing purposes - it may be prudent to
@@ -79,10 +77,6 @@ private:
     double firstEKin, firstEPot;
 
     // Counters
-    // Keep track of the number of timesteps, so that
-    // we do not thermostat every integration step -
-    // REDUNDANT due to enCounter in LJContainer
-    int thermCounter;
     // Keep track of which Gaussian potential is selected
     // a value of -1 implies there are no Gaussians
     int selectedGaussian;
