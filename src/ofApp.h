@@ -31,6 +31,9 @@ public:
     void drawUI();
     
     // Routines to setup the system
+    // Convert box coordinates to screen coordinates
+    ofPoint box2screen(double x, double y);
+    ofPoint box2screen(lj::coord point);
     // Assign random initial velocities from an appropriate Maxwell distribution
     void randomiseVelocity(vector<double> &vel, double T);
     // Set the parameters for the system
@@ -100,7 +103,6 @@ private:
     bool loganOn; // Is secret-Logan-mode turned on?
     bool graphOn; // Are the energy graphs showing?
     bool playOn; // Is the simulation playing?
-    
     
     // ~Trivial~ variables
     ofImage loganLeft, loganRight;

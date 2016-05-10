@@ -63,7 +63,7 @@ void Gaussian::setParams(double _gAmp, double _gAlpha, double _gex0, double _gey
         at position (x, y) due to this Gaussian.
  
     OVERLOAD x, y, [array<double, 3> reference] arguments:
-        Does the same but puts the results in the referenced array, with the first element
+        Does the same but puts the results in the referenced array, with the last element
         the energy.
  */
  

@@ -25,12 +25,27 @@ void ofApp::drawData(string name, double value, int x, int y, int length) { //Co
     drawFont.drawString(data_string, x, y);
 }
 
+/*
+    ROUTINE box2screen:
+        Scales coordinates from the box dimensions to the window size
+ */
+ofPoint ofApp::box2screen(double x, double y) {
+    double x_scaled = x * ofGetWidth()  / theSystem.getWidth();
+    double y_scaled = y * ofGetHeight() / theSystem.getHeight();
+    return ofPoint(x_scaled, y_scaled);
+}
+
+ofPoint ofApp::box2screen(lj::coord point) {
+    return box2screen(point.x, point.y);
+}
+
 
 /*
     ROUTINE randomiseVelocity:
         Sets the initial velocities of a velocity vector vel to randomised velocities
         sampled from a Maxwell distribution corresponding to the temperature T
  */
+//TODO: there's a standard libary function for this, see the andersen thermostat in ljforces.cpp
 void ofApp::randomiseVelocity(vector<double> &vel, double T) {
     double sigma = sqrt(T); // Std. dev. of normal distribution
     
@@ -327,9 +342,9 @@ void ofApp::setup(){
     left.assign(bufferSize, 0.0);
     right.assign(bufferSize, 0.0);
     
-    smoothedVol     = 0.0;
-    scaledVol		= 0.0;
-    sensitivity     = 0.04;
+    smoothedVol = 0.0;
+    scaledVol   = 0.0;
+    sensitivity = 0.04;
     
     soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
     
@@ -446,12 +461,12 @@ void ofApp::draw(){
     double velx, vely;
     double accx, accy;
     
-    vector<double> tempPos;
-    vector<double> tempPosPrev;
-    vector<double> tempPosPrevPrev;
-    vector<double> tempPosPrevPrevPrev;
-    vector<double> tempVel;
-    vector<double> tempAcc;
+    lj::coord tempPos;
+    lj::coord tempPosPrev;
+    lj::coord tempPosPrevPrev;
+    lj::coord tempPosPrevPrevPrev;
+    lj::coord tempVel;
+    lj::coord tempAcc;
     
     double trailSize;
     double hue;
@@ -469,25 +484,25 @@ void ofApp::draw(){
         tempVel = theSystem.getVel(i);
         tempAcc = theSystem.getForces(i);
         
-        posx = ofMap(tempPos[0], 0, BOX_SIZE[0], 0, ofGetWidth());
-        posy = ofMap(tempPos[1], 0, BOX_SIZE[1], 0, ofGetHeight());
+        posx = ofMap(tempPos.x, 0, BOX_SIZE[0], 0, ofGetWidth());
+        posy = ofMap(tempPos.y, 0, BOX_SIZE[1], 0, ofGetHeight());
         
-        pospx = ofMap(tempPosPrev[0], 0, BOX_SIZE[0], 0, ofGetWidth());
-        pospy = ofMap(tempPosPrev[1], 0, BOX_SIZE[1], 0, ofGetHeight());
+        pospx = ofMap(tempPosPrev.x, 0, BOX_SIZE[0], 0, ofGetWidth());
+        pospy = ofMap(tempPosPrev.y, 0, BOX_SIZE[1], 0, ofGetHeight());
         
-        posppx = ofMap(tempPosPrevPrev[0], 0, BOX_SIZE[0], 0, ofGetWidth());
-        posppy = ofMap(tempPosPrevPrev[1], 0, BOX_SIZE[1], 0, ofGetHeight());
+        posppx = ofMap(tempPosPrevPrev.x, 0, BOX_SIZE[0], 0, ofGetWidth());
+        posppy = ofMap(tempPosPrevPrev.y, 0, BOX_SIZE[1], 0, ofGetHeight());
         
-        pospppx = ofMap(tempPosPrevPrevPrev[0], 0, BOX_SIZE[0], 0, ofGetWidth());
-        pospppy = ofMap(tempPosPrevPrevPrev[1], 0, BOX_SIZE[1], 0, ofGetHeight());
+        pospppx = ofMap(tempPosPrevPrevPrev.x, 0, BOX_SIZE[0], 0, ofGetWidth());
+        pospppy = ofMap(tempPosPrevPrevPrev.y, 0, BOX_SIZE[1], 0, ofGetHeight());
         
         // Scale the velocities of particle i so that they can be mapped onto a colour range
-        velx = ofMap(abs(tempVel[0]), 0, 1.5*v_avg, 0, 255);
-        vely = ofMap(abs(tempVel[1]), 0, 1.5*v_avg, 0, 255);
+        velx = ofMap(abs(tempVel.x), 0, 1.5*v_avg, 0, 255);
+        vely = ofMap(abs(tempVel.y), 0, 1.5*v_avg, 0, 255);
         
         // Scale the forces so that they can deform the shapes of the ellipses by suitable amounts
-        accx = ofMap(log(1.0+abs(tempAcc[0])), 0, 10, 20, 50);
-        accy = ofMap(log(1.0+abs(tempAcc[1])), 0, 10, 20, 50);
+        accx = ofMap(log(1.0+abs(tempAcc.x)), 0, 10, 20, 50);
+        accy = ofMap(log(1.0+abs(tempAcc.y)), 0, 10, 20, 50);
         
         // Set the size of the trail depending on the size of the ellipses
         trailSize = (accx + accy) / 4.0;
@@ -518,7 +533,7 @@ void ofApp::draw(){
         // draw particle
         ofSetColor(particleColor);
         if (loganOn){
-            if (tempVel[0] >= 0)
+            if (tempVel.x >= 0)
                 loganRight.draw(posx - loganShiftx, posy - loganShifty, accx*2, accy*2);
             else
                 loganLeft.draw(posx - loganShiftx, posy - loganShifty, accx*2, accy*2);
@@ -556,8 +571,8 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
     
     //lets go through each sample and calculate the root mean square which is a rough way to calculate volume
     for (int i = 0; i < bufferSize; i++){
-        left[i]		= input[i*2]*0.5;
-        right[i]	= input[i*2+1]*0.5;
+        left[i]  = input[i*2]*0.5;
+        right[i] = input[i*2+1]*0.5;
         
         curVol += left[i] * left[i];
         curVol += right[i] * right[i];

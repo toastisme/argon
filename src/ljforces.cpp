@@ -12,7 +12,7 @@
 #include <thread> // For multithreading
 #include <iostream>
 
-namespace lj{
+namespace lj {
 
     /*
         DEFAULT CONSTRUCTOR:
@@ -22,14 +22,13 @@ namespace lj{
      */
     LJContainer::LJContainer()
     {
-        box_dimensions.push_back(0);
-        box_dimensions.push_back(0);
+        box_dimensions = {0, 0};
         setConsts(10.0, 10.0, 3.0, 0.01);
         maxEKin = 0.0;
         maxEPot = 0.0;
         enCounter = 0;
     }
-	
+    
     /*
         ROUTINE clearSystem:
             Cleans out all vectors/matrices, so that the system can be completely
@@ -51,13 +50,14 @@ namespace lj{
     
     
     // Return values of private variables without altering them
-	int const LJContainer::getN() { return N; }
-	double const LJContainer::getEPot() { return epot; }
-	double const LJContainer::getEKin() { return ekin; }
+    int const LJContainer::getN() { return N; }
+    double const LJContainer::getEPot() { return epot; }
+    double const LJContainer::getEKin() { return ekin; }
     double const LJContainer::getT() { return T; }
     double const LJContainer::getVAvg() { return v_avg; }
-    double const LJContainer::getWidth() { return box_dimensions[0]; }
-    double const LJContainer::getHeight() { return box_dimensions[1]; }
+    coord const LJContainer::getBox() { return box_dimensions; }
+    double const LJContainer::getWidth() { return box_dimensions.x; }
+    double const LJContainer::getHeight() { return box_dimensions.y; }
     double const LJContainer::getMaxEkin() { return maxEKin; }
     double const LJContainer::getMaxEpot() { return maxEPot; }
     
@@ -65,15 +65,15 @@ namespace lj{
     // and the number of energies stored.
     int const LJContainer::getNGaussians() { return gaussians.size(); }
     int const LJContainer::getNEnergies() { return prevEKin.size(); }
-	
+    
     // Return (x, y) vectors of the dynamical variables of particle i
     // Safety checks could be added, but index checking is usually slow
-    std::vector<double> const LJContainer::getPos(int i) { return positions[i]; }
-    std::vector<double> const LJContainer::getVel(int i) { return velocities[i]; }
-    std::vector<double> const LJContainer::getForces(int i) { return forces[i]; }
+    coord const LJContainer::getPos(int i) { return positions[i]; }
+    coord const LJContainer::getVel(int i) { return velocities[i]; }
+    coord const LJContainer::getForces(int i) { return forces[i]; }
     
     // Return the (x, y) position vector of particle npart, from nstep timesteps previously
-    std::vector<double> const LJContainer::getPreviousPositions(int npart, int nstep) { return previousPositions[nstep][npart]; }
+    coord const LJContainer::getPreviousPositions(int npart, int nstep) { return previousPositions[nstep][npart]; }
     
     // Return the ith previous kinetic and potential energy
     double const LJContainer::getPreviousEkin(int i) { return prevEKin[i]; }
@@ -95,31 +95,31 @@ namespace lj{
     
     
     // Set the position of particle i to (x, y)
-	void LJContainer::setPos(int i, double x, double y)
-	{
-		positions[i][0] = x;
-		positions[i][1] = y;
-	}
-	
-    // Set the velocity of particle i to (vx, vy)
-	void LJContainer::setVel(int i, double vx, double vy)
-	{
-		velocities[i][0] = vx;
-		velocities[i][1] = vy;
-	}
+    void LJContainer::setPos(int i, double x, double y)
+    {
+        positions[i].x = x;
+        positions[i].y = y;
+    }
     
-	// Set the parameters - the box dimensions [width, height] to [_boxw, _boxl],
+    // Set the velocity of particle i to (vx, vy)
+    void LJContainer::setVel(int i, double vx, double vy)
+    {
+        velocities[i].x = vx;
+        velocities[i].y = vy;
+    }
+    
+    // Set the parameters - the box dimensions [width, height] to [_boxw, _boxl],
     // the cutoff radius for the pair potential to rcutoff = _rcutoff,
     // and the timestep dt = _dt
     // subject to conditions on the suitability of each number.
-	void LJContainer::setConsts(double _boxl, double _boxw, double _rcutoff, double _dt)
-	{
+    void LJContainer::setConsts(double _boxl, double _boxw, double _rcutoff, double _dt)
+    {
         
         // Width and height should be positive numbers - DEFAULTS TO 10 x 10
-        if ( _boxw > 0 ) { box_dimensions[0] = _boxw;}
-        else { box_dimensions[0] = 10.0; }
-        if ( _boxl > 0 ) { box_dimensions[1] = _boxl;}
-        else { box_dimensions[1] = box_dimensions[0]; }
+        if ( _boxw > 0 ) { box_dimensions.x = _boxw;}
+        else { box_dimensions.x = 10.0; }
+        if ( _boxl > 0 ) { box_dimensions.y = _boxl;}
+        else { box_dimensions.y = 10.0; }
         
         // rcutoff and dt should also be positive; negative radius makes no sense,
         // and negative timestep would work fine, but seems weird.
@@ -147,8 +147,6 @@ namespace lj{
             N = 10;
         }
     }
-	
-    
     
     /*
         ROUTINE addParticle:
@@ -157,42 +155,41 @@ namespace lj{
             If there were N particles, this is now particle i = N+1.
             The particle counter, N, increments.
      */
-	void LJContainer::addParticle(double x, double y, double vx, double vy)
-	{
-	
-        std::vector<double> pos, vel, acc; // Temporary vectors of variables
+    void LJContainer::addParticle(double x, double y, double vx, double vy)
+    {
+        coord pos, vel, acc; // Temporary vectors of variables
         
         // Set the values of these vectors - zero acceleration to start with
-		pos.push_back(x); vel.push_back(vx);
-		pos.push_back(y); vel.push_back(vy);
-		for (int k = 0; k < 2; k++) acc.push_back(0.0);
+        pos.x = x;   pos.y = y;
+        vel.x = vx;  vel.y = vy;
+        acc.x = 0.0; acc.y = 0.0;
         
         // Push the particle onto the positions, velocities, and forces matrices
-		positions.push_back(pos);
-		velocities.push_back(vel);
-		forces.push_back(acc);
+        positions.push_back(pos);
+        velocities.push_back(vel);
+        forces.push_back(acc);
         
         // Increment the number of particles
-		N++;
-	}
-	
+        ++N;
+    }
+    
     /*
         ROUTINE removeParticle:
             Removes the most recently added particle, if there are any particles to remove.
             Decrements the particle counter, N, and removes the particle variables from
             the positions, velocities, forces arrays.
      */
-	void LJContainer::removeParticle()
-	{
-		if ( N > 0 ) { // Make sure there is a particle to be removed
-			N--;
+    void LJContainer::removeParticle()
+    {
+        if ( N > 0 ) { // Make sure there is a particle to be removed
+            N--;
             
             // pop_back is a last in-first out (LIFO) command
-			positions.pop_back();
-			velocities.pop_back();
-			forces.pop_back();
-		}
-	}
+            positions.pop_back();
+            velocities.pop_back();
+            forces.pop_back();
+        }
+    }
     
     
     /*
@@ -247,7 +244,6 @@ namespace lj{
      */
     void LJContainer::externalForce()
     {
-
         std::array<double, 3> forceEnergy; // Temporary array to store force and potential energy
         double x, y; // Unpack the x and y positions of particle i
         
@@ -255,23 +251,23 @@ namespace lj{
             
             for (int i = 0; i < N; i++){ // Loop over particles
                 
-                x = positions[i][0];
-                y = positions[i][1];
+                x = positions[i].x;
+                y = positions[i].y;
                 
                 // Calculate the force and energy into forceEnergy
                 // due to Gaussian g at position (x, y)
                 gaussians[g].calcForceEnergy(x, y, forceEnergy);
                 
                 // Update forces on particle i
-                forces[i][0] += forceEnergy[0];
-                forces[i][1] += forceEnergy[1];
+                forces[i].x += forceEnergy[0];
+                forces[i].y += forceEnergy[1];
                 
                 // Update potential energy
                 epot += forceEnergy[2];
             }
         }
     }
-	
+    
     /* 
         ROUTINE forcesEnergies:
             Load-balance the force calculations for the system onto nthreads threads
@@ -282,65 +278,67 @@ namespace lj{
      */
     void LJContainer::forcesEnergies(int nthreads)
     {
-            // Initialise forces and energies to zero
-            epot = 0.0;
-            for (int i = 0; i < N; i++){
-                    for (int k = 0; k < 2; k++) forces[i][k] = 0.0;
+        // Initialise forces and energies to zero
+        epot = 0.0;
+        for (int i = 0; i < N; i++){
+            forces[i].x = 0.0;
+            forces[i].y = 0.0;
+        }
+
+        // Divide the N x N force matrices into roughly equal
+        // columnwise chunks of N/nthreads.
+        int spacing = ceil(N/nthreads);
+
+        // Make temporary arrays to store the values calculated on each thread
+        int start = 0, end = spacing, counter = 0; // Counters
+
+        std::vector<std::thread> thrds(nthreads); // Vector of threads
+        std::vector<double> etemps(nthreads); // Vector of potential energies
+
+        // Vector of temporary force matrices
+        std::vector <std::vector <coord>>  ftemps;
+        for (int i = 0; i < nthreads; i++){
+            // For large simulations, this would be very memory intensive,
+            // but for small simulations is more efficient than trying to deal
+            // with potential threading gridlocks.
+
+            ftemps.push_back(forces); // Makes sure they are the right shape
+        }
+
+        // Farm each portion of the forces matrix out to a thread
+        while (counter < nthreads){
+
+            // Create thread of forcesThread procedure
+            thrds[counter] = std::thread(&LJContainer::forcesThread, *this,
+                    start, end, std::ref(ftemps[counter]),
+                    std::ref(etemps[counter]), positions,
+                    rcutoff, N);
+
+            // Move to the next chunk of the forces matrix
+            start = end;
+            end += spacing;
+
+            // If nthreads does not divide N exactly, the last thread will have
+            // a different number of particles assigned, the last of which has
+            // index N-1
+            if (end > N-1) { end = N-1; }
+
+            // Increment thread counter
+            counter++;
+        }
+
+        // Collect the results from each thread into the forces matrix, and epot variable
+        for (int i = 0; i < nthreads; i++){
+            thrds[i].join(); // Waits for thread i to finish before proceeding
+            epot += etemps[i];
+            for (int j = 0; j < N; j++){
+                forces[j].x += ftemps[i][j].x;
+                forces[j].y += ftemps[i][j].y;
             }
-        
-            // Divide the N x N force matrices into roughly equal
-            // columnwise chunks of N/nthreads.
-            int spacing = ceil(N/nthreads);
-        
-            // Make temporary arrays to store the values calculated on each thread
-            int start = 0, end = spacing, counter = 0; // Counters
-        
-            std::vector<std::thread> thrds(nthreads); // Vector of threads
-            std::vector<double> etemps(nthreads); // Vector of potential energies
-        
-            // Vector of temporary force matrices
-            std::vector<std::vector<std::vector<double> > >  ftemps;
-            for (int i = 0; i < nthreads; i++){
-                    // For large simulations, this would be very memory intensive,
-                    // but for small simulations is more efficient than trying to deal
-                    // with potential threading gridlocks.
-                
-                    ftemps.push_back(forces); // Makes sure they are the right shape
-            }
-        
-            // Farm each portion of the forces matrix out to a thread
-            while (counter < nthreads){
-                
-                    // Create thread of forcesThread procedure
-                    thrds[counter] = std::thread(&LJContainer::forcesThread, *this,
-                                                 start, end, std::ref(ftemps[counter]),
-                                                 std::ref(etemps[counter]), positions,
-                                                 rcutoff, N);
-                
-                    // Move to the next chunk of the forces matrix
-                    start = end;
-                    end += spacing;
-                
-                    // If nthreads does not divide N exactly, the last thread will have
-                    // a different number of particles assigned, the last of which has
-                    // index N-1
-                    if (end > N-1) { end = N-1; }
-                
-                    // Increment thread counter
-                    counter++;
-            }
-        
-            // Collect the results from each thread into the forces matrix, and epot variable
-            for (int i = 0; i < nthreads; i++){
-                    thrds[i].join(); // Waits for thread i to finish before proceeding
-                    epot += etemps[i];
-                    for (int j = 0; j < N; j++){
-                            for (int k = 0; k < 2; k++) forces[j][k] += ftemps[i][j][k];
-                    }
-            }
-        
-            // Calculate the forces due to the external Gaussian potentials
-            externalForce();
+        }
+
+        // Calculate the forces due to the external Gaussian potentials
+        externalForce();
     }
     
     /*
@@ -354,56 +352,56 @@ namespace lj{
             particles.
      */
     void LJContainer::forcesThread(int start, int end,
-                                   std::vector<std::vector<double> > &ftemp,
-                                   double &eptemp, std::vector<std::vector<double> > postemp,
-                                   double rcut, int npart)
-    {		
-            // Calculate the correction due to the shift of the Lennard-Jones potential
-            double rcut2 = rcut*rcut;
-            double shift = -4.0*(pow(rcut2, -6) - pow(rcut2, -3));
-        
-            // Set potential energy to zero
-            eptemp = 0.0;
-            
-            // Placeholders for the separation (rij) and forces (fij) between particles i and j
-            // and the position of particle i (ipos)
-            std::vector<double> rij, fij, ipos;
-            for (int k = 0; k < 2; k++){
-                    rij.push_back(0.0);
-                    fij.push_back(0.0);
-                    ipos.push_back(0.0);
-            }
-        
-            double fcoeff; // Magnitude of fij
-            double d2, od2, od6, od12; // d2 = rij^2, and one over rij^n = odn
-        
-            // Loop over all particles from start to end
-            for (int i = start; i < end; i++){
-                    for (int k = 0; k < 2; k++) ipos[k] = postemp[i][k]; // Unpack position of particle i
-    
-                    for(int j = i+1; j < npart; j++){
-                            d2 = 0.0;
-                            for (int k = 0; k < 2; k++){
-                                    // Compute rij
-                                    rij[k] = postemp[j][k] - ipos[k];
-                                    d2 += rij[k]*rij[k];
-                            }
-                            if (d2 < rcut2) { // Check if within cutoff radius
-                                    od2 = 1.0/d2;
-                                    od6 = od2*od2*od2;
-                                    od12 = od6*od6; 
-                                
-                                    // Lennard-Jones energy and forces
-                                    eptemp += 4.0*(od12 - od6) + shift; 
-                                    fcoeff = (-48.0*od12 + 24.0*od6)*od2;
-                                    for (int k = 0; k < 2; k++){
-                                            fij[k] = rij[k]*fcoeff;
-                                            ftemp[i][k] += fij[k];
-                                            ftemp[j][k] -= fij[k];
-                                    } 
-                            } // End if				
-                    } // End inner for-loop
-            } // End outer for-loop
+            std::vector<coord> &ftemp,
+            double &eptemp, std::vector<coord> postemp,
+            double rcut, int npart)
+    {        
+        // Calculate the correction due to the shift of the Lennard-Jones potential
+        double rcut2 = rcut*rcut;
+        double shift = -4.0*(pow(rcut2, -6) - pow(rcut2, -3));
+
+        // Set potential energy to zero
+        eptemp = 0.0;
+
+        // Placeholders for the separation (rij) and forces (fij) between particles i and j
+        // and the position of particle i (ipos)
+        coord rij, fij, ipos;
+
+        double fcoeff; // Magnitude of fij
+        double d2, od2, od6, od12; // d2 = rij^2, and one over rij^n = odn
+
+        // Loop over all particles from start to end
+        for (int i = start; i < end; ++i) {
+            // Unpack position of particle i
+            ipos.x = postemp[i].x;
+            ipos.y = postemp[i].y;
+
+            for(int j = i+1; j < npart; ++j){
+                // Compute rij
+                rij.x = postemp[j].x - ipos.x;
+                rij.y = postemp[j].y - ipos.y;
+                
+                d2 = rij.x * rij.x + rij.y * rij.y;
+                if (d2 < rcut2) { // Check if within cutoff radius
+                    od2 = 1.0 / d2;
+                    od6 = od2 * od2 * od2;
+                    od12 = od6 * od6;
+
+                    // Lennard-Jones energy and forces
+                    eptemp += 4.0 * (od12 - od6) + shift;
+                    fcoeff = (-48.0 * od12 + 24.0 * od6) * od2;
+                    
+                    fij.x = rij.x * fcoeff;
+                    fij.y = rij.y * fcoeff;
+                    
+                    ftemp[i].x += fij.x;
+                    ftemp[i].y += fij.y;
+                    
+                    ftemp[j].x -= fij.x;
+                    ftemp[j].y -= fij.y;
+                } // End if
+            } // End inner for-loop
+        } // End outer for-loop
     }
     
     /*
@@ -416,76 +414,82 @@ namespace lj{
      */
     void LJContainer::integrate(int nthreads)
     {
-        
-            double dt2 = 0.5*dt*dt; // Useful quantity for velocity verlet, dt^2/2
-        
-            for (int i = 0; i < N; i++){ // Loop over particles
-                
-                    for (int k = 0; k < 2; k++){ // Loop over dimensions
-                        
-                        // Update positions and half-update velocities
-                        positions[i][k] += dt*velocities[i][k] + dt2*forces[i][k];
-                        velocities[i][k] += 0.5*dt*forces[i][k];
-                        
-                        // Hard-wall boundary conditions - reflect if collided with box wall
-                        if (positions[i][k] > box_dimensions[k]){ // Too far to the right or down
-                            double difference = positions[i][k] - box_dimensions[k];
-                            positions[i][k] -= difference;
-                            velocities[i][k] *= -1;
-                        } else if ( positions[i][k] < 0.0 ) { // Too far up or to the left
-                            positions[i][k] *= -1;
-                            velocities[i][k] *= -1;
-                        }
-                    }
-                
+        double dt2 = 0.5 * dt * dt; // Useful quantity for velocity verlet, dt^2/2
+
+        for (int i = 0; i < N; ++i){ // Loop over particles
+
+            // Update positions
+            positions[i].x += dt * velocities[i].x + dt2 * forces[i].x;
+            positions[i].y += dt * velocities[i].y + dt2 * forces[i].y;
+            
+            // Half-update velocities
+            velocities[i].x += 0.5 * dt * forces[i].x;
+            velocities[i].y += 0.5 * dt * forces[i].y;
+
+            // Hard-wall boundary conditions - reflect if collided with box wall
+            if (positions[i].x > box_dimensions.x) {
+                positions[i].x = 2 * box_dimensions.x - positions[i].x;
+                velocities[i].x *= -1;
+            } else if (positions[i].x < 0) {
+                positions[i].x *= -1;
+                velocities[i].x *= -1;
             }
             
-            // Compute forces and energies on nthreads threads
-            forcesEnergies(nthreads);
+            if (positions[i].y > box_dimensions.y) {
+                positions[i].y = 2 * box_dimensions.y - positions[i].y;
+                velocities[i].y *= -1;
+            } else if (positions[i].y < 0) {
+                positions[i].y *= -1;
+                velocities[i].y *= -1;
+            }
+
+        }
+
+        // Compute forces and energies on nthreads threads
+        forcesEnergies(nthreads);
+
+        ekin = 0.0;
+        for (int i = 0; i < N; i++){
+            // Second half-update to velocities
+            velocities[i].x += 0.5 * dt * forces[i].x;
+            velocities[i].y += 0.5 * dt * forces[i].y;
             
-            // Second half-update to velocities, and calculate kinetic energy
-            ekin = 0.0;
-            for (int i = 0; i < N; i++){
-                    double temp = 0.0;
-                    for (int k = 0; k < 2; k++){
-                            velocities[i][k] += 0.5*dt*forces[i][k];
-                            temp += velocities[i][k]*velocities[i][k];
-                    }
-                    ekin += 0.5*temp;
+            // Calculate kinetic energy of i
+            ekin += velocities[i].x * velocities[i].x;
+            ekin += velocities[i].y * velocities[i].y;
+        }
+        ekin *= 0.5;
+
+        // Store the last 20 positions matrices
+
+        // FIFO removal of previous position matrix if 20 are already being stored
+        if (previousPositions.size() == 20){
+            previousPositions.erase(previousPositions.begin(), previousPositions.begin()+1);
+        }
+        previousPositions.push_back(positions); // Push current positions onto previousPositions
+
+        // Store the previous 600 kinetic and potential energies at intervals of 5 timesteps
+        if (enCounter % 5 == 0){ // Check 5 timesteps have passed
+
+            // FIFO removal of previous kinetic/potential energies if 120 are already being stored
+            if (prevEKin.size() == 120) {
+                prevEKin.erase(prevEKin.begin(), prevEKin.begin()+1);
+                prevEPot.erase(prevEPot.begin(), prevEPot.begin()+1);
             }
-        
-            // Store the last 20 positions matrices
-        
-            // FIFO removal of previous position matrix if 20 are already being stored
-            if (previousPositions.size() == 20){
-                previousPositions.erase(previousPositions.begin(), previousPositions.begin()+1);
-            }
-            previousPositions.push_back(positions); // Push current positions onto previousPositions
-        
-            // Store the previous 600 kinetic and potential energies at intervals of 5 timesteps
-            if (enCounter % 5 == 0){ // Check 5 timesteps have passed
-                
-                // FIFO removal of previous kinetic/potential energies if 120 are already being stored
-                if (prevEKin.size() == 120) {
-                    prevEKin.erase(prevEKin.begin(), prevEKin.begin()+1);
-                    prevEPot.erase(prevEPot.begin(), prevEPot.begin()+1);
-                }
-                
-                // Push back current kinetic/potential energies for graphing
-                prevEKin.push_back(ekin);
-                prevEPot.push_back(epot);
-        
-                // Find the maximum elements in prevEKin and prevEPot
-                std::vector<double>::iterator EKMAX = std::max_element(prevEKin.begin(), prevEKin.end());
-                std::vector<double>::iterator EPMAX = std::max_element(prevEPot.begin(), prevEPot.end());
-                maxEKin = prevEKin[std::distance(prevEKin.begin(), EKMAX)];
-                maxEPot = prevEPot[std::distance(prevEPot.begin(), EPMAX)];
-            }
-    
-            enCounter++; // Incremement the number of timesteps performed
+
+            // Push back current kinetic/potential energies for graphing
+            prevEKin.push_back(ekin);
+            prevEPot.push_back(epot);
+
+            // Find the maximum elements in prevEKin and prevEPot
+            std::vector<double>::iterator EKMAX = std::max_element(prevEKin.begin(), prevEKin.end());
+            std::vector<double>::iterator EPMAX = std::max_element(prevEPot.begin(), prevEPot.end());
+            maxEKin = prevEKin[std::distance(prevEKin.begin(), EKMAX)];
+            maxEPot = prevEPot[std::distance(prevEPot.begin(), EPMAX)];
+        }
+
+        enCounter++; // Incremement the number of timesteps performed
     }
-    
-    
     
     
     //----------------------------------------THERMOSTATS----------------------------------------
@@ -506,41 +510,40 @@ namespace lj{
     
     void LJContainer::andersen(double freq)
     {
-            // Set up random number generator, rd, to sample from:
-            // uniform distribution, uDist, on [0, 1]
-            // normal distribution, nDist, mean 0, std. dev. sqrt(T)
-            std::random_device rd;
-            std::mt19937 mt(rd());
-            std::uniform_real_distribution<double> uDist(0.0, 1.0);
-            std::normal_distribution<double> nDist(0.0, sqrt(T));
-            
-            // Randomly select particles to collide with the heat bath
-            for (int i = 0; i < N; i++)
-            {
-                    if(uDist(mt) < freq*dt){
-                            velocities[i][0] = nDist(mt);
-                            velocities[i][1] = nDist(mt);
-                    }
+        // Set up random number generator, rd, to sample from:
+        // uniform distribution, uDist, on [0, 1]
+        // normal distribution, nDist, mean 0, std. dev. sqrt(T)
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_real_distribution<double> uDist(0.0, 1.0);
+        std::normal_distribution<double> nDist(0.0, sqrt(T));
+        
+        // Randomly select particles to collide with the heat bath
+        for (int i = 0; i < N; i++)
+        {
+            if(uDist(mt) < freq*dt){
+                    velocities[i].x = nDist(mt);
+                    velocities[i].y = nDist(mt);
             }
+        }
     }
 
-    void LJContainer::berendsen(double freq){
+    void LJContainer::berendsen(double freq)
+    {
         //Calculate the average velocity
         v_avg = 0;
         for (int i = 0; i < N; i++){
-            for (int k = 0; k < 2; k++){
-                v_avg += fabs(velocities[i][k]);
-            }
+            v_avg += fabs(velocities[i].x);
+            v_avg += fabs(velocities[i].y);
         }
         v_avg /= N;
         
         //Calculate scaling factor (lambda)
         double lambda = sqrt(1+((dt/freq)*((T/v_avg)-1)));
         for (int i = 0; i < N; i++){
-            for (int k = 0; k < 2; k++){
-                //Scale the velocity of each particle
-                velocities[i][k]*=lambda;
-            }
+            //Scale the velocity of each particle
+            velocities[i].x *= lambda;
+            velocities[i].y *= lambda;
         }
     }
 }
