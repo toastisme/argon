@@ -39,7 +39,7 @@ void ofApp::setup(){
     thermFreq = 0.1;
     
     double TEMPERATURE = 0.5;
-    double BOX_WIDTH = 15.0;
+    double BOX_WIDTH = 17.0;
     
     // NOTE: ofGetWidth and ofGetHeight do not give the right values here if
     // the screen we're trying to draw is too large for the OS resolution
