@@ -40,6 +40,13 @@ void ofApp::setup(){
     
     double TEMPERATURE = 0.5;
     double BOX_WIDTH = 15.0;
+    
+    // NOTE: ofGetWidth and ofGetHeight do not give the right values here if
+    // the screen we're trying to draw is too large for the OS resolution
+    // and the window is resized - they give the right values later, but not
+    // in ofApp::setup(). If this happens, we get regions where the particles
+    // are inside the MD box, but not inside the screen.
+    // This is an openFrameworks issue.
     double BOX_HEIGHT = BOX_WIDTH / ofGetWidth() * ofGetHeight();
     double TIMESTEP = 0.002;
     double CUTOFF = 3.0;
