@@ -459,24 +459,51 @@ void ofApp::drawPotentialUI()
     ofDrawLine(sideWidth+30, ofGetHeight()/2 + topHeight, ofGetWidth() - 30, ofGetHeight()/2 + topHeight);
     
     // Draw potential depending on which is selected
-    int fineness = 200; // Number of points to use in drawing the curve
-    std::vector<float> xpoints, ypoints;
+    int fineness = 150; // Number of points to use in drawing the curve
+    std::vector<float> xpoints, ypoints, partx, party;
     float min_x = 0, min_y = 0, max_x = 0, max_y = 0;
     
-    float x, y;
-    min_x = 67.5*theSystem.getWidth()/(6*float(fineness));
-    max_x = (fineness+67.5)*theSystem.getWidth()/(6*float(fineness));
+    // Maximum distance between particles
+    float max_separation = sqrt(pow(theSystem.getWidth(), 2) + pow(theSystem.getHeight(), 2));
+    // x-axis spacing
+    float x_spacing = max_separation/(6*float(fineness));
+    // scale the x-axis to make drawing prettier
+    float scale_factor = 43.7;
     
+    float x, y;
+    min_x = scale_factor * x_spacing;
+    max_x = (fineness+scale_factor) * x_spacing;
+    
+    // Set up particle separations, relative to particle 0
+    lj::coord pos1 = theSystem.getPos(0);
+    for (int i = 1; i < theSystem.getN(); i++){
+        lj::coord pos = theSystem.getPos(i);
+        x = pos.x - pos1.x;
+        y = pos.y - pos1.y;
+        x = sqrt(x*x + y*y);
+        partx.push_back(x);
+    }
+    
+    // ALL THE POTENTIAL CALCULATIONS HERE SHOULD BE FACTORED OUT INTO SEPARATE FUNCTIONS
+    // THIS IS JUST A STUPID VERSION TO SEE IF IT LOOKS GOOD
     switch (selectedPotential) {
         case 2: { // Square well
             // Draw square well
             min_y = -10;
             for (int i = 0; i < fineness; i++){
-                x = (i+67.5)*theSystem.getWidth()/(6*float(fineness));
+                x = (i+scale_factor) * x_spacing;
                 y = min_y/2;
-                if ( i > fineness/4 && i < fineness/2) y = min_y;
+                if ( x > max_x/3 && x < 2*max_x/3) y = min_y;
                 xpoints.push_back(x);
                 ypoints.push_back(y);
+            }
+            
+            // Put particles on curve
+            for (int i = 0; i < theSystem.getN()-1; i++){
+                y = min_y/2;
+                if ( partx[i] > max_x/3 && partx[i] < 2*max_x/3) y = min_y;
+                
+                party.push_back(y);
             }
             
             break;
@@ -484,28 +511,32 @@ void ofApp::drawPotentialUI()
         case 3: { // Option 3
             // Draw option 3 - PLACEHOLDER
             for (int i = 0; i < fineness; i++){
-                x = (i+67.5)*theSystem.getWidth()/(6*float(fineness));
+                x = (i+scale_factor) * x_spacing;
                 y = 0;
                 xpoints.push_back(x);
                 ypoints.push_back(y);
             }
+            
+            for (int i = 0; i < theSystem.getN() - 1; i++) party.push_back(0);
             break;
         }
         case 4: { // Custom
             // Draw custom potential - PLACEHOLDER
             for (int i = 0; i < fineness; i++){
-                x = (i+67.5)*theSystem.getWidth()/(6*float(fineness));
+                x = (i+scale_factor) * x_spacing;
                 y = 0;
                 xpoints.push_back(x);
                 ypoints.push_back(y);
             }
+            
+            for (int i = 0; i < theSystem.getN() - 1; i++) party.push_back(0);
  
             break;
         }
         default: {// Lennard-Jones
-            // Draw Lennard-Jones
+            // Draw Lennard-Jones curve
             for (int i = 0; i< fineness; i++){
-                x = (i+67.5)*theSystem.getWidth()/(6*float(fineness));
+                x = (i+scale_factor) * x_spacing;
                 y = 1.0/pow(x, 6);
                 y = 4.0 * (y*y - y);
                 max_y = ( y > max_y ? y : max_y);
@@ -514,13 +545,26 @@ void ofApp::drawPotentialUI()
                 ypoints.push_back(y);
             }
             
+            // Put particles on curve
+            for (int i = 0; i < theSystem.getN()-1; i++){
+                x = partx[i];
+                y = 1.0/pow(x, 6);
+                y = 4.0 * (y*y - y);
+                party.push_back(y);
+            }
         }
     }
     
     // Rescale the x and y coordinates to fit window
     for (int i = 0; i < fineness; i++){
-        xpoints[i] = ofMap(xpoints[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40 );
-        ypoints[i] = ofMap(ypoints[i], min_y, max_y, 40, ofGetHeight()-topHeight - 40);
+        xpoints[i] = ofMap(xpoints[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true );
+        ypoints[i] = ofMap(ypoints[i], min_y, max_y, 40, ofGetHeight()-topHeight - 40, true);
+    }
+    
+    // Rescale the x, y for pair potential between each particle and particle 1
+    for (int i = 0; i < theSystem.getN()-1; i++){
+        partx[i] = ofMap(partx[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
+        party[i] = ofMap(party[i], min_y, max_y, 40, ofGetHeight() - topHeight - 40, true);
     }
     
     // Plot the curve
@@ -528,6 +572,12 @@ void ofApp::drawPotentialUI()
     ofSetColor(0, 200, 200, 255);
     for (int i = 0; i < fineness - 1; i++){
         ofDrawLine(xpoints[i], ofGetHeight()- ypoints[i], xpoints[i+1], ofGetHeight() - ypoints[i+1]);
+    }
+    
+    ofSetCircleResolution(10);
+    ofSetColor(255, 0, 0, 255);
+    for (int i = 0; i < theSystem.getN(); i++){
+        ofDrawCircle(partx[i], ofGetHeight() - party[i], 4);
     }
 
 }
@@ -747,8 +797,8 @@ void ofApp::keyPressed(int key){
     
     else if (key == 'd' || key == 'D') { // Drawing interface
         if (!helpOn) {
-            if (drawOn) playOn = true;
-            else playOn = false;
+            //if (drawOn) playOn = true;
+            //else playOn = false;
             drawOn = !drawOn;
         }
     }
