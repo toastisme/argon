@@ -35,6 +35,7 @@ public:
     void drawGraph();
     // Draw the user interface components
     void drawUI();
+    void drawPotentialUI();
     
     // Routines to setup the system
     // Convert box coordinates to screen coordinates
@@ -79,6 +80,9 @@ private:
     // instead keep minEKin and minEPot values in LJContainer
     // along with maxEKin and maxEPot
     double firstEKin, firstEPot;
+    
+    // For the potential UI
+    float topHeight, sideWidth, buttonHeight;
 
     // Counters
     // Keep track of which Gaussian potential is selected
@@ -86,6 +90,8 @@ private:
     int selectedGaussian;
     // Keep track of which UI control slider is selected
     int selectedSlider;
+    // Keep track of which pair potential is being used
+    int selectedPotential;
     
     // Font and images needed for UI
     ofTrueTypeFont uiFont14;
@@ -110,6 +116,7 @@ private:
     bool loganOn; // Is secret-Logan-mode turned on?
     bool graphOn; // Are the energy graphs showing?
     bool playOn; // Is the simulation playing?
+    bool drawOn; // Is the drawing UI open?
     
     // ~Trivial~ variables
     ofImage loganLeft, loganRight;

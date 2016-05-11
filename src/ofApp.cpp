@@ -51,6 +51,11 @@ void ofApp::setup(){
     double TIMESTEP = 0.002;
     double CUTOFF = 3.0;
     
+    // Set the potential UI parameters
+    topHeight = ofGetHeight()/8;
+    sideWidth = ofGetWidth()/7;
+    buttonHeight = (ofGetHeight() - topHeight)/4;
+    
     // openFrameworks initialisation
     ofSetFrameRate(60);
     ofBackground(0, 0, 0);
@@ -82,9 +87,11 @@ void ofApp::setup(){
     loganOn = false;
     graphOn = false;
     playOn  = true;
+    drawOn  = false;
 
     selectedGaussian = -1; // No gaussian selected
     selectedSlider = 0; // Temperature slider selected
+    selectedPotential = 1; // Lennard-Jones by default
     
     // Setup the sound
     int bufferSize = 256;
@@ -397,6 +404,135 @@ void ofApp::drawGraph()
 }
 
 /*
+    ROUTINE drawPotentialUI:
+*/
+void ofApp::drawPotentialUI()
+{
+    
+    // Draw top box
+    ofFill();
+    ofSetColor(144, 195, 212, 255);
+    ofDrawRectangle(0, 0, ofGetWidth(), topHeight);
+    
+    // Draw title
+    ofSetColor(0, 0, 0, 255);
+    uiFont14.drawString("Instructions go here", 2*sideWidth, topHeight/2);
+    
+    // Draw left box
+    ofSetColor(255, 255, 255, 30);
+    ofDrawRectangle(0, 0, sideWidth, ofGetHeight());
+    
+    // Draw buttons
+    ofSetColor(0, 0, 0, 200);
+    ofDrawRectangle(0, topHeight, sideWidth, buttonHeight);
+    ofDrawRectangle(0, topHeight+buttonHeight, sideWidth, buttonHeight);
+    ofDrawRectangle(0, topHeight+2*buttonHeight, sideWidth, buttonHeight);
+    ofDrawRectangle(0, topHeight+3*buttonHeight, sideWidth, buttonHeight);
+    
+    ofSetColor(255, 255, 255, 255);
+    
+    
+    // TO BE REPLACED BY THUMBNAIL IMAGES RATHER THAN TEXT
+    if(selectedPotential == 1) ofSetColor(0, 200, 200, 255);
+    uiFont12.drawString("L-J", 30, topHeight+buttonHeight/2);
+    if(selectedPotential == 1) ofSetColor(255, 255, 255, 255);
+    
+    if(selectedPotential == 2) ofSetColor(0, 200, 200, 255);
+    uiFont12.drawString("Square", 30, topHeight+3*buttonHeight/2);
+    if(selectedPotential == 2) ofSetColor(255, 255, 255, 255);
+    
+    if(selectedPotential == 3) ofSetColor(0, 200, 200, 255);
+    uiFont12.drawString("Option 3", 30, topHeight+5*buttonHeight/2);
+    if(selectedPotential == 3) ofSetColor(255, 255, 255, 255);
+    
+    if(selectedPotential == 4) ofSetColor(0, 200, 200, 255);
+    uiFont12.drawString("Custom", 30, topHeight+7*buttonHeight/2);
+    if(selectedPotential == 4) ofSetColor(255, 255, 255, 255);
+    
+    // Draw main box
+    ofSetColor(240, 242, 242, 255);
+    ofDrawRectangle(sideWidth, topHeight, ofGetWidth() - sideWidth, 7*topHeight);
+    
+    // Draw axes
+    ofSetColor(0, 0, 0, 100);
+    ofDrawLine(sideWidth + 30, topHeight + 30, sideWidth + 30, ofGetHeight() - 30);
+    ofDrawLine(sideWidth+30, ofGetHeight()/2 + topHeight, ofGetWidth() - 30, ofGetHeight()/2 + topHeight);
+    
+    // Draw potential depending on which is selected
+    int fineness = 200; // Number of points to use in drawing the curve
+    std::vector<float> xpoints, ypoints;
+    float min_x = 0, min_y = 0, max_x = 0, max_y = 0;
+    
+    float x, y;
+    min_x = 67.5*theSystem.getWidth()/(6*float(fineness));
+    max_x = (fineness+67.5)*theSystem.getWidth()/(6*float(fineness));
+    
+    switch (selectedPotential) {
+        case 2: { // Square well
+            // Draw square well
+            min_y = -10;
+            for (int i = 0; i < fineness; i++){
+                x = (i+67.5)*theSystem.getWidth()/(6*float(fineness));
+                y = min_y/2;
+                if ( i > fineness/4 && i < fineness/2) y = min_y;
+                xpoints.push_back(x);
+                ypoints.push_back(y);
+            }
+            
+            break;
+        }
+        case 3: { // Option 3
+            // Draw option 3 - PLACEHOLDER
+            for (int i = 0; i < fineness; i++){
+                x = (i+67.5)*theSystem.getWidth()/(6*float(fineness));
+                y = 0;
+                xpoints.push_back(x);
+                ypoints.push_back(y);
+            }
+            break;
+        }
+        case 4: { // Custom
+            // Draw custom potential - PLACEHOLDER
+            for (int i = 0; i < fineness; i++){
+                x = (i+67.5)*theSystem.getWidth()/(6*float(fineness));
+                y = 0;
+                xpoints.push_back(x);
+                ypoints.push_back(y);
+            }
+ 
+            break;
+        }
+        default: {// Lennard-Jones
+            // Draw Lennard-Jones
+            for (int i = 0; i< fineness; i++){
+                x = (i+67.5)*theSystem.getWidth()/(6*float(fineness));
+                y = 1.0/pow(x, 6);
+                y = 4.0 * (y*y - y);
+                max_y = ( y > max_y ? y : max_y);
+                min_y = ( y < min_y ? y : min_y);
+                xpoints.push_back(x);
+                ypoints.push_back(y);
+            }
+            
+        }
+    }
+    
+    // Rescale the x and y coordinates to fit window
+    for (int i = 0; i < fineness; i++){
+        xpoints[i] = ofMap(xpoints[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40 );
+        ypoints[i] = ofMap(ypoints[i], min_y, max_y, 40, ofGetHeight()-topHeight - 40);
+    }
+    
+    // Plot the curve
+    ofSetLineWidth(3.5);
+    ofSetColor(0, 200, 200, 255);
+    for (int i = 0; i < fineness - 1; i++){
+        ofDrawLine(xpoints[i], ofGetHeight()- ypoints[i], xpoints[i+1], ofGetHeight() - ypoints[i+1]);
+    }
+
+}
+
+/*
     ROUTINE draw:
         Part of the infinite update / draw loop.
         Draws the frame in the following sequence:
@@ -490,6 +626,8 @@ void ofApp::draw(){
     // Draw the UI if helpOn, otherwise draw message on how to turn the UI on.
     if (helpOn) {
         drawUI();
+    } else if (drawOn) {
+        drawPotentialUI();
     } else {
         ofSetColor(255, 255, 240);
         uiFont14.drawString("press 'h' for controls", 10, ofGetHeight()-10);
@@ -555,6 +693,7 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
             - p/P           = pause/restart the simulation
             - TAB           = switch which UI slider has focus
             - RIGHT/LEFT    = move the currently selected slider up/down
+            - d/D           = open/close drawable pair potential
  */
 void ofApp::keyPressed(int key){
     
@@ -593,7 +732,8 @@ void ofApp::keyPressed(int key){
     }
     
     else if (key == 'h' || key == 'H'){ // Show/hide UI
-        helpOn = !helpOn;
+        if (!drawOn)
+            helpOn = !helpOn;
     }
     
     else if (key == 'r' || key == 'R') { // Reset the system to have the current values of the sliders
@@ -603,6 +743,14 @@ void ofApp::keyPressed(int key){
     
     else if (key == 'p' || key == 'P') { // Pause/restart the simulation
         playOn = !playOn;
+    }
+    
+    else if (key == 'd' || key == 'D') { // Drawing interface
+        if (!helpOn) {
+            if (drawOn) playOn = true;
+            else playOn = false;
+            drawOn = !drawOn;
+        }
     }
     
     // If the UI is showing, the sliders are in focus
@@ -687,20 +835,37 @@ void ofApp::mouseDragged(int x, int y, int button){
  */
 void ofApp::mousePressed(int x, int y, int button){
     
-    // Default values for the amplitude and exponent of a Gaussian
-    // Should they really be stored here?
-    double GAMP =  50.0;
-    double GALPHA = 0.3;
     
-    // Rescale the (x, y) coordinates of the mouse input so that they
-    // are within the dimensions of the box
-    double scaled_x = x * theSystem.getWidth()/ofGetWidth();
-    double scaled_y = y * theSystem.getHeight()/ofGetHeight();
+    if ( drawOn ) { // Mouse controls drawing UI
+        if ( x < sideWidth && y > topHeight ){
+            
+            if ( y < topHeight + buttonHeight) {
+                selectedPotential = 1;
+            } else if ( y < topHeight + 2*buttonHeight){
+                selectedPotential = 2;
+            } else if ( y < topHeight + 3*buttonHeight){
+                selectedPotential = 3;
+            } else if ( y < topHeight + 4*buttonHeight){
+                selectedPotential = 4;
+            }
+            
+        }
+    } else { // Mouse controls Gaussian placement
+        // Default values for the amplitude and exponent of a Gaussian
+        // Should they really be stored here?
+        double GAMP =  50.0;
+        double GALPHA = 0.3;
     
-    // Add a Gaussian external potential to the system, and make this new
-    // Gaussian be the one currently in focus.
-    theSystem.addGaussian(GAMP, GALPHA, scaled_x, scaled_y);
-    selectedGaussian = theSystem.getNGaussians() - 1;
+        // Rescale the (x, y) coordinates of the mouse input so that they
+        // are within the dimensions of the box
+        double scaled_x = x * theSystem.getWidth()/ofGetWidth();
+        double scaled_y = y * theSystem.getHeight()/ofGetHeight();
+    
+        // Add a Gaussian external potential to the system, and make this new
+        // Gaussian be the one currently in focus.
+        theSystem.addGaussian(GAMP, GALPHA, scaled_x, scaled_y);
+        selectedGaussian = theSystem.getNGaussians() - 1;
+    }
 }
 
 //--------------------------------------------------------------
