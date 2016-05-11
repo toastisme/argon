@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ljforces.hpp"
 #include "gaussian.hpp"
+#include "cubicspline.hpp"
 #include <sstream>
 #include <string>
 
