@@ -444,7 +444,7 @@ void ofApp::draw(){
         tempVel = theSystem.getVel(i);
         tempAcc = theSystem.getForce(i);
         
-        hue = ofMap(tempVel.x + tempVel.y, 0, 3 * v_avg, 170, 210, true);
+        hue = ofMap(abs(tempVel.x) + abs(tempVel.y), 0, 3 * v_avg, 170, 210, true);
         particleColor.setHsb(hue, 255, 255);
         
         radius_x = ofMap(log(1.0 + abs(tempAcc.x)), 0, 10, 10, 25);
