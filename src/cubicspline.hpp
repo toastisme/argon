@@ -110,7 +110,7 @@ namespace cubic {
         std::vector <Point> const getPoints();
         
         // set segments from vector of control points
-        void setPoints(std::vector <Point> const);
+        void setPoints(const std::vector <Point> &vec);
         
         // reconstruct segments from control points
         void reconstruct();

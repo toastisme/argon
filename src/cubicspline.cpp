@@ -13,6 +13,9 @@ namespace cubic {
     
     // Segment
 
+    // Create a segment
+    // Left-hand control point at _x0, _y0 with slope _m0
+    // Right-hand control point at _x1, _y1 with slope _m1
     Segment::Segment(double _x0, double _y0, double _m0, double _x1, double _y1, double _m1) {
         double dy = _y1 - _y0;
         
@@ -24,6 +27,7 @@ namespace cubic {
         b = dy - _m1 * dx;
     }
     
+    // Create a segment between the Points left and right
     Segment::Segment(const Point &left, const Point &right) {
         double dy = right.y - left.y;
         
@@ -35,6 +39,7 @@ namespace cubic {
         b = dy - right.m * dx;
     }
 
+    // Return the Point at the left-hand side of the Segment
     Point const Segment::left() {
         Point p;
         p.x = x0;
@@ -43,6 +48,7 @@ namespace cubic {
         return p;
     }
     
+    // Return the Point at the right-hand side of the Segment
     Point const Segment::right() {
         Point p;
         p.x = x0 + dx;
@@ -51,12 +57,14 @@ namespace cubic {
         return p;
     }
 
+    // Returns true if x is bewteen the left and right control points
     bool const Segment::inside(double x) {
         if (x < x0) { return false; }
         if (x > (x0 + dx)) { return false; }
         return true;
     }
 
+    // Returns the value of the spline at position x, i.e. y(x)
     double const Segment::value(double x) {
         double t = (x - x0) / dx;
         double omt = 1 - t;
@@ -67,6 +75,7 @@ namespace cubic {
         return value;
     }
 
+    // Returns the slope at position x, i.e. y'(x)
     double const Segment::slope(double x) {
         double t = (x - x0) / dx;
         double omt = 1 - t;
@@ -79,6 +88,7 @@ namespace cubic {
         return slope;
     }
 
+    // Moves the left-hand control point to a position/slope defined by target
     void Segment::moveLeft(Point target) {
         double m1 = (y1 - y0 - b) / dx;
         
@@ -91,6 +101,7 @@ namespace cubic {
         b = dy - m1 * dx;
     }
 
+    // Moves the right-hand control point to a position/slope defined by target
     void Segment::moveRight(Point target) {
         double m0 = (y1 - y0 + a) / dx;
         
@@ -104,17 +115,33 @@ namespace cubic {
 
     // Spline
 
+    // Create a new Spline with one segment
+    // Use addPoint() later to subdivide into further segments
+    // Check if the points are in the correct order and reverse them if not
     Spline::Spline(double x0, double y0, double m0, double x1, double y1, double m1) {
-        Segment seg = Segment(x0, y0, m0, x1, y1, m1);
+        Segment *seg;
+        if (x0 <= x1) {
+            *seg = Segment(x0, y0, m0, x1, y1, m1);
+        } else {
+            *seg = Segment(x1, y1, m1, x0, y0, m0);
+        }
         spline.clear();
-        spline.push_back(seg);
+        spline.push_back(*seg);
     }
 
+    // Returns the index in the vector of Segments corresponding to the
+    // segment containing x
     int Spline::getSegment(double x) {
         int index;
+        
+        // loop through the spline segments
+        // stop when we've gone past x
+        
         for (index = 1; index < spline.size(); ++index) {
             if (spline[index].left().x > x) { break; }
         }
+        
+        // we've gone past x, so return the index containing x
         return index - 1;
     }
 
@@ -124,8 +151,9 @@ namespace cubic {
     Point const Spline::left()  { return spline.front().left(); }
     Point const Spline::right() { return spline.back().right(); }
 
+    // Get a control point by its index
     Point const Spline::getPoint(int index) {
-        if (index <= 0) {
+        if (index <= 0) { // 
             return left();
         } else if (index >= spline.size()) {
             return right();
@@ -134,6 +162,7 @@ namespace cubic {
         }
     }
     
+    // create a vector of all the control points
     std::vector<Point> const Spline::getPoints() {
         std::vector <Point> vec;
         vec.reserve(points());
@@ -144,7 +173,8 @@ namespace cubic {
         return vec;
     }
     
-    void Spline::setPoints(std::vector <Point> vec) {
+    // sets all the segments so that they match a given vector of control points
+    void Spline::setPoints(const std::vector <Point> &vec) {
         spline.clear();
         spline.reserve(vec.size() - 1);
         for (int i = 0; i < vec.size() - 1; ++i) {
@@ -152,49 +182,61 @@ namespace cubic {
         }
     }
     
+    // reconstructs the internal vector so that all the segments are in left-to-right order
     void Spline::reconstruct() {
         std::vector <Point> points = getPoints();
-        std::sort(points.begin(), points.end(), Point::comp);
+        std::sort(points.begin(), points.end(), Point::comp);   // sort by Point.x 
         setPoints(points);
     }
 
+    // add a new control point
     void Spline::addPoint(double x, double y, double m) {
-        if (x < left().x) { // append to start
-            Point l_point  = {x, y, m};
-            Point r_point = left();
+        if (x < left().x) {                                     // append to start
+            Point l_point  = {x, y, m};                         // Left point from parameters 
+            Point r_point = left();                             // Right point is left end of spline 
             
+            // create the new segment and add to the front
             Segment seg = Segment(l_point, r_point);
             spline.insert(spline.begin(), seg);
             
-        } else if (x > right().x) { // append to end
-            Point l_point  = right();
-            Point r_point = {x, y, m};
+        } else if (x > right().x) {                             // append to end
+            Point l_point  = right();                           // Left point is right end of spline 
+            Point r_point = {x, y, m};                          // Right point from parameters 
             
+            // create the new segment and add to the end
             Segment seg = Segment(l_point, r_point);
             spline.push_back(seg);
             
-        } else { // insert in middle
-            int index = getSegment(x);
-            Point l_point = spline[index].left();
-            Point r_point = {x, y, m};
+        } else {                                                // insert in middle
+            int index = getSegment(x);                          // get the index of the segment to be inserted into 
+            Point l_point = spline[index].left();               // Left point of segment to be made at left side of segment to be inserted into 
+            Point r_point = {x, y, m};                          // Right point of segment to be made from parameters 
             
+            // move the existing segment to start after the new one
             spline[index].moveLeft(r_point);
+            // create the new segment and add just before the adjusted one
             Segment seg = Segment(l_point, r_point);
             spline.insert(spline.begin() + index, seg);
         }
     }
 
+    // remove a specified control point
     void Spline::removePoint(int index) {
         if (index <= 0) {
+            // Remove first segment
             spline.erase(spline.begin());
         } else if (index >= spline.size()) {
+            // Remove last segment
             spline.pop_back();
         } else {
+            // Move right side of previous segment to join up spline
             spline[index - 1].moveRight(spline[index].right());
+            // Then remove segment
             spline.erase(spline.begin() + index);
         }
     }
 
+    // move a specified point to a new position
     void Spline::movePoint(int index, double x, double y, double m) {
         Point target = {x, y, m};
         
@@ -207,21 +249,26 @@ namespace cubic {
             spline[index].moveLeft(target);
         }
         
-        // TODO: only recalculate everything if two control points cross
+        // This might change the order of the control points, so we need to reconstruct
+        // the vector of segments so that everything is well-ordered
+        // TODO: only recalculate everything if two control points change order
         reconstruct();
     }
 
+    // return whether x is between left- and right-sides of spline
     bool const Spline::inside(double x) {
         if (x < spline.front().left().x) { return false; }
         if (x > spline.back().right().x) { return false; }
         return true;
     }
 
+    // return value of spline at position x, i.e. y(x)
     double const Spline::value(double x) {
         int index = getSegment(x);
         return spline[index].value(x);
     }
 
+    // return slope of spline at poisition x, i.e. y'(x)
     double const Spline::slope(double x) {
         int index = getSegment(x);
         return spline[index].slope(x);
