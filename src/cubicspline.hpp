@@ -66,8 +66,8 @@ namespace cubic {
         double const value(double x);   // value of segment at position x, i.e. returns y(x)
         double const slope(double x);   // slope of segment at position x, i.e. returns y'(x)
         
-        void moveLeft(Point target);  // move left endpoint
-        void moveRight(Point target); // move right endpoint
+        void moveLeft( const Point &target); // move left endpoint
+        void moveRight(const Point &target); // move right endpoint
     };
     
     class Spline {

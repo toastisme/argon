@@ -89,7 +89,7 @@ namespace cubic {
     }
 
     // Moves the left-hand control point to a position/slope defined by target
-    void Segment::moveLeft(Point target) {
+    void Segment::moveLeft(const Point &target) {
         double m1 = (y1 - y0 - b) / dx;
         
         dx = x0 + dx - target.x;
@@ -102,7 +102,7 @@ namespace cubic {
     }
 
     // Moves the right-hand control point to a position/slope defined by target
-    void Segment::moveRight(Point target) {
+    void Segment::moveRight(const Point &target) {
         double m0 = (y1 - y0 + a) / dx;
         
         dx = target.x - x0;
