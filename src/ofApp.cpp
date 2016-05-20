@@ -104,6 +104,8 @@ void ofApp::setup(){
     sensitivity = 0.04;
     
     soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
+    
+    testText = gui::TextElement("Hello World!", 100, 100, uiFont14);
 }
 
 /*
@@ -682,6 +684,8 @@ void ofApp::draw(){
         ofSetColor(255, 255, 240);
         uiFont14.drawString("press 'h' for controls", 10, ofGetHeight()-10);
     }
+    
+    testText.draw();
 }
 
 //--------------------------------------------------------------------

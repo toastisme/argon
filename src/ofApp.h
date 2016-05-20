@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ljforces.hpp"
 #include "gaussian.hpp"
+#include "gui.hpp"
 #include "cubicspline.hpp"
 #include <sstream>
 #include <string>
@@ -121,5 +122,8 @@ private:
     // ~Trivial~ variables
     ofImage loganLeft, loganRight;
     int loganShiftx, loganShifty;
+    
+    // UI Test stuff (to be removed)
+    gui::TextElement testText;
 
 };
