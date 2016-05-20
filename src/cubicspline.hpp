@@ -59,12 +59,12 @@ namespace cubic {
         Segment(const Point &left, const Point &right);
         
         // getters for the two endpoints
-        Point const left();
-        Point const right();
+        Point left()  const;
+        Point right() const;
         
-        bool   const inside(double x);  // true if x is between the left and right endpoints
-        double const value(double x);   // value of segment at position x, i.e. returns y(x)
-        double const slope(double x);   // slope of segment at position x, i.e. returns y'(x)
+        bool  inside(double x) const;  // true if x is between the left and right endpoints
+        double value(double x) const;   // value of segment at position x, i.e. returns y(x)
+        double slope(double x) const;   // slope of segment at position x, i.e. returns y'(x)
         
         void moveLeft( const Point &target); // move left endpoint
         void moveRight(const Point &target); // move right endpoint
@@ -83,7 +83,7 @@ namespace cubic {
     private:
         // returns the index of the segment which x lies in (i.e. which element of the spline vector to look at)
         // private function since the segments in the spline aren't exposed to the user
-        int getSegment(double x);
+        int getSegment(double x) const;
         
         std::vector <Segment> spline;
         
@@ -91,23 +91,23 @@ namespace cubic {
         // initialise spline as a single segment to add futher points later
         Spline(double x0, double y0, double m0, double x1, double y1, double m1);
         
-        int segments(); // number of segments in spline
-        int points();   // number of control points (== segments() + 1)
+        int segments() const; // number of segments in spline
+        int points()   const; // number of control points (== segments() + 1)
         
         // getters for the two endpoints
-        Point const left();
-        Point const right();
+        Point left()  const;
+        Point right() const;
         
         // getter for a particular control point on the spline
-        Point const getPoint(int index);
+        Point getPoint(int index) const;
         
         // getters for using the spline as a function
-        bool   const inside(double x);  // true if x is between the left and right endpoints
-        double const value(double x);   // value of the spline at position x, i.e. returns y(x)
-        double const slope(double x);   // slope of the spline at position x, i.e. returns y'(x)
+        bool   inside(double x) const; // true if x is between the left and right endpoints
+        double value(double x)  const; // value of the spline at position x, i.e. returns y(x)
+        double slope(double x)  const; // slope of the spline at position x, i.e. returns y'(x)
         
         // get vector of control points
-        std::vector <Point> const getPoints();
+        std::vector <Point> getPoints() const;
         
         // set segments from vector of control points
         void setPoints(const std::vector <Point> &vec);

@@ -40,7 +40,7 @@ namespace cubic {
     }
 
     // Return the Point at the left-hand side of the Segment
-    Point const Segment::left() {
+    Point Segment::left() const {
         Point p;
         p.x = x0;
         p.y = y0;
@@ -49,7 +49,7 @@ namespace cubic {
     }
     
     // Return the Point at the right-hand side of the Segment
-    Point const Segment::right() {
+    Point Segment::right() const {
         Point p;
         p.x = x0 + dx;
         p.y = y1;
@@ -58,14 +58,14 @@ namespace cubic {
     }
 
     // Returns true if x is bewteen the left and right control points
-    bool const Segment::inside(double x) {
+    bool Segment::inside(double x) const {
         if (x < x0) { return false; }
         if (x > (x0 + dx)) { return false; }
         return true;
     }
 
     // Returns the value of the spline at position x, i.e. y(x)
-    double const Segment::value(double x) {
+    double Segment::value(double x) const {
         double t = (x - x0) / dx;
         double omt = 1 - t;
         
@@ -76,7 +76,7 @@ namespace cubic {
     }
 
     // Returns the slope at position x, i.e. y'(x)
-    double const Segment::slope(double x) {
+    double Segment::slope(double x) const {
         double t = (x - x0) / dx;
         double omt = 1 - t;
         
@@ -131,7 +131,7 @@ namespace cubic {
 
     // Returns the index in the vector of Segments corresponding to the
     // segment containing x
-    int Spline::getSegment(double x) {
+    int Spline::getSegment(double x) const {
         int index;
         
         // loop through the spline segments
@@ -145,14 +145,14 @@ namespace cubic {
         return index - 1;
     }
 
-    int Spline::segments() { return spline.size(); }
-    int Spline::points() { return segments() + 1; }
+    int Spline::segments() const { return spline.size(); }
+    int Spline::points()   const { return segments() + 1; }
 
-    Point const Spline::left()  { return spline.front().left(); }
-    Point const Spline::right() { return spline.back().right(); }
+    Point Spline::left()  const { return spline.front().left(); }
+    Point Spline::right() const { return spline.back().right(); }
 
     // Get a control point by its index
-    Point const Spline::getPoint(int index) {
+    Point Spline::getPoint(int index) const {
         if (index <= 0) { // 
             return left();
         } else if (index >= spline.size()) {
@@ -163,7 +163,7 @@ namespace cubic {
     }
     
     // create a vector of all the control points
-    std::vector<Point> const Spline::getPoints() {
+    std::vector<Point> Spline::getPoints() const {
         std::vector <Point> vec;
         vec.reserve(points());
         for (int i = 0; i < segments(); ++i) {
@@ -256,20 +256,20 @@ namespace cubic {
     }
 
     // return whether x is between left- and right-sides of spline
-    bool const Spline::inside(double x) {
+    bool Spline::inside(double x) const {
         if (x < spline.front().left().x) { return false; }
         if (x > spline.back().right().x) { return false; }
         return true;
     }
 
     // return value of spline at position x, i.e. y(x)
-    double const Spline::value(double x) {
+    double Spline::value(double x) const {
         int index = getSegment(x);
         return spline[index].value(x);
     }
 
     // return slope of spline at poisition x, i.e. y'(x)
-    double const Spline::slope(double x) {
+    double Spline::slope(double x) const {
         int index = getSegment(x);
         return spline[index].slope(x);
     }
