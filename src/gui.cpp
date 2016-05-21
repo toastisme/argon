@@ -10,11 +10,15 @@
 
 namespace gui {
     
+    /*
+        Element
+     */
+    
     // Get position as left / right / top / bottom
-    double Element::getLeft()    const { return origin_x + left; }
-    double Element::getRight()   const { return origin_y + right; }
-    double Element::getTop()     const { return origin_x + top; }
-    double Element::getBottom()  const { return origin_y + bottom; }
+    double Element::getLeft()    const { return parent->left + left; }
+    double Element::getRight()   const { return parent->left + right; }
+    double Element::getTop()     const { return parent->top  + top; }
+    double Element::getBottom()  const { return parent->top  + bottom; }
     
     // Get position as x / y / width / height
     double Element::getX()       const { return getLeft(); }
@@ -23,19 +27,79 @@ namespace gui {
     double Element::getHeight()  const { return bottom - top; }
     
     // Get position of centre
-    double Element::getCentreX() const { return origin_x + (right + left) / 2.0; }
-    double Element::getCentreY() const { return origin_y + (bottom + top) / 2.0; }
+    double Element::getCentreX() const { return parent->left + (right + left) / 2.0; }
+    double Element::getCentreY() const { return parent->top  + (bottom + top) / 2.0; }
     
-    // get/set visibility
-    bool Element::isVisible() const { return visible; }
-    void Element::makeVisible()     { visible = true; }
-    void Element::makeInvisible()   { visible = false; }
-    void Element::toggleVisible()   { visible = not visible; }
+    void Element::setParent(Element *_parent) { parent = _parent; }
     
-    // draw calls render only if visible
-    void Element::draw() const {
+    /*
+        Atom
+     */
+    
+    void Atom::makeVisible()   { visible = true; }
+    void Atom::makeInvisible() { visible = false; }
+    void Atom::toggleVisible() { visible = not visible; }
+    
+    void Atom::draw() const {
         if (visible) { render(); }
     }
+    
+    /*
+        Container
+     */
+    
+    Container::Container() {
+        left = 0;
+        top = 0;
+        parent = NULL;
+    }
+    
+    Container::Container(double x, double y) {
+        left = x;
+        right = x;
+        top = y;
+        bottom = y;
+        parent = NULL;
+    }
+    
+    Container::~Container() {
+        for (int i = 0; i < children.size(); ++i) {
+            delete children[i];
+        }
+    }
+
+    void Container::draw() const {
+        for (int i = 0; i < children.size(); ++i) {
+            children[i]->draw();
+        }
+    }
+    
+    void Container::addChild(Element *child) {
+        child->setParent(this);
+        children.push_back(child);
+    }
+    
+    void Container::makeVisible() {
+        for (int i = 0; i < children.size(); ++i) {
+            children[i]->makeVisible();
+        }
+    }
+    
+    void Container::makeInvisible() {
+        for (int i = 0; i < children.size(); ++i) {
+            children[i]->makeInvisible();
+        }
+    }
+    
+    void Container::toggleVisible() {
+        for (int i = 0; i < children.size(); ++i) {
+            children[i]->toggleVisible();
+        }
+    }
+    
+    /*
+        TextElement
+     */
     
     TextElement::TextElement() {
         font = NULL;
@@ -45,8 +109,6 @@ namespace gui {
         string = _string;
         font = &_font;
         
-        origin_x = 0;
-        origin_y = 0;
         left = x;
         top = y;
         right = left + _font.stringWidth(_string);
@@ -56,6 +118,7 @@ namespace gui {
     }
     
     void TextElement::render() const {
-        if (font) { font->drawString(string, left, top); }
+        if (font) { font->drawString(string, getLeft(), getTop()); }
     }
+    
 }

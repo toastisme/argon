@@ -22,8 +22,6 @@ namespace gui {
         BOTTOM_LEFT, BOTTOM, BOTTOM_RIGHT
     };
     
-    struct coord { double x, y; };
-    
     class Element
     {
         /*
@@ -38,12 +36,16 @@ namespace gui {
          */
         
     protected:
-        double left, top, right, bottom, origin_x, origin_y;
-        bool visible;
-        virtual void render() const = 0;
+        const Element *parent;
+        
+        double left, top, right, bottom;
     
     public:
-        void draw() const;
+        Element() {};
+        virtual ~Element() {};
+        
+        virtual void draw() const = 0;
+        void setParent(Element *parent);
         
         double getLeft()    const;
         double getRight()   const;
@@ -58,20 +60,68 @@ namespace gui {
         double getCentreX() const;
         double getCentreY() const;
         
-        bool isVisible() const;
-        void makeVisible();
-        void makeInvisible();
-        void toggleVisible();
+        virtual void makeVisible() = 0;
+        virtual void makeInvisible() = 0;
+        virtual void toggleVisible() = 0;
         
     };
     
-    class TextElement: public Element {
+    class Atom : public Element
+    {
+        /*
+            Abstract class defining a single UI object drawn directly to screen.
+         */
+        
+    protected:
+        virtual void render() const = 0;
+        bool visible;
+        
+    public:
+        virtual void draw() const;
+        
+        virtual void makeVisible();
+        virtual void makeInvisible();
+        virtual void toggleVisible();
+    };
+    
+    class Container : public Element
+    {
+        /*
+            Abstract class defining a container for Elements.
+            Aside from being an Element itself (which must have a size, visibility,
+            and be drawable), it has a container for child Elements, which could be
+            Elements or other Containers.
+         */
+        
+    protected:
+        std::vector <Element *> children;
+        
+    public:
+        Container();
+        Container(double x, double y);
+        virtual ~Container();
+        
+        virtual void draw() const;
+        void addChild(Element *child);
+        
+        virtual void makeVisible();
+        virtual void makeInvisible();
+        virtual void toggleVisible();
+    };
+    
+    /*
+        Atoms
+     */
+    
+    class TextElement : public Atom
+    {
         /* 
             UI Element for a single line of text.
          */
         
-    private:
-        void render() const;
+    protected:
+        virtual void render() const;
+        
         std::string string;
         const ofTrueTypeFont *font;
         
@@ -81,25 +131,6 @@ namespace gui {
         
     };
     
-    class Container: public Element {
-        /*
-            Abstract class defining a container for Elements.
-            Aside from being an Element itself (which must have a size, visibility,
-            and be drawable), it has a container for child Elements, which could be
-            Elements or other Containers.
-         */
-        
-    protected:
-        std::vector <Element> children;
-        
-    public:
-        void draw() {
-            for (int i = 0; i < children.size(); ++i) {
-                children[i].draw();
-            }
-        }
-        
-    };
 }
 
 #endif /* gui_hpp */

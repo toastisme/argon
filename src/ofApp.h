@@ -124,6 +124,6 @@ private:
     int loganShiftx, loganShifty;
     
     // UI Test stuff (to be removed)
-    gui::TextElement testText;
+    gui::Container testUI;
 
 };

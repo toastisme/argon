@@ -105,7 +105,9 @@ void ofApp::setup(){
     
     soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
     
-    testText = gui::TextElement("Hello World!", 100, 100, uiFont14);
+    testUI = gui::Container(100, 100);
+    testUI.addChild(new gui::TextElement("Hello World!", 200, 0, uiFont14));
+    testUI.makeVisible();
 }
 
 /*
@@ -685,7 +687,7 @@ void ofApp::draw(){
         uiFont14.drawString("press 'h' for controls", 10, ofGetHeight()-10);
     }
     
-    testText.draw();
+    testUI.draw();
 }
 
 //--------------------------------------------------------------------
