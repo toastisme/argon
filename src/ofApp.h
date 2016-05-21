@@ -3,7 +3,8 @@
 #include "ofMain.h"
 #include "ljforces.hpp"
 #include "gaussian.hpp"
-#include "gui.hpp"
+#include "gui_base.hpp"
+#include "gui_derived.hpp"
 #include "cubicspline.hpp"
 #include <sstream>
 #include <string>
@@ -124,6 +125,6 @@ private:
     int loganShiftx, loganShifty;
     
     // UI Test stuff (to be removed)
-    gui::Container testUI;
+    gui::System testUI;
 
 };

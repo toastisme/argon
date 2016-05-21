@@ -105,9 +105,8 @@ void ofApp::setup(){
     
     soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
     
-    testUI = gui::Container(100, 100);
-    testUI.addChild(new gui::TextElement("Hello World!", 200, 0, uiFont14));
-    testUI.makeVisible();
+    testUI = gui::System(100, 100);
+    testUI.addChild(new gui::TextElement("Hello World!", uiFont14, 200, 0));
 }
 
 /*
