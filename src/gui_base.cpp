@@ -11,81 +11,89 @@
 namespace gui {
     
     /*
+        rect
+     */
+    
+    double rect::width()   const { return right - left; }
+    double rect::height()  const { return bottom - top; }
+    double rect::centreX() const { return (left + right) / 2.0; }
+    double rect::centreY() const { return (top + bottom) / 2.0; }
+    
+    point rect::getPos(Position position) const {
+        point ret;
+        
+        switch (position) {
+            case TOP_LEFT:     { ret.x = left;      ret.y = top;       } break;
+            case TOP:          { ret.x = centreX(); ret.y = top;       } break;
+            case TOP_RIGHT:    { ret.x = right;     ret.y = top;       } break;
+            case LEFT:         { ret.x = left;      ret.y = centreY(); } break;
+            case CENTRE:       { ret.x = centreX(); ret.y = centreY(); } break;
+            case RIGHT:        { ret.x = right;     ret.y = centreY(); } break;
+            case BOTTOM_LEFT:  { ret.x = left;      ret.y = bottom;    } break;
+            case BOTTOM:       { ret.x = centreX(); ret.y = bottom;    } break;
+            case BOTTOM_RIGHT: { ret.x = right;     ret.y = bottom;    } break;
+            default:           { ret.x = 0;         ret.y = 0;         } break;
+        }
+        
+        return ret;
+    }
+    
+    void rect::setVertex(Position position, point pos) {
+        switch (position) {
+            case TOP_LEFT:     { left  = pos.x; top    = pos.y; } break;
+            case TOP_RIGHT:    { right = pos.x; top    = pos.y; } break;
+            case BOTTOM_LEFT:  { left  = pos.x; bottom = pos.y; } break;
+            case BOTTOM_RIGHT: { right = pos.x; bottom = pos.y; } break;
+            default:           { } break;
+        }
+    }
+    
+    void rect::setSide(Position position, double pos) {
+        switch (position) {
+            case TOP:    { top    = pos; } break;
+            case LEFT:   { left   = pos; } break;
+            case RIGHT:  { right  = pos; } break;
+            case BOTTOM: { bottom = pos; } break;
+            default:     { } break;
+        }
+    }
+    
+    bool rect::inside(double x, double y) const {
+        if (x >= left && x <= right && y >= top && y <= bottom) {
+            return true;
+        }
+        return false;
+    }
+    
+    rect rect::offset(point origin) const {
+        rect ret;
+        
+        ret.left   = origin.x + left;
+        ret.right  = origin.x + right;
+        ret.top    = origin.y + top;
+        ret.bottom = origin.y + bottom;
+        
+        return ret;
+    }
+    
+    /*
         UIBase
      */
     
-    // Default constructor: initialise position and size to 0
-    UIBase::UIBase() {
-        pos_l = 0;
-        pos_r = 0;
-        pos_t = 0;
-        pos_b = 0;
-    }
+    // Default constructor: initialise position and width to 0, 0
+    UIBase::UIBase() { bounds = { 0, 0, 0, 0 }; }
     
-    // Overloaded constructor: initialise position to x, y and size to 0
-    UIBase::UIBase(double x, double y) {
-        pos_l = x;
-        pos_r = x;
-        pos_t = y;
-        pos_b = y;
-    }
+    // Overloaded constructor: initialise position to x, y and width to 0, 0
+    UIBase::UIBase(double x, double y) { bounds = { x, x, y, y }; }
     
     // Default destructor: no memory needs freeing, so do nothing
     UIBase::~UIBase() {}
     
-    // Get position as left / right / top / bottom
-    double UIBase::left()    const { return pos_l; }
-    double UIBase::right()   const { return pos_r; }
-    double UIBase::top()     const { return pos_t; }
-    double UIBase::bottom()  const { return pos_b; }
+    const rect UIBase::getRect() const { return bounds; }
+    const rect UIBase::absoluteRect() const { return bounds.offset(getOrigin()); }
     
-    // Get position as x / y / width / height
-    double UIBase::x()       const { return pos_l; }
-    double UIBase::y()       const { return pos_t; }
-    double UIBase::width()   const { return pos_r - pos_l; }
-    double UIBase::height()  const { return pos_b - pos_t; }
+    const point UIBase::getOrigin() const { return {0, 0}; }
     
-    // Get position of centre
-    double UIBase::centreX() const { return (pos_r + pos_l) / 2.0; }
-    double UIBase::centreY() const { return (pos_b + pos_t) / 2.0; }
-    
-    // Get position via Position enum
-    coord UIBase::getCoord(Position position) const {
-        coord point;
-        
-        switch (position) {
-            case TOP_LEFT: {
-                point.x = left(); point.y = top();
-            } break;
-            case TOP: {
-                point.x = centreX(); point.y = top();
-            } break;
-            case TOP_RIGHT: {
-                point.x = right(); point.y = top();
-            } break;
-            case LEFT: {
-                point.x = left(); point.y = centreY();
-            } break;
-            case CENTRE: {
-                point.x = centreX(); point.y = centreY();
-            } break;
-            case RIGHT: {
-                point.x = right(); point.y = centreY();
-            } break;
-            case BOTTOM_LEFT: {
-                point.x = left(); point.y = bottom();
-            } break;
-            case BOTTOM: {
-                point.x = centreX(); point.y = bottom();
-            } break;
-            case BOTTOM_RIGHT: {
-                point.x = right(); point.y = bottom();
-            } break;
-            default: {
-                point.x = 0; point.y = 0;
-            } break;
-        }
-    }
     
     /*
         UIChild
@@ -102,19 +110,8 @@ namespace gui {
     // Set parent
     void UIChild::setParent(UIBase *_parent) { parent = _parent; }
     
-    // Get position as left / right / top / bottom relative to parent
-    double UIChild::left()    const { return parent->x() + pos_l; }
-    double UIChild::right()   const { return parent->x() + pos_r; }
-    double UIChild::top()     const { return parent->y() + pos_t; }
-    double UIChild::bottom()  const { return parent->y() + pos_b; }
-    
-    // Get position as x / y / width / height relative to parent
-    double UIChild::x()       const { return parent->x() + pos_l; }
-    double UIChild::y()       const { return parent->y() + pos_t; }
-    
-    // Get position of centre relative to parent
-    double UIChild::centreX() const { return parent->x() + (pos_l + pos_r) / 2.0; }
-    double UIChild::centreY() const { return parent->y() + (pos_t + pos_b) / 2.0; }
+    // Set origin to return parent's absolute position
+    const point UIChild::getOrigin() const { return parent->absoluteRect().getPos(TOP_LEFT); }
     
     /*
         UIAtom
@@ -134,7 +131,7 @@ namespace gui {
     void UIAtom::toggleVisible() { visible = not visible; }
     
     // draw checks if visible, and then calls render()
-    void UIAtom::draw() const {
+    void UIAtom::draw() {
         if (visible) { render(); }
     }
     
@@ -153,7 +150,7 @@ namespace gui {
     }
 
     // pass through to children
-    void UIContainer::draw() const {
+    void UIContainer::draw() {
         for (int i = 0; i < children.size(); ++i) {
             children[i]->draw();
         }
@@ -165,7 +162,12 @@ namespace gui {
         child->setParent(this);
         children.push_back(child);
         
-        //TODO: set size to child size
+        // set bounds to match total size
+        rect childRect = child->absoluteRect();
+        if (childRect.left   < bounds.left  ) { bounds.left   = childRect.left; }
+        if (childRect.right  > bounds.right ) { bounds.right  = childRect.right; }
+        if (childRect.top    < bounds.top   ) { bounds.top    = childRect.top; }
+        if (childRect.bottom > bounds.bottom) { bounds.bottom = childRect.bottom; }
     }
     
     // pass through to children

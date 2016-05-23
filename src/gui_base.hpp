@@ -20,9 +20,28 @@ namespace gui {
         BOTTOM_LEFT, BOTTOM, BOTTOM_RIGHT
     };
     
-    struct coord
+    struct point
     {
         double x, y;
+    };
+    
+    struct rect
+    {
+        double left, right, top, bottom;
+        
+        double width()   const;
+        double height()  const;
+        double centreX() const;
+        double centreY() const;
+        
+        point getPos(Position position) const;
+        
+        void setVertex(Position position, point pos);
+        void setSide(Position position, double pos);
+        
+        bool inside(double x, double y) const;
+        
+        rect offset(point origin) const;
     };
     
     class UIBase
@@ -40,29 +59,20 @@ namespace gui {
          */
         
     protected:
-        double pos_l, pos_r, pos_t, pos_b; // left, right, top, bottom coordinates
+        rect bounds; // position and size
+        //double pos_l, pos_r, pos_t, pos_b; // left, right, top, bottom coordinates
     
     public:
         UIBase();
         UIBase(double x, double y);
         virtual ~UIBase();
         
-        virtual void draw() const = 0;
+        const rect getRect() const;
+        const rect absoluteRect() const;
         
-        virtual double left()    const;
-        virtual double right()   const;
-        virtual double top()     const;
-        virtual double bottom()  const;
+        virtual const point getOrigin() const;
         
-        virtual double x()       const;
-        virtual double y()       const;
-        double width()  const;
-        double height() const;           // not virtual as not defined relative to parent
-        
-        virtual double centreX() const;
-        virtual double centreY() const;
-        
-        coord getCoord(Position position) const;
+        virtual void draw() = 0;
         
         virtual void makeVisible() = 0;
         virtual void makeInvisible() = 0;
@@ -90,17 +100,7 @@ namespace gui {
         
         void setParent(UIBase *parent);
         
-        virtual double left()    const;
-        virtual double right()   const;
-        virtual double top()     const;
-        virtual double bottom()  const;
-        
-        virtual double x()       const;
-        virtual double y()       const;
-        
-        virtual double centreX() const;
-        virtual double centreY() const;
-        
+        virtual const point getOrigin() const;
     };
     
     class UIAtom : public virtual UIBase
@@ -117,7 +117,7 @@ namespace gui {
          */
         
     protected:
-        virtual void render() const = 0;
+        virtual void render() = 0;
         bool visible;
         
     public:
@@ -126,7 +126,7 @@ namespace gui {
         UIAtom(bool visible);
         virtual ~UIAtom();
         
-        virtual void draw() const;
+        virtual void draw();
         
         virtual void makeVisible();
         virtual void makeInvisible();
@@ -150,7 +150,7 @@ namespace gui {
         UIContainer(double x, double y);
         virtual ~UIContainer();
         
-        virtual void draw() const;
+        virtual void draw();
         void addChild(UIChild *child);
         
         virtual void makeVisible();
