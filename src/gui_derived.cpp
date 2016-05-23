@@ -113,7 +113,10 @@ namespace gui {
         bounds = stringBounds.offset({bounds.left, bounds.top});
     }
     
-    void ValueAtom::render() { renderString(bounds.left, bounds.top); }
+    void ValueAtom::render() {
+        setString(getValue(), format);
+        renderString(bounds.left, bounds.top);
+    }
     
     /*
         SliderAtom
@@ -132,12 +135,7 @@ namespace gui {
     }
     
     double SliderAtom::getSliderPos() { return ofMap(getValue(), min, max, bounds.left, bounds.right, true); }
-    void SliderAtom::setFromSliderPos(double x) {
-        double mapped = ofMap(x, bounds.left, bounds.right, min, max, true);
-        printf("Set slider: %lf %lf\n", x, mapped);
-
-        setValue(ofMap(x, bounds.left, bounds.right, min, max, true));
-    }
+    void SliderAtom::setFromSliderPos(double x) { setValue(ofMap(x, bounds.left, bounds.right, min, max, true)); }
     
     void SliderAtom::render() {
         ofSetColor(255, 255, 255);
