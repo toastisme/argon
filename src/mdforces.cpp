@@ -124,7 +124,7 @@ namespace md {
         box_dimensions.x = box_width  > 0 ? box_width  : 10.0;
         box_dimensions.y = box_length > 0 ? box_length : 10.0;
     }
-    void MDContainer::setTemp(double temperature) { T = temperature > 0 ? temperature : 0.5; }
+    void MDContainer::setTemp(double temperature) { T = temperature >= 0 ? temperature : 0.5; }
     void MDContainer::setTimestep(double timestep) { dt = timestep > 0 ? timestep : 0.002; }
     void MDContainer::setCutoff(double cutoff) { rcutoff = cutoff > 0 ? cutoff : 3.0; }
     
