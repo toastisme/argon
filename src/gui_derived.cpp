@@ -88,7 +88,7 @@ namespace gui {
     
     ValueAtom::ValueAtom() : UIAtom(), value(NULL), font(NULL) {}
     
-    ValueAtom::ValueAtom(const double (lj::LJContainer::*_getValue)(), lj::LJContainer *system, const std::string &_format, const ofTrueTypeFont &_font, double x, double y)
+    ValueAtom::ValueAtom(const double (md::MDContainer::*_getValue)(), md::MDContainer *system, const std::string &_format, const ofTrueTypeFont &_font, double x, double y)
         : UIAtom(x, y), value(NULL), format(_format), font(&_font)
     {
         getValue = std::bind(_getValue, system);
@@ -131,7 +131,7 @@ namespace gui {
     
     SliderAtom::SliderAtom() : UIAtom() {}
     
-    SliderAtom::SliderAtom(const double (lj::LJContainer::*_getValue)(), void (lj::LJContainer::*_setValue)(double), lj::LJContainer *system, double _min, double _max, int _width, double x, double y)
+    SliderAtom::SliderAtom(const double (md::MDContainer::*_getValue)(), void (md::MDContainer::*_setValue)(double), md::MDContainer *system, double _min, double _max, int _width, double x, double y)
         : UIAtom(x, y), value(NULL), min(_min), max(_max), width(_width)
     {
         getValue = std::bind(_getValue, system);

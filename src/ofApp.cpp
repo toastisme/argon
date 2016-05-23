@@ -108,9 +108,9 @@ void ofApp::setup(){
     testUI = gui::UIContainer(0, 0);
     testUI.addChild(new gui::RectAtom(100, 100, 20, 50, ofColor(0, 255, 0)));
     testUI.addChild(new gui::TextAtom("Hello World!", uiFont14, 120, 150));
-    testUI.addChild(new gui::ValueAtom(&lj::LJContainer::getT, &theSystem, "%6.4lf", uiFont14, 200, 80));
+    testUI.addChild(new gui::ValueAtom(&md::MDContainer::getT, &theSystem, "%6.4lf", uiFont14, 200, 80));
     testUI.addChild(new gui::ValueAtom(&sensitivity, "%6.4lf", uiFont14, 200, 120));
-    testUI.addChild(new gui::SliderAtom(&lj::LJContainer::getT, &lj::LJContainer::setTemp, &theSystem, 0, 1000 / 120.0, 200, 400, 80));
+    testUI.addChild(new gui::SliderAtom(&md::MDContainer::getT, &md::MDContainer::setTemp, &theSystem, 0, 1000 / 120.0, 200, 400, 80));
 }
 
 /*

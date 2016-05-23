@@ -14,14 +14,7 @@
 #include "ofApp.h"
 #include "ofMain.h"
 #include "gui_base.hpp"
-#include "ljforces.hpp"
-
-// template<typename MyFunc>
-// void updateSlider(MyFunc func, double amount){
-//     func(amount);
-// }
-// 
-// updateSlider(system::getT, 0.5);
+#include "mdforces.hpp"
 
 namespace gui {
     
@@ -113,7 +106,7 @@ namespace gui {
     
     public:
         ValueAtom();
-        ValueAtom(const double (lj::LJContainer::*getValue)(), lj::LJContainer *system, const std::string &format, const ofTrueTypeFont &font, double x, double y);
+        ValueAtom(const double (md::MDContainer::*getValue)(), md::MDContainer *system, const std::string &format, const ofTrueTypeFont &font, double x, double y);
         ValueAtom(double *value, const std::string &format, const ofTrueTypeFont &font, double x, double y);
     };
     
@@ -137,7 +130,7 @@ namespace gui {
         
     public:
         SliderAtom();
-        SliderAtom(const double (lj::LJContainer::*getValue)(), void (lj::LJContainer::*setValue)(double), lj::LJContainer *system, double min, double max, int width, double x, double y);
+        SliderAtom(const double (md::MDContainer::*getValue)(), void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, int width, double x, double y);
         
         double getSliderPos();
         void setFromSliderPos(double x);
