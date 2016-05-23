@@ -58,46 +58,46 @@ namespace md{
         // Getters
         
         // Return values of private variables
-        int const getN();
-        int const getSteps();
-        double const getT();
-        double const getVAvg();
+        int getN() const;
+        int getSteps() const;
+        double getT() const;
+        double getVAvg() const;
         
-        double const getTimestep();
-        double const getCutoff();
+        double getTimestep() const;
+        double getCutoff() const;
         
-        coord const getBox();
-        double const getWidth();
-        double const getHeight();
+        coord  getBox() const;
+        double getWidth() const;
+        double getHeight() const;
         
-        double const getEPot();
-        double const getEKin();
-        double const getMaxEpot();
-        double const getMaxEkin();
+        double getEPot() const;
+        double getEKin() const;
+        double getMaxEpot() const;
+        double getMaxEkin() const;
         
         // Return sizes of vectors
-        int const getNGaussians();
-        int const getNEnergies();
-        int const getNPrevPos();
+        int getNGaussians() const;
+        int getNEnergies() const;
+        int getNPrevPos() const;
         
         // Return struct of dynamical variables of particle i
-        coord const getPos(int i);
-        coord const getVel(int i);
-        coord const getForce(int i);
+        coord getPos(int i) const;
+        coord getVel(int i) const;
+        coord getForce(int i) const;
         
         // Return position struct of particle i nstep frames ago
-        coord const getPos(int i, int nstep);
+        coord getPos(int i, int nstep) const;
         
         // Return energy nstep frames ago
-        double const getPreviousEpot(int nstep);
-        double const getPreviousEkin(int nstep);
+        double getPreviousEpot(int nstep) const;
+        double getPreviousEkin(int nstep) const;
         
         // Get a reference to or details of the ith Gaussian
         Gaussian& getGaussian(int i);
-        double getGaussianAlpha(int i);
-        double getGaussianAmp(int i);
-        double getGaussianX0(int i);
-        double getGaussianY0(int i);
+        double getGaussianAlpha(int i) const;
+        double getGaussianAmp(int i) const;
+        double getGaussianX0(int i) const;
+        double getGaussianY0(int i) const;
         
         //Setters
         void setPos(int i, double x, double y);
