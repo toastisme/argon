@@ -55,7 +55,6 @@ namespace gui {
         void renderString(int top, int right) const;
     };
     
-    
     /*
         Atoms
      */
@@ -140,6 +139,26 @@ namespace gui {
         void mouseMoved(int x, int y);
         void mousePressed(int x, int y, int button);
         void mouseReleased(int x, int y, int button);
+    };
+    
+    class ButtonAtom : public UIAtom
+    {
+        /*
+            UI Atom for a button which toggles a boolean value, stored by reference
+         */
+        
+    private:
+        virtual void render();
+        
+        bool *toggle;
+        const ofImage *imageOn;
+        const ofImage *imageOff;
+        
+    public:
+        ButtonAtom();
+        ButtonAtom(bool &toggle, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
+        
+        void mousePressed(int x, int y, int button);
     };
     
 }

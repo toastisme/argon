@@ -56,6 +56,7 @@ namespace gui {
     }
     
     
+    
     /*
         RectAtom
      */
@@ -157,6 +158,29 @@ namespace gui {
     
     void SliderAtom::mouseReleased(int x, int y, int button) {
         mouseFocus = false;
+    }
+    
+    /*
+        ButtonAtom
+     */
+    
+    ButtonAtom::ButtonAtom() : UIAtom(), toggle(NULL), imageOn(NULL), imageOff(NULL) {}
+    
+    ButtonAtom::ButtonAtom(bool &_toggle, const ofImage &_imageOn, const ofImage &_imageOff, double x, double y, double width, double height)
+        : UIAtom(x, y, width, height), imageOn(&_imageOn), imageOff(&_imageOff), toggle(&_toggle) {}
+    
+    void ButtonAtom::render() {
+        if (toggle) {
+            if (*toggle) {
+                if (imageOn)  {  imageOn->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
+            } else {
+                if (imageOff) { imageOff->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
+            }
+        }
+    }
+    
+    void ButtonAtom::mousePressed(int x, int y, int button) {
+        if (button == 0 && bounds.inside(x, y)) { *toggle = not *toggle; }
     }
 
 }
