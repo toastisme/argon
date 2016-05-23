@@ -9,12 +9,15 @@
 #ifndef gui_base_hpp
 #define gui_base_hpp
 
-#include <stdio.h>
 #include <vector>
 
 namespace gui {
     enum Position
     {
+        /*
+            Enum defining nine positions within a UI element.
+         */
+        
         TOP_LEFT, TOP, TOP_RIGHT,
         LEFT, CENTRE, RIGHT,
         BOTTOM_LEFT, BOTTOM, BOTTOM_RIGHT
@@ -22,11 +25,20 @@ namespace gui {
     
     struct point
     {
+        /*
+            Struct defining a 2-D point.
+         */
+        
         double x, y;
     };
     
     struct rect
     {
+        /*
+            Struct defining a rectangle. Data is stored as the position of each side of the
+            rectangle, and various methods are given to get the width, height, centre, etc.
+         */
+        
         double left, right, top, bottom;
         
         double width()   const;
@@ -49,7 +61,7 @@ namespace gui {
         /*
             Abstract class defining a base UI element.
          
-            Has a position (coord pos), a width and height (coord size), and various methods
+            Has a bounding box, defined by rect bounds, a point origin, and various methods
             to get this position and size in both left/right/top/bottom and x/y/width/height
             formats.
          
@@ -59,18 +71,21 @@ namespace gui {
          */
         
     protected:
-        rect bounds; // position and size
-        //double pos_l, pos_r, pos_t, pos_b; // left, right, top, bottom coordinates
+        rect bounds;  // position and size
+        point origin; // either {0, 0} or top-left corner of parent
     
     public:
         UIBase();
-        UIBase(double x, double y);
+        UIBase(double x, double y, double width = 0, double height = 0);
         virtual ~UIBase();
         
-        const rect getRect() const;
-        const rect absoluteRect() const;
+        // return bounding box rectangle (bounds)
+        const rect getRect() const;      // relative to parent
+        const rect absoluteRect() const; // absolute position on screen
         
-        virtual const point getOrigin() const;
+        // getter and setter for origin (i.e. top-left corner of parent)
+        const point getOrigin() const;
+        void setOrigin(point origin);
         
         virtual void draw() = 0;
         
@@ -78,35 +93,16 @@ namespace gui {
         virtual void makeInvisible() = 0;
         virtual void toggleVisible() = 0;
         
+        virtual void mouseMoved(int x, int y);
+        virtual void mousePressed(int x, int y, int button);
+        virtual void mouseReleased(int x, int y, int button);
+        
     };
     
-    class UIChild : public virtual UIBase
+    class UIAtom : public UIBase
     {
         /*
-            Class containing a child element's behaviour.
-         
-            Has a parent, which can be set through setParent, and its position is defined
-            relative to its parent's position.
-         */
-    
-    protected:
-        UIBase *parent;
-        
-    public:
-        UIChild();
-        //UIChild(double x, double y, UIBase *parent = NULL);
-        UIChild(UIBase *parent);
-        virtual ~UIChild();
-        
-        void setParent(UIBase *parent);
-        
-        virtual const point getOrigin() const;
-    };
-    
-    class UIAtom : public virtual UIBase
-    {
-        /*
-            Class containing a single, basic drawable UI element's behaviour.
+            Abstract class containing a single, basic drawable UI element's behaviour.
          
             Has a visibility flag, which defines whether the element is visible or not, and
             overrides the makeVisible() etc. methods so that they control this flag.
@@ -122,9 +118,7 @@ namespace gui {
         
     public:
         UIAtom();
-        UIAtom(double x, double y);
-        UIAtom(bool visible);
-        virtual ~UIAtom();
+        UIAtom(double x, double y, double width = 0, double height = 0, bool visible = true);
         
         virtual void draw();
         
@@ -133,52 +127,35 @@ namespace gui {
         virtual void toggleVisible();
     };
     
-    class UIContainer : public virtual UIBase
+    class UIContainer : public UIBase
     {
         /*
-            Abstract class defining a container for Elements.
-            Aside from being an Element itself (which must have a size, visibility,
-            and be drawable), it has a container for child Elements, which could be
-            Elements or other Containers.
+            (Non-abstract) class defining a container for UI elements.
+         
+            Aside from being a UIBase itself (which must have a size, be drawable, etc.), it has a
+            container for child UIBases, which could be UIAtoms or other UIContainers. Methods such
+            as draw(), toggleVisible(), mouseMoved(), etc. pass the call through to its children.
          */
         
     protected:
-        std::vector <UIChild *> children;
+        std::vector <UIBase *> children;
         
     public:
         UIContainer();
-        UIContainer(double x, double y);
+        UIContainer(double x, double y, double width = 0, double height = 0);
         virtual ~UIContainer();
         
+        void addChild(UIBase *child);
+        
         virtual void draw();
-        void addChild(UIChild *child);
         
         virtual void makeVisible();
         virtual void makeInvisible();
         virtual void toggleVisible();
-    };
-    
-    class System : public UIContainer {
-        // A container which has no parent; drawn to a position on screen.
         
-    public:
-        System();
-        System(double x, double y);
-    };
-    
-    class Container : public UIContainer, public UIChild {
-        // A container with a parent; drawn relative to that parent.
-        
-    public:
-        Container(UIContainer *parent = NULL);
-        Container(double x, double y, UIContainer *parent = NULL);
-    };
-    
-    class Atom : public UIAtom, public UIChild {
-        // A single UI element rendered to the screen, relative to its parent.
-        
-    public:
-        Atom(UIContainer *parent = NULL);
+        virtual void mouseMoved(int x, int y);
+        virtual void mousePressed(int x, int y, int button);
+        virtual void mouseReleased(int x, int y, int button);
     };
     
 }

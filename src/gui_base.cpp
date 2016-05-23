@@ -80,38 +80,27 @@ namespace gui {
         UIBase
      */
     
-    // Default constructor: initialise position and width to 0, 0
-    UIBase::UIBase() { bounds = { 0, 0, 0, 0 }; }
+    // Default constructor: initialise position, size and origin to 0, 0
+    UIBase::UIBase() { bounds = { 0, 0, 0, 0 }; origin = {0, 0}; }
     
-    // Overloaded constructor: initialise position to x, y and width to 0, 0
-    UIBase::UIBase(double x, double y) { bounds = { x, x, y, y }; }
+    // Overloaded constructor: initialise position to x, y; size and origin to 0, 0
+    UIBase::UIBase(double x, double y, double width, double height) { bounds = { x, x + width, y, y + height }; origin = {0, 0}; }
     
     // Default destructor: no memory needs freeing, so do nothing
     UIBase::~UIBase() {}
     
+    // return bounds either relative to origin or in absoulute screen coordinates
     const rect UIBase::getRect() const { return bounds; }
     const rect UIBase::absoluteRect() const { return bounds.offset(getOrigin()); }
     
-    const point UIBase::getOrigin() const { return {0, 0}; }
+    // getter and setter for origin
+    const point UIBase::getOrigin() const { return origin; }
+    void UIBase::setOrigin(point _origin) { origin = _origin; }
     
-    
-    /*
-        UIChild
-     */
-    
-    // Default constructor: intialise parent to NULL
-    UIChild::UIChild() : parent(NULL) {}
-    
-    // Overloaded constructor: initialise parent
-    UIChild::UIChild(UIBase *_parent) : parent(_parent) {}
-    
-    UIChild::~UIChild() {}
-    
-    // Set parent
-    void UIChild::setParent(UIBase *_parent) { parent = _parent; }
-    
-    // Set origin to return parent's absolute position
-    const point UIChild::getOrigin() const { return parent->absoluteRect().getPos(TOP_LEFT); }
+    // Default handling of mouse events is to do nothing
+    void UIBase::mouseMoved(int x, int y) {}
+    void UIBase::mousePressed(int x, int y, int button) {}
+    void UIBase::mouseReleased(int x, int y, int button) {}
     
     /*
         UIAtom
@@ -121,19 +110,17 @@ namespace gui {
     UIAtom::UIAtom() : visible(false) {}
     
     // Overloaded constructor: start visible, pass pos through to base
-    UIAtom::UIAtom(bool _visible) : visible(_visible) {}
-    
-    UIAtom::~UIAtom() {}
-    
-    // visibility methods just alter the visibility flag
-    void UIAtom::makeVisible()   { visible = true; }
-    void UIAtom::makeInvisible() { visible = false; }
-    void UIAtom::toggleVisible() { visible = not visible; }
+    UIAtom::UIAtom(double x, double y, double width, double height, bool _visible) : UIBase(x, y, width, height), visible(_visible) {}
     
     // draw checks if visible, and then calls render()
     void UIAtom::draw() {
         if (visible) { render(); }
     }
+    
+    // visibility methods just alter the visibility flag
+    void UIAtom::makeVisible()   { visible = true; }
+    void UIAtom::makeInvisible() { visible = false; }
+    void UIAtom::toggleVisible() { visible = not visible; }
     
     /*
         Container
@@ -142,24 +129,20 @@ namespace gui {
     // Default constructor
     UIContainer::UIContainer() : UIBase() {}
     
+    // Overloaded constructor: set position
+    UIContainer::UIContainer(double x, double y, double width, double height) : UIBase(x, y, width, height) {}
+    
     // Destructor: delete all children
     UIContainer::~UIContainer() {
         for (int i = 0; i < children.size(); ++i) {
             delete children[i];
         }
     }
-
-    // pass through to children
-    void UIContainer::draw() {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->draw();
-        }
-    }
     
     // Add a child: set its parent to this object
     // Then make sure size matches the total size spanned by the children
-    void UIContainer::addChild(UIChild *child) {
-        child->setParent(this);
+    void UIContainer::addChild(UIBase *child) {
+        child->setOrigin(bounds.getPos(TOP_LEFT));
         children.push_back(child);
         
         // set bounds to match total size
@@ -169,34 +152,49 @@ namespace gui {
         if (childRect.top    < bounds.top   ) { bounds.top    = childRect.top; }
         if (childRect.bottom > bounds.bottom) { bounds.bottom = childRect.bottom; }
     }
+
+    // remainder of methods just pass the call through to its children
     
-    // pass through to children
+    void UIContainer::draw() {
+        for (int i = 0; i < children.size(); ++i) {
+            children[i]->draw();
+        }
+    }
+    
     void UIContainer::makeVisible() {
         for (int i = 0; i < children.size(); ++i) {
             children[i]->makeVisible();
         }
     }
     
-    // pass through to children
     void UIContainer::makeInvisible() {
         for (int i = 0; i < children.size(); ++i) {
             children[i]->makeInvisible();
         }
     }
     
-    // pass through to children
     void UIContainer::toggleVisible() {
         for (int i = 0; i < children.size(); ++i) {
             children[i]->toggleVisible();
         }
     }
     
+    void UIContainer::mouseMoved(int x, int y) {
+        for (int i = 0; i < children.size(); ++i) {
+            children[i]->mouseMoved(x, y);
+        }
+    }
     
-    System::System() {}
-    System::System(double x, double y) : UIBase(x, y) {}
+    void UIContainer::mousePressed(int x, int y, int button) {
+        for (int i = 0; i < children.size(); ++i) {
+            children[i]->mousePressed(x, y, button);
+        }
+    }
     
-    Container::Container(UIContainer *parent) : UIChild(parent) {}
-    //Container::Container(double x, double y, UIContainer *parent) : UIBase(x, y), UIChild(parent) {}
+    void UIContainer::mouseReleased(int x, int y, int button) {
+        for (int i = 0; i < children.size(); ++i) {
+            children[i]->mouseReleased(x, y, button);
+        }
+    }
     
-    Atom::Atom(UIContainer *parent) : UIAtom(true), UIChild(parent) {}
 }

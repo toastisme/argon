@@ -114,7 +114,7 @@ namespace cubic {
     }
 
     // Spline
-
+    
     // Create a new Spline with one segment
     // Use addPoint() later to subdivide into further segments
     // Check if the points are in the correct order and reverse them if not

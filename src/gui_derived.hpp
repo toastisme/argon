@@ -10,17 +10,76 @@
 #define gui_derived_hpp
 
 #include <stdio.h>
+#include <functional>
+#include "ofApp.h"
 #include "ofMain.h"
 #include "gui_base.hpp"
 #include "ljforces.hpp"
 
+// template<typename MyFunc>
+// void updateSlider(MyFunc func, double amount){
+//     func(amount);
+// }
+// 
+// updateSlider(system::getT, 0.5);
+
 namespace gui {
+    
+    typedef std::function<const double()> getter;
+    typedef std::function<void(double)>   setter;
+    
+    /*
+        Components
+     */
+    
+    class TextComponent
+    {
+        /*
+            Defines behaviour for an atom which draws text to the screen. Compensates for openFrameworks
+            being dumb about the origin for drawing text.
+         */
+        
+    private:
+        std::string string;
+        rect stringBounds;
+        
+        const ofTrueTypeFont *font;
+        ofColor colour;
+        
+        void resetBounds();
+        
+    public:
+        TextComponent();
+        TextComponent(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour);
+        
+        void setString(const std::string &string);
+        void setColour(const ofColor &colour);
+        void setFont(const ofTrueTypeFont &font);
+        
+        void renderString(int top, int right) const;
+    };
+    
     
     /*
         Atoms
      */
     
-    class TextAtom : public Atom
+    class RectAtom : public UIAtom
+    {
+        /*
+            UI Atom for a plain rectangle.
+         */
+        
+    private:
+        virtual void render();
+        ofColor colour;
+        
+    public:
+        RectAtom();
+        RectAtom(double x, double y, double width, double height, ofColor colour);
+    };
+    
+    class TextAtom : public UIAtom
     {
         /* 
             UI Atom for a single line of text.
@@ -37,7 +96,7 @@ namespace gui {
         TextAtom(const std::string &string, const ofTrueTypeFont &font, double x, double y);
     };
     
-    class SystemValueAtom : public Atom
+    class ValueAtom : public UIAtom
     {
         /*
             UI Atom for drawing a double outputted from a member function of an LJContainer.
@@ -46,18 +105,19 @@ namespace gui {
     private:
         virtual void render();
         
-        lj::LJContainer *system;
-        const double (lj::LJContainer::*getfunc)();
+        double *value;
+        getter getValue;
         
         std::string format;
         const ofTrueTypeFont *font;
     
     public:
-        SystemValueAtom();
-        SystemValueAtom(const double (lj::LJContainer::*valueFunction)(), lj::LJContainer &system, const std::string &format, const ofTrueTypeFont &font, double x, double y);
+        ValueAtom();
+        ValueAtom(const double (lj::LJContainer::*getValue)(), lj::LJContainer *system, const std::string &format, const ofTrueTypeFont &font, double x, double y);
+        ValueAtom(double *value, const std::string &format, const ofTrueTypeFont &font, double x, double y);
     };
     
-    class SliderAtom : public Atom
+    class SliderAtom : public UIAtom
     {
         /*
             UI Atom for drawing a slider based on member functions from an LJContainer.
@@ -66,20 +126,26 @@ namespace gui {
     private:
         virtual void render();
         
-        lj::LJContainer *system;
-        const double (lj::LJContainer::*getfunc)();
-        const double (lj::LJContainer::*setfunc)();
+        double *value;
+        getter getValue;
+        setter setValue;
         
-        double min, max, step;
+        double min, max;
         int width;
-        bool selected;
+        
+        bool mouseFocus;
         
     public:
         SliderAtom();
-        SliderAtom(const double (lj::LJContainer::*getterFunction)(), void (lj::LJContainer::*setterFunction)(double), lj::LJContainer &system, double min, double max, int steps, int width, double x, double y);
+        SliderAtom(const double (lj::LJContainer::*getValue)(), void (lj::LJContainer::*setValue)(double), lj::LJContainer *system, double min, double max, int width, double x, double y);
         
-        void setPosition(double x);
+        double getSliderPos();
+        void setFromSliderPos(double x);
         
+        // handle mouse events
+        void mouseMoved(int x, int y);
+        void mousePressed(int x, int y, int button);
+        void mouseReleased(int x, int y, int button);
     };
     
 }

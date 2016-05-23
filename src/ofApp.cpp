@@ -105,9 +105,12 @@ void ofApp::setup(){
     
     soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
     
-    testUI = gui::System(100, 100);
-    testUI.addChild(new gui::TextAtom("Hello World!", uiFont14, 200, 200));
-    testUI.addChild(new gui::SystemValueAtom(&lj::LJContainer::getT, theSystem, "%6.4lf", uiFont14, 200, 30));
+    testUI = gui::UIContainer(0, 0);
+    testUI.addChild(new gui::RectAtom(100, 100, 20, 50, ofColor(0, 255, 0)));
+    testUI.addChild(new gui::TextAtom("Hello World!", uiFont14, 120, 150));
+    testUI.addChild(new gui::ValueAtom(&lj::LJContainer::getT, &theSystem, "%6.4lf", uiFont14, 200, 80));
+    testUI.addChild(new gui::ValueAtom(&sensitivity, "%6.4lf", uiFont14, 200, 120));
+    testUI.addChild(new gui::SliderAtom(&lj::LJContainer::getT, &lj::LJContainer::setTemp, &theSystem, 0, 1000 / 120.0, 200, 400, 80));
 }
 
 /*
@@ -871,11 +874,16 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-
+    if (helpOn) {
+        testUI.mouseMoved(x, y);
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
+    if (helpOn) {
+        testUI.mouseMoved(x, y);
+    }
 
 }
 
@@ -906,6 +914,8 @@ void ofApp::mousePressed(int x, int y, int button){
             }
             
         }
+    } else if (helpOn) {
+        testUI.mousePressed(x, y, button);
     } else { // Mouse controls Gaussian placement
         // Default values for the amplitude and exponent of a Gaussian
         // Should they really be stored here?
@@ -926,7 +936,9 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+    if (helpOn) {
+        testUI.mouseReleased(x, y, button);
+    }
 }
 
 //--------------------------------------------------------------

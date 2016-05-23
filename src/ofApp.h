@@ -108,9 +108,11 @@ private:
     // Left and right audio channel amplitudes
     vector <float> left;
     vector <float> right;
-    float smoothedVol; // Average volume, smoothed out
-    float scaledVol; // Volume rescaled between 0 and 1
-    float sensitivity; // Sensitivity of Gaussians to changes in volume
+    
+    // note: changed these to doubles
+    double smoothedVol; // Average volume, smoothed out
+    double scaledVol; // Volume rescaled between 0 and 1
+    double sensitivity; // Sensitivity of Gaussians to changes in volume
     
     // Logical variables
     bool audioOn; // Is audio input turned on?
@@ -125,6 +127,6 @@ private:
     int loganShiftx, loganShifty;
     
     // UI Test stuff (to be removed)
-    gui::System testUI;
+    gui::UIContainer testUI;
 
 };
