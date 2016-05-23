@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ljforces.hpp"
+#include "mdforces.hpp"
 #include "gaussian.hpp"
 #include "cubicspline.hpp"
 #include <sstream>
@@ -42,7 +42,7 @@ public:
     double box2screen_x(double x, double x0 = 0.0);
     double box2screen_y(double y, double y0 = 0.0);
     ofPoint box2screen(double x, double y, double x0 = 0.0, double y0 = 0.0);
-    ofPoint box2screen(lj::coord point, lj::coord origin = {0.0, 0.0});
+    ofPoint box2screen(md::coord point, md::coord origin = {0.0, 0.0});
     
     // Assign random initial velocities from an appropriate Maxwell distribution
     //void randomiseVelocity(vector<double> &vel, double T);
@@ -66,7 +66,7 @@ public:
 
 private:
    
-    lj::LJContainer theSystem; // The MD simulation system
+    md::MDContainer theSystem; // The MD simulation system
     
     // Store the number of particles locally until the system
     // is reset with 'r' and we can regrid everything
@@ -77,7 +77,7 @@ private:
     
     // Keep track of very first kinetic/potential energies
     // for graph drawing purposes - it may be prudent to
-    // instead keep minEKin and minEPot values in LJContainer
+    // instead keep minEKin and minEPot values in MDContainer
     // along with maxEKin and maxEPot
     double firstEKin, firstEPot;
     
