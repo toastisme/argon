@@ -182,5 +182,18 @@ namespace gui {
     void ButtonAtom::mousePressed(int x, int y, int button) {
         if (button == 0 && bounds.inside(x, y)) { *toggle = not *toggle; }
     }
+    
+    /*
+        SliderContainer
+     */
+    
+    SliderContainer::SliderContainer() {}
+    
+    SliderContainer::SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, const double (md::MDContainer::*getValue)(), void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height)
+    {
+        addChild(new TextAtom(label, font, colour, x, y));
+        addChild(new SliderAtom(getValue, setValue, system, min, max, sliderWidth, x + labelWidth, y));
+        addChild(new ValueAtom(getValue, system, format, font, colour, x + labelWidth + sliderWidth, y));
+    }
 
 }

@@ -126,7 +126,7 @@ private:
     ofImage loganLeft, loganRight;
     int loganShiftx, loganShifty;
     
-    // UI Test stuff (to be removed)
+    // UI Containers
     gui::UIContainer testUI;
 
 };

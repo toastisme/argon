@@ -161,6 +161,21 @@ namespace gui {
         void mousePressed(int x, int y, int button);
     };
     
+    /*
+        Containers
+     */
+    
+    class SliderContainer : public UIContainer
+    {
+        /*
+            UI Container for a text label, slider and value horizontal combination
+         */
+        
+    public:
+        SliderContainer();
+        SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, const double (md::MDContainer::*getValue)(), void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
+    };
+    
 }
 
 #endif /* gui_derived_hpp */
