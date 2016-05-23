@@ -1,18 +1,19 @@
 /***************************************************
  *                                                 *
- *  MD Pie LJForces Library                        *
- *  Implements ljforces.hpp                        *
+ *  MD Pie MDForces Library                        *
+ *  Implements mdforces.hpp                        *
  *  Robert A Shaw (2016)                           *
  *                                                 *
  ***************************************************/
 
-#include "ljforces.hpp"
+#include "mdforces.hpp"
 #include <cmath> // Basic maths functions
 #include <random> // For the Andersen thermostat
 #include <thread> // For multithreading
 #include <iostream>
+#include <algorithm>
 
-namespace lj {
+namespace md {
 
     /*
         DEFAULT CONSTRUCTOR:
@@ -20,7 +21,7 @@ namespace lj {
             and the timstep to 0.002. Initialises maximum energies, and enCounter,
             to zero.
      */
-    LJContainer::LJContainer()
+    MDContainer::MDContainer()
     {
         box_dimensions = {0, 0};
         rcutoff = 3.0;
@@ -36,7 +37,7 @@ namespace lj {
             reset and the simulation started again. This includes setting the number of particles
             back to zero, as all particles are removed, and resetting enCounter
      */
-    void LJContainer::clearSystem()
+    void MDContainer::clearSystem()
     {
         positions.clear();
         velocities.clear();
@@ -52,46 +53,46 @@ namespace lj {
     
     
     // Return values of private variables without altering them
-    int    const LJContainer::getN() { return N; }
-    int    const LJContainer::getSteps() { return enCounter; }
-    double const LJContainer::getEPot() { return epot; }
-    double const LJContainer::getEKin() { return ekin; }
-    double const LJContainer::getT() { return T; }
-    double const LJContainer::getVAvg() { return v_avg; }
-    double const LJContainer::getTimestep() { return dt; }
-    double const LJContainer::getCutoff() { return rcutoff; }
-    coord  const LJContainer::getBox() { return box_dimensions; }
-    double const LJContainer::getWidth() { return box_dimensions.x; }
-    double const LJContainer::getHeight() { return box_dimensions.y; }
-    double const LJContainer::getMaxEkin() { return maxEKin; }
-    double const LJContainer::getMaxEpot() { return maxEPot; }
+    int    const MDContainer::getN() { return N; }
+    int    const MDContainer::getSteps() { return enCounter; }
+    double const MDContainer::getEPot() { return epot; }
+    double const MDContainer::getEKin() { return ekin; }
+    double const MDContainer::getT() { return T; }
+    double const MDContainer::getVAvg() { return v_avg; }
+    double const MDContainer::getTimestep() { return dt; }
+    double const MDContainer::getCutoff() { return rcutoff; }
+    coord  const MDContainer::getBox() { return box_dimensions; }
+    double const MDContainer::getWidth() { return box_dimensions.x; }
+    double const MDContainer::getHeight() { return box_dimensions.y; }
+    double const MDContainer::getMaxEkin() { return maxEKin; }
+    double const MDContainer::getMaxEpot() { return maxEPot; }
     
     // Return sizes of gaussians, prevPos, and energies vectors, i.e. the number
     // of gaussians, positions and energies stored
-    int const LJContainer::getNGaussians() { return gaussians.size(); }
-    int const LJContainer::getNEnergies() { return prevEKin.size(); }
-    int const LJContainer::getNPrevPos() { return prevPositions.size(); }
+    int const MDContainer::getNGaussians() { return gaussians.size(); }
+    int const MDContainer::getNEnergies() { return prevEKin.size(); }
+    int const MDContainer::getNPrevPos() { return prevPositions.size(); }
     
     // Return (x, y) vectors of the dynamical variables of particle i
     // Safety checks could be added, but index checking is usually slow
-    coord const LJContainer::getPos(int i) { return positions[i]; }
-    coord const LJContainer::getVel(int i) { return velocities[i]; }
-    coord const LJContainer::getForce(int i) { return forces[i]; }
+    coord const MDContainer::getPos(int i) { return positions[i]; }
+    coord const MDContainer::getVel(int i) { return velocities[i]; }
+    coord const MDContainer::getForce(int i) { return forces[i]; }
     
     // Return the (x, y) position vector of particle npart, from nstep timesteps previously
-    coord const LJContainer::getPos(int npart, int nstep) { return prevPositions[nstep][npart]; }
+    coord const MDContainer::getPos(int npart, int nstep) { return prevPositions[nstep][npart]; }
     
     // Return the ith previous kinetic and potential energy
-    double const LJContainer::getPreviousEkin(int i) { return prevEKin[i]; }
-    double const LJContainer::getPreviousEpot(int i) { return prevEPot[i]; }
+    double const MDContainer::getPreviousEkin(int i) { return prevEKin[i]; }
+    double const MDContainer::getPreviousEpot(int i) { return prevEPot[i]; }
     
     // Return a reference to the ith gaussian in gaussians
-    Gaussian& LJContainer::getGaussian(int i) { return gaussians[i]; }
+    Gaussian& MDContainer::getGaussian(int i) { return gaussians[i]; }
     // Return values of the private variables of the ith gaussian in gaussians
-    double LJContainer::getGaussianAlpha(int i) { return gaussians[i].getgAlpha(); }
-    double LJContainer::getGaussianAmp(int i) { return gaussians[i].getgAmp(); }
-    double LJContainer::getGaussianX0(int i) { return gaussians[i].getgex0(); }
-    double LJContainer::getGaussianY0(int i) { return gaussians[i].getgey0(); }
+    double MDContainer::getGaussianAlpha(int i) { return gaussians[i].getgAlpha(); }
+    double MDContainer::getGaussianAmp(int i) { return gaussians[i].getgAmp(); }
+    double MDContainer::getGaussianX0(int i) { return gaussians[i].getgex0(); }
+    double MDContainer::getGaussianY0(int i) { return gaussians[i].getgey0(); }
     
     
     
@@ -100,14 +101,14 @@ namespace lj {
     
     
     // Set the position of particle i to (x, y)
-    void LJContainer::setPos(int i, double x, double y)
+    void MDContainer::setPos(int i, double x, double y)
     {
         positions[i].x = x;
         positions[i].y = y;
     }
     
     // Set the velocity of particle i to (vx, vy)
-    void LJContainer::setVel(int i, double vx, double vy)
+    void MDContainer::setVel(int i, double vx, double vy)
     {
         velocities[i].x = vx;
         velocities[i].y = vy;
@@ -119,13 +120,13 @@ namespace lj {
     // temp     - 0.5 (60K)
     // timestep - 0.002
     // cutoff   - 3
-    void LJContainer::setBox(double box_width, double box_length) {
+    void MDContainer::setBox(double box_width, double box_length) {
         box_dimensions.x = box_width  > 0 ? box_width  : 10.0;
         box_dimensions.y = box_length > 0 ? box_length : 10.0;
     }
-    void LJContainer::setTemp(double temperature) { T = temperature > 0 ? temperature : 0.5; }
-    void LJContainer::setTimestep(double timestep) { dt = timestep > 0 ? timestep : 0.002; }
-    void LJContainer::setCutoff(double cutoff) { rcutoff = cutoff > 0 ? cutoff : 3.0; }
+    void MDContainer::setTemp(double temperature) { T = temperature > 0 ? temperature : 0.5; }
+    void MDContainer::setTimestep(double timestep) { dt = timestep > 0 ? timestep : 0.002; }
+    void MDContainer::setCutoff(double cutoff) { rcutoff = cutoff > 0 ? cutoff : 3.0; }
     
 /*
     ROUTINE setupSystem:
@@ -133,7 +134,7 @@ namespace lj {
         to have the parameters listed in the arguments. Places the particles on a grid, and gives them random velocities
         sampled from a Maxwell distribution of the chosen temperature. Calculates the initial forces and energies.
  */
-    void LJContainer::addParticlesGrid(int numParticles) {
+    void MDContainer::addParticlesGrid(int numParticles) {
         int i = 0, j = 0;
         double posx, posy;
         
@@ -145,11 +146,11 @@ namespace lj {
         
         // grid particles
         for (int n = 0; n < numParticles; ++n){
-            lj::coord pos;
+            md::coord pos;
             pos.x = xspacing * (i + 0.5);
             pos.y = yspacing * (j + 0.5);
             
-            lj::coord vel = randomVel();
+            md::coord vel = randomVel();
             
             addParticle(pos, vel);
             
@@ -167,7 +168,7 @@ namespace lj {
             If there were N particles, this is now particle i = N+1.
             The particle counter, N, increments.
      */
-    void LJContainer::addParticle(coord pos, coord vel)
+    void MDContainer::addParticle(coord pos, coord vel)
     {
         coord acc = {0.0, 0.0}; // zero initial acceleration
         
@@ -180,7 +181,7 @@ namespace lj {
         ++N;
     }
     
-    void LJContainer::addParticle(double x, double y, double vx, double vy) {
+    void MDContainer::addParticle(double x, double y, double vx, double vy) {
         coord pos = {x, y};
         coord vel = {vx, vy};
         addParticle(pos, vel);
@@ -192,7 +193,7 @@ namespace lj {
             Decrements the particle counter, N, and removes the particle variables from
             the positions, velocities, forces arrays.
      */
-    void LJContainer::removeParticle()
+    void MDContainer::removeParticle()
     {
         if ( N > 0 ) { // Make sure there is a particle to be removed
             N--;
@@ -212,7 +213,7 @@ namespace lj {
             If there are already 4 gaussians, it removes the first Gaussian in the
             gaussians array.
      */
-    void LJContainer::addGaussian(double gAmp, double gAlpha, double gex0, double gey0){
+    void MDContainer::addGaussian(double gAmp, double gAlpha, double gex0, double gey0){
         // Scale set to 1, so no scaling occurs before audio input
         Gaussian newGaussian(gAmp, gAlpha, gex0, gey0, 1.0);
         
@@ -233,7 +234,7 @@ namespace lj {
      
             i = 0 by default if no argument is provided
      */
-    void LJContainer::removeGaussian(int i){
+    void MDContainer::removeGaussian(int i){
         // Remove ith gaussian (first by default)
         gaussians.erase(gaussians.begin()+i, gaussians.begin()+i+1);
     }
@@ -245,7 +246,7 @@ namespace lj {
      
             This does not perform index checking.
      */
-    void LJContainer::updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0, double scale){
+    void MDContainer::updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0, double scale){
         gaussians[i].setParams(gAmp, gAlpha, gex0, gey0, scale);
     }
     
@@ -255,7 +256,7 @@ namespace lj {
             Loops over all the Gaussians in the gaussians array and calculates the forces on each particle
             due to each Gaussian (if any exist), and the contribution to the potential energy.
      */
-    void LJContainer::externalForce()
+    void MDContainer::externalForce()
     {
         std::array<double, 3> forceEnergy; // Temporary array to store force and potential energy
         double x, y; // Unpack the x and y positions of particle i
@@ -289,7 +290,7 @@ namespace lj {
             Results in the forces and potential energy being stored in the forces matrix
             and epot. Also calls externalForces.
      */
-    void LJContainer::forcesEnergies(int nthreads)
+    void MDContainer::forcesEnergies(int nthreads)
     {
         // Initialise forces and energies to zero
         epot = 0.0;
@@ -322,7 +323,7 @@ namespace lj {
         while (counter < nthreads){
 
             // Create thread of forcesThread procedure
-            thrds[counter] = std::thread(&LJContainer::forcesThread, *this,
+            thrds[counter] = std::thread(&MDContainer::forcesThread, *this,
                     start, end, std::ref(ftemps[counter]),
                     std::ref(etemps[counter]), positions,
                     rcutoff, N);
@@ -364,7 +365,7 @@ namespace lj {
             npart is the number of particles, and postemp is a temporary array of the positions of the
             particles.
      */
-    void LJContainer::forcesThread(int start, int end,
+    void MDContainer::forcesThread(int start, int end,
             std::vector<coord> &ftemp,
             double &eptemp, std::vector<coord> postemp,
             double rcut, int npart)
@@ -420,12 +421,12 @@ namespace lj {
     /*
         ROUTINE integrate:
             Performs the main velocity-Verlet integration step of the MD simulation. After the 
-            LJContainer is set up, and a single forcesEnergies calculation performed, this routine
+            MDContainer is set up, and a single forcesEnergies calculation performed, this routine
             is all that needs to be called to propagate the system by one timestep. 
      
             nthreads is the number of threads the forces calculations should be performed on
      */
-    void LJContainer::integrate(int nthreads)
+    void MDContainer::integrate(int nthreads)
     {
         double dt2 = 0.5 * dt * dt; // Useful quantity for velocity verlet, dt^2/2
 
@@ -483,7 +484,7 @@ namespace lj {
             energies are kept, using a deque for the FIFO behaviour and
             storing the most recent position / energy at index 0
      */
-    void LJContainer::savePreviousValues()
+    void MDContainer::savePreviousValues()
     {
         prevPositions.push_front(positions);
         prevEPot.push_front(epot);
@@ -506,7 +507,7 @@ namespace lj {
             freq, on nthreads threads. Saves the positions and energies after
             all nsteps integrations are completed
      */
-    void LJContainer::run(int nsteps, double freq, int nthreads) {
+    void MDContainer::run(int nsteps, double freq, int nthreads) {
         for (int i = 0; i < nsteps; ++i) {
             integrate(nthreads);
             berendsen(freq);
@@ -534,7 +535,7 @@ namespace lj {
             3/2 NkT = 1/2 mv^2
      */
     
-    coord LJContainer::randomVel()
+    coord MDContainer::randomVel()
     {
         // Set up random number generator, rd, to sample from:
         // normal distribution, nDist, mean 0, std. dev. sqrt(T)
@@ -548,7 +549,7 @@ namespace lj {
         return vel;
     }
     
-    void LJContainer::andersen(double freq)
+    void MDContainer::andersen(double freq)
     {
         // Set up random number generator, rd, to sample from:
         // uniform distribution, uDist, on [0, 1]
@@ -562,7 +563,7 @@ namespace lj {
         }
     }
 
-    void LJContainer::berendsen(double freq)
+    void MDContainer::berendsen(double freq)
     {
         //Calculate the average velocity
         v_avg = 0;

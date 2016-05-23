@@ -1,6 +1,6 @@
 /***************************************************
  *                                                 *
- * LJForces library for MD Pie                     *
+ * MDForces library                                *
  * Stores and calculates positions, velocities,    *
  * forces, temperature, pressure, and energies     *
  * for MD simulation.                              *
@@ -9,20 +9,20 @@
  ***************************************************/
 
 
-#ifndef LJFORCES_HEADER_DEF
-#define LJFORCES_HEADER_DEF
+#ifndef MDFORCES_HEADER_DEF
+#define MDFORCES_HEADER_DEF
 
 #include <vector>
 #include <deque>
 #include "gaussian.hpp"
 
-namespace lj{
+namespace md{
     struct coord
     {
         double x, y;
     };
 
-    class LJContainer
+    class MDContainer
     {
     private:
         int N; // Number of particles
@@ -50,7 +50,7 @@ namespace lj{
         int enCounter; // Counter so that only every nth energy is stored
         
     public:
-        LJContainer(); // Default constructor
+        MDContainer(); // Default constructor
         
         void clearSystem(); // Reset object
         
