@@ -46,8 +46,11 @@ namespace gui {
         TextComponent(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour);
         
         void setString(const std::string &string);
+        void setString(double value, const std::string &format);
         void setColour(const ofColor &colour);
         void setFont(const ofTrueTypeFont &font);
+        
+        rect getStringBounds() const;
         
         void renderString(int top, int right) const;
     };
@@ -72,7 +75,7 @@ namespace gui {
         RectAtom(double x, double y, double width, double height, ofColor colour);
     };
     
-    class TextAtom : public UIAtom
+    class TextAtom : public UIAtom, TextComponent
     {
         /* 
             UI Atom for a single line of text.
@@ -81,15 +84,12 @@ namespace gui {
     private:
         virtual void render();
         
-        std::string string;
-        const ofTrueTypeFont *font;
-        
     public:
         TextAtom();
-        TextAtom(const std::string &string, const ofTrueTypeFont &font, double x, double y);
+        TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, double x, double y);
     };
     
-    class ValueAtom : public UIAtom
+    class ValueAtom : public UIAtom, TextComponent
     {
         /*
             UI Atom for drawing a double outputted from a member function of an LJContainer.
@@ -102,12 +102,13 @@ namespace gui {
         getter getValue;
         
         std::string format;
-        const ofTrueTypeFont *font;
-    
+        
     public:
         ValueAtom();
-        ValueAtom(const double (md::MDContainer::*getValue)(), md::MDContainer *system, const std::string &format, const ofTrueTypeFont &font, double x, double y);
-        ValueAtom(double *value, const std::string &format, const ofTrueTypeFont &font, double x, double y);
+        ValueAtom(const double (md::MDContainer::*getValue)(), md::MDContainer *system, const std::string &format, const ofTrueTypeFont &font, const ofColor &colour, double x, double y);
+        ValueAtom(double *value, const std::string &format, const ofTrueTypeFont &font, const ofColor &color, double x, double y);
+        
+        std::string getString() const;
     };
     
     class SliderAtom : public UIAtom

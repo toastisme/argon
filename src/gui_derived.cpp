@@ -38,12 +38,21 @@ namespace gui {
         resetBounds();
     }
     
+    void TextComponent::setString(double value, const std::string &format) {
+        char drawstr[31];
+        sprintf(drawstr, format.c_str(), value);
+        string = std::string(drawstr);
+        resetBounds();
+    }
+    
     void TextComponent::setFont(const ofTrueTypeFont &_font) { font = &_font; }
     void TextComponent::setColour(const ofColor &_colour) { colour = _colour; }
     
+    rect TextComponent::getStringBounds() const { return stringBounds; }
+    
     void TextComponent::renderString(int left, int top) const {
         ofSetColor(colour);
-        font->drawString(string, left, top + stringBounds.height());
+        if (font) { font->drawString(string, left, top + stringBounds.height()); }
     }
     
     
@@ -67,63 +76,44 @@ namespace gui {
         TextAtom
      */
     
-    TextAtom::TextAtom() : UIAtom(), font(NULL) {}
+    TextAtom::TextAtom() : UIAtom(), TextComponent() {}
     
-    TextAtom::TextAtom(const std::string &_string, const ofTrueTypeFont &_font, double x, double y)
-        : UIAtom(x, y), string(_string), font(&_font)
+    TextAtom::TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, double x, double y)
+        : UIAtom(x, y), TextComponent(string, font, colour)
     {
-        ofRectangle rect = _font.getStringBoundingBox(_string, 0, 0);
-        bounds.right  = bounds.left + rect.getRight();
-        bounds.bottom = bounds.top - rect.getTop();
+        rect stringBounds = getStringBounds();
+        bounds = stringBounds.offset({bounds.left, bounds.top});
     }
     
-    void TextAtom::render() {
-        rect absBounds = absoluteRect();
-        if (font) { font->drawString(string, absBounds.left, absBounds.bottom); }
-    }
+    void TextAtom::render() { renderString(bounds.left, bounds.top); }
     
     /*
         ValueAtom
      */
     
-    ValueAtom::ValueAtom() : UIAtom(), value(NULL), font(NULL) {}
+    ValueAtom::ValueAtom() : UIAtom(), value(NULL), TextComponent() {}
     
-    ValueAtom::ValueAtom(const double (md::MDContainer::*_getValue)(), md::MDContainer *system, const std::string &_format, const ofTrueTypeFont &_font, double x, double y)
-        : UIAtom(x, y), value(NULL), format(_format), font(&_font)
+    ValueAtom::ValueAtom(const double (md::MDContainer::*_getValue)(), md::MDContainer *system, const std::string &_format, const ofTrueTypeFont &font, const ofColor &colour, double x, double y)
+        : UIAtom(x, y), value(NULL), format(_format), TextComponent("", font, colour)
     {
         getValue = std::bind(_getValue, system);
+        setString(getValue(), format);
         
-        char drawstr[31];
-        sprintf(drawstr, format.c_str(), getValue());
-        
-        // Compensating for openFrameworks drawing text from the bottom-left instead of the top-left
-        ofRectangle rect = _font.getStringBoundingBox(std::string(drawstr), 0, 0);
-        bounds.right  = bounds.left + rect.getRight();
-        bounds.bottom = bounds.top - rect.getTop();
+        rect stringBounds = getStringBounds();
+        bounds = stringBounds.offset({bounds.left, bounds.top});
     }
     
-    ValueAtom::ValueAtom(double *_value, const std::string &_format, const ofTrueTypeFont &_font, double x, double y)
-        : UIAtom(x, y), value(_value), format(_format), font(&_font)
+    ValueAtom::ValueAtom(double *_value, const std::string &_format, const ofTrueTypeFont &font, const ofColor &colour, double x, double y)
+        : UIAtom(x, y), value(_value), format(_format), TextComponent("", font, colour)
     {
         getValue = [&] () { return *value; };
+        setString(getValue(), format);
         
-        char drawstr[31];
-        sprintf(drawstr, format.c_str(), getValue());
-        
-        ofRectangle rect = _font.getStringBoundingBox(std::string(drawstr), x, y);
-        bounds.right  = bounds.left + rect.getRight();
-        bounds.bottom = bounds.top - rect.getTop();
+        rect stringBounds = getStringBounds();
+        bounds = stringBounds.offset({bounds.left, bounds.top});
     }
     
-    void ValueAtom::render() {
-        if (font) {
-            char drawstr[31];
-            sprintf(drawstr, format.c_str(), getValue());
-            
-            rect absBounds = absoluteRect();
-            font->drawString(drawstr, absBounds.left, absBounds.bottom);
-        }
-    }
+    void ValueAtom::render() { renderString(bounds.left, bounds.top); }
     
     /*
         SliderAtom
@@ -142,7 +132,12 @@ namespace gui {
     }
     
     double SliderAtom::getSliderPos() { return ofMap(getValue(), min, max, bounds.left, bounds.right, true); }
-    void SliderAtom::setFromSliderPos(double x) { setValue(ofMap(x, bounds.left, bounds.right, min, max, true)); }
+    void SliderAtom::setFromSliderPos(double x) {
+        double mapped = ofMap(x, bounds.left, bounds.right, min, max, true);
+        printf("Set slider: %lf %lf\n", x, mapped);
+
+        setValue(ofMap(x, bounds.left, bounds.right, min, max, true));
+    }
     
     void SliderAtom::render() {
         ofSetColor(255, 255, 255);
