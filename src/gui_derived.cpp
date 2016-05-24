@@ -103,7 +103,7 @@ namespace gui {
     
     ValueAtom::ValueAtom() : UIAtom(), value(NULL), TextComponent() {}
     
-    ValueAtom::ValueAtom(const double (md::MDContainer::*_getValue)(), md::MDContainer *system, const std::string &_format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y)
+    ValueAtom::ValueAtom(double (md::MDContainer::*_getValue)() const, md::MDContainer *system, const std::string &_format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y)
         : UIAtom(x, y), value(NULL), format(_format), TextComponent("", font, colour, anchor)
     {
         getValue = std::bind(_getValue, system);
@@ -134,7 +134,7 @@ namespace gui {
     
     SliderAtom::SliderAtom() : UIAtom() {}
     
-    SliderAtom::SliderAtom(const double (md::MDContainer::*_getValue)(), void (md::MDContainer::*_setValue)(double), md::MDContainer *system, double _min, double _max, double x, double y, double width, double height)
+    SliderAtom::SliderAtom(double (md::MDContainer::*_getValue)() const, void (md::MDContainer::*_setValue)(double), md::MDContainer *system, double _min, double _max, double x, double y, double width, double height)
         : UIAtom(x, y, width, height), value(NULL), min(_min), max(_max)
     {
         getValue = std::bind(_getValue, system);
@@ -202,7 +202,7 @@ namespace gui {
     
     SliderContainer::SliderContainer() {}
     
-    SliderContainer::SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, const double (md::MDContainer::*getValue)(), void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height)
+    SliderContainer::SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, double (md::MDContainer::*getValue)() const, void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height)
     {
         addChild(new TextAtom(label, font, colour, RIGHT, x, y));
         addChild(new SliderAtom(getValue, setValue, system, min, max, x + labelWidth, y, sliderWidth, height));

@@ -18,8 +18,8 @@
 
 namespace gui {
     
-    typedef std::function<const double()> getter;
-    typedef std::function<void(double)>   setter;
+    typedef std::function<double()> getter;
+    typedef std::function<void(double)> setter;
     
     /*
         Components
@@ -108,7 +108,7 @@ namespace gui {
         
     public:
         ValueAtom();
-        ValueAtom(const double (md::MDContainer::*getValue)(), md::MDContainer *system, const std::string &format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y);
+        ValueAtom(double (md::MDContainer::*getValue)() const, md::MDContainer *system, const std::string &format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y);
         ValueAtom(double *value, const std::string &format, const ofTrueTypeFont &font, const ofColor &color, Position anchor, double x, double y);
         
         std::string getString() const;
@@ -133,7 +133,7 @@ namespace gui {
         
     public:
         SliderAtom();
-        SliderAtom(const double (md::MDContainer::*getValue)(), void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, double x, double y, double width, double height);
+        SliderAtom(double (md::MDContainer::*getValue)() const, void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, double x, double y, double width, double height);
         SliderAtom(double *value, double min, double max, double x, double y, double width, double height);
         
         double getSliderPos();
@@ -177,7 +177,7 @@ namespace gui {
         
     public:
         SliderContainer();
-        SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, const double (md::MDContainer::*getValue)(), void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
+        SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, double (md::MDContainer::*getValue)() const, void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
         SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, double *value, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
     };
     
