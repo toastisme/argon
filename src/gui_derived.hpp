@@ -187,8 +187,6 @@ namespace gui {
         static int PADDING;
     };
     
-    
-    
 }
 
 #endif /* gui_derived_hpp */

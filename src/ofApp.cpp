@@ -105,7 +105,7 @@ void ofApp::setup(){
     
     soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
     
-    testUI = gui::UIContainer(0, 0);
+    testUI = gui::UIContainer(300, 100);
     testUI.addChild(new gui::SliderContainer("Temperature (K):", uiFont14, ofColor(0, 255, 0), &md::MDContainer::getTempKelvin, &md::MDContainer::setTempKelvin, &theSystem, 0, 1000, "%6.4lf", 100, 200, 200, 400, 200, 10));
     testUI.addChild(new gui::SliderContainer("Sensitivity:", uiFont14, ofColor(0, 255, 0), &sensitivity, 0.005, 0.135, "%7.4lf", 100, 300, 200, 400, 200, 10));
     testUI.addChild(new gui::ButtonAtom(playOn, playbutton, pausebutton, 800, 0, 50, 50));

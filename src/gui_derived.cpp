@@ -56,11 +56,11 @@ namespace gui {
         if (font) { font->drawString(string, left, top + stringBounds.height()); }
     }
     
-    void TextComponent::renderString(rect absoluteBounds) const {
+    void TextComponent::renderString(rect bounds) const {
         ofSetColor(colour);
         if (font) {
             rect drawRect = stringBounds;
-            drawRect.moveAnchor(align, absoluteBounds.getPos(align));
+            drawRect.moveAnchor(align, bounds.getPos(align));
             font->drawString(string, drawRect.left, drawRect.bottom);
         }
     }
@@ -93,7 +93,7 @@ namespace gui {
         : UIAtom(x, y, width, height), TextComponent(string, font, colour, _anchor)
     {}
     
-    void TextAtom::render() { renderString(absoluteRect()); }
+    void TextAtom::render() { renderString(bounds); }
     
     /*
         ValueAtom
@@ -117,7 +117,7 @@ namespace gui {
     
     void ValueAtom::render() {
         setString(getValue(), format);
-        renderString(absoluteRect());
+        renderString(bounds);
     }
     
     /*
@@ -146,6 +146,7 @@ namespace gui {
     
     void SliderAtom::setFromSliderPos(double x) {
         x -= SliderAtom::HANDLE_WIDTH / 2;
+        
         setValue(ofMap(x, bounds.left, bounds.right - SliderAtom::HANDLE_WIDTH, min, max, true));
     }
     
@@ -217,22 +218,20 @@ namespace gui {
     
     SliderContainer::SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, double (md::MDContainer::*getValue)() const, void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height)
     {
-        double labelLeft  = x;
-        double sliderLeft = x + labelWidth + SliderContainer::PADDING;
-        double valueLeft  = x + labelWidth + sliderWidth + 2 * SliderContainer::PADDING;
+        double sliderLeft = labelWidth + SliderContainer::PADDING;
+        double valueLeft  = labelWidth + sliderWidth + 2 * SliderContainer::PADDING;
         
-        addChild(new TextAtom(label, font, colour, RIGHT, labelLeft, y, labelWidth, height));
+        addChild(new TextAtom(label, font, colour, RIGHT, 0, y, labelWidth, height));
         addChild(new SliderAtom(getValue, setValue, system, min, max, sliderLeft, y, sliderWidth, height));
         addChild(new ValueAtom(getValue, system, format, font, colour, LEFT, valueLeft, y, valueWidth, height));
     }
 
     SliderContainer::SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, double *value, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height)
     {
-        double labelLeft  = x;
-        double sliderLeft = x + labelWidth + SliderContainer::PADDING;
-        double valueLeft  = x + labelWidth + sliderWidth + 2 * SliderContainer::PADDING;
+        double sliderLeft = labelWidth + SliderContainer::PADDING;
+        double valueLeft  = labelWidth + sliderWidth + 2 * SliderContainer::PADDING;
         
-        addChild(new TextAtom(label, font, colour, RIGHT, labelLeft, y, labelWidth, height));
+        addChild(new TextAtom(label, font, colour, RIGHT, 0, y, labelWidth, height));
         addChild(new SliderAtom(value, min, max, sliderLeft, y, sliderWidth, height));
         addChild(new ValueAtom(value, format, font, colour, LEFT, valueLeft, y, valueWidth, height));
     }

@@ -30,16 +30,18 @@ namespace gui {
          */
         
         double x, y;
+        
+        point operator+(const point &other);
+        point operator-(const point &other);
     };
     
-    class rect
+    struct rect
     {
         /*
-            Class defining a rectangle. Data is stored as the position of each side of the
+            Struct defining a rectangle. Data is stored as the position of each side of the
             rectangle, and various methods are given to get the width, height, centre, etc.
          */
         
-    public:
         double left, right, top, bottom;
         
         double width()   const;
@@ -69,7 +71,7 @@ namespace gui {
         /*
             Abstract class defining a base UI element.
          
-            Has a bounding box, defined by rect bounds, a point origin, and various methods
+            Has a bounding box, defined by rect bounds,and various methods
             to get this position and size in both left/right/top/bottom and x/y/width/height
             formats.
          
@@ -79,8 +81,7 @@ namespace gui {
          */
         
     protected:
-        rect bounds;  // position and size
-        point origin; // either {0, 0} or top-left corner of parent
+        rect bounds;    // position and size
     
     public:
         UIBase();
@@ -88,12 +89,7 @@ namespace gui {
         virtual ~UIBase();
         
         // return bounding box rectangle (bounds)
-        const rect getRect() const;      // relative to parent
-        const rect absoluteRect() const; // absolute position on screen
-        
-        // getter and setter for origin (i.e. top-left corner of parent)
-        const point getOrigin() const;
-        void setOrigin(point origin);
+        const rect getRect() const;
         
         virtual void draw() = 0;
         

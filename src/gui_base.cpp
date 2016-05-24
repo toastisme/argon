@@ -11,6 +11,18 @@
 namespace gui {
     
     /*
+        point
+     */
+    
+    point point::operator+(const point &other) {
+        return { x + other.x, y + other.y };
+    }
+    
+    point point::operator-(const point &other) {
+        return { x - other.x, y - other.y };
+    }
+    
+    /*
         rect
      */
     
@@ -72,6 +84,7 @@ namespace gui {
             case BOTTOM_LEFT:  { setXYWH(x,           y - H,       W, H); } break;
             case BOTTOM:       { setXYWH(x - W / 2.0, y - H,       W, H); } break;
             case BOTTOM_RIGHT: { setXYWH(x - W,       y - H,       W, H); } break;
+            default:           { } break;
         }
     }
     
@@ -107,22 +120,17 @@ namespace gui {
         UIBase
      */
     
-    // Default constructor: initialise position, size and origin to 0, 0
-    UIBase::UIBase() { bounds = { 0, 0, 0, 0 }; origin = {0, 0}; }
+    // Default constructor: initialise position and size to 0, 0 and parent to NULL
+    UIBase::UIBase() { bounds.setXYWH(0, 0, 0, 0); }
     
     // Overloaded constructor: initialise position to x, y; size and origin to 0, 0
-    UIBase::UIBase(double x, double y, double width, double height) { bounds = { x, x + width, y, y + height }; origin = {0, 0}; }
+    UIBase::UIBase(double x, double y, double width, double height) { bounds.setXYWH(x, y, width, height); }
     
     // Default destructor: no memory needs freeing, so do nothing
     UIBase::~UIBase() {}
     
-    // return bounds either relative to origin or in absoulute screen coordinates
+    // return bounds
     const rect UIBase::getRect() const { return bounds; }
-    const rect UIBase::absoluteRect() const { return bounds.offset(getOrigin()); }
-    
-    // getter and setter for origin
-    const point UIBase::getOrigin() const { return origin; }
-    void UIBase::setOrigin(point _origin) { origin = _origin; }
     
     // Default handling of mouse events is to do nothing
     void UIBase::mouseMoved(int x, int y) {}
@@ -169,12 +177,11 @@ namespace gui {
     // Add a child: set its parent to this object
     // Then make sure size matches the total size spanned by the children
     void UIContainer::addChild(UIBase *child) {
-        child->setOrigin(bounds.getPos(TOP_LEFT));
         children.push_back(child);
         
         // set bounds to match total size
         // TODO: this doesn't handle origins properly
-        rect childRect = child->absoluteRect();
+        rect childRect = child->getRect();
         bounds.expandToFit(childRect);
     }
 
