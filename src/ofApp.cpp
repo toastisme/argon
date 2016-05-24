@@ -106,8 +106,8 @@ void ofApp::setup(){
     soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
     
     testUI = gui::UIContainer(0, 0);
-    testUI.addChild(new gui::SliderContainer("Temperature (K):", uiFont14, ofColor(0, 255, 0), &md::MDContainer::getT, &md::MDContainer::setTemp, &theSystem, 0, 1000/120.0, "%6.4lf", 100, 200, 200, 400, 200, 10));
-    testUI.addChild(new gui::SliderContainer("Sensitivity:", uiFont14, ofColor(0, 255, 0), &sensitivity, 0.005, 0.135, "%6.4lf", 100, 300, 200, 400, 200, 10));
+    testUI.addChild(new gui::SliderContainer("Temperature (K):", uiFont14, ofColor(0, 255, 0), &md::MDContainer::getTempKelvin, &md::MDContainer::setTempKelvin, &theSystem, 0, 1000, "%6.4lf", 100, 200, 200, 400, 200, 10));
+    testUI.addChild(new gui::SliderContainer("Sensitivity:", uiFont14, ofColor(0, 255, 0), &sensitivity, 0.005, 0.135, "%7.4lf", 100, 300, 200, 400, 200, 10));
     testUI.addChild(new gui::ButtonAtom(playOn, playbutton, pausebutton, 800, 0, 50, 50));
     testUI.makeInvisible();
 }
@@ -333,7 +333,7 @@ void ofApp::drawUI()
     ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 122, 250, 10);
     
     //Parameter values
-    drawData(uiFont12, " ", theSystem.getT()*120, ofGetWidth()-545, ofGetHeight() - 109, 5); // Temperature
+    drawData(uiFont12, " ", theSystem.getTemp()*120, ofGetWidth()-545, ofGetHeight() - 109, 5); // Temperature
     drawData(uiFont12, " ", numParticles, ofGetWidth()-545, ofGetHeight() - 87, 5); // Number of particles
     drawData(uiFont12, " ", sensitivity, ofGetWidth()-545, ofGetHeight() - 62, 5); // Sensitivity
     
@@ -343,7 +343,7 @@ void ofApp::drawUI()
     ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 75, 250, 10);
     //Slider cursors
     ofSetColor(0,0,0);
-    ofDrawRectangle((ofGetWidth() - 800) + 30*theSystem.getT(), ofGetHeight() - 122, 5, 10);
+    ofDrawRectangle((ofGetWidth() - 800) + 30*theSystem.getTemp(), ofGetHeight() - 122, 5, 10);
     ofDrawRectangle((ofGetWidth() - 800) + numParticles, ofGetHeight() - 100, 5, 10);
     ofDrawRectangle((ofGetWidth() - 810) + 1900*sensitivity, ofGetHeight() - 75, 5, 10);
     
@@ -798,7 +798,7 @@ void ofApp::keyPressed(int key){
     
     else if (key == 'r' || key == 'R') { // Reset the system to have the current values of the sliders
         md::coord box = theSystem.getBox();
-        setupSystem(numParticles, theSystem.getT(), box.x, box.y, theSystem.getTimestep(), theSystem.getCutoff());
+        setupSystem(numParticles, theSystem.getTemp(), box.x, box.y, theSystem.getTimestep(), theSystem.getCutoff());
     }
     
     else if (key == 'p' || key == 'P') { // Pause/restart the simulation
@@ -820,8 +820,8 @@ void ofApp::keyPressed(int key){
         if (key == OF_KEY_RIGHT){
             switch(selectedSlider) {
                 case 0: { // Temperature
-                    if (((theSystem.getT()*120) + 10.0) <= 980){ //Bounds the upper end of the temperature slider
-                        theSystem.setTemp(theSystem.getT()+(10/120.0));
+                    if (((theSystem.getTemp()*120) + 10.0) <= 980){ //Bounds the upper end of the temperature slider
+                        theSystem.setTemp(theSystem.getTemp()+(10/120.0));
                     }
                     break;
                 }
@@ -844,8 +844,8 @@ void ofApp::keyPressed(int key){
         else if (key == OF_KEY_LEFT){
             switch(selectedSlider) {
                 case 0: { // Temperature
-                    if ((theSystem.getT() - (10/120.0)) > 0){ //Bounds the lower end of the temperature slider
-                        theSystem.setTemp(theSystem.getT()-(10/120.0));
+                    if ((theSystem.getTemp() - (10/120.0)) > 0){ //Bounds the lower end of the temperature slider
+                        theSystem.setTemp(theSystem.getTemp()-(10/120.0));
                     }
                     break;
                 }

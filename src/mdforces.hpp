@@ -60,7 +60,8 @@ namespace md{
         // Return values of private variables
         int getN() const;
         int getSteps() const;
-        double getT() const;
+        double getTemp() const;
+        double getTempKelvin() const;
         double getVAvg() const;
         
         double getTimestep() const;
@@ -108,6 +109,7 @@ namespace md{
         void setCutoff(double cutoff);
         void setTimestep(double timestep);
         void setTemp(double temperature);
+        void setTempKelvin(double temperature);
         
         // Add and remove particles
         void addParticle(double x, double y, double vx, double vy);
