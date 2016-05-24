@@ -35,6 +35,7 @@ namespace gui {
     private:
         std::string string;
         rect stringBounds;
+        Position align;
         
         const ofTrueTypeFont *font;
         ofColor colour;
@@ -43,16 +44,18 @@ namespace gui {
         
     public:
         TextComponent();
-        TextComponent(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour);
+        TextComponent(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position align);
         
         void setString(const std::string &string);
         void setString(double value, const std::string &format);
         void setColour(const ofColor &colour);
         void setFont(const ofTrueTypeFont &font);
+        void setAlign(Position align);
         
         rect getStringBounds() const;
         
-        void renderString(int top, int right) const;
+        void renderString(int left, int top) const;
+        void renderString(rect bounds) const;
     };
     
     /*
@@ -82,10 +85,11 @@ namespace gui {
         
     private:
         virtual void render();
+        Position anchor;
         
     public:
         TextAtom();
-        TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, double x, double y);
+        TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y);
     };
     
     class ValueAtom : public UIAtom, TextComponent
@@ -104,8 +108,8 @@ namespace gui {
         
     public:
         ValueAtom();
-        ValueAtom(const double (md::MDContainer::*getValue)(), md::MDContainer *system, const std::string &format, const ofTrueTypeFont &font, const ofColor &colour, double x, double y);
-        ValueAtom(double *value, const std::string &format, const ofTrueTypeFont &font, const ofColor &color, double x, double y);
+        ValueAtom(const double (md::MDContainer::*getValue)(), md::MDContainer *system, const std::string &format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y);
+        ValueAtom(double *value, const std::string &format, const ofTrueTypeFont &font, const ofColor &color, Position anchor, double x, double y);
         
         std::string getString() const;
     };
@@ -124,13 +128,13 @@ namespace gui {
         setter setValue;
         
         double min, max;
-        int width;
         
         bool mouseFocus;
         
     public:
         SliderAtom();
-        SliderAtom(const double (md::MDContainer::*getValue)(), void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, int width, double x, double y);
+        SliderAtom(const double (md::MDContainer::*getValue)(), void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, double x, double y, double width, double height);
+        SliderAtom(double *value, double min, double max, double x, double y, double width, double height);
         
         double getSliderPos();
         void setFromSliderPos(double x);
@@ -174,6 +178,7 @@ namespace gui {
     public:
         SliderContainer();
         SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, const double (md::MDContainer::*getValue)(), void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
+        SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, double *value, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
     };
     
 }

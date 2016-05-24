@@ -49,11 +49,15 @@ namespace gui {
         point getPos(Position position) const;
         
         void setVertex(Position position, point pos);
-        void setSide(Position position, double pos);
+        rect alignAnchor(rect other, Position anchor_this, Position anchor_other) const;
         
         bool inside(double x, double y) const;
         
         rect offset(point origin) const;
+        rect offset(double x, double y) const;
+        
+        static rect fromLRTB(double left, double right, double top, double bottom);
+        static rect fromXYWH(double x, double y, double width, double height);
     };
     
     class UIBase

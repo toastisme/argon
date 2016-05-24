@@ -48,15 +48,38 @@ namespace gui {
         }
     }
     
-    void rect::setSide(Position position, double pos) {
-        switch (position) {
-            case TOP:    { top    = pos; } break;
-            case LEFT:   { left   = pos; } break;
-            case RIGHT:  { right  = pos; } break;
-            case BOTTOM: { bottom = pos; } break;
-            default:     { } break;
+    rect rect::alignAnchor(rect other, Position anchor_this, Position anchor_other) const {
+        rect ret;
+        
+        // First align anchor_this to other's top-left:
+        switch (anchor_this) {
+            case TOP_LEFT:     { ret = rect::fromXYWH(other.left, other.top, width(), height()); } break;
+            case TOP:          { ret = rect::fromXYWH(other.left - width() / 2.0, other.top, width(), height()); } break;
+            case TOP_RIGHT:    { ret = rect::fromXYWH(other.left - width(), other.top, width(), height()); } break;
+            case LEFT:         { ret = rect::fromXYWH(other.left, other.top - height() / 2.0, width(), height()); } break;
+            case CENTRE:       { ret = rect::fromXYWH(other.left - width() / 2.0, other.top - height() / 2.0, width(), height()); } break;
+            case RIGHT:        { ret = rect::fromXYWH(other.left - width(), other.top - height() / 2.0, width(), height()); } break;
+            case BOTTOM_LEFT:  { ret = rect::fromXYWH(other.left, other.top - height(), width(), height()); } break;
+            case BOTTOM:       { ret = rect::fromXYWH(other.left - width() / 2.0, other.top - height(), width(), height()); } break;
+            case BOTTOM_RIGHT: { ret = rect::fromXYWH(other.left - width(), other.top - height(), width(), height()); } break;
         }
+        
+        // now shift to match anchor_other:
+        switch(anchor_other) {
+            case TOP_LEFT:     {} break;
+            case TOP:          { ret = ret.offset(other.width() / 2.0, 0); } break;
+            case TOP_RIGHT:    { ret = ret.offset(other.width(), 0); } break;
+            case LEFT:         { ret = ret.offset(0, other.height() / 2.0); } break;
+            case CENTRE:       { ret = ret.offset(other.width() / 2.0, other.height() / 2.0); } break;
+            case RIGHT:        { ret = ret.offset(other.width(), other.height() / 2.0); } break;
+            case BOTTOM_LEFT:  { ret = ret.offset(0, other.height()); } break;
+            case BOTTOM:       { ret = ret.offset(other.width() / 2.0, other.height()); } break;
+            case BOTTOM_RIGHT: { ret = ret.offset(other.width(), other.height()); } break;
+        }
+        
+        return ret;
     }
+    
     
     bool rect::inside(double x, double y) const {
         if (x >= left && x <= right && y >= top && y <= bottom) {
@@ -65,16 +88,27 @@ namespace gui {
         return false;
     }
     
-    rect rect::offset(point origin) const {
-        rect ret;
-        
-        ret.left   = origin.x + left;
-        ret.right  = origin.x + right;
-        ret.top    = origin.y + top;
-        ret.bottom = origin.y + bottom;
+    rect rect::offset(point origin) const { return offset(origin.x, origin.y); }
+                                      
+    rect rect::offset(double x, double y) const {
+    rect ret;
+
+        ret.left   = x + left;
+        ret.right  = x + right;
+        ret.top    = y + top;
+        ret.bottom = y + bottom;
         
         return ret;
     }
+    
+    rect rect::fromLRTB(double left, double right, double top, double bottom) {
+        return { left, right, top, bottom };
+    }
+    
+    rect rect::fromXYWH(double x, double y, double width, double height) {
+        return { x, x + width, y, y + height };
+    }
+    
     
     /*
         UIBase
