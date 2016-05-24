@@ -74,7 +74,7 @@ namespace gui {
         
     public:
         RectAtom();
-        RectAtom(double x, double y, double width, double height, ofColor colour);
+        RectAtom(const ofColor &colour, double x, double y, double width, double height);
     };
     
     class TextAtom : public UIAtom, TextComponent
@@ -89,7 +89,7 @@ namespace gui {
         
     public:
         TextAtom();
-        TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y);
+        TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height);
     };
     
     class ValueAtom : public UIAtom, TextComponent
@@ -108,8 +108,8 @@ namespace gui {
         
     public:
         ValueAtom();
-        ValueAtom(double (md::MDContainer::*getValue)() const, md::MDContainer *system, const std::string &format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y);
-        ValueAtom(double *value, const std::string &format, const ofTrueTypeFont &font, const ofColor &color, Position anchor, double x, double y);
+        ValueAtom(double (md::MDContainer::*getValue)() const, md::MDContainer *system, const std::string &format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height);
+        ValueAtom(double *value, const std::string &format, const ofTrueTypeFont &font, const ofColor &color, Position anchor, double x, double y, double width, double height);
         
         std::string getString() const;
     };
@@ -143,6 +143,10 @@ namespace gui {
         void mouseMoved(int x, int y);
         void mousePressed(int x, int y, int button);
         void mouseReleased(int x, int y, int button);
+        
+        static int BODY_HEIGHT;
+        static int HANDLE_WIDTH;
+        static int HANDLE_HEIGHT;
     };
     
     class ButtonAtom : public UIAtom
@@ -179,7 +183,11 @@ namespace gui {
         SliderContainer();
         SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, double (md::MDContainer::*getValue)() const, void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
         SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, double *value, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
+        
+        static int PADDING;
     };
+    
+    
     
 }
 

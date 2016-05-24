@@ -32,13 +32,14 @@ namespace gui {
         double x, y;
     };
     
-    struct rect
+    class rect
     {
         /*
-            Struct defining a rectangle. Data is stored as the position of each side of the
+            Class defining a rectangle. Data is stored as the position of each side of the
             rectangle, and various methods are given to get the width, height, centre, etc.
          */
         
+    public:
         double left, right, top, bottom;
         
         double width()   const;
@@ -46,18 +47,21 @@ namespace gui {
         double centreX() const;
         double centreY() const;
         
+        void setLRTB(double left, double right, double top, double bottom);
+        void setXYWH(double x, double y, double width, double height);
+        
         point getPos(Position position) const;
         
         void setVertex(Position position, point pos);
-        rect alignAnchor(rect other, Position anchor_this, Position anchor_other) const;
+        
+        void moveAnchor(Position position, point pos);
         
         bool inside(double x, double y) const;
+        void expandToFit(rect other);
         
         rect offset(point origin) const;
         rect offset(double x, double y) const;
         
-        static rect fromLRTB(double left, double right, double top, double bottom);
-        static rect fromXYWH(double x, double y, double width, double height);
     };
     
     class UIBase

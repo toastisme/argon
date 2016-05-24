@@ -19,6 +19,14 @@ namespace gui {
     double rect::centreX() const { return (left + right) / 2.0; }
     double rect::centreY() const { return (top + bottom) / 2.0; }
     
+    void rect::setLRTB(double _left, double _right, double _top, double _bottom) {
+        left = _left; right = _right; top = _top; bottom = _bottom;
+    }
+    
+    void rect::setXYWH(double x, double y, double width, double height) {
+        left = x; right = x + width; top = y; bottom = y + height;
+    }
+    
     point rect::getPos(Position position) const {
         point ret;
         
@@ -48,44 +56,37 @@ namespace gui {
         }
     }
     
-    rect rect::alignAnchor(rect other, Position anchor_this, Position anchor_other) const {
-        rect ret;
+    void rect::moveAnchor(Position anchor, point pos) {
+        double x = pos.x;
+        double y = pos.y;
+        double W = width();
+        double H = height();
         
-        // First align anchor_this to other's top-left:
-        switch (anchor_this) {
-            case TOP_LEFT:     { ret = rect::fromXYWH(other.left, other.top, width(), height()); } break;
-            case TOP:          { ret = rect::fromXYWH(other.left - width() / 2.0, other.top, width(), height()); } break;
-            case TOP_RIGHT:    { ret = rect::fromXYWH(other.left - width(), other.top, width(), height()); } break;
-            case LEFT:         { ret = rect::fromXYWH(other.left, other.top - height() / 2.0, width(), height()); } break;
-            case CENTRE:       { ret = rect::fromXYWH(other.left - width() / 2.0, other.top - height() / 2.0, width(), height()); } break;
-            case RIGHT:        { ret = rect::fromXYWH(other.left - width(), other.top - height() / 2.0, width(), height()); } break;
-            case BOTTOM_LEFT:  { ret = rect::fromXYWH(other.left, other.top - height(), width(), height()); } break;
-            case BOTTOM:       { ret = rect::fromXYWH(other.left - width() / 2.0, other.top - height(), width(), height()); } break;
-            case BOTTOM_RIGHT: { ret = rect::fromXYWH(other.left - width(), other.top - height(), width(), height()); } break;
+        switch(anchor) {
+            case TOP_LEFT:     { setXYWH(x,           y,           W, H); } break;
+            case TOP:          { setXYWH(x - W / 2.0, y,           W, H); } break;
+            case TOP_RIGHT:    { setXYWH(x - W,       y,           W, H); } break;
+            case LEFT:         { setXYWH(x,           y - H / 2.0, W, H); } break;
+            case CENTRE:       { setXYWH(x - W / 2.0, y - H / 2.0, W, H); } break;
+            case RIGHT:        { setXYWH(x - W,       y - H / 2.0, W, H); } break;
+            case BOTTOM_LEFT:  { setXYWH(x,           y - H,       W, H); } break;
+            case BOTTOM:       { setXYWH(x - W / 2.0, y - H,       W, H); } break;
+            case BOTTOM_RIGHT: { setXYWH(x - W,       y - H,       W, H); } break;
         }
-        
-        // now shift to match anchor_other:
-        switch(anchor_other) {
-            case TOP_LEFT:     {} break;
-            case TOP:          { ret = ret.offset(other.width() / 2.0, 0); } break;
-            case TOP_RIGHT:    { ret = ret.offset(other.width(), 0); } break;
-            case LEFT:         { ret = ret.offset(0, other.height() / 2.0); } break;
-            case CENTRE:       { ret = ret.offset(other.width() / 2.0, other.height() / 2.0); } break;
-            case RIGHT:        { ret = ret.offset(other.width(), other.height() / 2.0); } break;
-            case BOTTOM_LEFT:  { ret = ret.offset(0, other.height()); } break;
-            case BOTTOM:       { ret = ret.offset(other.width() / 2.0, other.height()); } break;
-            case BOTTOM_RIGHT: { ret = ret.offset(other.width(), other.height()); } break;
-        }
-        
-        return ret;
     }
-    
     
     bool rect::inside(double x, double y) const {
         if (x >= left && x <= right && y >= top && y <= bottom) {
             return true;
         }
         return false;
+    }
+    
+    void rect::expandToFit(rect other) {
+        if (other.left   < left  ) { left   = other.left; }
+        if (other.right  < right ) { right  = other.right; }
+        if (other.top    < top   ) { top    = other.top; }
+        if (other.bottom < bottom) { bottom = other.bottom; }
     }
     
     rect rect::offset(point origin) const { return offset(origin.x, origin.y); }
@@ -99,14 +100,6 @@ namespace gui {
         ret.bottom = y + bottom;
         
         return ret;
-    }
-    
-    rect rect::fromLRTB(double left, double right, double top, double bottom) {
-        return { left, right, top, bottom };
-    }
-    
-    rect rect::fromXYWH(double x, double y, double width, double height) {
-        return { x, x + width, y, y + height };
     }
     
     
@@ -180,11 +173,9 @@ namespace gui {
         children.push_back(child);
         
         // set bounds to match total size
+        // TODO: this doesn't handle origins properly
         rect childRect = child->absoluteRect();
-        if (childRect.left   < bounds.left  ) { bounds.left   = childRect.left; }
-        if (childRect.right  > bounds.right ) { bounds.right  = childRect.right; }
-        if (childRect.top    < bounds.top   ) { bounds.top    = childRect.top; }
-        if (childRect.bottom > bounds.bottom) { bounds.bottom = childRect.bottom; }
+        bounds.expandToFit(childRect);
     }
 
     // remainder of methods just pass the call through to its children
