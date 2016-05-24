@@ -53,46 +53,46 @@ namespace md {
     
     
     // Return values of private variables without altering them
-    int    const MDContainer::getN() { return N; }
-    int    const MDContainer::getSteps() { return enCounter; }
-    double const MDContainer::getEPot() { return epot; }
-    double const MDContainer::getEKin() { return ekin; }
-    double const MDContainer::getT() { return T; }
-    double const MDContainer::getVAvg() { return v_avg; }
-    double const MDContainer::getTimestep() { return dt; }
-    double const MDContainer::getCutoff() { return rcutoff; }
-    coord  const MDContainer::getBox() { return box_dimensions; }
-    double const MDContainer::getWidth() { return box_dimensions.x; }
-    double const MDContainer::getHeight() { return box_dimensions.y; }
-    double const MDContainer::getMaxEkin() { return maxEKin; }
-    double const MDContainer::getMaxEpot() { return maxEPot; }
+    int    MDContainer::getN()        const { return N; }
+    int    MDContainer::getSteps()    const { return enCounter; }
+    double MDContainer::getEPot()     const { return epot; }
+    double MDContainer::getEKin()     const { return ekin; }
+    double MDContainer::getT()        const { return T; }
+    double MDContainer::getVAvg()     const { return v_avg; }
+    double MDContainer::getTimestep() const { return dt; }
+    double MDContainer::getCutoff()   const { return rcutoff; }
+    coord  MDContainer::getBox()      const { return box_dimensions; }
+    double MDContainer::getWidth()    const { return box_dimensions.x; }
+    double MDContainer::getHeight()   const { return box_dimensions.y; }
+    double MDContainer::getMaxEkin()  const { return maxEKin; }
+    double MDContainer::getMaxEpot()  const { return maxEPot; }
     
     // Return sizes of gaussians, prevPos, and energies vectors, i.e. the number
     // of gaussians, positions and energies stored
-    int const MDContainer::getNGaussians() { return gaussians.size(); }
-    int const MDContainer::getNEnergies() { return prevEKin.size(); }
-    int const MDContainer::getNPrevPos() { return prevPositions.size(); }
+    int MDContainer::getNGaussians()  const { return gaussians.size(); }
+    int MDContainer::getNEnergies()   const { return prevEKin.size(); }
+    int MDContainer::getNPrevPos()    const { return prevPositions.size(); }
     
     // Return (x, y) vectors of the dynamical variables of particle i
     // Safety checks could be added, but index checking is usually slow
-    coord const MDContainer::getPos(int i) { return positions[i]; }
-    coord const MDContainer::getVel(int i) { return velocities[i]; }
-    coord const MDContainer::getForce(int i) { return forces[i]; }
+    coord MDContainer::getPos(int i)   const { return positions[i]; }
+    coord MDContainer::getVel(int i)   const { return velocities[i]; }
+    coord MDContainer::getForce(int i) const { return forces[i]; }
     
     // Return the (x, y) position vector of particle npart, from nstep timesteps previously
-    coord const MDContainer::getPos(int npart, int nstep) { return prevPositions[nstep][npart]; }
+    coord MDContainer::getPos(int npart, int nstep) const { return prevPositions[nstep][npart]; }
     
     // Return the ith previous kinetic and potential energy
-    double const MDContainer::getPreviousEkin(int i) { return prevEKin[i]; }
-    double const MDContainer::getPreviousEpot(int i) { return prevEPot[i]; }
+    double MDContainer::getPreviousEkin(int i) const { return prevEKin[i]; }
+    double MDContainer::getPreviousEpot(int i) const { return prevEPot[i]; }
     
     // Return a reference to the ith gaussian in gaussians
     Gaussian& MDContainer::getGaussian(int i) { return gaussians[i]; }
     // Return values of the private variables of the ith gaussian in gaussians
-    double MDContainer::getGaussianAlpha(int i) { return gaussians[i].getgAlpha(); }
-    double MDContainer::getGaussianAmp(int i) { return gaussians[i].getgAmp(); }
-    double MDContainer::getGaussianX0(int i) { return gaussians[i].getgex0(); }
-    double MDContainer::getGaussianY0(int i) { return gaussians[i].getgey0(); }
+    double MDContainer::getGaussianAlpha(int i) const { return gaussians[i].getgAlpha(); }
+    double MDContainer::getGaussianAmp(int i)   const { return gaussians[i].getgAmp(); }
+    double MDContainer::getGaussianX0(int i)    const { return gaussians[i].getgex0(); }
+    double MDContainer::getGaussianY0(int i)    const { return gaussians[i].getgey0(); }
     
     
     

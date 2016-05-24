@@ -30,11 +30,11 @@ public:
     Gaussian(const Gaussian& other); // Copy constructor
     
     // Get private variables
-    double const getgAmp();
-    double const getgAlpha();
-    double const getgex0();
-    double const getgey0();
-    double const getScale();
+    double getgAmp() const;
+    double getgAlpha() const;
+    double getgex0() const;
+    double getgey0() const;
+    double getScale() const;
     
     // Set the parameters
     void setParams(double _gAmp, double _gAlpha, double _gex0, double _gey0, double _scale);

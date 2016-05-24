@@ -37,11 +37,11 @@ Gaussian::Gaussian(const Gaussian& other)
         Return the values of the private variables; scope to alter how these values are
         accessed if necessary.
  */
-double const Gaussian::getgAlpha() { return gAlpha; }
-double const Gaussian::getgAmp() { return gAmp; }
-double const Gaussian::getgex0() { return gex0; }
-double const Gaussian::getgey0() { return gey0; }
-double const Gaussian::getScale() { return scale; }
+double Gaussian::getgAlpha() const { return gAlpha; }
+double Gaussian::getgAmp()   const { return gAmp; }
+double Gaussian::getgex0()   const { return gex0; }
+double Gaussian::getgey0()   const { return gey0; }
+double Gaussian::getScale()  const { return scale; }
 
 /*
     ROUTINE setParams:
