@@ -249,7 +249,7 @@ void ofApp::drawGaussian(Gaussian& g, bool selected){
     ofColor color;
     u_char hue = 200;
     u_char saturation = gA > 0 ? 255 : 0;
-    u_char brightness = 128;
+    u_char brightness = 180;
     
     // Brighten if selected
     if (selected) {
