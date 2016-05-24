@@ -153,24 +153,21 @@ void ofApp::setupSystem(int numParticles, double temperature, double box_width, 
  */
 void ofApp::update(){
     
-    if (playOn) { // If not paused
+    // If not paused, integrate 5 times with a thermostat frequency of 0.1
+    if (playOn) { theSystem.run(5, thermFreq, N_THREADS); }
         
-        // Integrate 5 times with a thermostat frequency of 0.1
-        theSystem.run(5, thermFreq, N_THREADS);
+    // scale the audio between 0 and 1
+    if (audioOn) {
+        // Scale smoothedVol between 0 and 1, taking account of the sensitivity
+        // to the audioInput.
+        scaledVol = ofMap(smoothedVol, 0.0, sensitivity, 0.0, 1.0, true);
         
-        // scale the audio between 0 and 1
-        if (audioOn) {
-            // Scale smoothedVol between 0 and 1, taking account of the sensitivity
-            // to the audioInput.
-            scaledVol = ofMap(smoothedVol, 0.0, sensitivity, 0.0, 1.0, true);
-            
-            // Update the currently selected Gaussian, so that quiet-> loud results in
-            // a change from an attractive, wide Gaussian, to a repulsive, narrow Gaussian.
-            if ( selectedGaussian > -1)
-                theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 0.8 - 0.5*scaledVol,
-                                         theSystem.getGaussianX0(selectedGaussian),
-                                         theSystem.getGaussianY0(selectedGaussian), scaledVol);
-        }
+        // Update the currently selected Gaussian, so that quiet-> loud results in
+        // a change from an attractive, wide Gaussian, to a repulsive, narrow Gaussian.
+        if ( selectedGaussian > -1)
+            theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 0.8 - 0.5*scaledVol,
+                                     theSystem.getGaussianX0(selectedGaussian),
+                                     theSystem.getGaussianY0(selectedGaussian), scaledVol);
     }
 }
 
