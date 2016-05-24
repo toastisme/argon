@@ -115,6 +115,12 @@ namespace gui {
         setString(getValue(), format);
     }
     
+    ValueAtom::ValueAtom(FuncGetter _getValue, const std::string &_format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height)
+        : UIAtom(x, y, width, height), getValue(_getValue), format(_format), TextComponent("", font, colour, anchor)
+    {
+        setString(getValue(), format);
+    }
+    
     void ValueAtom::render() {
         setString(getValue(), format);
         renderString(bounds);
@@ -139,6 +145,9 @@ namespace gui {
         getValue = [&] () { return *value; };
         setValue = [&] (double set) { *value = set; };
     }
+    
+    SliderAtom::SliderAtom(FuncGetter _getValue, FuncSetter _setValue, double _min, double _max, double x, double y, double width, double height)
+        : UIAtom(x, y, width, height), min(_min), max(_max), getValue(_getValue), setValue(_setValue) {}
     
     double SliderAtom::getSliderPos() {
         return ofMap(getValue(), min, max, bounds.left, bounds.right - SliderAtom::HANDLE_WIDTH, true);
@@ -191,12 +200,30 @@ namespace gui {
         ButtonAtom
      */
     
-    ButtonAtom::ButtonAtom() : UIAtom(), toggle(NULL), imageOn(NULL), imageOff(NULL) {}
+    ButtonAtom::ButtonAtom() : UIAtom(), image(NULL) {}
     
-    ButtonAtom::ButtonAtom(bool &_toggle, const ofImage &_imageOn, const ofImage &_imageOff, double x, double y, double width, double height)
-        : UIAtom(x, y, width, height), imageOn(&_imageOn), imageOff(&_imageOff), toggle(&_toggle) {}
+    ButtonAtom::ButtonAtom(FuncAction _doAction, const ofImage &_image, double x, double y, double width, double height)
+        : UIAtom(x, y, width, height), doAction(_doAction), image(&_image)
+    { }
     
     void ButtonAtom::render() {
+        if (image) { image->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
+    }
+    
+    void ButtonAtom::mousePressed(int x, int y, int button) {
+        if (button == 0 && bounds.inside(x, y)) { doAction(); }
+    }
+    
+    /*
+        ButtonToggleAtom
+     */
+    
+    ButtonToggleAtom::ButtonToggleAtom() : UIAtom(), toggle(NULL), imageOn(NULL), imageOff(NULL) {}
+    
+    ButtonToggleAtom::ButtonToggleAtom(bool &_toggle, const ofImage &_imageOn, const ofImage &_imageOff, double x, double y, double width, double height)
+        : UIAtom(x, y, width, height), imageOn(&_imageOn), imageOff(&_imageOff), toggle(&_toggle) {}
+    
+    void ButtonToggleAtom::render() {
         if (toggle) {
             if (*toggle) {
                 if (imageOn)  {  imageOn->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
@@ -206,7 +233,7 @@ namespace gui {
         }
     }
     
-    void ButtonAtom::mousePressed(int x, int y, int button) {
+    void ButtonToggleAtom::mousePressed(int x, int y, int button) {
         if (button == 0 && bounds.inside(x, y)) { *toggle = not *toggle; }
     }
     
@@ -234,6 +261,16 @@ namespace gui {
         addChild(new TextAtom(label, font, colour, RIGHT, 0, y, labelWidth, height));
         addChild(new SliderAtom(value, min, max, sliderLeft, y, sliderWidth, height));
         addChild(new ValueAtom(value, format, font, colour, LEFT, valueLeft, y, valueWidth, height));
+    }
+    
+    SliderContainer::SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, FuncGetter getValue, FuncSetter setValue, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height)
+    {
+        double sliderLeft = labelWidth + SliderContainer::PADDING;
+        double valueLeft  = labelWidth + sliderWidth + 2 * SliderContainer::PADDING;
+        
+        addChild(new TextAtom(label, font, colour, RIGHT, 0, y, labelWidth, height));
+        addChild(new SliderAtom(getValue, setValue, min, max, sliderLeft, y, sliderWidth, height));
+        addChild(new ValueAtom(getValue, format, font, colour, LEFT, valueLeft, y, valueWidth, height));
     }
     
     int SliderContainer::PADDING = 5;

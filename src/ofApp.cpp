@@ -106,18 +106,31 @@ void ofApp::setup(){
     soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
     
     testUI = gui::UIContainer(300, 100);
-    testUI.addChild(new gui::SliderContainer("Temperature (K):", uiFont14, ofColor(0, 255, 0), &md::MDContainer::getTempKelvin, &md::MDContainer::setTempKelvin, &theSystem, 0, 1000, "%6.4lf", 100, 200, 200, 400, 200, 10));
-    testUI.addChild(new gui::SliderContainer("Sensitivity:", uiFont14, ofColor(0, 255, 0), &sensitivity, 0.005, 0.135, "%7.4lf", 100, 300, 200, 400, 200, 10));
-    testUI.addChild(new gui::ButtonAtom(playOn, playbutton, pausebutton, 800, 0, 50, 50));
+    
+    testUI.addChild(new gui::SliderContainer("Temperature (K):", uiFont14, ofColor(0, 255, 0),
+                                             [&] () { return theSystem.getTemp() * 120; },
+                                             [&] (double set) { theSystem.setTemp(set / 120.0); },
+                                             0, 1000, "%6.4lf", 100, 200, 200, 400, 200, 10));
+    
+    testUI.addChild(new gui::SliderContainer("Sensitivity:", uiFont14, ofColor(0, 255, 0),
+                                             [&] () { return (double)sensitivity; },
+                                             [&] (double set) { sensitivity = set; },
+                                             0.005, 0.135, "%7.4lf", 100, 300, 200, 400, 200, 10));
+    
+    testUI.addChild(new gui::ButtonToggleAtom(playOn, playbutton, pausebutton, 800, 0, 50, 50));
+    testUI.addChild(new gui::ButtonAtom([&] () { setupSystem(); }, playbutton, 800, 50, 50, 50));
     testUI.makeInvisible();
+    testUI.mouseReleased(0, 0, 0);
 }
 
 /*
     ROUTINE setupSystem:
         Sets up and regrids the system. First clears all particles, then sets basic constants. Then, add the
         particles on a grid, initialise the forces and energies and save initial positions to prevousPositions
+ 
+        Overloaded version takes no parameters, just regridding the system based on ofApp.numParticles
  */
-void ofApp::setupSystem(int numParticles, double temperature, double box_width, double box_height, double timestep, double cutoff) {
+void ofApp::setupSystem(int particles, double temperature, double box_width, double box_height, double timestep, double cutoff) {
     theSystem.clearSystem();
     
     theSystem.setBox(box_width, box_height);
@@ -125,8 +138,17 @@ void ofApp::setupSystem(int numParticles, double temperature, double box_width, 
     theSystem.setTimestep(timestep);
     theSystem.setCutoff(cutoff);
     
-    theSystem.addParticlesGrid(numParticles);
+    theSystem.addParticlesGrid(particles);
     
+    theSystem.forcesEnergies(N_THREADS);
+    theSystem.savePreviousValues();
+    firstEKin = theSystem.getEKin();
+    firstEPot = fabs(theSystem.getEPot());
+}
+    
+void ofApp::setupSystem() {
+    theSystem.clearSystem();
+    theSystem.addParticlesGrid(numParticles);
     theSystem.forcesEnergies(N_THREADS);
     theSystem.savePreviousValues();
     firstEKin = theSystem.getEKin();
@@ -795,7 +817,8 @@ void ofApp::keyPressed(int key){
     
     else if (key == 'r' || key == 'R') { // Reset the system to have the current values of the sliders
         md::coord box = theSystem.getBox();
-        setupSystem(numParticles, theSystem.getTemp(), box.x, box.y, theSystem.getTimestep(), theSystem.getCutoff());
+        setupSystem();
+        //setupSystem(numParticles, theSystem.getTemp(), box.x, box.y, theSystem.getTimestep(), theSystem.getCutoff());
     }
     
     else if (key == 'p' || key == 'P') { // Pause/restart the simulation

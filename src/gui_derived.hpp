@@ -18,8 +18,9 @@
 
 namespace gui {
     
-    typedef std::function<double()> getter;
-    typedef std::function<void(double)> setter;
+    typedef std::function <double()>     FuncGetter;
+    typedef std::function <void(double)> FuncSetter;
+    typedef std::function <void()>       FuncAction;
     
     /*
         Components
@@ -102,7 +103,7 @@ namespace gui {
         virtual void render();
         
         double *value;
-        getter getValue;
+        FuncGetter getValue;
         
         std::string format;
         
@@ -110,6 +111,7 @@ namespace gui {
         ValueAtom();
         ValueAtom(double (md::MDContainer::*getValue)() const, md::MDContainer *system, const std::string &format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height);
         ValueAtom(double *value, const std::string &format, const ofTrueTypeFont &font, const ofColor &color, Position anchor, double x, double y, double width, double height);
+        ValueAtom(FuncGetter getValue, const std::string &_format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height);
         
         std::string getString() const;
     };
@@ -124,8 +126,8 @@ namespace gui {
         virtual void render();
         
         double *value;
-        getter getValue;
-        setter setValue;
+        FuncGetter getValue;
+        FuncSetter setValue;
         
         double min, max;
         
@@ -135,6 +137,7 @@ namespace gui {
         SliderAtom();
         SliderAtom(double (md::MDContainer::*getValue)() const, void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, double x, double y, double width, double height);
         SliderAtom(double *value, double min, double max, double x, double y, double width, double height);
+        SliderAtom(FuncGetter getValue, FuncSetter setValue, double min, double max, double x, double y, double width, double height);
         
         double getSliderPos();
         void setFromSliderPos(double x);
@@ -152,6 +155,25 @@ namespace gui {
     class ButtonAtom : public UIAtom
     {
         /*
+            UI Atom for a button which calls a void(void) function.
+         */
+        
+    private:
+        virtual void render();
+        
+        FuncAction doAction;
+        const ofImage *image;
+        
+    public:
+        ButtonAtom();
+        ButtonAtom(FuncAction doAction, const ofImage &image, double x, double y, double width, double height);
+        
+        void mousePressed(int x, int y, int button);
+    };
+    
+    class ButtonToggleAtom : public UIAtom
+    {
+        /*
             UI Atom for a button which toggles a boolean value, stored by reference
          */
         
@@ -163,8 +185,8 @@ namespace gui {
         const ofImage *imageOff;
         
     public:
-        ButtonAtom();
-        ButtonAtom(bool &toggle, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
+        ButtonToggleAtom();
+        ButtonToggleAtom(bool &toggle, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
         
         void mousePressed(int x, int y, int button);
     };
@@ -183,6 +205,7 @@ namespace gui {
         SliderContainer();
         SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, double (md::MDContainer::*getValue)() const, void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
         SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, double *value, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
+        SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, FuncGetter getValue, FuncSetter setValue, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
         
         static int PADDING;
     };

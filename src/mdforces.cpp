@@ -53,32 +53,31 @@ namespace md {
     
     
     // Return values of private variables without altering them
-    int    MDContainer::getN()          const { return N; }
-    int    MDContainer::getSteps()      const { return enCounter; }
-    double MDContainer::getEPot()       const { return epot; }
-    double MDContainer::getEKin()       const { return ekin; }
-    double MDContainer::getTemp()       const { return T; }
-    double MDContainer::getTempKelvin() const { return T * 120.0; }
-    double MDContainer::getVAvg()       const { return v_avg; }
-    double MDContainer::getTimestep()   const { return dt; }
-    double MDContainer::getCutoff()     const { return rcutoff; }
-    coord  MDContainer::getBox()        const { return box_dimensions; }
-    double MDContainer::getWidth()      const { return box_dimensions.x; }
-    double MDContainer::getHeight()     const { return box_dimensions.y; }
-    double MDContainer::getMaxEkin()    const { return maxEKin; }
-    double MDContainer::getMaxEpot()    const { return maxEPot; }
+    int    MDContainer::getN()         const { return N; }
+    int    MDContainer::getSteps()     const { return enCounter; }
+    double MDContainer::getEPot()      const { return epot; }
+    double MDContainer::getEKin()      const { return ekin; }
+    double MDContainer::getTemp()      const { return T; }
+    double MDContainer::getVAvg()      const { return v_avg; }
+    double MDContainer::getTimestep()  const { return dt; }
+    double MDContainer::getCutoff()    const { return rcutoff; }
+    coord  MDContainer::getBox()       const { return box_dimensions; }
+    double MDContainer::getWidth()     const { return box_dimensions.x; }
+    double MDContainer::getHeight()    const { return box_dimensions.y; }
+    double MDContainer::getMaxEkin()   const { return maxEKin; }
+    double MDContainer::getMaxEpot()   const { return maxEPot; }
     
     // Return sizes of gaussians, prevPos, and energies vectors, i.e. the number
     // of gaussians, positions and energies stored
-    int MDContainer::getNGaussians()    const { return gaussians.size(); }
-    int MDContainer::getNEnergies()     const { return prevEKin.size(); }
-    int MDContainer::getNPrevPos()      const { return prevPositions.size(); }
+    int MDContainer::getNGaussians()   const { return gaussians.size(); }
+    int MDContainer::getNEnergies()    const { return prevEKin.size(); }
+    int MDContainer::getNPrevPos()     const { return prevPositions.size(); }
     
     // Return (x, y) vectors of the dynamical variables of particle i
     // Safety checks could be added, but index checking is usually slow
-    coord MDContainer::getPos(int i)    const { return positions[i]; }
-    coord MDContainer::getVel(int i)    const { return velocities[i]; }
-    coord MDContainer::getForce(int i)  const { return forces[i]; }
+    coord MDContainer::getPos(int i)   const { return positions[i]; }
+    coord MDContainer::getVel(int i)   const { return velocities[i]; }
+    coord MDContainer::getForce(int i) const { return forces[i]; }
     
     // Return the (x, y) position vector of particle npart, from nstep timesteps previously
     coord MDContainer::getPos(int npart, int nstep) const { return prevPositions[nstep][npart]; }
@@ -126,7 +125,6 @@ namespace md {
         box_dimensions.y = box_length > 0 ? box_length : 10.0;
     }
     void MDContainer::setTemp(double temperature) { T = temperature >= 0 ? temperature : 0.5; }
-    void MDContainer::setTempKelvin(double temperature) { T = temperature >= 0 ? temperature / 120.0 : 0.5; }
     void MDContainer::setTimestep(double timestep) { dt = timestep > 0 ? timestep : 0.002; }
     void MDContainer::setCutoff(double cutoff) { rcutoff = cutoff > 0 ? cutoff : 3.0; }
     

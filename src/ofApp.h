@@ -51,6 +51,7 @@ public:
     
     // Set the parameters for the system
     void setupSystem(int numParticles, double temperature, double box_length, double box_width, double timestep, double cutoff);
+    void setupSystem();
 
     // Events
     void keyPressed(int key);
@@ -109,10 +110,9 @@ private:
     vector <float> left;
     vector <float> right;
     
-    // note: changed these to doubles
-    double smoothedVol; // Average volume, smoothed out
-    double scaledVol; // Volume rescaled between 0 and 1
-    double sensitivity; // Sensitivity of Gaussians to changes in volume
+    float smoothedVol; // Average volume, smoothed out
+    float scaledVol; // Volume rescaled between 0 and 1
+    float sensitivity; // Sensitivity of Gaussians to changes in volume
     
     // Logical variables
     bool audioOn; // Is audio input turned on?
