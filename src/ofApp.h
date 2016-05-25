@@ -127,6 +127,8 @@ private:
     int loganShiftx, loganShifty;
     
     // UI Containers
+    gui::UIContainer menuUI;
+    gui::UIContainer presshUI;
     gui::UIContainer testUI;
 
 };

@@ -18,9 +18,9 @@
 
 namespace gui {
     
-    typedef std::function <double()>     FuncGetter;
-    typedef std::function <void(double)> FuncSetter;
-    typedef std::function <void()>       FuncAction;
+    typedef std::function <double()>     FuncGetter;   // function void -> double
+    typedef std::function <void(double)> FuncSetter;   // function double -> void
+    typedef std::function <void()>       FuncAction;   // function void -> void
     
     /*
         Components
@@ -62,6 +62,21 @@ namespace gui {
     /*
         Atoms
      */
+    
+    class SetColour : public UIAtom
+    {
+        /*
+            UIAtom which doesn't draw anything, but sets the draw colour
+         */
+        
+    private:
+        virtual void render();
+        ofColor colour;
+        
+    public:
+        SetColour();
+        SetColour(const ofColor &colour);
+    };
     
     class RectAtom : public UIAtom
     {
@@ -109,8 +124,6 @@ namespace gui {
         
     public:
         ValueAtom();
-        ValueAtom(double (md::MDContainer::*getValue)() const, md::MDContainer *system, const std::string &format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height);
-        ValueAtom(double *value, const std::string &format, const ofTrueTypeFont &font, const ofColor &color, Position anchor, double x, double y, double width, double height);
         ValueAtom(FuncGetter getValue, const std::string &_format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height);
         
         std::string getString() const;
@@ -135,8 +148,6 @@ namespace gui {
         
     public:
         SliderAtom();
-        SliderAtom(double (md::MDContainer::*getValue)() const, void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, double x, double y, double width, double height);
-        SliderAtom(double *value, double min, double max, double x, double y, double width, double height);
         SliderAtom(FuncGetter getValue, FuncSetter setValue, double min, double max, double x, double y, double width, double height);
         
         double getSliderPos();
@@ -203,8 +214,6 @@ namespace gui {
         
     public:
         SliderContainer();
-        SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, double (md::MDContainer::*getValue)() const, void (md::MDContainer::*setValue)(double), md::MDContainer *system, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
-        SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, double *value, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
         SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, FuncGetter getValue, FuncSetter setValue, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
         
         static int PADDING;
