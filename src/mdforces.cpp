@@ -574,11 +574,13 @@ namespace md {
         v_avg /= N;
         
         //Calculate scaling factor (lambda)
-        double lambda = sqrt(1+((dt*freq)*((T/v_avg)-1)));
-        for (int i = 0; i < N; i++){
-            //Scale the velocity of each particle
-            velocities[i].x *= lambda;
-            velocities[i].y *= lambda;
+        if (v_avg > 0) {
+            double lambda = sqrt(1+((dt*freq)*((T/v_avg)-1)));
+            for (int i = 0; i < N; i++){
+                //Scale the velocity of each particle
+                velocities[i].x *= lambda;
+                velocities[i].y *= lambda;
+            }
         }
     }
 }
