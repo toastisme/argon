@@ -64,8 +64,11 @@ void ofApp::setup(){
     
     // graphics
     circGradient.load("circ_gradient.png");
-    playbutton.load("play-btn2.png");
-    pausebutton.load("pause-btn2.png");
+    playButton.load("ButtonPlay.png");
+    pauseButton.load("ButtonPause.png");
+    resetButton.load("ButtonReset.png");
+    audioOnButton.load("ButtonMic.png");
+    audioOffButton.load("ButtonNoMic.png");
     
     loganLeft.load("david-logan-posing-left.png");
     loganRight.load("david-logan-posing-right.png");
@@ -111,7 +114,7 @@ void ofApp::setup(){
     ofColor bgcolor = ofColor(80, 80, 80, 80);
     ofColor textcolor = ofColor(255, 255, 240);
     
-    menuUI = gui::UIContainer(0, mt);
+    menuUI = gui::UIContainer(0, mt, 1024, 600 - mt);
     
     menuUI.addChild(new gui::RectAtom(bgcolor, 0, mt, 1024, 190));
     
@@ -134,15 +137,15 @@ void ofApp::setup(){
                                       gui::RIGHT, 690, mt + 5, 100, 30));
     menuUI.addChild(new gui::TextAtom("Reset:", uiFont10, textcolor,
                                       gui::RIGHT, 690, mt + 40, 100, 30));
-    menuUI.addChild(new gui::TextAtom("Audio on/off:", uiFont10, textcolor,
+    menuUI.addChild(new gui::TextAtom("Mic on/off:", uiFont10, textcolor,
                                       gui::RIGHT, 690, mt + 75, 100, 30));
     
     menuUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
-    menuUI.addChild(new gui::ButtonToggleAtom(playOn, playbutton, pausebutton,
+    menuUI.addChild(new gui::ButtonToggleAtom(playOn, playButton, pauseButton,
                                               800, mt + 5, 30, 30));
-    menuUI.addChild(new gui::ButtonAtom([&] () { setupSystem(); }, playbutton,
+    menuUI.addChild(new gui::ButtonAtom([&] () { setupSystem(); }, resetButton,
                                               800, mt + 40, 30, 30));
-    menuUI.addChild(new gui::ButtonToggleAtom(audioOn, playbutton, pausebutton,
+    menuUI.addChild(new gui::ButtonToggleAtom(audioOn, audioOnButton, audioOffButton,
                                               800, mt + 75, 30, 30));
     
     menuUI.addChild(new gui::TextAtom("Key Commands", uiFont12, textcolor,
@@ -171,26 +174,9 @@ void ofApp::setup(){
     menuUI.addChild(new gui::ValueAtom([&] () { return ofGetFrameRate(); },
                                        "%4.1lf", uiFont14, textcolor,
                                        gui::TOP_RIGHT, 819, 5, 200, 100));
-                                       
-    
     menuUI.makeInvisible();
     menuUI.mouseReleased(0, 0, 0);
     
-    //
-    //testUI.addChild(new gui::SliderContainer("Temperature (K):", uiFont14, ofColor(0, 255, 0),
-    //                                         [&] () { return theSystem.getTemp() * 120; },
-    //                                         [&] (double set) { theSystem.setTemp(set / 120.0); },
-    //                                         0, 1000, "%6.4lf", 100, 200, 200, 400, 200, 10));
-    //
-    //testUI.addChild(new gui::SliderContainer("Sensitivity:", uiFont14, ofColor(0, 255, 0),
-    //                                         [&] () { return (double)sensitivity; },
-    //                                         [&] (double set) { sensitivity = set; },
-    //                                         0.005, 0.135, "%7.4lf", 100, 300, 200, 400, 200, 10));
-    //
-    //testUI.addChild(new gui::ButtonToggleAtom(playOn, playbutton, pausebutton, 800, 0, 50, 50));
-    //testUI.addChild(new gui::ButtonAtom([&] () { setupSystem(); }, playbutton, 800, 50, 50, 50));
-    testUI.makeInvisible();
-    testUI.mouseReleased(0, 0, 0);
 }
 
 /*
@@ -364,91 +350,6 @@ void ofApp::drawGaussian(Gaussian& g, bool selected){
     circGradient.draw(x, y, width, height);
 }
 
-
-/*
-    ROUTINE drawUI:
-        Draws the user interface, which shows the control sliders for the temperature,
-        number of particles, and audio input sensitivity, whilst also displaying the
-        various key commands to control the simulation.
- */
-void ofApp::drawUI()
-{
-    ofSetColor(255, 255, 255, 30);
-    //Controls window
-    ofDrawRectangle(0, ofGetHeight() - 150, ofGetWidth(), 150);
-    ofSetColor(255, 255, 240);
-    //drawFont.loadFont("Montserrat-Bold.ttf", 12);
-    uiFont12.drawString("Key Commands", ofGetWidth() - 230, ofGetHeight()-130);
-    //drawFont.loadFont("Montserrat-Bold.ttf", 10);
-    uiFont10.drawString("Audio        /         'a'" ,ofGetWidth() - 225,ofGetHeight()-110);
-    
-    //Highlight audio on/off
-    if (audioOn) {
-        uiFont10.drawString("off" ,ofGetWidth() - 153,ofGetHeight()-110);
-        ofSetColor(0, 200, 0);
-        uiFont10.drawString("on" ,ofGetWidth() - 178,ofGetHeight()-110);
-    } else{
-        uiFont10.drawString("on" ,ofGetWidth() - 178,ofGetHeight()-110);
-        ofSetColor(255, 0, 0);
-        uiFont10.drawString("off" ,ofGetWidth() - 153,ofGetHeight()-110);
-    }
-    ofSetColor(255, 255, 240);
-    uiFont10.drawString("Change gaussian 'g'" ,ofGetWidth() - 230,ofGetHeight()-90);
-    uiFont10.drawString("Remove gaussian 'k'" ,ofGetWidth() - 230,ofGetHeight()-70);
-    uiFont10.drawString("Show energies 'e'" ,ofGetWidth() - 225,ofGetHeight()-50);
-    uiFont10.drawString("Pause 'p'" ,ofGetWidth() - 190,ofGetHeight()-30);
-    uiFont10.drawString("Reset 'r'" ,ofGetWidth() - 190,ofGetHeight()-10);
-    uiFont10.drawString("Change slider 'tab'", 50, ofGetHeight() - 30);
-    uiFont10.drawString("Move slider up/down 'left/right arrow'", 250, ofGetHeight()-30);
-    
-    //Highlight the selected parameter
-    int slider1, slider2, slider3;
-    slider1 = (selectedSlider == 0 ? 0 : 1);
-    slider2 = (selectedSlider == 1 ? 0 : 1);
-    slider3 = (selectedSlider == 2 ? 0 : 1);
-    //drawFont.loadFont("Montserrat-Bold.ttf", 12);
-    ofSetColor(255, 255*slider1, 240*slider1);
-    uiFont12.drawString(" Temperature (K):", ofGetWidth() - 1000, ofGetHeight() - 110);
-    
-    ofSetColor(255, 255*slider2, 240*slider2);
-    uiFont12.drawString(" Particles:", ofGetWidth() - 1000, ofGetHeight() - 88);
-    
-    ofSetColor(255, 255*slider3, 240*slider3);
-    uiFont12.drawString(" Sensitivity:", ofGetWidth() - 1000, ofGetHeight() - 63);
-    
-    ofSetColor(255, 255, 240);
-    
-    //Temperature slider
-    ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 122, 250, 10);
-    
-    //Parameter values
-    drawData(uiFont12, " ", theSystem.getTemp()*120, ofGetWidth()-545, ofGetHeight() - 109, 5); // Temperature
-    drawData(uiFont12, " ", numParticles, ofGetWidth()-545, ofGetHeight() - 87, 5); // Number of particles
-    drawData(uiFont12, " ", sensitivity, ofGetWidth()-545, ofGetHeight() - 62, 5); // Sensitivity
-    
-    //Particle slider
-    ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 100, 250, 10);
-    //Sensitivity slider
-    ofDrawRectangle(ofGetWidth() - 800,ofGetHeight() - 75, 250, 10);
-    //Slider cursors
-    ofSetColor(0,0,0);
-    ofDrawRectangle((ofGetWidth() - 800) + 30*theSystem.getTemp(), ofGetHeight() - 122, 5, 10);
-    ofDrawRectangle((ofGetWidth() - 800) + numParticles, ofGetHeight() - 100, 5, 10);
-    ofDrawRectangle((ofGetWidth() - 810) + 1900*sensitivity, ofGetHeight() - 75, 5, 10);
-    
-    //buttons
-    if (playOn) {
-        pausebutton.draw(ofGetWidth() - 350, ofGetHeight() - 132, 55, 55);
-        ofSetColor(0, 200, 0);
-        playbutton.draw(ofGetWidth() - 420, ofGetHeight() - 130, 50, 50);
-        
-    }
-    else{
-        playbutton.draw(ofGetWidth() - 420, ofGetHeight() - 130, 50, 50);
-        ofSetColor(0,230,255);
-        pausebutton.draw(ofGetWidth() - 350, ofGetHeight() - 132, 55, 55);
-    }
-}
 
 /*
     ROUTINE drawGraph:
@@ -695,9 +596,6 @@ void ofApp::drawPotentialUI()
  */
 void ofApp::draw(){
     
-    // 1. Draw the frame rate in the top left
-    drawData(uiFont14, "framerate", ofGetFrameRate(), 5, 25);
-    
     // Set the resolution and fill settings for drawing the energy graphs if necessary
     ofFill();
     ofSetCircleResolution(10);
@@ -771,7 +669,7 @@ void ofApp::draw(){
     // Draw the UI if helpOn, otherwise draw message on how to turn the UI on.
     if (drawOn) {
         drawPotentialUI();
-    } else {
+    } else if (not helpOn) {
         ofSetColor(255, 255, 240);
         uiFont14.drawString("press 'h' for controls", 10, ofGetHeight()-10);
     }
@@ -1003,8 +901,10 @@ void ofApp::mousePressed(int x, int y, int button){
             }
             
         }
-    } else if (helpOn) {
+    } else if (helpOn && menuUI.getRect().inside(x, y)) { // Mouse controls menu
+        // pass through event to children
         menuUI.mousePressed(x, y, button);
+        
     } else { // Mouse controls Gaussian placement
         // Default values for the amplitude and exponent of a Gaussian
         // Should they really be stored here?

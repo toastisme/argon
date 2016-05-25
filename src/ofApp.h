@@ -100,8 +100,12 @@ private:
     ofTrueTypeFont uiFont14;
     ofTrueTypeFont uiFont12;
     ofTrueTypeFont uiFont10;
-    ofImage playbutton;
-    ofImage pausebutton;
+    ofImage playButton;
+    ofImage pauseButton;
+    ofImage resetButton;
+    ofImage audioOnButton;
+    ofImage audioOffButton;
+    ofImage menuButton;
     ofImage circGradient;
     
     // Audio data

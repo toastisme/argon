@@ -181,8 +181,8 @@ namespace gui {
         
         // set bounds to match total size
         // TODO: this doesn't handle origins properly
-        rect childRect = child->getRect();
-        bounds.expandToFit(childRect);
+        //rect childRect = child->getRect();
+        //bounds.expandToFit(childRect);
     }
 
     // remainder of methods just pass the call through to its children
