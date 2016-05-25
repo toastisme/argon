@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <vector>
 #include <array>
+#include "utilities.hpp"
 
 namespace cubic {
     

@@ -146,11 +146,11 @@ namespace md {
         
         // grid particles
         for (int n = 0; n < numParticles; ++n){
-            md::coord pos;
+            coord pos;
             pos.x = xspacing * (i + 0.5);
             pos.y = yspacing * (j + 0.5);
             
-            md::coord vel = randomVel();
+            coord vel = randomVel();
             
             addParticle(pos, vel);
             

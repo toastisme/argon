@@ -15,6 +15,7 @@
 
 #include <vector>
 #include <array>
+#include "utilities.hpp"
 
 class Gaussian
 {

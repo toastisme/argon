@@ -8,6 +8,7 @@
 #include "cubicspline.hpp"
 #include <sstream>
 #include <string>
+#include "utilities.hpp"
 
 
 #define N_THREADS 1 // Number of threads to be used in the forces calculations
@@ -44,7 +45,7 @@ public:
     double box2screen_x(double x, double x0 = 0.0);
     double box2screen_y(double y, double y0 = 0.0);
     ofPoint box2screen(double x, double y, double x0 = 0.0, double y0 = 0.0);
-    ofPoint box2screen(md::coord point, md::coord origin = {0.0, 0.0});
+    ofPoint box2screen(coord point, coord origin = {0.0, 0.0});
     
     // Assign random initial velocities from an appropriate Maxwell distribution
     //void randomiseVelocity(vector<double> &vel, double T);
