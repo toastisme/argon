@@ -88,6 +88,8 @@ namespace cubic {
         std::vector <Segment> spline;
         
     public:
+        // Default constructor
+        Spline();
         // initialise spline as a single segment to add futher points later
         Spline(double x0, double y0, double m0, double x1, double y1, double m1);
         

@@ -79,7 +79,6 @@ void ofApp::setup(){
     
     // Initialise theSystem
     setupSystem(numParticles, TEMPERATURE, BOX_WIDTH, BOX_HEIGHT, TIMESTEP, CUTOFF);
-    
     // Set the booleans so that the audio input is turned on, as is the simulation,
     // but the UI, secret-Logan-mode, and energy graphs are off.
     audioOn = true;
@@ -88,10 +87,12 @@ void ofApp::setup(){
     graphOn = false;
     playOn  = true;
     drawOn  = false;
+    customPotentialOn = false;
 
     selectedGaussian = -1; // No gaussian selected
     selectedSlider = 0; // Temperature slider selected
     selectedPotential = 1; // Lennard-Jones by default
+    customPotentialButton = 1; //addPoints button selected by default
     
     // Setup the sound
     int bufferSize = 256;
@@ -126,6 +127,7 @@ void ofApp::setupSystem(int numParticles, double temperature, double box_width, 
     firstEKin = theSystem.getEKin();
     firstEPot = fabs(theSystem.getEPot());
 }
+
 
 //--------------------------------------------------------------
 // UPDATE
@@ -405,56 +407,69 @@ void ofApp::drawGraph()
 
 /*
     ROUTINE drawPotentialUI:
+    Draws the UI for selecting different pair potentials and plots the selected potential.
+    The custom potential is drawn and modified using the cubicspline functions.
+    Template functions are scaled and plotted using the scalePotential function
+    Custom potentials are scaled and plotted directly in the customPotential function
 */
 void ofApp::drawPotentialUI()
 {
     
     // Draw top box
     ofFill();
-    ofSetColor(144, 195, 212, 255);
+    ofSetColor(0,0,0, 180);
     ofDrawRectangle(0, 0, ofGetWidth(), topHeight);
     
     // Draw title
-    ofSetColor(0, 0, 0, 255);
-    uiFont14.drawString("Instructions go here", 2*sideWidth, topHeight/2);
+    ofSetColor(255, 255, 240);
+    uiFont14.drawString("Select a pair potential", 1.4*sideWidth, topHeight/2);
+    uiFont10.drawString("Apply", 6.5*sideWidth, topHeight/2);
     
     // Draw left box
-    ofSetColor(255, 255, 255, 30);
+    ofSetColor(0,0,0, 180);
     ofDrawRectangle(0, 0, sideWidth, ofGetHeight());
     
     // Draw buttons
-    ofSetColor(0, 0, 0, 200);
+    ofSetColor(0, 0, 0, 180);
     ofDrawRectangle(0, topHeight, sideWidth, buttonHeight);
     ofDrawRectangle(0, topHeight+buttonHeight, sideWidth, buttonHeight);
     ofDrawRectangle(0, topHeight+2*buttonHeight, sideWidth, buttonHeight);
     ofDrawRectangle(0, topHeight+3*buttonHeight, sideWidth, buttonHeight);
+    ofSetColor(255,255,255,30);
+    ofNoFill();
+    ofDrawRectangle(0, topHeight, sideWidth, buttonHeight);
+    ofDrawRectangle(0, topHeight+buttonHeight, sideWidth, buttonHeight);
+    ofDrawRectangle(0, topHeight+2*buttonHeight, sideWidth, buttonHeight);
+    ofDrawRectangle(0, topHeight+3*buttonHeight, sideWidth, buttonHeight);
+
     
     ofSetColor(255, 255, 255, 255);
     
     
     // TO BE REPLACED BY THUMBNAIL IMAGES RATHER THAN TEXT
     if(selectedPotential == 1) ofSetColor(0, 200, 200, 255);
-    uiFont12.drawString("L-J", 30, topHeight+buttonHeight/2);
+    uiFont12.drawString("Lennard-Jones", 10, topHeight+buttonHeight/2);
     if(selectedPotential == 1) ofSetColor(255, 255, 255, 255);
     
     if(selectedPotential == 2) ofSetColor(0, 200, 200, 255);
-    uiFont12.drawString("Square", 30, topHeight+3*buttonHeight/2);
+    uiFont12.drawString("Square Well", 20, topHeight+3*buttonHeight/2);
     if(selectedPotential == 2) ofSetColor(255, 255, 255, 255);
     
     if(selectedPotential == 3) ofSetColor(0, 200, 200, 255);
-    uiFont12.drawString("Option 3", 30, topHeight+5*buttonHeight/2);
+    uiFont12.drawString("Morse", 40, topHeight+5*buttonHeight/2);
     if(selectedPotential == 3) ofSetColor(255, 255, 255, 255);
     
     if(selectedPotential == 4) ofSetColor(0, 200, 200, 255);
-    uiFont12.drawString("Custom", 30, topHeight+7*buttonHeight/2);
+    uiFont12.drawString("Custom", 35, topHeight+7*buttonHeight/2);
     if(selectedPotential == 4) ofSetColor(255, 255, 255, 255);
     
     // Draw main box
-    ofSetColor(240, 242, 242, 255);
+    ofFill();
+    ofSetColor(50, 50, 50, 180);
     ofDrawRectangle(sideWidth, topHeight, ofGetWidth() - sideWidth, 7*topHeight);
     
     // Draw axes
-    ofSetColor(0, 0, 0, 100);
+    ofSetColor(255,255,255, 90);
     ofDrawLine(sideWidth + 30, topHeight + 30, sideWidth + 30, ofGetHeight() - 30);
     ofDrawLine(sideWidth+30, ofGetHeight()/2 + topHeight, ofGetWidth() - 30, ofGetHeight()/2 + topHeight);
     
@@ -465,8 +480,10 @@ void ofApp::drawPotentialUI()
     
     // Maximum distance between particles
     float max_separation = sqrt(pow(theSystem.getWidth(), 2) + pow(theSystem.getHeight(), 2));
+    
     // x-axis spacing
     float x_spacing = max_separation/(6*float(fineness));
+
     // scale the x-axis to make drawing prettier
     float scale_factor = 43.7;
     
@@ -484,103 +501,249 @@ void ofApp::drawPotentialUI()
         partx.push_back(x);
     }
     
-    // ALL THE POTENTIAL CALCULATIONS HERE SHOULD BE FACTORED OUT INTO SEPARATE FUNCTIONS
-    // THIS IS JUST A STUPID VERSION TO SEE IF IT LOOKS GOOD
+    // Obtain x values for potential calculations
+    for (int i = 0; i < fineness; i++){
+        x = (i+scale_factor) * x_spacing;
+        xpoints.push_back(x);
+    }
+
     switch (selectedPotential) {
         case 2: { // Square well
             // Draw square well
-            min_y = -10;
-            for (int i = 0; i < fineness; i++){
-                x = (i+scale_factor) * x_spacing;
-                y = min_y/2;
-                if ( x > max_x/3 && x < 2*max_x/3) y = min_y;
-                xpoints.push_back(x);
-                ypoints.push_back(y);
-            }
-            
-            // Put particles on curve
-            for (int i = 0; i < theSystem.getN()-1; i++){
-                y = min_y/2;
-                if ( partx[i] > max_x/3 && partx[i] < 2*max_x/3) y = min_y;
-                
-                party.push_back(y);
-            }
-            
+            drawSWPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
             break;
         }
-        case 3: { // Option 3
-            // Draw option 3 - PLACEHOLDER
-            for (int i = 0; i < fineness; i++){
-                x = (i+scale_factor) * x_spacing;
-                y = 0;
-                xpoints.push_back(x);
-                ypoints.push_back(y);
-            }
-            
-            for (int i = 0; i < theSystem.getN() - 1; i++) party.push_back(0);
+        case 3: { // Morse
+            // Draw Morse potential
+            drawMorsePotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
             break;
         }
         case 4: { // Custom
-            // Draw custom potential - PLACEHOLDER
-            for (int i = 0; i < fineness; i++){
-                x = (i+scale_factor) * x_spacing;
-                y = 0;
-                xpoints.push_back(x);
-                ypoints.push_back(y);
-            }
-            
-            for (int i = 0; i < theSystem.getN() - 1; i++) party.push_back(0);
- 
+            // Draw custom potential
+            drawCustomPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
             break;
         }
         default: {// Lennard-Jones
             // Draw Lennard-Jones curve
-            for (int i = 0; i< fineness; i++){
-                x = (i+scale_factor) * x_spacing;
-                y = 1.0/pow(x, 6);
-                y = 4.0 * (y*y - y);
-                max_y = ( y > max_y ? y : max_y);
-                min_y = ( y < min_y ? y : min_y);
-                xpoints.push_back(x);
-                ypoints.push_back(y);
-            }
-            
-            // Put particles on curve
-            for (int i = 0; i < theSystem.getN()-1; i++){
-                x = partx[i];
-                y = 1.0/pow(x, 6);
-                y = 4.0 * (y*y - y);
-                party.push_back(y);
-            }
+            drawLJPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
         }
     }
+}
+
+// Custom potential function
+void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints, std::vector<float> partx,std::vector<float> party){
     
-    // Rescale the x and y coordinates to fit window
-    for (int i = 0; i < fineness; i++){
+    float x,y;
+    
+    //Draw buttons
+    
+    if (customPotentialButton == 1){
+        ofSetColor(255, 0, 0);
+        uiFont10.drawString("Add Points", 3.3*sideWidth, topHeight/2);
+        ofSetColor(255, 255, 240);
+        uiFont10.drawString("Move Points", 3.95*sideWidth, topHeight/2);
+        uiFont10.drawString("Change Slope", 4.65*sideWidth, topHeight/2);
+        uiFont10.drawString("Remove Points", 5.45*sideWidth, topHeight/2);
+    }
+    if (customPotentialButton == 2){
+        ofSetColor(255, 0, 0);
+        uiFont10.drawString("Move Points", 3.95*sideWidth, topHeight/2);
+        ofSetColor(255, 255, 240);
+        uiFont10.drawString("Add Points", 3.3*sideWidth, topHeight/2);
+        uiFont10.drawString("Change Slope", 4.65*sideWidth, topHeight/2);
+        uiFont10.drawString("Remove Points", 5.45*sideWidth, topHeight/2);
+    }
+    if (customPotentialButton == 3){
+        ofSetColor(255, 0, 0);
+        uiFont10.drawString("Change Slope", 4.65*sideWidth, topHeight/2);
+        ofSetColor(255, 255, 240);
+        uiFont10.drawString("Add Points", 3.3*sideWidth, topHeight/2);
+        uiFont10.drawString("Move Points", 3.95*sideWidth, topHeight/2);
+        uiFont10.drawString("Remove Points", 5.45*sideWidth, topHeight/2);
+    }
+    if (customPotentialButton == 4){
+        ofSetColor(255, 0, 0);
+        uiFont10.drawString("Remove Points", 5.45*sideWidth, topHeight/2);
+        ofSetColor(255, 255, 240);
+        uiFont10.drawString("Add Points", 3.3*sideWidth, topHeight/2);
+        uiFont10.drawString("Move Points", 3.95*sideWidth, topHeight/2);
+        uiFont10.drawString("Change Slope", 4.65*sideWidth, topHeight/2);
+    }
+
+    
+    // Rescale the default position of the four-point spline
+    // Only occurs the first time the custom potential is selected
+    if (customPotentialOn == false){
+        double x0 = ofMap(min_x*1.025, min_x, max_x,sideWidth + 40, ofGetWidth() - 40, true);
+        double x1 = ofMap(max_x/3.8, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
+        double x2 = ofMap(max_x/3.0, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
+        double x_end = ofMap(max_x, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
+        double y0 = ofGetHeight()/5.5;
+        double y1 = ofGetHeight()/1.25;
+        double y2 = ofGetHeight()/1.15;
+        double y_end = ofGetHeight()/1.8;
+    
+        // Move the three points to the scaled position
+        //customPotential.movePoint(3, x_end, y_end, 0);
+        //customPotential.movePoint(2, x2, y2, 0);
+        customPotential.movePoint(1, x_end, y_end, 0);
+        customPotential.movePoint(0, x0, y0, 0);
+        
+        // After calling the custom potential the first time, skip this block
+        customPotentialOn = !customPotentialOn;
+    }
+    
+    // Once the initial three-point spline has been rescaled, update the spline each iteration
+    else {
+        // Set color, position of each point in the spline
+        for (int i = 1; (i < customPotential.points()+1); i++){
+            ofSetColor(0, 200, 240,200);
+            ofFill();
+            ofDrawCircle(customPotential.getPoint(i-1).x, customPotential.getPoint(i-1).y, 10);
+            ofSetColor(255, 255, 255,90);
+            ofNoFill();
+            ofDrawCircle(customPotential.getPoint(i-1).x, customPotential.getPoint(i-1).y, 10);
+        }
+        
+        // Map every x value to the UI and obtain y, add each value to ypoints
+        for (int i = 0; i < xpoints.size(); i++){
+            xpoints[i] = ofMap(xpoints[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true );
+            y = customPotential.value(xpoints[i]);
+            // If y is out of the y limits, set y to the limit
+            max_y = ( y > max_y ? y : max_y);
+            min_y = ( y < min_y ? y : min_y);
+            ypoints.push_back(y);
+        }
+        
+        // Map every x particle value to the UI and obtain y, add each value to party
+        for (int i = 0; i < theSystem.getN() - 1; i++){
+            partx[i] = ofMap(partx[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
+            y = customPotential.value(partx[i]);
+            party.push_back(y);
+        }
+        
+        // Draw the potential
+        ofSetColor(255,255,255, 220);
+        for (int i = 1; i < xpoints.size() - 1; i++){
+            ofDrawLine(xpoints[i], ypoints[i], xpoints[i+1], ypoints[i+1]);
+        }
+        
+        // Draw the particles on the potential
+        ofSetColor(0, 100, 220, 220);
+        for (int i = 0; i < theSystem.getN() - 1; i++){
+            ofFill();
+            ofDrawCircle(partx[i], party[i], 4);
+        }
+
+    }
+    
+}
+
+// Square well potential function
+void ofApp::drawSWPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party){
+    
+    float x,y;
+    
+    // Calculate y values for the potential and add to ypoints
+    min_y = -10;
+    for (int i = 0; i < xpoints.size(); i++){
+        x = xpoints[i];
+        y = min_y/2;
+        if ( x > max_x/3 && x < 2*max_x/3) y = min_y;
+        ypoints.push_back(y);
+    }
+    
+    // Calculate the y values for the partiles and add to paty
+    for (int i = 0; i < theSystem.getN()-1; i++){
+        y = min_y/2;
+        if ( partx[i] > max_x/3 && partx[i] < 2*max_x/3) y = min_y;
+        party.push_back(y);
+    }
+    // Scale the potential and particle values, and draw them in the UI
+    scalePotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
+    
+}
+
+// Lennard-Jones potential function
+void ofApp::drawLJPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party){
+
+    float x,y;
+    
+    // Calculate y values for the potential and add to ypoints
+    for (int i = 0; i< xpoints.size(); i++){
+        x = xpoints[i];
+        y = 1.0/pow(x, 6);
+        y = 4.0 * (y*y - y);
+        max_y = ( y > max_y ? y : max_y);
+        min_y = ( y < min_y ? y : min_y);
+        ypoints.push_back(y);
+    }
+    
+    // Calculate y values for the particles and add to party
+    for (int i = 0; i < theSystem.getN() - 1; i++){
+        x = partx[i];
+        y = 1.0/pow(x, 6);
+        y = 4.0 * (y*y - y);
+        party.push_back(y);
+    }
+    // Scale the potential and particle values, and draw them in the UI
+    scalePotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
+}
+
+// Morse potential function
+void ofApp::drawMorsePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party){
+    
+    float x,y;
+    // Calculate y values for the potential and add to ypoints
+    for (int i = 0; i< xpoints.size(); i++){
+        x = xpoints[i];
+        y = exp(-2*(x-1)) - 2*exp(-(x-1));
+        max_y = ( y > max_y ? y : max_y);
+        min_y = ( y < min_y ? y : min_y);
+        ypoints.push_back(y);
+    }
+    
+    // Calculate y values for the particles and add to party
+    for (int i = 0; i < theSystem.getN() - 1; i++){
+        x = partx[i];
+        y = exp(-2*(x-1)) - 2*exp(-(x-1));
+        party.push_back(y);
+    }
+    // Scale the potential and particle values, and draw them in the UI
+    scalePotential(min_x , min_y, max_x, max_y, xpoints, ypoints, partx, party);
+    
+}
+
+// Scale the potentials to the UI and draw them
+void ofApp::scalePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party){
+    
+    // Map the potential values to the UI
+    for (int i = 0; i < xpoints.size(); i++){
         xpoints[i] = ofMap(xpoints[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true );
         ypoints[i] = ofMap(ypoints[i], min_y, max_y, 40, ofGetHeight()-topHeight - 40, true);
     }
     
-    // Rescale the x, y for pair potential between each particle and particle 1
+    // Map the particle values to the UI
     for (int i = 0; i < theSystem.getN()-1; i++){
         partx[i] = ofMap(partx[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
         party[i] = ofMap(party[i], min_y, max_y, 40, ofGetHeight() - topHeight - 40, true);
     }
     
-    // Plot the curve
+    // Plot the potential
     ofSetLineWidth(3.5);
-    ofSetColor(0, 200, 200, 255);
-    for (int i = 0; i < fineness - 1; i++){
+    ofSetColor(255,255,255, 220);
+    for (int i = 0; i < xpoints.size() - 1; i++){
         ofDrawLine(xpoints[i], ofGetHeight()- ypoints[i], xpoints[i+1], ofGetHeight() - ypoints[i+1]);
     }
     
+    // Plot the particles along the curve
     ofSetCircleResolution(10);
-    ofSetColor(255, 0, 0, 255);
+    ofSetColor(0, 100, 220, 220);
     for (int i = 0; i < theSystem.getN(); i++){
         ofDrawCircle(partx[i], ofGetHeight() - party[i], 4);
     }
-
 }
+
 
 /*
     ROUTINE draw:
@@ -856,6 +1019,7 @@ void ofApp::keyPressed(int key){
             }
         }
     }
+    
 }
 
 //--------------------------------------------------------------
@@ -870,7 +1034,32 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
+    // Drag selected customPotential point when 'move points' button is on
+    if (customPotentialButton == 2){
+        for (int i = 1; (i < customPotential.points()-1); i++){
+                if (x > customPotential.getPoint(i).x - 20 && x < customPotential.getPoint(i).x + 20){
+                    if (y > customPotential.getPoint(i).y - 20 && y < customPotential.getPoint(i).y + 20){
+                        int xpos = x;
+                        int ypos = y;
+                        // Prevent points being moved across each other
+                        xpos = (x < customPotential.getPoint(i-1).x + 5 ? customPotential.getPoint(i-1).x + 5 : xpos);
+                        xpos = (x > customPotential.getPoint(i+1).x - 5 ? customPotential.getPoint(i+1).x - 5 : xpos);
+                        // Prevent points being moved outside of the screen
+                        
+                        customPotential.movePoint(i, xpos, ypos, customPotential.getPoint(i).m);
+                    }
+                }
+        }
+    }
+    // Change slope of selected customPotential point when 'change slope' button is on
+    else if (customPotentialButton == 3){
+        for (int i=1; (i < customPotential.points()); i++) {
+            if (x > customPotential.getPoint(i).x - 30 && x < customPotential.getPoint(i).x + 30){
+                        float slope_y = ofMap(y, topHeight + 30, ofGetHeight()-30, -3.0, 3.0);
+                        customPotential.movePoint(i,customPotential.getPoint(i).x , customPotential.getPoint(i).y, slope_y);
+                }
+        }
+    }
 }
 
 //--------------------------------------------------------------
@@ -888,19 +1077,38 @@ void ofApp::mousePressed(int x, int y, int button){
     
     if ( drawOn ) { // Mouse controls drawing UI
         if ( x < sideWidth && y > topHeight ){
-            
+        // Select potential
             if ( y < topHeight + buttonHeight) {
-                selectedPotential = 1;
+                selectedPotential = 1; // Lennard-Jones potential
             } else if ( y < topHeight + 2*buttonHeight){
-                selectedPotential = 2;
+                selectedPotential = 2; // Square well potential
             } else if ( y < topHeight + 3*buttonHeight){
-                selectedPotential = 3;
+                selectedPotential = 3; // Morse potential
             } else if ( y < topHeight + 4*buttonHeight){
-                selectedPotential = 4;
+                selectedPotential = 4; // Custom potential
             }
-            
         }
-    } else { // Mouse controls Gaussian placement
+        // Select customPotential button
+        if (selectedPotential == 4) {
+            if (y < topHeight && y > 10){
+                if (x > 3.2*sideWidth && x < 3.8*sideWidth ){
+                    customPotentialButton = 1; // Add points
+                }
+                else if (x > 3.95*sideWidth && x < 4.5*sideWidth ) {
+                    customPotentialButton = 2; // Move points
+                }
+                else if (x > 4.65*sideWidth && x < 5.3*sideWidth ){
+                    customPotentialButton = 3; // Change slope
+                }
+                else if (x > 5.45*sideWidth && x < 6.15*sideWidth ){
+                    customPotentialButton = 4; // Remove points
+                }
+            }
+        }
+    }
+
+
+        else { // Mouse controls Gaussian placement
         // Default values for the amplitude and exponent of a Gaussian
         // Should they really be stored here?
         double GAMP =  50.0;
@@ -915,6 +1123,39 @@ void ofApp::mousePressed(int x, int y, int button){
         // Gaussian be the one currently in focus.
         theSystem.addGaussian(GAMP, GALPHA, scaled_x, scaled_y);
         selectedGaussian = theSystem.getNGaussians() - 1;
+    }
+    
+    if (selectedPotential == 4){ // Mouse controls custom potential modification
+        // Add customPotential points at clicked location when 'add points' button is on
+        if (customPotentialButton == 1){
+            // Ensure the point is created within the box
+            if (x > sideWidth + 30 && x < ofGetWidth()-30){
+                if (y > topHeight + 30 && y < ofGetHeight()-30){
+                    // Prevent particles being created on top of each other
+                    int count_close_points = 0;
+                    for (int i = 1; (i < customPotential.points()+1); i++){
+                        if (x > customPotential.getPoint(i).x - 10 && x < customPotential.getPoint(i).x + 10){
+                            count_close_points++;
+                        }
+                    }
+                    if (count_close_points == 0){
+                    customPotential.addPoint(x, y, 0);
+                    }
+                }
+            }
+        }
+    
+        // Remove clicked customPotential points when the 'remove points' button is on
+        else if (customPotentialButton == 4){
+            for (int i = 1; (i < customPotential.points()-1); i++){
+                if (x > customPotential.getPoint(i).x - 10 && x < customPotential.getPoint(i).x + 10){
+                    if (y > customPotential.getPoint(i).y - 10 && y < customPotential.getPoint(i).y + 10){
+                        
+                        customPotential.removePoint(i);
+                    }
+                }
+            }
+        }
     }
 }
 

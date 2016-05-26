@@ -37,6 +37,16 @@ public:
     void drawUI();
     void drawPotentialUI();
     
+    // Draw potential functions
+    void drawCustomPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
+    void drawLJPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
+    void drawSWPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
+    void drawMorsePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
+    
+    // Scale potential functions to UI
+    void scalePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
+    
+    
     // Routines to setup the system
     // Convert box coordinates to screen coordinates
     double box2screen_x(double x, double x0 = 0.0);
@@ -67,6 +77,7 @@ public:
 private:
    
     lj::LJContainer theSystem; // The MD simulation system
+    cubic::Spline customPotential; // The custom potential for particle-particle interactions
     
     // Store the number of particles locally until the system
     // is reset with 'r' and we can regrid everything
@@ -92,6 +103,8 @@ private:
     int selectedSlider;
     // Keep track of which pair potential is being used
     int selectedPotential;
+    // Keep track of which customPotential button is being used
+    int customPotentialButton;
     
     // Font and images needed for UI
     ofTrueTypeFont uiFont14;
@@ -117,6 +130,7 @@ private:
     bool graphOn; // Are the energy graphs showing?
     bool playOn; // Is the simulation playing?
     bool drawOn; // Is the drawing UI open?
+    bool customPotentialOn; // Has the custom potential been selected?
     
     // ~Trivial~ variables
     ofImage loganLeft, loganRight;

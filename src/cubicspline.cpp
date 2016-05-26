@@ -104,11 +104,31 @@ namespace cubic {
 
     // Spline
 
-    Spline::Spline(double x0, double y0, double m0, double x1, double y1, double m1) {
-        Segment seg = Segment(x0, y0, m0, x1, y1, m1);
+
+
+    // Default constructor
+    Spline::Spline(){
         spline.clear();
-        spline.push_back(seg);
+        spline.push_back(Segment(0,1,-5,1,0,0));
+        //addPoint(3, 1, 1);
+        //addPoint(4,1,1);
     }
+    
+    // Create a new Spline with one segment
+    // Use addPoint() later to subdivide into further segments
+    // Check if the points are in the correct order and reverse them if not
+    Spline::Spline(double x0, double y0, double m0, double x1, double y1, double m1) {
+        spline.clear();
+        if (x0 <= x1) {
+            spline.push_back(Segment(x0, y0, m0, x1, y1, m1));
+        } else {
+            spline.push_back(Segment(x1, y1, m1, x0, y0, m0));
+        }
+    }
+
+
+    // Returns the index in the vector of Segments corresponding to the
+    // segment containing x
 
     int Spline::getSegment(double x) {
         int index;
