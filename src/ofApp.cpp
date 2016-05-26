@@ -43,8 +43,7 @@ void ofApp::setup()
     double BOX_WIDTH = 17.0;
     
     // NOTE: ofGetWidth and ofGetHeight do not give the right values here if
-    // the screen we're trying to draw is too large for the OS resolution
-    // and the window is resized - they give the right values later, but not
+    // the screen we're trying to draw is to the right values later, but not
     // in ofApp::setup(). If this happens, we get regions where the particles
     // are inside the MD box, but not inside the screen.
     // This is an openFrameworks issue.
@@ -583,8 +582,8 @@ void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max
         // Move the three points to the scaled position
         //customPotential.movePoint(3, x_end, y_end, 0);
         //customPotential.movePoint(2, x2, y2, 0);
-        customPotential.movePoint(1, x_end, y_end, 0);
-        customPotential.movePoint(0, x0, y0, 0);
+        customPotential.getSpline().movePoint(1, x_end, y_end, 0);
+        customPotential.getSpline().movePoint(0, x0, y0, 0);
         
         // After calling the custom potential the first time, skip this block
         customPotentialOn = !customPotentialOn;
@@ -593,19 +592,19 @@ void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max
     // Once the initial three-point spline has been rescaled, update the spline each iteration
     else {
         // Set color, position of each point in the spline
-        for (int i = 1; (i < customPotential.points()+1); i++){
+        for (int i = 1; (i < customPotential.getSpline().points()+1); i++){
             ofSetColor(0, 200, 240,200);
             ofFill();
-            ofDrawCircle(customPotential.getPoint(i-1).x, customPotential.getPoint(i-1).y, 10);
+            ofDrawCircle(customPotential.getSpline().getPoint(i-1).x, customPotential.getSpline().getPoint(i-1).y, 10);
             ofSetColor(255, 255, 255,90);
             ofNoFill();
-            ofDrawCircle(customPotential.getPoint(i-1).x, customPotential.getPoint(i-1).y, 10);
+            ofDrawCircle(customPotential.getSpline().getPoint(i-1).x, customPotential.getSpline().getPoint(i-1).y, 10);
         }
         
         // Map every x value to the UI and obtain y, add each value to ypoints
         for (int i = 0; i < xpoints.size(); i++){
             xpoints[i] = ofMap(xpoints[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true );
-            y = customPotential.value(xpoints[i]);
+            y = customPotential.getSpline().value(xpoints[i]);
             // If y is out of the y limits, set y to the limit
             max_y = ( y > max_y ? y : max_y);
             min_y = ( y < min_y ? y : min_y);
@@ -615,7 +614,7 @@ void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max
         // Map every x particle value to the UI and obtain y, add each value to party
         for (int i = 0; i < theSystem.getN() - 1; i++){
             partx[i] = ofMap(partx[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
-            y = customPotential.value(partx[i]);
+            y = customPotential.getSpline().value(partx[i]);
             party.push_back(y);
         }
         
@@ -1039,27 +1038,27 @@ void ofApp::mouseDragged(int x, int y, int button){
 
     // Drag selected customPotential point when 'move points' button is on
     if (customPotentialButton == 2){
-        for (int i = 1; (i < customPotential.points()-1); i++){
-                if (x > customPotential.getPoint(i).x - 20 && x < customPotential.getPoint(i).x + 20){
-                    if (y > customPotential.getPoint(i).y - 20 && y < customPotential.getPoint(i).y + 20){
+        for (int i = 1; (i < customPotential.getSpline().points()-1); i++){
+                if (x > customPotential.getSpline().getPoint(i).x - 20 && x < customPotential.getSpline().getPoint(i).x + 20){
+                    if (y > customPotential.getSpline().getPoint(i).y - 20 && y < customPotential.getSpline().getPoint(i).y + 20){
                         int xpos = x;
                         int ypos = y;
                         // Prevent points being moved across each other
-                        xpos = (x < customPotential.getPoint(i-1).x + 5 ? customPotential.getPoint(i-1).x + 5 : xpos);
-                        xpos = (x > customPotential.getPoint(i+1).x - 5 ? customPotential.getPoint(i+1).x - 5 : xpos);
+                        xpos = (x < customPotential.getSpline().getPoint(i-1).x + 5 ? customPotential.getSpline().getPoint(i-1).x + 5 : xpos);
+                        xpos = (x > customPotential.getSpline().getPoint(i+1).x - 5 ? customPotential.getSpline().getPoint(i+1).x - 5 : xpos);
                         // Prevent points being moved outside of the screen
                         
-                        customPotential.movePoint(i, xpos, ypos, customPotential.getPoint(i).m);
+                        customPotential.getSpline().movePoint(i, xpos, ypos, customPotential.getSpline().getPoint(i).m);
                     }
                 }
         }
     }
     // Change slope of selected customPotential point when 'change slope' button is on
     else if (customPotentialButton == 3){
-        for (int i=1; (i < customPotential.points()); i++) {
-            if (x > customPotential.getPoint(i).x - 30 && x < customPotential.getPoint(i).x + 30){
+        for (int i=1; (i < customPotential.getSpline().points()); i++) {
+            if (x > customPotential.getSpline().getPoint(i).x - 30 && x < customPotential.getSpline().getPoint(i).x + 30){
                         float slope_y = ofMap(y, topHeight + 30, ofGetHeight()-30, -3.0, 3.0);
-                        customPotential.movePoint(i,customPotential.getPoint(i).x , customPotential.getPoint(i).y, slope_y);
+                        customPotential.getSpline().movePoint(i,customPotential.getSpline().getPoint(i).x , customPotential.getSpline().getPoint(i).y, slope_y);
                 }
         }
     }
@@ -1139,13 +1138,13 @@ void ofApp::mousePressed(int x, int y, int button){
                 if (y > topHeight + 30 && y < ofGetHeight()-30){
                     // Prevent particles being created on top of each other
                     int count_close_points = 0;
-                    for (int i = 1; (i < customPotential.points()+1); i++){
-                        if (x > customPotential.getPoint(i).x - 10 && x < customPotential.getPoint(i).x + 10){
+                    for (int i = 1; (i < customPotential.getSpline().points()+1); i++){
+                        if (x > customPotential.getSpline().getPoint(i).x - 10 && x < customPotential.getSpline().getPoint(i).x + 10){
                             count_close_points++;
                         }
                     }
                     if (count_close_points == 0){
-                    customPotential.addPoint(x, y, 0);
+                    customPotential.getSpline().addPoint(x, y, 0);
                     }
                 }
             }
@@ -1153,11 +1152,11 @@ void ofApp::mousePressed(int x, int y, int button){
     
         // Remove clicked customPotential points when the 'remove points' button is on
         else if (customPotentialButton == 4){
-            for (int i = 1; (i < customPotential.points()-1); i++){
-                if (x > customPotential.getPoint(i).x - 10 && x < customPotential.getPoint(i).x + 10){
-                    if (y > customPotential.getPoint(i).y - 10 && y < customPotential.getPoint(i).y + 10){
+            for (int i = 1; (i < customPotential.getSpline().points()-1); i++){
+                if (x > customPotential.getSpline().getPoint(i).x - 10 && x < customPotential.getSpline().getPoint(i).x + 10){
+                    if (y > customPotential.getSpline().getPoint(i).y - 10 && y < customPotential.getSpline().getPoint(i).y + 10){
                         
-                        customPotential.removePoint(i);
+                        customPotential.getSpline().removePoint(i);
                     }
                 }
             }

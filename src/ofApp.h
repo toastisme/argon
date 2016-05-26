@@ -82,7 +82,6 @@ public:
 private:
    
     md::MDContainer theSystem; // The MD simulation system
-    cubic::Spline customPotential; // The custom potential for particle-particle interactions
     
     // Store the number of particles locally until the system
     // is reset with 'r' and we can regrid everything
@@ -104,6 +103,7 @@ private:
     LennardJones ljPotential;
     SquareWell squarePotential;
     Morse morsePotential;
+    CustomPotential customPotential;
 
     // Counters
     // Keep track of which Gaussian potential is selected

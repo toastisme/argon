@@ -101,19 +101,19 @@ public:
 class CustomPotential : public PotentialFunctor
 {
 private:
-    cubic::Spline& spline;
+    cubic::Spline spline;
     
 public:
-    // Default constructor
-    CustomPotential(cubic::Spline& _spline);
+    // Constructor
+    CustomPotential();
     
     // Force/energy calculation
     double operator()(double rij, coord& force);
     // Just energy
     double potential(double rij);
     
-    // Set spline
-    void setSpline(cubic::Spline& newSpline);
+    // Get spline
+    cubic::Spline& getSpline();
     
 };
 

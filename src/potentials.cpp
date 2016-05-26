@@ -171,4 +171,28 @@ double Morse::potential(double rij)
     return epot;
 }
 
-    
+
+//------ CUSTOM POTENTIAL ------
+
+// Constructor (does nothing currently)
+
+CustomPotential::CustomPotential() {}
+
+// Get a reference to the spline
+
+cubic::Spline& CustomPotential::getSpline() { return spline; }
+
+// Force and energy calculation
+
+double CustomPotential::operator()(double rij, coord& force)
+{
+    force.x = spline.slope(rij);
+    force.y = force.x;
+    return spline.value(rij);
+}
+
+// Just the energy
+double CustomPotential::potential(double rij)
+{
+    return spline.value(rij);
+}
