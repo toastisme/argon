@@ -114,6 +114,14 @@ namespace cubic {
     }
 
     // Spline
+
+    // Default constructor
+    Spline::Spline(){
+        spline.clear();
+        spline.push_back(Segment(0,1,-5,1,0,0));
+        //addPoint(3, 1, 1);
+        //addPoint(4,1,1);
+    }
     
     // Create a new Spline with one segment
     // Use addPoint() later to subdivide into further segments
