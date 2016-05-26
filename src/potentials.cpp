@@ -112,7 +112,7 @@ double SquareWell::operator()(double rij, coord& force)
     } else if ( rij < rMax ) { // Inside well
         epot = V0;
     } else if ( rij <  1.05 * rMax ) {
-        forceCoeff = steepness;
+        forceCoeff = -20.0*V0/rMax;
     }
     
     force.x = forceCoeff;
