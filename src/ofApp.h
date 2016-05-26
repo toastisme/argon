@@ -43,9 +43,7 @@ public:
     
     // Draw potential functions
     void drawCustomPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
-    void drawLJPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
-    void drawSWPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
-    void drawMorsePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
+    void drawPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party, PotentialFunctor& pot);
     
     // Scale potential functions to UI
     void scalePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);

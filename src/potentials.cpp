@@ -125,7 +125,7 @@ double SquareWell::operator()(double rij, coord& force)
 double SquareWell::potential(double rij)
 {
     double epot = 0;
-    if ( rij < rMax ) epot = steepness * rij + intercept;
+    if ( rij < rMin ) epot = steepness * rij + intercept;
     else if ( rij < rMax ) epot = V0;
     
     return epot;

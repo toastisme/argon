@@ -506,12 +506,12 @@ void ofApp::drawPotentialUI()
     switch (selectedPotential) {
         case 2: { // Square well
             // Draw square well
-            drawSWPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
+            drawPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party, squarePotential);
             break;
         }
         case 3: { // Morse
             // Draw Morse potential
-            drawMorsePotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
+            drawPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party, morsePotential);
             break;
         }
         case 4: { // Custom
@@ -521,7 +521,7 @@ void ofApp::drawPotentialUI()
         }
         default: {// Lennard-Jones
             // Draw Lennard-Jones curve
-            drawLJPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
+            drawPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party, ljPotential);
         }
     }
 }
@@ -635,79 +635,30 @@ void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max
     
 }
 
-// Square well potential function
-void ofApp::drawSWPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party){
-    
-    float x,y;
-    
-    // Calculate y values for the potential and add to ypoints
-    min_y = -10;
-    for (int i = 0; i < xpoints.size(); i++){
-        x = xpoints[i];
-        y = min_y/2;
-        if ( x > max_x/3 && x < 2*max_x/3) y = min_y;
-        ypoints.push_back(y);
-    }
-    
-    // Calculate the y values for the partiles and add to paty
-    for (int i = 0; i < theSystem.getN()-1; i++){
-        y = min_y/2;
-        if ( partx[i] > max_x/3 && partx[i] < 2*max_x/3) y = min_y;
-        party.push_back(y);
-    }
-    // Scale the potential and particle values, and draw them in the UI
-    scalePotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
-    
-}
-
-// Lennard-Jones potential function
-void ofApp::drawLJPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party){
+// Draw any potential of type PotentialFunctor
+void ofApp::drawPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party, PotentialFunctor& pot){
 
     float x,y;
     
     // Calculate y values for the potential and add to ypoints
     for (int i = 0; i< xpoints.size(); i++){
         x = xpoints[i];
-        y = 1.0/pow(x, 6);
-        y = 4.0 * (y*y - y);
+        y = pot.potential(x);
         max_y = ( y > max_y ? y : max_y);
         min_y = ( y < min_y ? y : min_y);
         ypoints.push_back(y);
     }
     
+    max_y = ( max_y > 2.0 ? 2.0 : max_y );
+    
     // Calculate y values for the particles and add to party
     for (int i = 0; i < theSystem.getN() - 1; i++){
         x = partx[i];
-        y = 1.0/pow(x, 6);
-        y = 4.0 * (y*y - y);
+        y = pot.potential(x);
         party.push_back(y);
     }
     // Scale the potential and particle values, and draw them in the UI
     scalePotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
-}
-
-// Morse potential function
-void ofApp::drawMorsePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party){
-    
-    float x,y;
-    // Calculate y values for the potential and add to ypoints
-    for (int i = 0; i< xpoints.size(); i++){
-        x = xpoints[i];
-        y = exp(-2*(x-1)) - 2*exp(-(x-1));
-        max_y = ( y > max_y ? y : max_y);
-        min_y = ( y < min_y ? y : min_y);
-        ypoints.push_back(y);
-    }
-    
-    // Calculate y values for the particles and add to party
-    for (int i = 0; i < theSystem.getN() - 1; i++){
-        x = partx[i];
-        y = exp(-2*(x-1)) - 2*exp(-(x-1));
-        party.push_back(y);
-    }
-    // Scale the potential and particle values, and draw them in the UI
-    scalePotential(min_x , min_y, max_x, max_y, xpoints, ypoints, partx, party);
-    
 }
 
 // Scale the potentials to the UI and draw them
