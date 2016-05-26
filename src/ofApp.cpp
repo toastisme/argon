@@ -123,17 +123,17 @@ void ofApp::setup()
     menuUI.addChild(new gui::SliderContainer("Temperature (K)", uiFont12, textcolor,
                                              [&] () { return theSystem.getTemp() * 120; },
                                              [&] (double set) { theSystem.setTemp(set / 120.0); },
-                                             0, 1000, "%1.1lf", 5, mt + 5, 150, 450, 70, 30));
+                                             0, 1000, 1, 5, mt + 5, 150, 450, 70, 30));
     
     menuUI.addChild(new gui::SliderContainer("Particles", uiFont12, textcolor,
                                              [&] () { return numParticles; },
                                              [&] (double set) { numParticles = (int)set; },
-                                             2, 200, "%1.0lf", 5, mt + 40, 150, 450, 70, 30));
+                                             2, 200, 0, 5, mt + 40, 150, 450, 70, 30));
     
     menuUI.addChild(new gui::SliderContainer("Mic sensitivity", uiFont12, textcolor,
                                              [&] () { return sensitivity; },
                                              [&] (double set) { sensitivity = (float)set; },
-                                             0.005, 0.135, "%1.3lf", 5, mt + 75, 150, 450, 70, 30));
+                                             0.005, 0.135, 3, 5, mt + 75, 150, 450, 70, 30));
     
     menuUI.addChild(new gui::TextAtom("Play / pause:", uiFont10, textcolor,
                                       gui::RIGHT, 690, mt + 5, 100, 30));
@@ -174,7 +174,7 @@ void ofApp::setup()
                                       gui::LEFT, 995, mt + 85, 24, 20));
     
     menuUI.addChild(new gui::ValueAtom([&] () { return ofGetFrameRate(); },
-                                       "%4.1lf", uiFont14, textcolor,
+                                       1, uiFont14, textcolor,
                                        gui::TOP_RIGHT, 819, 5, 200, 100));
     menuUI.makeInvisible();
     menuUI.mouseReleased(0, 0, 0);

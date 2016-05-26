@@ -9,7 +9,8 @@
 #ifndef gui_derived_hpp
 #define gui_derived_hpp
 
-#include <stdio.h>
+//#include <stdio.h>
+#include <ios>
 #include <functional>
 #include "ofApp.h"
 #include "ofMain.h"
@@ -49,6 +50,7 @@ namespace gui {
         
         void setString(const std::string &string);
         void setString(double value, const std::string &format);
+        void setString(double value, int precision);
         void setColour(const ofColor &colour);
         void setFont(const ofTrueTypeFont &font);
         void setAlign(Position align);
@@ -120,11 +122,11 @@ namespace gui {
         double *value;
         FuncGetter getValue;
         
-        std::string format;
+        int precision;
         
     public:
         ValueAtom();
-        ValueAtom(FuncGetter getValue, const std::string &_format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height);
+        ValueAtom(FuncGetter getValue, int precision, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height);
         
         std::string getString() const;
     };
@@ -214,7 +216,7 @@ namespace gui {
         
     public:
         SliderContainer();
-        SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, FuncGetter getValue, FuncSetter setValue, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
+        SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, FuncGetter getValue, FuncSetter setValue, double min, double max, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
         
         static int PADDING;
     };
