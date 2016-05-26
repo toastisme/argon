@@ -19,8 +19,9 @@
 class PotentialFunctor
 {
 public:
-    // Pure virtual function, must be overridden in child classes
-    virtual double operator()(double rij, coord force) = 0;
+    // Pure virtual functions, must be overridden in child classes
+    virtual double operator()(double rij, coord& force) = 0;
+    virtual double potential(double rij) = 0;
 };
 
 
@@ -36,7 +37,9 @@ public:
     LennardJones(); // Defaults to a 12-6 potential with epsilon = sigma = 1
     
     // Force/energy calculation
-    double operator()(double rij, coord force);
+    double operator()(double rij, coord& force);
+    // Just energy
+    double potential(double rij);
     
     // Set the repel/attract powers
     void setPowers(int _repel, int _attract);
@@ -52,16 +55,22 @@ class SquareWell : public PotentialFunctor
 private:
     double V0; // Value of potential in the well
     double rMin, rMax; // The potential is V0 for rMin < rij < rMax
+    double steepness, intercept; // Hard wall approximation at left of well
 public:
     // Constructor
     SquareWell(); // Defaults to V0 = -1, rMin = 1 and rMax = 2
     
     // Force/energy calculation
-    double operator()(double rij, coord force);
+    double operator()(double rij, coord& force);
+    // Just energy
+    double potential(double rij);
     
     // Set well-depth, rMin and rMax
     void setV0(double _v0);
     void setBounds(double _rMin, double _rMax);
+    
+    // Determine steepness
+    void calcSteepness();
 };
 
 // Morse potential
@@ -77,7 +86,9 @@ public:
     Morse(); // Defaults to De = 1, a = 1, req = 2
     
     // Force/energy calculation
-    double operator()(double rij, coord force);
+    double operator()(double rij, coord& force);
+    // Just energy
+    double potential(double rij);
     
     // Set well-depth, width and req
     void setDepth(double _de);
@@ -97,7 +108,12 @@ public:
     CustomPotential(cubic::Spline& _spline);
     
     // Force/energy calculation
-    double operator()(double rij, coord force);
+    double operator()(double rij, coord& force);
+    // Just energy
+    double potential(double rij);
+    
+    // Set spline
+    void setSpline(cubic::Spline& newSpline);
     
 };
 

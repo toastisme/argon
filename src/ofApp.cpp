@@ -32,7 +32,8 @@ ofPoint ofApp::box2screen(coord point, coord origin) {
         Constructor for the app. Sets up the system at the beginning, loads all the assets
         needed for the app (images and fonts), and initialises the audio input stream.
  */
-void ofApp::setup(){
+void ofApp::setup() 
+{
     
     // Default values for system parameters
     numParticles = 50;

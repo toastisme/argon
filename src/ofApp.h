@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include "utilities.hpp"
+#include "potentials.hpp"
 
 
 #define N_THREADS 1 // Number of threads to be used in the forces calculations
@@ -98,6 +99,11 @@ private:
     
     // For the potential UI
     float topHeight, sideWidth, buttonHeight;
+    
+    // Variable potentials
+    LennardJones ljPotential;
+    SquareWell squarePotential;
+    Morse morsePotential;
 
     // Counters
     // Keep track of which Gaussian potential is selected

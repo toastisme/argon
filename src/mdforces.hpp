@@ -16,6 +16,7 @@
 #include <deque>
 #include "gaussian.hpp"
 #include "utilities.hpp"
+#include "potentials.hpp"
 
 namespace md{
 
@@ -45,6 +46,12 @@ namespace md{
         double maxEKin, maxEPot; // Maximum kinetic and potential energies in prevEPot, prevEKin
         double v_avg; // Current average speed of particles
         int enCounter; // Counter so that only every nth energy is stored
+        
+        // Default potential is Lennard-Jones
+        LennardJones lj;
+        
+        // Reference to the potential functor to be used to calculate the forces
+        PotentialFunctor& potential;
         
     public:
         MDContainer(); // Default constructor
@@ -106,6 +113,9 @@ namespace md{
         void setTimestep(double timestep);
         void setTemp(double temperature);
         
+        // Set the potential
+        void setPotential(PotentialFunctor& _potential);
+        
         // Add and remove particles
         void addParticle(double x, double y, double vx, double vy);
         void addParticle(coord pos, coord vel);
@@ -121,8 +131,7 @@ namespace md{
         void forcesEnergies(int nthreads);
         void externalForce();
         void forcesThread(int start, int end, std::vector<coord>& ftemp,
-                double& etemp, std::vector<coord> postemp,
-                double rcut, int npart);
+                double& etemp, std::vector<coord> postemp);
         
         // Main MD integration step
         void integrate(int nthreads);
