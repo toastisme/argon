@@ -35,7 +35,7 @@ void LennardJones::setSigma(double _sigma)
 
 // Force and energy calculation
 
-double LennardJones::operator()(double rij, coord force)
+double LennardJones::operator()(double rij, coord& force)
 {
     double epot = 0; // Potential energy
     
@@ -47,7 +47,7 @@ double LennardJones::operator()(double rij, coord force)
     
     epot = 4 * epsilon * ( odRepel - odAttract );
     
-    double forceCoeff = 4 * epsilon * ( attractPow * odAttract - repelPow * odRepel) / pow(rij, 2);
+    double forceCoeff = 4 * epsilon * ( double(attractPow) * odAttract - double(repelPow) * odRepel) / pow(rij, 2);
     
     force.x = forceCoeff;
     force.y = forceCoeff;
@@ -100,7 +100,7 @@ void SquareWell::calcSteepness()
 }
 
 // Force and energy calculation
-double SquareWell::operator()(double rij, coord force)
+double SquareWell::operator()(double rij, coord& force)
 {
     double epot = 0; // Potential zero to right of well
     double forceCoeff = 0; // Forces are zero inside or to right of well
@@ -146,7 +146,7 @@ void Morse::setREq(double _req) { req = ( _req > 0 ? _req : req); }
 
 // Force and energy calculation
 
-double Morse::operator()(double rij, coord force)
+double Morse::operator()(double rij, coord& force)
 {
     double epot = 0;
     

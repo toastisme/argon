@@ -21,7 +21,7 @@ namespace md {
             and the timstep to 0.002. Initialises maximum energies, and enCounter,
             to zero.
      */
-    MDContainer::MDContainer()
+    MDContainer::MDContainer() : potential(lj)
     {
         box_dimensions = {0, 0};
         rcutoff = 3.0;
@@ -127,6 +127,10 @@ namespace md {
     void MDContainer::setTemp(double temperature) { T = temperature >= 0 ? temperature : 0.5; }
     void MDContainer::setTimestep(double timestep) { dt = timestep > 0 ? timestep : 0.002; }
     void MDContainer::setCutoff(double cutoff) { rcutoff = cutoff > 0 ? cutoff : 3.0; }
+    
+    // Set the potential
+    
+    void MDContainer::setPotential(PotentialFunctor& _potential) { potential = _potential; }
     
 /*
     ROUTINE setupSystem:
@@ -325,8 +329,7 @@ namespace md {
             // Create thread of forcesThread procedure
             thrds[counter] = std::thread(&MDContainer::forcesThread, *this,
                     start, end, std::ref(ftemps[counter]),
-                    std::ref(etemps[counter]), positions,
-                    rcutoff, N);
+                    std::ref(etemps[counter]), positions);
 
             // Move to the next chunk of the forces matrix
             start = end;
@@ -366,12 +369,11 @@ namespace md {
             particles.
      */
     void MDContainer::forcesThread(int start, int end,
-            std::vector<coord> &ftemp,
-            double &eptemp, std::vector<coord> postemp,
-            double rcut, int npart)
+            std::vector<coord> &ftemp, double &eptemp,
+            std::vector<coord> postemp)
     {        
         // Calculate the correction due to the shift of the Lennard-Jones potential
-        double rcut2 = rcut*rcut;
+        double rcut2 = rcutoff*rcutoff;
         double shift = -4.0*(pow(rcut2, -6) - pow(rcut2, -3));
 
         // Set potential energy to zero
@@ -381,8 +383,7 @@ namespace md {
         // and the position of particle i (ipos)
         coord rij, fij, ipos;
 
-        double fcoeff; // Magnitude of fij
-        double d2, od2, od6, od12; // d2 = rij^2, and one over rij^n = odn
+        double d2, r; // d2 = |rij|^2, r = |rij|
 
         // Loop over all particles from start to end
         for (int i = start; i < end; ++i) {
@@ -390,23 +391,20 @@ namespace md {
             ipos.x = postemp[i].x;
             ipos.y = postemp[i].y;
 
-            for(int j = i+1; j < npart; ++j){
+            for(int j = i+1; j < N; ++j){
                 // Compute rij
                 rij.x = postemp[j].x - ipos.x;
                 rij.y = postemp[j].y - ipos.y;
                 
                 d2 = rij.x * rij.x + rij.y * rij.y;
                 if (d2 < rcut2) { // Check if within cutoff radius
-                    od2 = 1.0 / d2;
-                    od6 = od2 * od2 * od2;
-                    od12 = od6 * od6;
-
-                    // Lennard-Jones energy and forces
-                    eptemp += 4.0 * (od12 - od6) + shift;
-                    fcoeff = (-48.0 * od12 + 24.0 * od6) * od2;
+                    r = sqrt(d2);
                     
-                    fij.x = rij.x * fcoeff;
-                    fij.y = rij.y * fcoeff;
+                    // Lennard-Jones energy and forces
+                    eptemp += potential(r, fij);
+                    
+                    fij.x *= rij.x;
+                    fij.y *= rij.y;
                     
                     ftemp[i].x += fij.x;
                     ftemp[i].y += fij.y;

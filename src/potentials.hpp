@@ -20,7 +20,7 @@ class PotentialFunctor
 {
 public:
     // Pure virtual functions, must be overridden in child classes
-    virtual double operator()(double rij, coord force) = 0;
+    virtual double operator()(double rij, coord& force) = 0;
     virtual double potential(double rij) = 0;
 };
 
@@ -37,7 +37,7 @@ public:
     LennardJones(); // Defaults to a 12-6 potential with epsilon = sigma = 1
     
     // Force/energy calculation
-    double operator()(double rij, coord force);
+    double operator()(double rij, coord& force);
     // Just energy
     double potential(double rij);
     
@@ -61,7 +61,7 @@ public:
     SquareWell(); // Defaults to V0 = -1, rMin = 1 and rMax = 2
     
     // Force/energy calculation
-    double operator()(double rij, coord force);
+    double operator()(double rij, coord& force);
     // Just energy
     double potential(double rij);
     
@@ -86,7 +86,7 @@ public:
     Morse(); // Defaults to De = 1, a = 1, req = 2
     
     // Force/energy calculation
-    double operator()(double rij, coord force);
+    double operator()(double rij, coord& force);
     // Just energy
     double potential(double rij);
     
@@ -108,7 +108,7 @@ public:
     CustomPotential(cubic::Spline& _spline);
     
     // Force/energy calculation
-    double operator()(double rij, coord force);
+    double operator()(double rij, coord& force);
     // Just energy
     double potential(double rij);
     
