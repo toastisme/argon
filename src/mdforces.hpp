@@ -15,12 +15,9 @@
 #include <vector>
 #include <deque>
 #include "gaussian.hpp"
+#include "utilities.hpp"
 
 namespace md{
-    struct coord
-    {
-        double x, y;
-    };
 
     class MDContainer
     {

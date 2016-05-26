@@ -19,7 +19,7 @@ ofPoint ofApp::box2screen(double x, double y, double x0, double y0) {
     return ofPoint(box2screen_x(x, x0), box2screen_y(y, y0));
 }
 
-ofPoint ofApp::box2screen(md::coord point, md::coord origin) {
+ofPoint ofApp::box2screen(coord point, coord origin) {
     return box2screen(point.x, point.y, origin.x, origin.y);
 }
 
@@ -296,12 +296,12 @@ void ofApp::drawParticle(int index, double radius, ofColor color, int nframes) {
 }
 
 void ofApp::drawParticle(int index, double radius_x, double radius_y, int nframes) {
-    md::coord pos = theSystem.getPos(index, nframes);
+    coord pos = theSystem.getPos(index, nframes);
     ofDrawEllipse(box2screen(pos), radius_x * 2, radius_y * 2);
 }
 
 void ofApp::drawParticle(int index, double radius, int nframes) {
-    md::coord pos = theSystem.getPos(index, nframes);
+    coord pos = theSystem.getPos(index, nframes);
     ofDrawCircle(box2screen(pos), radius);
 }
 
@@ -471,9 +471,9 @@ void ofApp::drawPotentialUI()
     max_x = (fineness+scale_factor) * x_spacing;
     
     // Set up particle separations, relative to particle 0
-    md::coord pos1 = theSystem.getPos(0);
+    coord pos1 = theSystem.getPos(0);
     for (int i = 1; i < theSystem.getN(); i++){
-        md::coord pos = theSystem.getPos(i);
+        coord pos = theSystem.getPos(i);
         x = pos.x - pos1.x;
         y = pos.y - pos1.y;
         x = sqrt(x*x + y*y);
@@ -613,8 +613,8 @@ void ofApp::draw(){
     
     // Setup temporary placeholders
     ofColor particleColor;
-    md::coord tempVel;
-    md::coord tempAcc;
+    coord tempVel;
+    coord tempAcc;
     
     double radius_x;
     double radius_y;
@@ -639,7 +639,7 @@ void ofApp::draw(){
         
         if (loganOn) {
             ofSetColor(particleColor);
-            md::coord pos = theSystem.getPos(i);
+            coord pos = theSystem.getPos(i);
             if (tempVel.x >= 0)
                 loganRight.draw(box2screen(pos.x, pos.y, loganShiftx, loganShifty), radius_x * 4, radius_y * 4);
             else
@@ -782,7 +782,7 @@ void ofApp::keyPressed(int key){
     }
     
     else if (key == 'r' || key == 'R') { // Reset the system to have the current values of the sliders
-        md::coord box = theSystem.getBox();
+        coord box = theSystem.getBox();
         setupSystem();
         //setupSystem(numParticles, theSystem.getTemp(), box.x, box.y, theSystem.getTimestep(), theSystem.getCutoff());
     }
