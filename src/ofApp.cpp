@@ -199,8 +199,6 @@ void ofApp::setupSystem(int particles, double temperature, double box_width, dou
     
     theSystem.forcesEnergies(N_THREADS);
     theSystem.savePreviousValues();
-    firstEKin = theSystem.getEKin();
-    firstEPot = fabs(theSystem.getEPot());
 }
     
 void ofApp::setupSystem() {
@@ -208,8 +206,6 @@ void ofApp::setupSystem() {
     theSystem.addParticlesGrid(numParticles);
     theSystem.forcesEnergies(N_THREADS);
     theSystem.savePreviousValues();
-    firstEKin = theSystem.getEKin();
-    firstEPot = fabs(theSystem.getEPot());
 }
 
 
@@ -358,9 +354,8 @@ void ofApp::drawGaussian(Gaussian& g, bool selected){
         Draws the kinetic/potential energy graphs as small red/blue circles
         in the background. 
  
-        This rescales the values for the graphs using firstEKin/Pot and maxEKin/Pot
-        as the minimum/maximum values respectively, which seems to be giving 
-        unsatisfactory results in some circumstances. Needs looking in to.
+        This rescales the values for the graphs using minEKin/Pot and maxEKin/Pot
+        as the minimum/maximum values respectively.
  */
 void ofApp::drawGraph()
 {
@@ -371,8 +366,10 @@ void ofApp::drawGraph()
     float winHeight = 2*ofGetHeight()/3;
     float xOffset = 1.1*winLeft;
     float yOffset = 7*winHeight/6;
-    float ekinScale = theSystem.getMaxEkin();//8*theSystem.getN()*theSystem.getT();
-    float epotScale = theSystem.getMaxEpot();//8*firstEPot;
+    float ekinMaxScale = theSystem.getMaxEkin();
+    float ekinMinScale = theSystem.getMinEkin();
+    float epotMaxScale = theSystem.getMaxEpot();
+    float epotMinScale = theSystem.getMinEpot();
     //ofFill();
     //ofSetColor(255, 255, 255, 100);
     //ofDrawRectangle(winLeft, winTop, winWidth, winHeight);
@@ -385,11 +382,11 @@ void ofApp::drawGraph()
     // and draw them as small circles.
     for (int i = 0; i < theSystem.getNEnergies(); i++){
         ofSetColor(200, 0, 0);
-        ekin = ofMap(theSystem.getPreviousEkin(i), firstEKin, ekinScale, 0, 0.9*winHeight, true);
+        ekin = ofMap(theSystem.getPreviousEkin(i), ekinMinScale, ekinMaxScale, 0, 0.9*winHeight);
         ofDrawCircle(xOffset + 5*i, yOffset - ekin, radius);
         
         ofSetColor(255, 255, 255);
-        epot = ofMap(fabs(theSystem.getPreviousEpot(i)), firstEPot, epotScale, 0, 0.9*winHeight, true);
+        epot = ofMap(fabs(theSystem.getPreviousEpot(i)), epotMinScale, epotMaxScale, 0, 0.9*winHeight);
         ofDrawCircle(xOffset + 5*i, yOffset - epot, radius);
     }
     
@@ -907,8 +904,6 @@ void ofApp::keyPressed(int key){
     
     else if (key == 'd' || key == 'D') { // Drawing interface
         if (!helpOn) {
-            //if (drawOn) playOn = true;
-            //else playOn = false;
             drawOn = !drawOn;
         }
     }
@@ -1033,12 +1028,16 @@ void ofApp::mousePressed(int x, int y, int button){
         // Select potential
             if ( y < topHeight + buttonHeight) {
                 selectedPotential = 1; // Lennard-Jones potential
+                theSystem.setPotential(&ljPotential);
             } else if ( y < topHeight + 2*buttonHeight){
                 selectedPotential = 2; // Square well potential
+                theSystem.setPotential(&squarePotential);
             } else if ( y < topHeight + 3*buttonHeight){
                 selectedPotential = 3; // Morse potential
+                theSystem.setPotential(&morsePotential);
             } else if ( y < topHeight + 4*buttonHeight){
                 selectedPotential = 4; // Custom potential
+                theSystem.setPotential(&customPotential);
             }
         }
         

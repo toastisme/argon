@@ -88,12 +88,6 @@ private:
     // Thermostat frequency
     double thermFreq;
     
-    // Keep track of very first kinetic/potential energies
-    // for graph drawing purposes - it may be prudent to
-    // instead keep minEKin and minEPot values in MDContainer
-    // along with maxEKin and maxEPot
-    double firstEKin, firstEPot;
-    
     // For the potential UI
     float topHeight, sideWidth, buttonHeight;
     

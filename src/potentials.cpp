@@ -8,6 +8,7 @@
 
 #include "potentials.hpp"
 #include <cmath>
+#include <iostream>
 
 //------ LENNARD-JONES POTENTIAL -----
 
@@ -76,7 +77,7 @@ double LennardJones::potential(double rij)
 //------ SQUARE WELL POTENTIAL -----
 
 // Constructor, sets default values of parameters
-SquareWell::SquareWell() : V0(-1.0), rMin(1.0), rMax(2.0), intercept(1e6)
+SquareWell::SquareWell() : V0(-1.0), rMin(1.0), rMax(2.0), intercept(40.0)
 {
     calcSteepness();
 }

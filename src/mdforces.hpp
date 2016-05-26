@@ -43,7 +43,7 @@ namespace md{
         double epot, ekin; // Potential and kinetic energies
         double rcutoff; // Cutoff radius for pair potential
         double dt, T; // MD timestep and desired temperature
-        double maxEKin, maxEPot; // Maximum kinetic and potential energies in prevEPot, prevEKin
+        double maxEKin, maxEPot, minEKin, minEPot; // Maximum/minimum kinetic and potential energies in prevEPot, prevEKin
         double v_avg; // Current average speed of particles
         int enCounter; // Counter so that only every nth energy is stored
         
@@ -51,7 +51,7 @@ namespace md{
         LennardJones lj;
         
         // Reference to the potential functor to be used to calculate the forces
-        PotentialFunctor& potential;
+        PotentialFunctor* potential;
         
     public:
         MDContainer(); // Default constructor
@@ -78,6 +78,8 @@ namespace md{
         double getEKin() const;
         double getMaxEpot() const;
         double getMaxEkin() const;
+        double getMinEpot() const;
+        double getMinEkin() const;
         
         // Return sizes of vectors
         int getNGaussians() const;
@@ -114,7 +116,7 @@ namespace md{
         void setTemp(double temperature);
         
         // Set the potential
-        void setPotential(PotentialFunctor& _potential);
+        void setPotential(PotentialFunctor* _potential);
         
         // Add and remove particles
         void addParticle(double x, double y, double vx, double vy);

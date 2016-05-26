@@ -21,7 +21,7 @@ namespace md {
             and the timstep to 0.002. Initialises maximum energies, and enCounter,
             to zero.
      */
-    MDContainer::MDContainer() : potential(lj)
+    MDContainer::MDContainer()
     {
         box_dimensions = {0, 0};
         rcutoff = 3.0;
@@ -29,6 +29,7 @@ namespace md {
         maxEKin = 0.0;
         maxEPot = 0.0;
         enCounter = 0;
+        potential = &lj;
     }
     
     /*
@@ -66,6 +67,8 @@ namespace md {
     double MDContainer::getHeight()    const { return box_dimensions.y; }
     double MDContainer::getMaxEkin()   const { return maxEKin; }
     double MDContainer::getMaxEpot()   const { return maxEPot; }
+    double MDContainer::getMinEkin()   const { return minEKin; }
+    double MDContainer::getMinEpot()   const { return minEPot; }
     
     // Return sizes of gaussians, prevPos, and energies vectors, i.e. the number
     // of gaussians, positions and energies stored
@@ -130,7 +133,7 @@ namespace md {
     
     // Set the potential
     
-    void MDContainer::setPotential(PotentialFunctor& _potential) { potential = _potential; }
+    void MDContainer::setPotential(PotentialFunctor* _potential) { potential = _potential; }
     
 /*
     ROUTINE setupSystem:
@@ -400,8 +403,8 @@ namespace md {
                 if (d2 < rcut2) { // Check if within cutoff radius
                     r = sqrt(d2);
                     
-                    // Lennard-Jones energy and forces
-                    eptemp += potential(r, fij);
+                    // Energy and forces
+                    eptemp += (*potential)(r, fij);
                     
                     fij.x *= rij.x;
                     fij.y *= rij.y;
@@ -485,18 +488,22 @@ namespace md {
     void MDContainer::savePreviousValues()
     {
         prevPositions.push_front(positions);
-        prevEPot.push_front(epot);
+        prevEPot.push_front(fabs(epot));
         prevEKin.push_front(ekin);
         
         if (prevPositions.size() == 20) prevPositions.pop_back();
         if (prevEPot.size() == 120) prevEPot.pop_back();
         if (prevEKin.size() == 120) prevEKin.pop_back();
         
-        // Find the maximum elements in prevEKin and prevEPot
+        // Find the maximum/minimum elements in prevEKin and prevEPot
         std::deque<double>::iterator EKMAX = std::max_element(prevEKin.begin(), prevEKin.end());
         std::deque<double>::iterator EPMAX = std::max_element(prevEPot.begin(), prevEPot.end());
+        std::deque<double>::iterator EKMIN = std::min_element(prevEKin.begin(), prevEKin.end());
+        std::deque<double>::iterator EPMIN = std::min_element(prevEPot.begin(), prevEPot.end());
         maxEKin = prevEKin[std::distance(prevEKin.begin(), EKMAX)];
         maxEPot = prevEPot[std::distance(prevEPot.begin(), EPMAX)];
+        minEKin = prevEKin[std::distance(prevEKin.begin(), EKMIN)];
+        minEPot = prevEPot[std::distance(prevEPot.begin(), EPMIN)];
     }
     
     /*
