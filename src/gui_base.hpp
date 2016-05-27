@@ -10,6 +10,7 @@
 #define gui_base_hpp
 
 #include <vector>
+#include "utilities.hpp"
 
 namespace gui {
     enum Position
@@ -21,18 +22,6 @@ namespace gui {
         TOP_LEFT, TOP, TOP_RIGHT,
         LEFT, CENTRE, RIGHT,
         BOTTOM_LEFT, BOTTOM, BOTTOM_RIGHT
-    };
-    
-    struct point
-    {
-        /*
-            Struct defining a 2-D point.
-         */
-        
-        double x, y;
-        
-        point operator+(const point &other);
-        point operator-(const point &other);
     };
     
     struct rect
@@ -52,16 +41,16 @@ namespace gui {
         void setLRTB(double left, double right, double top, double bottom);
         void setXYWH(double x, double y, double width, double height);
         
-        point getPos(Position position) const;
+        coord getPos(Position position) const;
         
-        void setVertex(Position position, point pos);
+        void setVertex(Position position, coord pos);
         
-        void moveAnchor(Position position, point pos);
+        void moveAnchor(Position position, coord pos);
         
         bool inside(double x, double y) const;
         void expandToFit(rect other);
         
-        rect offset(point origin) const;
+        rect offset(coord origin) const;
         rect offset(double x, double y) const;
         
     };

@@ -11,18 +11,6 @@
 namespace gui {
     
     /*
-        point
-     */
-    
-    point point::operator+(const point &other) {
-        return { x + other.x, y + other.y };
-    }
-    
-    point point::operator-(const point &other) {
-        return { x - other.x, y - other.y };
-    }
-    
-    /*
         rect
      */
     
@@ -39,8 +27,8 @@ namespace gui {
         left = x; right = x + width; top = y; bottom = y + height;
     }
     
-    point rect::getPos(Position position) const {
-        point ret;
+    coord rect::getPos(Position position) const {
+        coord ret;
         
         switch (position) {
             case TOP_LEFT:     { ret.x = left;      ret.y = top;       } break;
@@ -58,7 +46,7 @@ namespace gui {
         return ret;
     }
     
-    void rect::setVertex(Position position, point pos) {
+    void rect::setVertex(Position position, coord pos) {
         switch (position) {
             case TOP_LEFT:     { left  = pos.x; top    = pos.y; } break;
             case TOP_RIGHT:    { right = pos.x; top    = pos.y; } break;
@@ -68,7 +56,7 @@ namespace gui {
         }
     }
     
-    void rect::moveAnchor(Position anchor, point pos) {
+    void rect::moveAnchor(Position anchor, coord pos) {
         double x = pos.x;
         double y = pos.y;
         double W = width();
@@ -102,7 +90,7 @@ namespace gui {
         if (other.bottom < bottom) { bottom = other.bottom; }
     }
     
-    rect rect::offset(point origin) const { return offset(origin.x, origin.y); }
+    rect rect::offset(coord origin) const { return offset(origin.x, origin.y); }
                                       
     rect rect::offset(double x, double y) const {
     rect ret;
