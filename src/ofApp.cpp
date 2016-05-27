@@ -43,8 +43,7 @@ void ofApp::setup()
     double BOX_WIDTH = 17.0;
     
     // NOTE: ofGetWidth and ofGetHeight do not give the right values here if
-    // the screen we're trying to draw is too large for the OS resolution
-    // and the window is resized - they give the right values later, but not
+    // the screen we're trying to draw is to the right values later, but not
     // in ofApp::setup(). If this happens, we get regions where the particles
     // are inside the MD box, but not inside the screen.
     // This is an openFrameworks issue.
@@ -200,8 +199,6 @@ void ofApp::setupSystem(int particles, double temperature, double box_width, dou
     
     theSystem.forcesEnergies(N_THREADS);
     theSystem.savePreviousValues();
-    firstEKin = theSystem.getEKin();
-    firstEPot = fabs(theSystem.getEPot());
 }
     
 void ofApp::setupSystem() {
@@ -209,8 +206,6 @@ void ofApp::setupSystem() {
     theSystem.addParticlesGrid(numParticles);
     theSystem.forcesEnergies(N_THREADS);
     theSystem.savePreviousValues();
-    firstEKin = theSystem.getEKin();
-    firstEPot = fabs(theSystem.getEPot());
 }
 
 
@@ -359,9 +354,8 @@ void ofApp::drawGaussian(Gaussian& g, bool selected){
         Draws the kinetic/potential energy graphs as small red/blue circles
         in the background. 
  
-        This rescales the values for the graphs using firstEKin/Pot and maxEKin/Pot
-        as the minimum/maximum values respectively, which seems to be giving 
-        unsatisfactory results in some circumstances. Needs looking in to.
+        This rescales the values for the graphs using minEKin/Pot and maxEKin/Pot
+        as the minimum/maximum values respectively.
  */
 void ofApp::drawGraph()
 {
@@ -372,8 +366,10 @@ void ofApp::drawGraph()
     float winHeight = 2*ofGetHeight()/3;
     float xOffset = 1.1*winLeft;
     float yOffset = 7*winHeight/6;
-    float ekinScale = theSystem.getMaxEkin();//8*theSystem.getN()*theSystem.getT();
-    float epotScale = theSystem.getMaxEpot();//8*firstEPot;
+    float ekinMaxScale = theSystem.getMaxEkin();
+    float ekinMinScale = theSystem.getMinEkin();
+    float epotMaxScale = theSystem.getMaxEpot();
+    float epotMinScale = theSystem.getMinEpot();
     //ofFill();
     //ofSetColor(255, 255, 255, 100);
     //ofDrawRectangle(winLeft, winTop, winWidth, winHeight);
@@ -386,11 +382,11 @@ void ofApp::drawGraph()
     // and draw them as small circles.
     for (int i = 0; i < theSystem.getNEnergies(); i++){
         ofSetColor(200, 0, 0);
-        ekin = ofMap(theSystem.getPreviousEkin(i), firstEKin, ekinScale, 0, 0.9*winHeight, true);
+        ekin = ofMap(theSystem.getPreviousEkin(i), ekinMinScale, ekinMaxScale, 0, 0.9*winHeight);
         ofDrawCircle(xOffset + 5*i, yOffset - ekin, radius);
         
         ofSetColor(255, 255, 255);
-        epot = ofMap(fabs(theSystem.getPreviousEpot(i)), firstEPot, epotScale, 0, 0.9*winHeight, true);
+        epot = ofMap(fabs(theSystem.getPreviousEpot(i)), epotMinScale, epotMaxScale, 0, 0.9*winHeight);
         ofDrawCircle(xOffset + 5*i, yOffset - epot, radius);
     }
     
@@ -507,12 +503,12 @@ void ofApp::drawPotentialUI()
     switch (selectedPotential) {
         case 2: { // Square well
             // Draw square well
-            drawSWPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
+            drawPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party, squarePotential);
             break;
         }
         case 3: { // Morse
             // Draw Morse potential
-            drawMorsePotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
+            drawPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party, morsePotential);
             break;
         }
         case 4: { // Custom
@@ -522,7 +518,7 @@ void ofApp::drawPotentialUI()
         }
         default: {// Lennard-Jones
             // Draw Lennard-Jones curve
-            drawLJPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
+            drawPotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party, ljPotential);
         }
     }
 }
@@ -583,8 +579,8 @@ void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max
         // Move the three points to the scaled position
         //customPotential.movePoint(3, x_end, y_end, 0);
         //customPotential.movePoint(2, x2, y2, 0);
-        customPotential.movePoint(1, x_end, y_end, 0);
-        customPotential.movePoint(0, x0, y0, 0);
+        customPotential.getSpline().movePoint(1, x_end, y_end, 0);
+        customPotential.getSpline().movePoint(0, x0, y0, 0);
         
         // After calling the custom potential the first time, skip this block
         customPotentialOn = !customPotentialOn;
@@ -593,19 +589,19 @@ void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max
     // Once the initial three-point spline has been rescaled, update the spline each iteration
     else {
         // Set color, position of each point in the spline
-        for (int i = 1; (i < customPotential.points()+1); i++){
+        for (int i = 1; (i < customPotential.getSpline().points()+1); i++){
             ofSetColor(0, 200, 240,200);
             ofFill();
-            ofDrawCircle(customPotential.getPoint(i-1).x, customPotential.getPoint(i-1).y, 10);
+            ofDrawCircle(customPotential.getSpline().getPoint(i-1).x, customPotential.getSpline().getPoint(i-1).y, 10);
             ofSetColor(255, 255, 255,90);
             ofNoFill();
-            ofDrawCircle(customPotential.getPoint(i-1).x, customPotential.getPoint(i-1).y, 10);
+            ofDrawCircle(customPotential.getSpline().getPoint(i-1).x, customPotential.getSpline().getPoint(i-1).y, 10);
         }
         
         // Map every x value to the UI and obtain y, add each value to ypoints
         for (int i = 0; i < xpoints.size(); i++){
             xpoints[i] = ofMap(xpoints[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true );
-            y = customPotential.value(xpoints[i]);
+            y = customPotential.getSpline().value(xpoints[i]);
             // If y is out of the y limits, set y to the limit
             max_y = ( y > max_y ? y : max_y);
             min_y = ( y < min_y ? y : min_y);
@@ -615,7 +611,7 @@ void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max
         // Map every x particle value to the UI and obtain y, add each value to party
         for (int i = 0; i < theSystem.getN() - 1; i++){
             partx[i] = ofMap(partx[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
-            y = customPotential.value(partx[i]);
+            y = customPotential.getSpline().value(partx[i]);
             party.push_back(y);
         }
         
@@ -636,79 +632,30 @@ void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max
     
 }
 
-// Square well potential function
-void ofApp::drawSWPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party){
-    
-    float x,y;
-    
-    // Calculate y values for the potential and add to ypoints
-    min_y = -10;
-    for (int i = 0; i < xpoints.size(); i++){
-        x = xpoints[i];
-        y = min_y/2;
-        if ( x > max_x/3 && x < 2*max_x/3) y = min_y;
-        ypoints.push_back(y);
-    }
-    
-    // Calculate the y values for the partiles and add to paty
-    for (int i = 0; i < theSystem.getN()-1; i++){
-        y = min_y/2;
-        if ( partx[i] > max_x/3 && partx[i] < 2*max_x/3) y = min_y;
-        party.push_back(y);
-    }
-    // Scale the potential and particle values, and draw them in the UI
-    scalePotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
-    
-}
-
-// Lennard-Jones potential function
-void ofApp::drawLJPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party){
+// Draw any potential of type PotentialFunctor
+void ofApp::drawPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party, PotentialFunctor& pot){
 
     float x,y;
     
     // Calculate y values for the potential and add to ypoints
     for (int i = 0; i< xpoints.size(); i++){
         x = xpoints[i];
-        y = 1.0/pow(x, 6);
-        y = 4.0 * (y*y - y);
+        y = pot.potential(x);
         max_y = ( y > max_y ? y : max_y);
         min_y = ( y < min_y ? y : min_y);
         ypoints.push_back(y);
     }
     
+    max_y = ( max_y > 2.0 ? 2.0 : max_y );
+    
     // Calculate y values for the particles and add to party
     for (int i = 0; i < theSystem.getN() - 1; i++){
         x = partx[i];
-        y = 1.0/pow(x, 6);
-        y = 4.0 * (y*y - y);
+        y = pot.potential(x);
         party.push_back(y);
     }
     // Scale the potential and particle values, and draw them in the UI
     scalePotential(min_x, min_y, max_x, max_y, xpoints, ypoints, partx, party);
-}
-
-// Morse potential function
-void ofApp::drawMorsePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party){
-    
-    float x,y;
-    // Calculate y values for the potential and add to ypoints
-    for (int i = 0; i< xpoints.size(); i++){
-        x = xpoints[i];
-        y = exp(-2*(x-1)) - 2*exp(-(x-1));
-        max_y = ( y > max_y ? y : max_y);
-        min_y = ( y < min_y ? y : min_y);
-        ypoints.push_back(y);
-    }
-    
-    // Calculate y values for the particles and add to party
-    for (int i = 0; i < theSystem.getN() - 1; i++){
-        x = partx[i];
-        y = exp(-2*(x-1)) - 2*exp(-(x-1));
-        party.push_back(y);
-    }
-    // Scale the potential and particle values, and draw them in the UI
-    scalePotential(min_x , min_y, max_x, max_y, xpoints, ypoints, partx, party);
-    
 }
 
 // Scale the potentials to the UI and draw them
@@ -957,8 +904,6 @@ void ofApp::keyPressed(int key){
     
     else if (key == 'd' || key == 'D') { // Drawing interface
         if (!helpOn) {
-            //if (drawOn) playOn = true;
-            //else playOn = false;
             drawOn = !drawOn;
         }
     }
@@ -1039,27 +984,27 @@ void ofApp::mouseDragged(int x, int y, int button){
 
     // Drag selected customPotential point when 'move points' button is on
     if (customPotentialButton == 2){
-        for (int i = 1; (i < customPotential.points()-1); i++){
-                if (x > customPotential.getPoint(i).x - 20 && x < customPotential.getPoint(i).x + 20){
-                    if (y > customPotential.getPoint(i).y - 20 && y < customPotential.getPoint(i).y + 20){
+        for (int i = 1; (i < customPotential.getSpline().points()-1); i++){
+                if (x > customPotential.getSpline().getPoint(i).x - 20 && x < customPotential.getSpline().getPoint(i).x + 20){
+                    if (y > customPotential.getSpline().getPoint(i).y - 20 && y < customPotential.getSpline().getPoint(i).y + 20){
                         int xpos = x;
                         int ypos = y;
                         // Prevent points being moved across each other
-                        xpos = (x < customPotential.getPoint(i-1).x + 5 ? customPotential.getPoint(i-1).x + 5 : xpos);
-                        xpos = (x > customPotential.getPoint(i+1).x - 5 ? customPotential.getPoint(i+1).x - 5 : xpos);
+                        xpos = (x < customPotential.getSpline().getPoint(i-1).x + 5 ? customPotential.getSpline().getPoint(i-1).x + 5 : xpos);
+                        xpos = (x > customPotential.getSpline().getPoint(i+1).x - 5 ? customPotential.getSpline().getPoint(i+1).x - 5 : xpos);
                         // Prevent points being moved outside of the screen
                         
-                        customPotential.movePoint(i, xpos, ypos, customPotential.getPoint(i).m);
+                        customPotential.getSpline().movePoint(i, xpos, ypos, customPotential.getSpline().getPoint(i).m);
                     }
                 }
         }
     }
     // Change slope of selected customPotential point when 'change slope' button is on
     else if (customPotentialButton == 3){
-        for (int i=1; (i < customPotential.points()); i++) {
-            if (x > customPotential.getPoint(i).x - 30 && x < customPotential.getPoint(i).x + 30){
+        for (int i=1; (i < customPotential.getSpline().points()); i++) {
+            if (x > customPotential.getSpline().getPoint(i).x - 30 && x < customPotential.getSpline().getPoint(i).x + 30){
                         float slope_y = ofMap(y, topHeight + 30, ofGetHeight()-30, -3.0, 3.0);
-                        customPotential.movePoint(i,customPotential.getPoint(i).x , customPotential.getPoint(i).y, slope_y);
+                        customPotential.getSpline().movePoint(i,customPotential.getSpline().getPoint(i).x , customPotential.getSpline().getPoint(i).y, slope_y);
                 }
         }
     }
@@ -1083,12 +1028,16 @@ void ofApp::mousePressed(int x, int y, int button){
         // Select potential
             if ( y < topHeight + buttonHeight) {
                 selectedPotential = 1; // Lennard-Jones potential
+                theSystem.setPotential(&ljPotential);
             } else if ( y < topHeight + 2*buttonHeight){
                 selectedPotential = 2; // Square well potential
+                theSystem.setPotential(&squarePotential);
             } else if ( y < topHeight + 3*buttonHeight){
                 selectedPotential = 3; // Morse potential
+                theSystem.setPotential(&morsePotential);
             } else if ( y < topHeight + 4*buttonHeight){
                 selectedPotential = 4; // Custom potential
+                theSystem.setPotential(&customPotential);
             }
         }
         
@@ -1139,13 +1088,13 @@ void ofApp::mousePressed(int x, int y, int button){
                 if (y > topHeight + 30 && y < ofGetHeight()-30){
                     // Prevent particles being created on top of each other
                     int count_close_points = 0;
-                    for (int i = 1; (i < customPotential.points()+1); i++){
-                        if (x > customPotential.getPoint(i).x - 10 && x < customPotential.getPoint(i).x + 10){
+                    for (int i = 1; (i < customPotential.getSpline().points()+1); i++){
+                        if (x > customPotential.getSpline().getPoint(i).x - 10 && x < customPotential.getSpline().getPoint(i).x + 10){
                             count_close_points++;
                         }
                     }
                     if (count_close_points == 0){
-                    customPotential.addPoint(x, y, 0);
+                    customPotential.getSpline().addPoint(x, y, 0);
                     }
                 }
             }
@@ -1153,11 +1102,11 @@ void ofApp::mousePressed(int x, int y, int button){
     
         // Remove clicked customPotential points when the 'remove points' button is on
         else if (customPotentialButton == 4){
-            for (int i = 1; (i < customPotential.points()-1); i++){
-                if (x > customPotential.getPoint(i).x - 10 && x < customPotential.getPoint(i).x + 10){
-                    if (y > customPotential.getPoint(i).y - 10 && y < customPotential.getPoint(i).y + 10){
+            for (int i = 1; (i < customPotential.getSpline().points()-1); i++){
+                if (x > customPotential.getSpline().getPoint(i).x - 10 && x < customPotential.getSpline().getPoint(i).x + 10){
+                    if (y > customPotential.getSpline().getPoint(i).y - 10 && y < customPotential.getSpline().getPoint(i).y + 10){
                         
-                        customPotential.removePoint(i);
+                        customPotential.getSpline().removePoint(i);
                     }
                 }
             }

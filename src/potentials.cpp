@@ -8,6 +8,7 @@
 
 #include "potentials.hpp"
 #include <cmath>
+#include <iostream>
 
 //------ LENNARD-JONES POTENTIAL -----
 
@@ -76,7 +77,7 @@ double LennardJones::potential(double rij)
 //------ SQUARE WELL POTENTIAL -----
 
 // Constructor, sets default values of parameters
-SquareWell::SquareWell() : V0(-1.0), rMin(1.0), rMax(2.0), intercept(1e6)
+SquareWell::SquareWell() : V0(-1.0), rMin(1.0), rMax(2.0), intercept(40.0)
 {
     calcSteepness();
 }
@@ -111,7 +112,7 @@ double SquareWell::operator()(double rij, coord& force)
     } else if ( rij < rMax ) { // Inside well
         epot = V0;
     } else if ( rij <  1.05 * rMax ) {
-        forceCoeff = steepness;
+        forceCoeff = -20.0*V0/rMax;
     }
     
     force.x = forceCoeff;
@@ -125,7 +126,7 @@ double SquareWell::operator()(double rij, coord& force)
 double SquareWell::potential(double rij)
 {
     double epot = 0;
-    if ( rij < rMax ) epot = steepness * rij + intercept;
+    if ( rij < rMin ) epot = steepness * rij + intercept;
     else if ( rij < rMax ) epot = V0;
     
     return epot;
@@ -171,4 +172,28 @@ double Morse::potential(double rij)
     return epot;
 }
 
-    
+
+//------ CUSTOM POTENTIAL ------
+
+// Constructor (does nothing currently)
+
+CustomPotential::CustomPotential() {}
+
+// Get a reference to the spline
+
+cubic::Spline& CustomPotential::getSpline() { return spline; }
+
+// Force and energy calculation
+
+double CustomPotential::operator()(double rij, coord& force)
+{
+    force.x = spline.slope(rij);
+    force.y = force.x;
+    return spline.value(rij);
+}
+
+// Just the energy
+double CustomPotential::potential(double rij)
+{
+    return spline.value(rij);
+}

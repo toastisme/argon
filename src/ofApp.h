@@ -43,9 +43,7 @@ public:
     
     // Draw potential functions
     void drawCustomPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
-    void drawLJPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
-    void drawSWPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
-    void drawMorsePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
+    void drawPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party, PotentialFunctor& pot);
     
     // Scale potential functions to UI
     void scalePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
@@ -82,7 +80,6 @@ public:
 private:
    
     md::MDContainer theSystem; // The MD simulation system
-    cubic::Spline customPotential; // The custom potential for particle-particle interactions
     
     // Store the number of particles locally until the system
     // is reset with 'r' and we can regrid everything
@@ -91,12 +88,6 @@ private:
     // Thermostat frequency
     double thermFreq;
     
-    // Keep track of very first kinetic/potential energies
-    // for graph drawing purposes - it may be prudent to
-    // instead keep minEKin and minEPot values in MDContainer
-    // along with maxEKin and maxEPot
-    double firstEKin, firstEPot;
-    
     // For the potential UI
     float topHeight, sideWidth, buttonHeight;
     
@@ -104,6 +95,7 @@ private:
     LennardJones ljPotential;
     SquareWell squarePotential;
     Morse morsePotential;
+    CustomPotential customPotential;
 
     // Counters
     // Keep track of which Gaussian potential is selected
