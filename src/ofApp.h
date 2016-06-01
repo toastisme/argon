@@ -132,7 +132,7 @@ private:
     
     // Logical variables
     bool audioOn; // Is audio input turned on?
-    bool helpOn; // Is the UI showing?
+    bool controlsOn; // Is the UI showing?
     bool loganOn; // Is secret-Logan-mode turned on?
     bool graphOn; // Are the energy graphs showing?
     bool playOn; // Is the simulation playing?

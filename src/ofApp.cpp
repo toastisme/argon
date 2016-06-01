@@ -85,7 +85,7 @@ void ofApp::setup()
     // Set the booleans so that the audio input is turned on, as is the simulation,
     // but the UI, secret-Logan-mode, and energy graphs are off.
     audioOn = true;
-    helpOn  = false;
+    controlsOn  = false;
     loganOn = false;
     graphOn = false;
     playOn  = true;
@@ -388,6 +388,7 @@ void ofApp::drawGraph()
         ofSetColor(255, 255, 255);
         epot = ofMap(fabs(theSystem.getPreviousEpot(i)), epotMinScale, epotMaxScale, 0, 0.9*winHeight);
         ofDrawCircle(xOffset + 5*i, yOffset - epot, radius);
+
     }
     
     // Label the two graphs in the top left corner.
@@ -416,7 +417,6 @@ void ofApp::drawPotentialUI()
     // Draw title
     ofSetColor(255, 255, 240);
     uiFont14.drawString("Select a pair potential", 1.4*sideWidth, topHeight/2);
-    uiFont10.drawString("Apply", 6.5*sideWidth, topHeight/2);
     
     // Draw left box
     ofSetColor(0,0,0, 180);
@@ -568,17 +568,11 @@ void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max
     // Only occurs the first time the custom potential is selected
     if (customPotentialOn == false){
         double x0 = ofMap(min_x*1.025, min_x, max_x,sideWidth + 40, ofGetWidth() - 40, true);
-        double x1 = ofMap(max_x/3.8, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
-        double x2 = ofMap(max_x/3.0, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
         double x_end = ofMap(max_x, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
         double y0 = ofGetHeight()/5.5;
-        double y1 = ofGetHeight()/1.25;
-        double y2 = ofGetHeight()/1.15;
         double y_end = ofGetHeight()/1.8;
     
-        // Move the three points to the scaled position
-        //customPotential.movePoint(3, x_end, y_end, 0);
-        //customPotential.movePoint(2, x2, y2, 0);
+        // Move the two points to the scaled position;
         customPotential.getSpline().movePoint(1, x_end, y_end, 0);
         customPotential.getSpline().movePoint(0, x0, y0, 0);
         
@@ -586,7 +580,7 @@ void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max
         customPotentialOn = !customPotentialOn;
     }
     
-    // Once the initial three-point spline has been rescaled, update the spline each iteration
+    // Once the initial two-point spline has been rescaled, update the spline each iteration
     else {
         // Set color, position of each point in the spline
         for (int i = 1; (i < customPotential.getSpline().points()+1); i++){
@@ -613,6 +607,7 @@ void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max
             partx[i] = ofMap(partx[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
             y = customPotential.getSpline().value(partx[i]);
             party.push_back(y);
+            
         }
         
         // Draw the potential
@@ -702,7 +697,7 @@ void ofApp::scalePotential(float min_x, float min_y, float max_x, float max_y, s
                 - coloured by its velocity,
                 - with width and height determined by the x/y forces acting on it.
                 - Trails of the 10th and 15th previous positions.
-            5. If helpOn (UI showing), draws the UI. Otherwise, draws message
+            5. If controlsOn (UI showing), draws the UI. Otherwise, draws message
                 on how to turn on UI in bottom left corner.
  */
 void ofApp::draw(){
@@ -776,11 +771,10 @@ void ofApp::draw(){
         }
     }
     
-    
-    // Draw the UI if helpOn, otherwise draw message on how to turn the UI on.
+    // Draw the UI if controlsOn, otherwise draw message on how to turn the UI on.
     if (drawOn) {
         drawPotentialUI();
-    } else if (not helpOn) {
+    } else if (not controlsOn) {
         ofSetColor(255, 255, 240);
         uiFont14.drawString("press 'h' for controls", 10, ofGetHeight()-10);
     }
@@ -887,7 +881,7 @@ void ofApp::keyPressed(int key){
     
     else if (key == 'h' || key == 'H'){ // Show/hide UI
         if (!drawOn) {
-            helpOn = !helpOn;
+            controlsOn = !controlsOn;
             menuUI.toggleVisible();
         }
     }
@@ -903,13 +897,13 @@ void ofApp::keyPressed(int key){
     }
     
     else if (key == 'd' || key == 'D') { // Drawing interface
-        if (!helpOn) {
+        if (!controlsOn) {
             drawOn = !drawOn;
         }
     }
     
     // If the UI is showing, the sliders are in focus
-    if (helpOn == true){
+    if (controlsOn == true){
         if (key == OF_KEY_TAB)  // Switch slider
             selectedSlider = (selectedSlider+1)%3;
         if (key == OF_KEY_RIGHT){
@@ -971,14 +965,14 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-    if (helpOn) {
+    if (controlsOn) {
         menuUI.mouseMoved(x, y);
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    if (helpOn) {
+    if (controlsOn) {
         menuUI.mouseMoved(x, y);
     }
 
@@ -1059,7 +1053,7 @@ void ofApp::mousePressed(int x, int y, int button){
             }
         }
         
-    } else if (helpOn && menuUI.getRect().inside(x, y)) { // Mouse controls menu
+    } else if (controlsOn && menuUI.getRect().inside(x, y)) { // Mouse controls menu
         // pass through event to children
         menuUI.mousePressed(x, y, button);
         
@@ -1116,7 +1110,7 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    if (helpOn) {
+    if (controlsOn) {
         menuUI.mouseReleased(x, y, button);
     }
 }

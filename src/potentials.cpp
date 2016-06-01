@@ -9,6 +9,7 @@
 #include "potentials.hpp"
 #include <cmath>
 #include <iostream>
+#include "ofApp.h"
 
 //------ LENNARD-JONES POTENTIAL -----
 
@@ -163,6 +164,7 @@ double Morse::operator()(double rij, coord& force)
     return epot;
 }
 
+
 // Just energy
 double Morse::potential(double rij)
 {
@@ -191,6 +193,7 @@ double CustomPotential::operator()(double rij, coord& force)
     force.y = force.x;
     return spline.value(rij);
 }
+
 
 // Just the energy
 double CustomPotential::potential(double rij)
