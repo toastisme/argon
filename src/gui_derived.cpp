@@ -26,6 +26,7 @@ namespace gui {
     }
     
     void TextComponent::resetBounds() {
+        descenderHeight = font->getDescenderHeight();
         double width = font->stringWidth(string);
         double height = font->getLineHeight();
         stringBounds.setXYWH(0, 0, width, height);
@@ -46,23 +47,22 @@ namespace gui {
         resetBounds();
     }
     
-    void TextComponent::setFont(const ofTrueTypeFont &_font) { font = &_font; }
+    void TextComponent::setFont(const ofTrueTypeFont &_font) {
+        font = &_font;
+        resetBounds();
+    }
+    
     void TextComponent::setColour(const ofColor &_colour) { colour = _colour; }
     void TextComponent::setAlign(Position _align) { align = _align; }
     
     rect TextComponent::getStringBounds() const { return stringBounds; }
-    
-    void TextComponent::renderString(int left, int top) const {
-        ofSetColor(colour);
-        if (font) { font->drawString(string, left, top + stringBounds.height()); }
-    }
     
     void TextComponent::renderString(rect bounds) const {
         ofSetColor(colour);
         if (font) {
             rect drawRect = stringBounds;
             drawRect.movePos(align, bounds.getPos(align));
-            font->drawString(string, drawRect.left, drawRect.bottom);
+            font->drawString(string, drawRect.left, drawRect.bottom + descenderHeight);
         }
     }
     

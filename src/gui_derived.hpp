@@ -35,8 +35,9 @@ namespace gui {
          */
         
     private:
-        std::string string;  // string to be drawn
-        rect stringBounds;   // bounding box of the string
+        std::string string;     // string to be drawn
+        rect stringBounds;      // bounding box of the string
+        double descenderHeight; // size of descender (maximum size glyphs can go below baseline of text)
         Position align;      // alignment of the string inside the rectangle
         
         const ofTrueTypeFont *font;
@@ -56,7 +57,6 @@ namespace gui {
         
         rect getStringBounds() const;
         
-        void renderString(int left, int top) const;
         void renderString(rect bounds) const;
     };
     
