@@ -38,6 +38,7 @@ namespace gui {
         resetBounds();
     }
     
+    // set string using printf -- deprecated
     void TextComponent::setString(double value, const std::string &format) {
         char drawstr[31];
         sprintf(drawstr, format.c_str(), value);
@@ -45,6 +46,7 @@ namespace gui {
         resetBounds();
     }
     
+    // set string using value and number of decimal places
     void TextComponent::setString(double value, int precision) {
         stringstream drawstr;
         drawstr.precision(precision);
@@ -69,7 +71,7 @@ namespace gui {
         ofSetColor(colour);
         if (font) {
             rect drawRect = stringBounds;
-            drawRect.moveAnchor(align, bounds.getPos(align));
+            drawRect.movePos(align, bounds.getPos(align));
             font->drawString(string, drawRect.left, drawRect.bottom);
         }
     }

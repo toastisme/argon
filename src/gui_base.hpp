@@ -55,7 +55,6 @@ namespace gui {
         
         // move the rect (preserving width and height) by an offset
         void moveBy(coord offset);
-        void moveBy(double dx, double dy);
         
         // true if the point x, y is inside (or on the boundary of) the rect
         bool inside(double x, double y) const;
@@ -99,7 +98,7 @@ namespace gui {
         const rect getRect() const;
         
         // move UI element by offset
-        void moveBy(const coord &offset);
+        virtual void moveBy(coord offset);
         
         // draw element; called from ofApp.draw()
         virtual void draw() = 0;
@@ -172,6 +171,9 @@ namespace gui {
         
         // destructor calls all childrens' destructors, and frees their memory
         virtual ~UIContainer();
+        
+        // move the container, which also moves all children by the same amount
+        virtual void moveBy(coord offset);
         
         // add a child UIAtom or UIContainer
         void addChild(UIBase *child);

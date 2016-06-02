@@ -121,9 +121,7 @@ namespace gui {
     const rect UIBase::getRect() const { return bounds; }
     
     // move by offset
-    void UIBase::moveBy(const coord &offset) {
-        
-    }
+    void UIBase::moveBy(coord offset) { bounds.moveBy(offset); }
     
     // Default handling of mouse events is to do nothing
     void UIBase::mouseMoved(int x, int y) {}
@@ -167,26 +165,31 @@ namespace gui {
         }
     }
     
-    // Add a child: set its parent to this object
-    // Then make sure size matches the total size spanned by the children
-    void UIContainer::addChild(UIBase *child) {
-        children.push_back(child);
-        
-        // set bounds to match total size
-        // TODO: this doesn't handle origins properly
-        //rect childRect = child->getRect();
-        //bounds.expandToFit(childRect);
+    // move container and all children
+    void UIContainer::moveBy(coord offset) {
+        bounds.moveBy(offset);
+        passCallToChildren(&UIBase::moveBy, offset);
     }
-
-    // remainder of methods just pass the call through to its children
-    // some trivial templating
     
+    // templated function to pass an arbitrary function call and its arguments to each child element
+    // just some trivial templating, easy stuff really...
     template<typename T, typename ...Args>
     void UIContainer::passCallToChildren(T (UIBase::*func)(Args...), Args ... args) {
         for (int i = 0; i < children.size(); ++i) {
             (children[i]->*func)(std::forward<Args>(args)...);
         }
     }
+    
+    // Add a child: move it so that its coordinates are given relative to the top-left corner of the container
+    // then add to the vector of children
+    // i.e. a child originally positioned at (100, 100) relative to the top-left corner of the screen becomes
+    // positioned at (100, 100) relative to the top-left corner of bounds
+    void UIContainer::addChild(UIBase *child) {
+        child->moveBy(bounds.getPos(TOP_LEFT));
+        children.push_back(child);
+    }
+
+    // remainder of methods just pass the call through to its children
     
     void UIContainer::draw() { passCallToChildren(&UIBase::draw); }
     void UIContainer::makeVisible() { passCallToChildren(&UIBase::makeVisible); }
