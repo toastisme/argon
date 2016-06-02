@@ -26,11 +26,9 @@ namespace gui {
     }
     
     void TextComponent::resetBounds() {
-        ofRectangle bounds = font->getStringBoundingBox(string, 0, 0);
-        stringBounds.left = 0;
-        stringBounds.right = bounds.getRight();
-        stringBounds.top = 0;
-        stringBounds.bottom = -bounds.getTop();
+        double width = font->stringWidth(string);
+        double height = font->getLineHeight();
+        stringBounds.setXYWH(0, 0, width, height);
     }
     
     void TextComponent::setString(const std::string &_string) {
