@@ -49,7 +49,6 @@ namespace gui {
         TextComponent(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position align);
         
         void setString(const std::string &string);
-        void setString(double value, const std::string &format);
         void setString(double value, int precision);
         void setColour(const ofColor &colour);
         void setFont(const ofTrueTypeFont &font);
