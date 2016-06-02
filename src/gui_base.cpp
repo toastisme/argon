@@ -46,17 +46,17 @@ namespace gui {
         return ret;
     }
     
-    void rect::setVertex(Position position, coord pos) {
-        switch (position) {
-            case TOP_LEFT:     { left  = pos.x; top    = pos.y; } break;
-            case TOP_RIGHT:    { right = pos.x; top    = pos.y; } break;
-            case BOTTOM_LEFT:  { left  = pos.x; bottom = pos.y; } break;
-            case BOTTOM_RIGHT: { right = pos.x; bottom = pos.y; } break;
-            default:           { } break;
-        }
-    }
+    //void rect::setVertex(Position position, coord pos) {
+    //    switch (position) {
+    //        case TOP_LEFT:     { left  = pos.x; top    = pos.y; } break;
+    //        case TOP_RIGHT:    { right = pos.x; top    = pos.y; } break;
+    //        case BOTTOM_LEFT:  { left  = pos.x; bottom = pos.y; } break;
+    //        case BOTTOM_RIGHT: { right = pos.x; bottom = pos.y; } break;
+    //        default:           { } break;
+    //    }
+    //}
     
-    void rect::moveAnchor(Position anchor, coord pos) {
+    void rect::movePos(Position anchor, coord pos) {
         double x = pos.x;
         double y = pos.y;
         double W = width();
@@ -76,6 +76,13 @@ namespace gui {
         }
     }
     
+    void rect::moveBy(coord offset) {
+        left   += offset.x;
+        right  += offset.x;
+        top    += offset.y;
+        bottom += offset.y;
+    }
+    
     bool rect::inside(double x, double y) const {
         if (x >= left && x <= right && y >= top && y <= bottom) {
             return true;
@@ -83,25 +90,18 @@ namespace gui {
         return false;
     }
     
-    void rect::expandToFit(rect other) {
-        if (other.left   < left  ) { left   = other.left; }
-        if (other.right  < right ) { right  = other.right; }
-        if (other.top    < top   ) { top    = other.top; }
-        if (other.bottom < bottom) { bottom = other.bottom; }
-    }
-    
-    rect rect::offset(coord origin) const { return offset(origin.x, origin.y); }
-                                      
-    rect rect::offset(double x, double y) const {
-    rect ret;
+    //rect rect::offset(coord origin) const { return offset(origin.x, origin.y); }
+    //                                  
+    //rect rect::offset(double x, double y) const {
+    //rect ret;
 
-        ret.left   = x + left;
-        ret.right  = x + right;
-        ret.top    = y + top;
-        ret.bottom = y + bottom;
-        
-        return ret;
-    }
+    //    ret.left   = x + left;
+    //    ret.right  = x + right;
+    //    ret.top    = y + top;
+    //    ret.bottom = y + bottom;
+    //    
+    //    return ret;
+    //}
     
     
     /*
@@ -119,6 +119,11 @@ namespace gui {
     
     // return bounds
     const rect UIBase::getRect() const { return bounds; }
+    
+    // move by offset
+    void UIBase::moveBy(const coord &offset) {
+        
+    }
     
     // Default handling of mouse events is to do nothing
     void UIBase::mouseMoved(int x, int y) {}
@@ -174,47 +179,21 @@ namespace gui {
     }
 
     // remainder of methods just pass the call through to its children
+    // some trivial templating
     
-    void UIContainer::draw() {
+    template<typename T, typename ...Args>
+    void UIContainer::passCallToChildren(T (UIBase::*func)(Args...), Args ... args) {
         for (int i = 0; i < children.size(); ++i) {
-            children[i]->draw();
+            (children[i]->*func)(std::forward<Args>(args)...);
         }
     }
     
-    void UIContainer::makeVisible() {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->makeVisible();
-        }
-    }
-    
-    void UIContainer::makeInvisible() {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->makeInvisible();
-        }
-    }
-    
-    void UIContainer::toggleVisible() {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->toggleVisible();
-        }
-    }
-    
-    void UIContainer::mouseMoved(int x, int y) {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->mouseMoved(x, y);
-        }
-    }
-    
-    void UIContainer::mousePressed(int x, int y, int button) {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->mousePressed(x, y, button);
-        }
-    }
-    
-    void UIContainer::mouseReleased(int x, int y, int button) {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->mouseReleased(x, y, button);
-        }
-    }
+    void UIContainer::draw() { passCallToChildren(&UIBase::draw); }
+    void UIContainer::makeVisible() { passCallToChildren(&UIBase::makeVisible); }
+    void UIContainer::makeInvisible() { passCallToChildren(&UIBase::makeInvisible); }
+    void UIContainer::toggleVisible() { passCallToChildren(&UIBase::toggleVisible); }
+    void UIContainer::mouseMoved(int x, int y) { passCallToChildren(&UIBase::mouseMoved, x, y); }
+    void UIContainer::mousePressed(int x, int y, int button) { passCallToChildren(&UIBase::mousePressed, x, y, button); }
+    void UIContainer::mouseReleased(int x, int y, int button) { passCallToChildren(&UIBase::mouseReleased, x, y, button); }
     
 }

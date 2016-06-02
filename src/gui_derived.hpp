@@ -35,9 +35,9 @@ namespace gui {
          */
         
     private:
-        std::string string;
-        rect stringBounds;
-        Position align;
+        std::string string;  // string to be drawn
+        rect stringBounds;   // bounding box of the string
+        Position align;      // alignment of the string inside the rectangle
         
         const ofTrueTypeFont *font;
         ofColor colour;
