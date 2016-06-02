@@ -248,7 +248,7 @@ namespace cubic {
         
         if (index <= 0) {
             spline.front().moveLeft(target);
-        } else if (index > spline.size()) {
+        } else if (index >= spline.size()) {
             spline.back().moveRight(target);
         } else {
             spline[index-1].moveRight(target);
