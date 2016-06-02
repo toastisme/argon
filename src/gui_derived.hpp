@@ -38,7 +38,6 @@ namespace gui {
         std::string string;     // string to be drawn
         rect stringBounds;      // bounding box of the string
         double descenderHeight; // size of descender (maximum size glyphs can go below baseline of text)
-        Position align;      // alignment of the string inside the rectangle
         
         const ofTrueTypeFont *font;
         ofColor colour;
@@ -47,17 +46,16 @@ namespace gui {
         
     public:
         TextComponent();
-        TextComponent(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position align);
+        TextComponent(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour);
         
         void setString(const std::string &string);
         void setString(double value, int precision);
         void setColour(const ofColor &colour);
         void setFont(const ofTrueTypeFont &font);
-        void setAlign(Position align);
         
         rect getStringBounds() const;
         
-        void renderString(rect bounds) const;
+        void renderString(rect bounds, Position align) const;
     };
     
     /*
@@ -102,11 +100,11 @@ namespace gui {
         
     private:
         virtual void render();
-        Position anchor;
+        Position align;
         
     public:
         TextAtom();
-        TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height);
+        TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position align, double x, double y, double width, double height);
     };
     
     class ValueAtom : public UIAtom, TextComponent
@@ -117,6 +115,7 @@ namespace gui {
         
     private:
         virtual void render();
+        Position align;
         
         double *value;
         FuncGetter getValue;
@@ -125,7 +124,7 @@ namespace gui {
         
     public:
         ValueAtom();
-        ValueAtom(FuncGetter getValue, int precision, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height);
+        ValueAtom(FuncGetter getValue, int precision, const ofTrueTypeFont &font, const ofColor &colour, Position align, double x, double y, double width, double height);
         
         std::string getString() const;
     };

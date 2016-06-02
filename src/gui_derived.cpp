@@ -19,8 +19,8 @@ namespace gui {
     
     TextComponent::TextComponent() : font(NULL) {}
     
-    TextComponent::TextComponent(const std::string &_string, const ofTrueTypeFont &_font, const ofColor &_colour, Position _align)
-        : string(_string), font(&_font), colour(_colour), align(_align)
+    TextComponent::TextComponent(const std::string &_string, const ofTrueTypeFont &_font, const ofColor &_colour)
+        : string(_string), font(&_font), colour(_colour)
     {
         resetBounds();
     }
@@ -53,11 +53,10 @@ namespace gui {
     }
     
     void TextComponent::setColour(const ofColor &_colour) { colour = _colour; }
-    void TextComponent::setAlign(Position _align) { align = _align; }
     
     rect TextComponent::getStringBounds() const { return stringBounds; }
     
-    void TextComponent::renderString(rect bounds) const {
+    void TextComponent::renderString(rect bounds, Position align) const {
         ofSetColor(colour);
         if (font) {
             rect drawRect = stringBounds;
@@ -98,11 +97,11 @@ namespace gui {
     
     TextAtom::TextAtom() : UIAtom(), TextComponent() {}
     
-    TextAtom::TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position _anchor, double x, double y, double width, double height)
-        : UIAtom(x, y, width, height), TextComponent(string, font, colour, _anchor)
+    TextAtom::TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position _align, double x, double y, double width, double height)
+        : UIAtom(x, y, width, height), TextComponent(string, font, colour), align(_align)
     {}
     
-    void TextAtom::render() { renderString(bounds); }
+    void TextAtom::render() { renderString(bounds, align); }
     
     /*
         ValueAtom
@@ -110,15 +109,15 @@ namespace gui {
     
     ValueAtom::ValueAtom() : UIAtom(), value(NULL), TextComponent() {}
     
-    ValueAtom::ValueAtom(FuncGetter _getValue, int _precision, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height)
-        : UIAtom(x, y, width, height), getValue(_getValue), precision(_precision), TextComponent("", font, colour, anchor)
+    ValueAtom::ValueAtom(FuncGetter _getValue, int _precision, const ofTrueTypeFont &font, const ofColor &colour, Position _align, double x, double y, double width, double height)
+        : UIAtom(x, y, width, height), TextComponent("", font, colour), getValue(_getValue), precision(_precision), align(_align)
     {
         setString(getValue(), precision);
     }
     
     void ValueAtom::render() {
         setString(getValue(), precision);
-        renderString(bounds);
+        renderString(bounds, align);
     }
     
     /*
