@@ -46,23 +46,13 @@ namespace gui {
         return ret;
     }
     
-    //void rect::setVertex(Position position, coord pos) {
-    //    switch (position) {
-    //        case TOP_LEFT:     { left  = pos.x; top    = pos.y; } break;
-    //        case TOP_RIGHT:    { right = pos.x; top    = pos.y; } break;
-    //        case BOTTOM_LEFT:  { left  = pos.x; bottom = pos.y; } break;
-    //        case BOTTOM_RIGHT: { right = pos.x; bottom = pos.y; } break;
-    //        default:           { } break;
-    //    }
-    //}
-    
-    void rect::movePos(Position anchor, coord pos) {
+    void rect::movePos(Position position, coord pos) {
         double x = pos.x;
         double y = pos.y;
         double W = width();
         double H = height();
         
-        switch(anchor) {
+        switch(position) {
             case TOP_LEFT:     { setXYWH(x,           y,           W, H); } break;
             case TOP:          { setXYWH(x - W / 2.0, y,           W, H); } break;
             case TOP_RIGHT:    { setXYWH(x - W,       y,           W, H); } break;
@@ -90,18 +80,6 @@ namespace gui {
         return false;
     }
     
-    //rect rect::offset(coord origin) const { return offset(origin.x, origin.y); }
-    //                                  
-    //rect rect::offset(double x, double y) const {
-    //rect ret;
-
-    //    ret.left   = x + left;
-    //    ret.right  = x + right;
-    //    ret.top    = y + top;
-    //    ret.bottom = y + bottom;
-    //    
-    //    return ret;
-    //}
     
     
     /*

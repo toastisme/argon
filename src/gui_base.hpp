@@ -46,9 +46,6 @@ namespace gui {
         // i.e. getPos(TOP_LEFT) == {left, top}
         coord getPos(Position position) const;
         
-        // set a corner to a specific coordinate
-        //void setVertex(Position position, coord pos);
-        
         // move the rect (preserving width and height) such that a specified position in the rectangle,
         // given by the enum position, is now at the point pos
         void movePos(Position position, coord pos);
@@ -58,11 +55,6 @@ namespace gui {
         
         // true if the point x, y is inside (or on the boundary of) the rect
         bool inside(double x, double y) const;
-        
-        // return a new rect with the same width and height, but shifted by an offset
-        //rect offset(coord origin) const;
-        //rect offset(double x, double y) const;
-        
     };
     
     class UIBase

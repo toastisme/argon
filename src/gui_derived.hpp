@@ -9,7 +9,6 @@
 #ifndef gui_derived_hpp
 #define gui_derived_hpp
 
-//#include <stdio.h>
 #include <ios>
 #include <functional>
 #include "ofApp.h"
@@ -31,7 +30,8 @@ namespace gui {
     {
         /*
             Defines behaviour for an atom which draws text to the screen. Compensates for openFrameworks
-            being dumb about the origin for drawing text.
+            being dumb about the origin for drawing text, and allows easy alignment of text within a given
+            rectangle.
          */
         
     private:
@@ -42,19 +42,25 @@ namespace gui {
         const ofTrueTypeFont *font;
         ofColor colour;
         
+        // reset the bounding box of the string and the descender height if the string is changed
         void resetBounds();
         
     public:
         TextComponent();
         TextComponent(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour);
         
+        // set the string either directly or by formatting a double into a string with precision decimal places
         void setString(const std::string &string);
         void setString(double value, int precision);
+        
+        // setters for colour and font of the drawn string
         void setColour(const ofColor &colour);
         void setFont(const ofTrueTypeFont &font);
         
+        // return the bounding box of the string
         rect getStringBounds() const;
         
+        // render the string to the screen, align within a rectangle
         void renderString(rect bounds, Position align) const;
     };
     
