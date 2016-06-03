@@ -23,11 +23,10 @@ private:
     double gAmp; // Amplitude of Gaussian, A above
     double gAlpha; // Exponent, a above
     double gex0, gey0; // (x0, y0) centre of Gaussian
-    double scale; // Stores the scaling value from the audio input
     
 public:
     
-    Gaussian(double _gAmp, double _gAlpha, double _gex0, double _gey0, double _scale); // Constructor
+    Gaussian(double _gAmp, double _gAlpha, double _gex0, double _gey0); // Constructor
     Gaussian(const Gaussian& other); // Copy constructor
     
     // Get private variables
@@ -35,10 +34,9 @@ public:
     double getgAlpha() const;
     double getgex0() const;
     double getgey0() const;
-    double getScale() const;
     
     // Set the parameters
-    void setParams(double _gAmp, double _gAlpha, double _gex0, double _gey0, double _scale);
+    void setParams(double _gAmp, double _gAlpha, double _gex0, double _gey0);
     
     // Calculate the force vector at (x, y) due to the Gaussian
     std::vector<double> calcForceEnergy(double x, double y);

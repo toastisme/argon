@@ -255,7 +255,7 @@ void ofApp::update(){
         if ( selectedGaussian > -1)
             theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 0.8 - 0.5*scaledVol,
                                      theSystem.getGaussianX0(selectedGaussian),
-                                     theSystem.getGaussianY0(selectedGaussian), scaledVol);
+                                     theSystem.getGaussianY0(selectedGaussian));
     }
 }
 

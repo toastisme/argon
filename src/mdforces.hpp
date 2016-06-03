@@ -127,7 +127,7 @@ namespace md{
         // Add a Gaussian, or remove or update the ith Gaussian
         void addGaussian(double gAmp, double gAlpha, double gex0, double gey0);
         void removeGaussian(int i = 0);
-        void updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0, double _scale);
+        void updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0);
 
         // Calculate forces and energies
         void forcesEnergies(int nthreads);

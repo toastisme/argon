@@ -221,8 +221,8 @@ namespace md {
             gaussians array.
      */
     void MDContainer::addGaussian(double gAmp, double gAlpha, double gex0, double gey0){
-        // Scale set to 1, so no scaling occurs before audio input
-        Gaussian newGaussian(gAmp, gAlpha, gex0, gey0, 1.0);
+        // Create new gaussian
+        Gaussian newGaussian(gAmp, gAlpha, gex0, gey0);
         
         // Push onto the end of the gaussians array
         gaussians.push_back(newGaussian);
@@ -253,8 +253,8 @@ namespace md {
      
             This does not perform index checking.
      */
-    void MDContainer::updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0, double scale){
-        gaussians[i].setParams(gAmp, gAlpha, gex0, gey0, scale);
+    void MDContainer::updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0){
+        gaussians[i].setParams(gAmp, gAlpha, gex0, gey0);
     }
     
     
