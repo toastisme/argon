@@ -124,20 +124,23 @@ void ofApp::setup()
     menuUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 110));
     
     // sliders
-    menuUI.addChild(new gui::SliderContainer("Temperature (K)", uiFont12, textcolor,
+    menuUI.addChild(new gui::SliderContainer("Temperature (K)",
                                              [&] () { return theSystem.getTemp() * 120; },
                                              [&] (double set) { theSystem.setTemp(set / 120.0); },
-                                             0, 1000, 1, 5, 5, 150, 450, 70, 30));
+                                             0, 1000, uiFont12, textcolor, 1,
+                                             5, 5, 150, 450, 70, 30));
     
-    menuUI.addChild(new gui::SliderContainer("Particles", uiFont12, textcolor,
+    menuUI.addChild(new gui::SliderContainer("Particles",
                                              [&] () { return numParticles; },
                                              [&] (double set) { numParticles = (int)set; },
-                                             2, 200, 0, 5, 40, 150, 450, 70, 30));
+                                             2, 200, uiFont12, textcolor, 0,
+                                             5, 40, 150, 450, 70, 30));
     
-    menuUI.addChild(new gui::SliderContainer("Mic sensitivity", uiFont12, textcolor,
+    menuUI.addChild(new gui::SliderContainer("Mic sensitivity",
                                              [&] () { return sensitivity; },
                                              [&] (double set) { sensitivity = (float)set; },
-                                             0.005, 0.135, 3, 5, 75, 150, 450, 70, 30));
+                                             0.005, 0.135, uiFont12, textcolor, 3,
+                                             5, 75, 150, 450, 70, 30));
     
     // button text
     menuUI.addChild(new gui::TextAtom("Play / pause:", uiFont10, textcolor,

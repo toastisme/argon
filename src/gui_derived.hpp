@@ -16,6 +16,24 @@
 #include "gui_base.hpp"
 #include "mdforces.hpp"
 
+/*
+    Note on order of arguments to constructors:
+    The constuctors for some of these gui elements can be lengthy due to the number of variables, so the
+    parameters are put in a standard order:
+ 
+        1. What:  parameters describing what is actually drawn
+        2. How:   parameters describing how it is drawn (colour, size, etc.)
+        3. Where: parameters describing where it is drawn on the screen (usually x, y, width, height)
+ 
+    For example, the parameters for SliderConstructor (label + slider + value) are in the following order:
+ 
+        SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &colour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
+ 
+        1. What:  label text, value to track (getter, setter, min, max)
+        2. How:   font, colour, precision of value
+        3. Where: x, y, width of label text, width of slider, width of value text, height
+ */
+
 namespace gui {
     
     // Some typedefs for the function arguments, allowing the gui classes to interact with other objects
@@ -227,7 +245,7 @@ namespace gui {
         
     public:
         SliderContainer();
-        SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, FuncGetter getValue, FuncSetter setValue, double min, double max, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
+        SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &colour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
         
         static int PADDING;   // padding between the indidivual UI elements in the container -- set to 5
     };

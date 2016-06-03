@@ -220,7 +220,7 @@ namespace gui {
     
     SliderContainer::SliderContainer() {}
     
-    SliderContainer::SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, FuncGetter getValue, FuncSetter setValue, double min, double max, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height)
+    SliderContainer::SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &colour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height)
     {
         double sliderLeft = labelWidth + SliderContainer::PADDING;
         double valueLeft  = labelWidth + sliderWidth + 2 * SliderContainer::PADDING;
