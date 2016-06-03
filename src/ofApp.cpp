@@ -993,32 +993,33 @@ void ofApp::mouseMoved(int x, int y ){
 void ofApp::mouseDragged(int x, int y, int button){
     if (helpOn) {
         menuUI.mouseMoved(x, y);
-    }
+    } else {
 
-    // Drag selected customPotential point when 'move points' button is on
-    if (customPotentialButton == 2){
-        for (int i = 1; (i < customPotential.getSpline().points()-1); i++){
-                if (x > customPotential.getSpline().getPoint(i).x - 20 && x < customPotential.getSpline().getPoint(i).x + 20){
-                    if (y > customPotential.getSpline().getPoint(i).y - 20 && y < customPotential.getSpline().getPoint(i).y + 20){
-                        int xpos = x;
-                        int ypos = y;
-                        // Prevent points being moved across each other
-                        xpos = (x < customPotential.getSpline().getPoint(i-1).x + 5 ? customPotential.getSpline().getPoint(i-1).x + 5 : xpos);
-                        xpos = (x > customPotential.getSpline().getPoint(i+1).x - 5 ? customPotential.getSpline().getPoint(i+1).x - 5 : xpos);
-                        // Prevent points being moved outside of the screen
-                        
-                        customPotential.getSpline().movePoint(i, xpos, ypos, customPotential.getSpline().getPoint(i).m);
+        // Drag selected customPotential point when 'move points' button is on
+        if (customPotentialButton == 2){
+            for (int i = 1; (i < customPotential.getSpline().points()-1); i++){
+                    if (x > customPotential.getSpline().getPoint(i).x - 20 && x < customPotential.getSpline().getPoint(i).x + 20){
+                        if (y > customPotential.getSpline().getPoint(i).y - 20 && y < customPotential.getSpline().getPoint(i).y + 20){
+                            int xpos = x;
+                            int ypos = y;
+                            // Prevent points being moved across each other
+                            xpos = (x < customPotential.getSpline().getPoint(i-1).x + 5 ? customPotential.getSpline().getPoint(i-1).x + 5 : xpos);
+                            xpos = (x > customPotential.getSpline().getPoint(i+1).x - 5 ? customPotential.getSpline().getPoint(i+1).x - 5 : xpos);
+                            // Prevent points being moved outside of the screen
+                            
+                            customPotential.getSpline().movePoint(i, xpos, ypos, customPotential.getSpline().getPoint(i).m);
+                        }
                     }
-                }
+            }
         }
-    }
-    // Change slope of selected customPotential point when 'change slope' button is on
-    else if (customPotentialButton == 3){
-        for (int i=1; (i < customPotential.getSpline().points()); i++) {
-            if (x > customPotential.getSpline().getPoint(i).x - 30 && x < customPotential.getSpline().getPoint(i).x + 30){
-                        float slope_y = ofMap(y, topHeight + 30, ofGetHeight()-30, -3.0, 3.0);
-                        customPotential.getSpline().movePoint(i,customPotential.getSpline().getPoint(i).x , customPotential.getSpline().getPoint(i).y, slope_y);
-                }
+        // Change slope of selected customPotential point when 'change slope' button is on
+        else if (customPotentialButton == 3){
+            for (int i=1; (i < customPotential.getSpline().points()); i++) {
+                if (x > customPotential.getSpline().getPoint(i).x - 30 && x < customPotential.getSpline().getPoint(i).x + 30){
+                            float slope_y = ofMap(y, topHeight + 30, ofGetHeight()-30, -3.0, 3.0);
+                            customPotential.getSpline().movePoint(i,customPotential.getSpline().getPoint(i).x , customPotential.getSpline().getPoint(i).y, slope_y);
+                    }
+            }
         }
     }
 }
@@ -1093,7 +1094,7 @@ void ofApp::mousePressed(int x, int y, int button){
         selectedGaussian = theSystem.getNGaussians() - 1;
     }
     
-    if (selectedPotential == 4){ // Mouse controls custom potential modification
+    if (drawOn && selectedPotential == 4){ // Mouse controls custom potential modification
         // Add customPotential points at clicked location when 'add points' button is on
         if (customPotentialButton == 1){
             // Ensure the point is created within the box
@@ -1114,7 +1115,7 @@ void ofApp::mousePressed(int x, int y, int button){
         }
     
         // Remove clicked customPotential points when the 'remove points' button is on
-        else if (customPotentialButton == 4){
+        else if (drawOn && customPotentialButton == 4){
             for (int i = 1; (i < customPotential.getSpline().points()-1); i++){
                 if (x > customPotential.getSpline().getPoint(i).x - 10 && x < customPotential.getSpline().getPoint(i).x + 10){
                     if (y > customPotential.getSpline().getPoint(i).y - 10 && y < customPotential.getSpline().getPoint(i).y + 10){
