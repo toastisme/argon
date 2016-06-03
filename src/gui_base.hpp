@@ -16,7 +16,7 @@ namespace gui {
     enum Position
     {
         /*
-            Enum defining nine positions within a UI element.
+            Enum defining nine positions within a rect.
          */
         
         TOP_LEFT, TOP, TOP_RIGHT,

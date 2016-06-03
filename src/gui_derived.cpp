@@ -81,10 +81,7 @@ namespace gui {
     
     RectAtom::RectAtom() : UIAtom() {}
     RectAtom::RectAtom(const ofColor &_colour, double x, double y, double width, double height)
-        : UIAtom(x, y, width, height)
-    {
-        colour = _colour;
-    }
+        : UIAtom(x, y, width, height), colour(_colour) {}
     
     void RectAtom::render() {
         ofSetColor(colour);
@@ -107,7 +104,7 @@ namespace gui {
         ValueAtom
      */
     
-    ValueAtom::ValueAtom() : UIAtom(), value(NULL), TextComponent() {}
+    ValueAtom::ValueAtom() : UIAtom(), TextComponent() {}
     
     ValueAtom::ValueAtom(FuncGetter _getValue, int _precision, const ofTrueTypeFont &font, const ofColor &colour, Position _align, double x, double y, double width, double height)
         : UIAtom(x, y, width, height), TextComponent("", font, colour), getValue(_getValue), precision(_precision), align(_align)
