@@ -69,8 +69,9 @@ namespace gui {
             Has a pure virtual draw() method to implement drawing to the screen, which should
             be called whenever the main ofApp calls its draw method.
          
-            Has pure virtual visibility methods to implement making it visible or not. The
-            purpose of these is made clearer in UIAtom and UIContainer.
+            Has a flag, visible, which says whether the element is visible or not. Also has a
+            getter for this flag, and methods to set the element visible, invisible, or toggle
+            the visibility, which just sets this flag accordingly.
          
             Has methods to handle mouse events, implemented in UIBase as empty methods.
             These should be overloaded by UI elements which need to react to the mouse,
@@ -114,9 +115,6 @@ namespace gui {
         /*
             Abstract class defining a single atomistic piece of UI which is drawn to the screen.
          
-            Has a visibility flag, which defines whether the element is visible or not, and
-            overrides the makeVisible() etc. methods so that they control this flag.
-            
             Has a protected virtual method render(), which is the function that actually draws the
             UI element to the screen. draw() is overridden to call render() only if the visible
             flag is set to true.
@@ -139,8 +137,15 @@ namespace gui {
             (Non-abstract) class defining a container for UI elements.
          
             Contains a vector of child UIBases (which could be UIAtoms or other UIContainers), and
-            a method to add a child element. The virtual methods defined in UIBase are overidden to
-            simply pass the call onto each of the children within this vector.
+            a method to add a child element.
+         
+            The passCallToChildren is a helper method to pass a method call to every child element.
+         
+            The draw, mouseMoved, mousePressed, and mouseReleased methods simply pass their call to
+            the children.
+         
+            The makeVisible, makeInvisible, and toggleVisible methods set the container's visibility
+            flag as required, and then passes the call to the children.
          
             This allows collective control over a group of related UI elements, such as all objects
             within a single menu.
@@ -166,11 +171,13 @@ namespace gui {
         // add a child UIAtom or UIContainer
         void addChild(UIBase *child);
         
-        // remaining methods passed through to children
-        virtual void draw();
+        // change visibility flag and pass call through to children
         virtual void makeVisible();
         virtual void makeInvisible();
         virtual void toggleVisible();
+        
+        // remaining methods just pass call through to children
+        virtual void draw();
         virtual void mouseMoved(int x, int y);
         virtual void mousePressed(int x, int y, int button);
         virtual void mouseReleased(int x, int y, int button);

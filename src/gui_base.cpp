@@ -101,6 +101,7 @@ namespace gui {
     // move by offset
     void UIBase::moveBy(coord offset) { bounds.moveBy(offset); }
     
+    // getter and setters for visibility flag
     bool UIBase::getVisible() const { return visible; }
     void UIBase::makeVisible()   { visible = true; }
     void UIBase::makeInvisible() { visible = false; }
@@ -166,6 +167,8 @@ namespace gui {
         child->moveBy(bounds.getPos(TOP_LEFT));
         children.push_back(child);
     }
+    
+    // set visibility flag and also pass call through to children
     
     void UIContainer::makeVisible() {
         visible = true;
