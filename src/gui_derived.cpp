@@ -124,7 +124,7 @@ namespace gui {
     SliderAtom::SliderAtom() : UIAtom() {}
     
     SliderAtom::SliderAtom(FuncGetter _getValue, FuncSetter _setValue, double _min, double _max, double x, double y, double width, double height)
-        : UIAtom(x, y, width, height), min(_min), max(_max), getValue(_getValue), setValue(_setValue) {}
+        : UIAtom(x, y, width, height), min(_min), max(_max), getValue(_getValue), setValue(_setValue), mouseFocus(false) {}
     
     double SliderAtom::getSliderPos() {
         return ofMap(getValue(), min, max, bounds.left, bounds.right - SliderAtom::HANDLE_WIDTH, true);
