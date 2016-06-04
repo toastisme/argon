@@ -28,18 +28,18 @@ public:
     // default constructor sets everything up and starts the stream
     AudioStream();
     
-    double getRawVolume();   // get raw value of volume
-    double getVolume();      // get volume scaled between 0 and 1 based on maxAmplitude
+    double getRawVolume() const;   // get raw value of volume
+    double getVolume() const;      // get volume scaled between 0 and 1 based on maxAmplitude
     
     // getter and setter for whether the stream is active
-    bool getActive();
+    bool getActive() const\;
     void setActive(bool active);
     
     // toggles whether the stream is active
     void toggleActive();
     
     // getter and setter for maximum amplitude
-    double getMaxAmplitude();
+    double getMaxAmplitude() const;
     void setMaxAmplitude(double maxAmplitude);
 };
 

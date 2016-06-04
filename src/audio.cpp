@@ -25,13 +25,13 @@ void AudioStream::audioIn(ofSoundBuffer &buffer) {
 }
 
 // get raw, unscaled volume
-double AudioStream::getRawVolume() { return volume; }
+double AudioStream::getRawVolume() const { return volume; }
 
 // get volume scaled between 0 and 1 based maxAmplitude
-double AudioStream::getVolume() { return ofMap(volume, 0, maxAmplitude, 0, 1, true); }
+double AudioStream::getVolume() const { return ofMap(volume, 0, maxAmplitude, 0, 1, true); }
 
 // getter for active
-bool AudioStream::getActive() { return active; }
+bool AudioStream::getActive() const { return active; }
 
 // if setting the stream active, call stream.start(), and vice-versa for stream.stop()
 // otherwise a regular setter for active
@@ -51,5 +51,5 @@ void AudioStream::toggleActive() {
 }
 
 // getter and setter for maxAmplitude
-double AudioStream::getMaxAmplitude() { return maxAmplitude; }
+double AudioStream::getMaxAmplitude() const { return maxAmplitude; }
 void AudioStream::setMaxAmplitude(double set) { maxAmplitude = set; }
