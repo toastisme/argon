@@ -80,6 +80,7 @@ namespace gui {
         
     protected:
         rect bounds;    // position and size
+        bool visible;
     
     public:
         UIBase();
@@ -96,9 +97,10 @@ namespace gui {
         virtual void draw() = 0;
         
         // pure virtual methods to handle visibility
-        virtual void makeVisible() = 0;
-        virtual void makeInvisible() = 0;
-        virtual void toggleVisible() = 0;
+        bool getVisible() const;
+        virtual void makeVisible();
+        virtual void makeInvisible();
+        virtual void toggleVisible();
         
         // methods to handle mouse events
         virtual void mouseMoved(int x, int y);
@@ -122,19 +124,13 @@ namespace gui {
         
     protected:
         virtual void render() = 0;
-        bool visible;
         
     public:
         UIAtom();
-        UIAtom(double x, double y, double width = 0, double height = 0, bool visible = true);
+        UIAtom(double x, double y, double width = 0, double height = 0);
         
         // if visible, calls render
         virtual void draw();
-        
-        // control the flag visible
-        virtual void makeVisible();
-        virtual void makeInvisible();
-        virtual void toggleVisible();
     };
     
     class UIContainer : public UIBase

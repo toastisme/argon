@@ -87,10 +87,10 @@ namespace gui {
      */
     
     // Default constructor: initialise position and size to 0, 0 and parent to NULL
-    UIBase::UIBase() { bounds.setXYWH(0, 0, 0, 0); }
+    UIBase::UIBase() : visible(false) { bounds.setXYWH(0, 0, 0, 0); }
     
     // Overloaded constructor: initialise position to x, y; size and origin to 0, 0
-    UIBase::UIBase(double x, double y, double width, double height) { bounds.setXYWH(x, y, width, height); }
+    UIBase::UIBase(double x, double y, double width, double height) : visible(true) { bounds.setXYWH(x, y, width, height); }
     
     // Default destructor: no memory needs freeing, so do nothing
     UIBase::~UIBase() {}
@@ -100,6 +100,11 @@ namespace gui {
     
     // move by offset
     void UIBase::moveBy(coord offset) { bounds.moveBy(offset); }
+    
+    bool UIBase::getVisible() const { return visible; }
+    void UIBase::makeVisible()   { visible = true; }
+    void UIBase::makeInvisible() { visible = false; }
+    void UIBase::toggleVisible() { visible = not visible; }
     
     // Default handling of mouse events is to do nothing
     void UIBase::mouseMoved(int x, int y) {}
@@ -111,20 +116,15 @@ namespace gui {
      */
     
     // Default constructor: start invisible since no position was given
-    UIAtom::UIAtom() : visible(false) {}
+    UIAtom::UIAtom() {}
     
     // Overloaded constructor: start visible, pass pos through to base
-    UIAtom::UIAtom(double x, double y, double width, double height, bool _visible) : UIBase(x, y, width, height), visible(_visible) {}
+    UIAtom::UIAtom(double x, double y, double width, double height) : UIBase(x, y, width, height) {}
     
     // draw checks if visible, and then calls render()
     void UIAtom::draw() {
         if (visible) { render(); }
     }
-    
-    // visibility methods just alter the visibility flag
-    void UIAtom::makeVisible()   { visible = true; }
-    void UIAtom::makeInvisible() { visible = false; }
-    void UIAtom::toggleVisible() { visible = not visible; }
     
     /*
         Container
@@ -166,13 +166,25 @@ namespace gui {
         child->moveBy(bounds.getPos(TOP_LEFT));
         children.push_back(child);
     }
+    
+    void UIContainer::makeVisible() {
+        visible = true;
+        passCallToChildren(&UIBase::makeVisible);
+    }
+    
+    void UIContainer::makeInvisible() {
+        visible = false;
+        passCallToChildren(&UIBase::makeInvisible);
+    }
+    
+    void UIContainer::toggleVisible() {
+        visible = not visible;
+        passCallToChildren(&UIBase::toggleVisible);
+    }
 
     // remainder of methods just pass the call through to its children
     
     void UIContainer::draw() { passCallToChildren(&UIBase::draw); }
-    void UIContainer::makeVisible() { passCallToChildren(&UIBase::makeVisible); }
-    void UIContainer::makeInvisible() { passCallToChildren(&UIBase::makeInvisible); }
-    void UIContainer::toggleVisible() { passCallToChildren(&UIBase::toggleVisible); }
     void UIContainer::mouseMoved(int x, int y) { passCallToChildren(&UIBase::mouseMoved, x, y); }
     void UIContainer::mousePressed(int x, int y, int button) { passCallToChildren(&UIBase::mousePressed, x, y, button); }
     void UIContainer::mouseReleased(int x, int y, int button) { passCallToChildren(&UIBase::mouseReleased, x, y, button); }
