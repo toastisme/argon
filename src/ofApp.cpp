@@ -176,8 +176,12 @@ void ofApp::setup()
                                        1, uiFont14, textcolor,
                                        gui::BOTTOM_RIGHT, 819, -105, 200, 100));
     
+    // start menu as invisible
     menuUI.makeInvisible();
-    menuUI.mouseReleased(0, 0, 0);
+    
+    // press 'h' text - visible when menu is invisible
+    menuUI.addChild(new gui::TextAtom("Press h for menu", uiFont14, textcolor,
+                                      gui::BOTTOM_LEFT, 5, 0, 1024, 105));
 }
 
 /*
@@ -778,13 +782,9 @@ void ofApp::draw(){
     // Draw the UI if helpOn, otherwise draw message on how to turn the UI on.
     if (drawOn) {
         drawPotentialUI();
-    } else if (not helpOn) {
-        ofSetColor(255, 255, 240);
-        uiFont14.drawString("press 'h' for controls", 10, ofGetHeight()-10);
     }
     
     menuUI.draw();
-    testUI.draw();
 }
 
 //--------------------------------------------------------------------

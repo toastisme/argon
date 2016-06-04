@@ -140,7 +140,5 @@ private:
     
     // UI Containers
     gui::UIContainer menuUI;
-    gui::UIContainer presshUI;
-    gui::UIContainer testUI;
 
 };
