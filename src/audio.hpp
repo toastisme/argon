@@ -32,7 +32,7 @@ public:
     double getVolume() const;      // get volume scaled between 0 and 1 based on maxAmplitude
     
     // getter and setter for whether the stream is active
-    bool getActive() const\;
+    bool getActive() const;
     void setActive(bool active);
     
     // toggles whether the stream is active
