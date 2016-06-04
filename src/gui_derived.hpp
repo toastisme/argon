@@ -210,6 +210,7 @@ namespace gui {
         void mousePressed(int x, int y, int button);
     };
     
+    // THIS IS DEPRECATED, TO BE REPLACED BY BUTTONPAIRATOM
     class ButtonToggleAtom : public UIAtom
     {
         /*
@@ -226,6 +227,30 @@ namespace gui {
     public:
         ButtonToggleAtom();
         ButtonToggleAtom(bool &toggle, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
+        
+        // handle mouse events
+        void mousePressed(int x, int y, int button);
+    };
+    
+    class ButtonPairAtom : public UIAtom
+    {
+        /*
+            UI Atom for a button which has two states, 'on' and 'off' (starting on) and toggles between them
+         */
+        
+    private:
+        virtual void render();     // draws the correct button image to the screen
+        bool status;               // boolean for whether in the 'on' (true) or 'off' (false) state
+        
+        FuncAction doActionOn;     // function to call when clicked in 'on' state
+        const ofImage *imageOn;    // pointer to 'on' image asset
+        
+        FuncAction doActionOff;    // function to call when clicked in 'off' state
+        const ofImage *imageOff;   // pointer to 'off' image asset
+        
+    public:
+        ButtonPairAtom();
+        ButtonPairAtom(FuncAction doActionOn, const ofImage &imageOn, FuncAction doActionOff, const ofImage &imageOff, double x, double y, double width, double height);
         
         // handle mouse events
         void mousePressed(int x, int y, int button);

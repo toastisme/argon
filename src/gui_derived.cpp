@@ -215,6 +215,33 @@ namespace gui {
     }
     
     /*
+        ButtonPairAtom
+     */
+    
+    ButtonPairAtom::ButtonPairAtom() : UIAtom(), status(true), imageOn(NULL), imageOff(NULL) {}
+    
+    ButtonPairAtom::ButtonPairAtom(FuncAction _doActionOn, const ofImage &_imageOn, FuncAction _doActionOff, const ofImage &_imageOff, double x, double y, double width, double height)
+        : UIAtom(x, y, width, height), doActionOn(_doActionOn), imageOn(&_imageOn), doActionOff(_doActionOff), imageOff(&_imageOff), status(true) {}
+    
+    void ButtonPairAtom::render() {
+        if (status) {
+            imageOn->draw(bounds.left, bounds.top, bounds.width(), bounds.height());
+        } else {
+            imageOff->draw(bounds.left, bounds.top, bounds.width(), bounds.height());
+        }
+    }
+    
+    void ButtonPairAtom::mousePressed(int x, int y, int button) {
+        if (button == 0 && bounds.inside(x, y)) {
+            if (status) {
+                doActionOn();  status = false;
+            } else {
+                doActionOff(); status = true;
+            }
+        }
+    }
+    
+    /*
         SliderContainer
      */
     

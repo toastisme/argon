@@ -1,15 +1,17 @@
 #pragma once
 
+#include <sstream>
+#include <string>
+
 #include "ofMain.h"
+#include "utilities.hpp"
 #include "mdforces.hpp"
 #include "gaussian.hpp"
 #include "gui_base.hpp"
 #include "gui_derived.hpp"
 #include "cubicspline.hpp"
-#include <sstream>
-#include <string>
-#include "utilities.hpp"
 #include "potentials.hpp"
+#include "audio.hpp"
 
 
 #define N_THREADS 1 // Number of threads to be used in the forces calculations
@@ -112,6 +114,7 @@ private:
     ofTrueTypeFont uiFont14;
     ofTrueTypeFont uiFont12;
     ofTrueTypeFont uiFont10;
+    
     ofImage playButton;
     ofImage pauseButton;
     ofImage resetButton;
@@ -121,17 +124,9 @@ private:
     ofImage circGradient;
     
     // Audio data
-    ofSoundStream soundStream; // Audio input stream
-    // Left and right audio channel amplitudes
-    vector <float> left;
-    vector <float> right;
-    
-    float smoothedVol; // Average volume, smoothed out
-    float scaledVol; // Volume rescaled between 0 and 1
-    float sensitivity; // Sensitivity of Gaussians to changes in volume
+    AudioStream micInput;
     
     // Logical variables
-    bool audioOn; // Is audio input turned on?
     bool helpOn; // Is the UI showing?
     bool loganOn; // Is secret-Logan-mode turned on?
     bool graphOn; // Are the energy graphs showing?

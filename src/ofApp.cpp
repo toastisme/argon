@@ -84,7 +84,6 @@ void ofApp::setup()
     setupSystem(numParticles, TEMPERATURE, BOX_WIDTH, BOX_HEIGHT, TIMESTEP, CUTOFF);
     // Set the booleans so that the audio input is turned on, as is the simulation,
     // but the UI, secret-Logan-mode, and energy graphs are off.
-    audioOn = true;
     helpOn  = false;
     loganOn = false;
     graphOn = false;
@@ -96,18 +95,6 @@ void ofApp::setup()
     selectedSlider = 0; // Temperature slider selected
     selectedPotential = 1; // Lennard-Jones by default
     customPotentialButton = 1; //addPoints button selected by default
-    
-    // Setup the sound
-    int bufferSize = 256;
-    
-    left.assign(bufferSize, 0.0);
-    right.assign(bufferSize, 0.0);
-    
-    smoothedVol = 0.0;
-    scaledVol   = 0.0;
-    sensitivity = 0.04;
-    
-    soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
     
     /*
          Setup menu UI
@@ -137,8 +124,8 @@ void ofApp::setup()
                                              5, 40, 150, 450, 70, 30));
     
     menuUI.addChild(new gui::SliderContainer("Mic sensitivity",
-                                             [&] () { return sensitivity; },
-                                             [&] (double set) { sensitivity = (float)set; },
+                                             [&] () { return micInput.getMaxAmplitude(); },
+                                             [&] (double set) { micInput.setMaxAmplitude(set); },
                                              0.005, 0.135, uiFont12, textcolor, 3,
                                              5, 75, 150, 450, 70, 30));
     
@@ -156,7 +143,8 @@ void ofApp::setup()
                                               800, 5, 30, 30));
     menuUI.addChild(new gui::ButtonAtom([&] () { setupSystem(); }, resetButton,
                                               800, 40, 30, 30));
-    menuUI.addChild(new gui::ButtonToggleAtom(audioOn, audioOnButton, audioOffButton,
+    menuUI.addChild(new gui::ButtonPairAtom([&] () { micInput.setActive(false); }, audioOnButton,
+                                            [&] () { micInput.setActive(true);  }, audioOffButton,
                                               800, 75, 30, 30));
     
     // controls list
@@ -244,11 +232,9 @@ void ofApp::update(){
     // If not paused, integrate 5 times with a thermostat frequency of 0.1
     if (playOn) { theSystem.run(5, thermFreq, N_THREADS); }
         
-    // scale the audio between 0 and 1
-    if (audioOn) {
-        // Scale smoothedVol between 0 and 1, taking account of the sensitivity
-        // to the audioInput.
-        scaledVol = ofMap(smoothedVol, 0.0, sensitivity, 0.0, 1.0, true);
+    if (micInput.getActive()) {
+        // get volume, scaled to between 0 and 1
+        double scaledVol = micInput.getVolume();
         
         // Update the currently selected Gaussian, so that quiet-> loud results in
         // a change from an attractive, wide Gaussian, to a repulsive, narrow Gaussian.
@@ -805,39 +791,7 @@ void ofApp::draw(){
 // INPUT & EVENT HANDLING
 //--------------------------------------------------------------------
 
-/*
-    EVENT audioIn:
-        If audio is coming in to the primary input (built-in microphone by default
-        on a Mac), this is triggered. It takes the amplitudes of the left and right
-        audio streams and determines the root mean square averaged volume and then
-        updates the previous value of the volume in a 93:7 ratio of old:new, so that
-        volume changes are smoothed. Places this value in smoothedVol.
- */
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){
-    
-    float curVol = 0.0;
-    
-    // samples are "interleaved"
-    int numCounted = 0;
-    
-    //lets go through each sample and calculate the root mean square which is a rough way to calculate volume
-    for (int i = 0; i < bufferSize; i++){
-        left[i]  = input[i*2]*0.5;
-        right[i] = input[i*2+1]*0.5;
-        
-        curVol += left[i] * left[i];
-        curVol += right[i] * right[i];
-        numCounted+=2;
-    }
-    
-    //this is how we get the mean of rms
-    curVol /= (float)numCounted;
-    
-    // this is how we get the root of rms
-    curVol = sqrt( curVol );
-    
-    smoothedVol *= 0.93;
-    smoothedVol += 0.07 * curVol;
     
 }
 
@@ -865,7 +819,7 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 void ofApp::keyPressed(int key){
     
     if (key == 'a' || key == 'A') { // Audio on/off
-        audioOn = !audioOn;
+        //audioOn = !audioOn;
     }
     
     else if ((key == 'g' || key == 'G') && theSystem.getNGaussians() > 0) { // Change selected gaussian
@@ -918,60 +872,6 @@ void ofApp::keyPressed(int key){
     else if (key == 'd' || key == 'D') { // Drawing interface
         if (!helpOn) {
             drawOn = !drawOn;
-        }
-    }
-    
-    // If the UI is showing, the sliders are in focus
-    if (helpOn == true){
-        if (key == OF_KEY_TAB)  // Switch slider
-            selectedSlider = (selectedSlider+1)%3;
-        if (key == OF_KEY_RIGHT){
-            switch(selectedSlider) {
-                case 0: { // Temperature
-                    if (((theSystem.getTemp()*120) + 10.0) <= 980){ //Bounds the upper end of the temperature slider
-                        theSystem.setTemp(theSystem.getTemp()+(10/120.0));
-                    }
-                    break;
-                }
-                case 1: { // N particles
-                    if (numParticles + 5 <= 245) { //Bounds the upper end of the particle slider
-                        numParticles += 5;
-                    }
-                    break;
-                }
-                case 2: { // Sensitivity
-                    if (sensitivity + 0.005 < 0.140){ //Bounds the upper end of the sensitivity slider
-                        sensitivity += 0.005;
-                    }
-                    break;
-                }
-                default:
-                {}
-            }
-        }
-        else if (key == OF_KEY_LEFT){
-            switch(selectedSlider) {
-                case 0: { // Temperature
-                    if ((theSystem.getTemp() - (10/120.0)) > 0){ //Bounds the lower end of the temperature slider
-                        theSystem.setTemp(theSystem.getTemp()-(10/120.0));
-                    }
-                    break;
-                }
-                case 1: { // N particles
-                    if ((numParticles - 5) >= 0 ) { //Bounds the lower end of the particle slider
-                        numParticles -= 5;
-                    }
-                    break;
-                }
-                case 2: { // Sensitivity
-                    if (sensitivity - 0.005 >= 0.000){ //Bounds the lower end of the sensitivity slider
-                        sensitivity -= 0.005;
-                    }
-                    break;
-                }
-                default:
-                {}
-            }
         }
     }
     
