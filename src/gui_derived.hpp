@@ -40,9 +40,11 @@ namespace gui {
     // in an arbirtary manner. When declaring functions of these types in constructors, it is easiest to
     // use a lambda function
     
-    typedef std::function <double()>     FuncGetter;   // function void -> double
-    typedef std::function <void(double)> FuncSetter;   // function double -> void
-    typedef std::function <void()>       FuncAction;   // function void -> void
+    typedef std::function <double()>     FuncGetter;       // function void -> double
+    typedef std::function <void(double)> FuncSetter;       // function double -> void
+    typedef std::function <bool()>       FuncGetterBool;   // function void -> bool
+    typedef std::function <void(bool)>   FuncSetterBool;   // function void -> bool
+    typedef std::function <void()>       FuncAction;       // function void -> void
     
     /*
         Components
@@ -210,23 +212,31 @@ namespace gui {
         void mousePressed(int x, int y, int button);
     };
     
-    // THIS IS DEPRECATED, TO BE REPLACED BY BUTTONPAIRATOM
     class ButtonToggleAtom : public UIAtom
     {
         /*
-            UI Atom for a button which toggles a boolean value, stored by reference
+            UI Atom for a button which toggles a boolean value, stored as a getter / setter pair
          */
         
     private:
         virtual void render();     // draws the correct button image to the screen
         
-        bool *toggle;              // the pointer to the boolean value tracked by the button
+        bool *toggle;              // pointer to a boolean value tracked by the button
+                                   // this is only used (and only not NULL) if a boolean is given to the constructor
+                                   // instead of a getter / setter pair
+                                   // when things are properly moved into classes so that booleans to be tracked all
+                                   // have proper getter / setter pairs, this can be removed
+        
+        FuncGetterBool getBool;    // getter function (void -> bool) for the boolean represented by the button
+        FuncSetterBool setBool;    // setter function (bool -> void) for the boolean represented by the button
+        
         const ofImage *imageOn;    // pointer to 'on' image asset
         const ofImage *imageOff;   // pointer to 'off' image asset
         
     public:
         ButtonToggleAtom();
-        ButtonToggleAtom(bool &toggle, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
+        ButtonToggleAtom(FuncGetterBool getBool, FuncSetterBool setBool, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
+        ButtonToggleAtom(bool &toggle, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height); //DEPRECATED
         
         // handle mouse events
         void mousePressed(int x, int y, int button);

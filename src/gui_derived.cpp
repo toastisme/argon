@@ -195,50 +195,28 @@ namespace gui {
         ButtonToggleAtom
      */
     
-    ButtonToggleAtom::ButtonToggleAtom() : UIAtom(), toggle(NULL), imageOn(NULL), imageOff(NULL) {}
+    ButtonToggleAtom::ButtonToggleAtom() : UIAtom(), imageOn(NULL), imageOff(NULL) {}
     
     ButtonToggleAtom::ButtonToggleAtom(bool &_toggle, const ofImage &_imageOn, const ofImage &_imageOff, double x, double y, double width, double height)
-        : UIAtom(x, y, width, height), imageOn(&_imageOn), imageOff(&_imageOff), toggle(&_toggle) {}
+        : UIAtom(x, y, width, height), imageOn(&_imageOn), imageOff(&_imageOff), toggle(&_toggle)
+    {
+        getBool = [&] () { return *toggle; };
+        setBool = [&] (bool set) { *toggle = set; };
+    }
+    
+    ButtonToggleAtom::ButtonToggleAtom(FuncGetterBool _getBool, FuncSetterBool _setBool, const ofImage &_imageOn, const ofImage &_imageOff, double x, double y, double width, double height)
+        : UIAtom(x, y, width, height), getBool(_getBool), setBool(_setBool), imageOn(&_imageOn), imageOff(&_imageOff), toggle(NULL) {}
     
     void ButtonToggleAtom::render() {
-        if (toggle) {
-            if (*toggle) {
-                if (imageOn)  {  imageOn->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
-            } else {
-                if (imageOff) { imageOff->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
-            }
+        if (getBool()) {
+            if (imageOn)  {  imageOn->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
+        } else {
+            if (imageOff) { imageOff->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
         }
     }
     
     void ButtonToggleAtom::mousePressed(int x, int y, int button) {
-        if (button == 0 && bounds.inside(x, y)) { *toggle = not *toggle; }
-    }
-    
-    /*
-        ButtonPairAtom
-     */
-    
-    ButtonPairAtom::ButtonPairAtom() : UIAtom(), status(true), imageOn(NULL), imageOff(NULL) {}
-    
-    ButtonPairAtom::ButtonPairAtom(FuncAction _doActionOn, const ofImage &_imageOn, FuncAction _doActionOff, const ofImage &_imageOff, double x, double y, double width, double height)
-        : UIAtom(x, y, width, height), doActionOn(_doActionOn), imageOn(&_imageOn), doActionOff(_doActionOff), imageOff(&_imageOff), status(true) {}
-    
-    void ButtonPairAtom::render() {
-        if (status) {
-            imageOn->draw(bounds.left, bounds.top, bounds.width(), bounds.height());
-        } else {
-            imageOff->draw(bounds.left, bounds.top, bounds.width(), bounds.height());
-        }
-    }
-    
-    void ButtonPairAtom::mousePressed(int x, int y, int button) {
-        if (button == 0 && bounds.inside(x, y)) {
-            if (status) {
-                doActionOn();  status = false;
-            } else {
-                doActionOff(); status = true;
-            }
-        }
+        if (button == 0 && bounds.inside(x, y)) { setBool(not getBool()); }
     }
     
     /*

@@ -143,8 +143,8 @@ void ofApp::setup()
                                               800, 5, 30, 30));
     menuUI.addChild(new gui::ButtonAtom([&] () { setupSystem(); }, resetButton,
                                               800, 40, 30, 30));
-    menuUI.addChild(new gui::ButtonPairAtom([&] () { micInput.setActive(false); }, audioOnButton,
-                                            [&] () { micInput.setActive(true);  }, audioOffButton,
+    menuUI.addChild(new gui::ButtonToggleAtom([&] () { return micInput.getActive(); }, [&] (bool set) { micInput.setActive(set); },
+                                              audioOnButton, audioOffButton,
                                               800, 75, 30, 30));
     
     // controls list
@@ -819,7 +819,7 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 void ofApp::keyPressed(int key){
     
     if (key == 'a' || key == 'A') { // Audio on/off
-        //audioOn = !audioOn;
+        micInput.toggleActive();
     }
     
     else if ((key == 'g' || key == 'G') && theSystem.getNGaussians() > 0) { // Change selected gaussian
