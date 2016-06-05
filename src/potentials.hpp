@@ -68,6 +68,7 @@ public:
     // Set well-depth, rMin and rMax
     void setV0(double _v0);
     void setBounds(double _rMin, double _rMax);
+    void setIntercept(double _intercept);
     
     // Determine steepness
     void calcSteepness();
