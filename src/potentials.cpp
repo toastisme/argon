@@ -88,11 +88,17 @@ void SquareWell::setBounds(double _rMin, double _rMax)
 {
     rMin = ( _rMin > 0 ? _rMin : rMin);
     rMax = ( _rMax > 0 ? _rMax : rMax);
+    rMax = ( rMax > rMin ? rMax : rMin + 1.0);
 }
 
 void SquareWell::setV0(double _v0)
 {
     V0 = _v0;
+}
+
+void SquareWell::setIntercept(double _intercept)
+{
+    intercept = (_intercept > 0 ? _intercept : intercept);
 }
 
 void SquareWell::calcSteepness()
