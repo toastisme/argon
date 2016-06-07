@@ -254,31 +254,6 @@ void ofApp::update(){
 //--------------------------------------------------------------
 
 /*
-    ROUTINE drawData:
-        Draws a string name with floating point data value at position x and y. 
- 
-        Overloaded version has extra argument length which sets the length of the floating point displayed.
- */
-void ofApp::drawData(const ofTrueTypeFont &font, string name, double value, int x, int y) { //Converts data as int to string
-    char drawstr[255];
-    sprintf(drawstr, "%s %lf", name.c_str(), value);
-    font.drawString(drawstr, x, y);
-}
-
-void ofApp::drawData(const ofTrueTypeFont &font, string name, double value, int x, int y, int length) { //Converts data as int to string
-    //TODO: use iomanip
-    char drawstr[255];
-    sprintf(drawstr, "%s %lf", name.c_str(), value);
-    stringstream convert_to_string;
-    string drawstr_string;
-    convert_to_string << drawstr;
-    convert_to_string  >> drawstr_string;
-    string data_string = drawstr_string.substr(0, length);
-    
-    font.drawString(data_string, x, y);
-}
-
-/*
     ROUTINE drawParticle:
         Draws a particle, specified by index and a size given either as x and y radii (ellipse)
         or by a single constant radius (circle).

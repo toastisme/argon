@@ -27,9 +27,6 @@ public:
     void draw();
 
     // Custom drawing routines
-    // Draw strings from floating point data
-    void drawData(const ofTrueTypeFont &font, string name, double value, int x, int y, int length);
-    void drawData(const ofTrueTypeFont &font, string name, double value, int x, int y);
     // Draw a particle
     void drawParticle(int index, double radius_x, double radius_y, ofColor color, int nframes = 0);
     void drawParticle(int index, double radius, ofColor color, int nframes = 0);
