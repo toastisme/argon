@@ -230,9 +230,9 @@ namespace gui {
         double sliderLeft = labelWidth + SliderContainer::PADDING;
         double valueLeft  = labelWidth + sliderWidth + 2 * SliderContainer::PADDING;
         
-        addChild(new TextAtom(label, font, colour, RIGHT, 0, y, labelWidth, height));
+        addChild(new TextAtom(label, font, colour, POS_RIGHT, 0, y, labelWidth, height));
         addChild(new SliderAtom(getValue, setValue, min, max, sliderLeft, y, sliderWidth, height));
-        addChild(new ValueAtom(getValue, precision, font, colour, LEFT, valueLeft, y, valueWidth, height));
+        addChild(new ValueAtom(getValue, precision, font, colour, POS_LEFT, valueLeft, y, valueWidth, height));
     }
     
     int SliderContainer::PADDING = 5;

@@ -131,11 +131,11 @@ void ofApp::setup()
     
     // button text
     menuUI.addChild(new gui::TextAtom("Play / pause:", uiFont10, textcolor,
-                                      gui::RIGHT, 690, 5, 100, 30));
+                                      POS_RIGHT, 690, 5, 100, 30));
     menuUI.addChild(new gui::TextAtom("Reset:", uiFont10, textcolor,
-                                      gui::RIGHT, 690, 40, 100, 30));
+                                      POS_RIGHT, 690, 40, 100, 30));
     menuUI.addChild(new gui::TextAtom("Mic on/off:", uiFont10, textcolor,
-                                      gui::RIGHT, 690, 75, 100, 30));
+                                      POS_RIGHT, 690, 75, 100, 30));
     
     // buttons
     menuUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
@@ -149,39 +149,39 @@ void ofApp::setup()
     
     // controls list
     menuUI.addChild(new gui::TextAtom("Key Commands", uiFont12, textcolor,
-                                      gui::TOP, 850, 5, 174, 20));
+                                      POS_TOP, 850, 5, 174, 20));
     
     menuUI.addChild(new gui::TextAtom("Change gaussian:", uiFont10, textcolor,
-                                      gui::RIGHT, 850, 25, 140, 20));
+                                      POS_RIGHT, 850, 25, 140, 20));
     menuUI.addChild(new gui::TextAtom("g", uiFont10, textcolor,
-                                      gui::LEFT, 995, 25, 24, 20));
+                                      POS_LEFT, 995, 25, 24, 20));
     
     menuUI.addChild(new gui::TextAtom("Remove gaussian:", uiFont10, textcolor,
-                                      gui::RIGHT, 850, 45, 140, 20));
+                                      POS_RIGHT, 850, 45, 140, 20));
     menuUI.addChild(new gui::TextAtom("k", uiFont10, textcolor,
-                                      gui::LEFT, 995, 45, 24, 20));
+                                      POS_LEFT, 995, 45, 24, 20));
     
     menuUI.addChild(new gui::TextAtom("Show energies:", uiFont10, textcolor,
-                                      gui::RIGHT, 850, 65, 140, 20));
+                                      POS_RIGHT, 850, 65, 140, 20));
     menuUI.addChild(new gui::TextAtom("e", uiFont10, textcolor,
-                                      gui::LEFT, 995, 65, 24, 20));
+                                      POS_LEFT, 995, 65, 24, 20));
     
     menuUI.addChild(new gui::TextAtom("Show potentials:", uiFont10, textcolor,
-                                      gui::RIGHT, 850, 85, 140, 20));
+                                      POS_RIGHT, 850, 85, 140, 20));
     menuUI.addChild(new gui::TextAtom("d", uiFont10, textcolor,
-                                      gui::LEFT, 995, 85, 24, 20));
+                                      POS_LEFT, 995, 85, 24, 20));
     
     // framerate counter
     menuUI.addChild(new gui::ValueAtom([&] () { return ofGetFrameRate(); },
                                        1, uiFont14, textcolor,
-                                       gui::BOTTOM_RIGHT, 819, -105, 200, 100));
+                                       POS_BOTTOM_RIGHT, 819, -105, 200, 100));
     
     // start menu as invisible
     menuUI.makeInvisible();
     
     // press 'h' text - visible when menu is invisible
     menuUI.addChild(new gui::TextAtom("Press h for menu", uiFont14, textcolor,
-                                      gui::BOTTOM_LEFT, 5, 0, 1024, 105));
+                                      POS_BOTTOM_LEFT, 5, 0, 1024, 105));
 }
 
 /*
