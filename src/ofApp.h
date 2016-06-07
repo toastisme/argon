@@ -124,7 +124,6 @@ private:
     AudioStream micInput;
     
     // Logical variables
-    bool helpOn; // Is the UI showing?
     bool loganOn; // Is secret-Logan-mode turned on?
     bool graphOn; // Are the energy graphs showing?
     bool playOn; // Is the simulation playing?

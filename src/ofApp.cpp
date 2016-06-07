@@ -84,7 +84,6 @@ void ofApp::setup()
     setupSystem(numParticles, TEMPERATURE, BOX_WIDTH, BOX_HEIGHT, TIMESTEP, CUTOFF);
     // Set the booleans so that the audio input is turned on, as is the simulation,
     // but the UI, secret-Logan-mode, and energy graphs are off.
-    helpOn  = false;
     loganOn = false;
     graphOn = false;
     playOn  = true;
@@ -179,7 +178,11 @@ void ofApp::setup()
     // start menu as invisible
     menuUI.makeInvisible();
     
-    // press 'h' text - visible when menu is invisible
+    // 'Press h for menu' text
+    // This defaults to visible, but we're adding it to a menu we've just set to invisible
+    // This means the text is visible when the rest of the menu is invisible and vice-versa
+    // Calling toggleVisible toggles everything correctly
+    // This might need to be moved to a separate UI container to work well with other UI elements
     menuUI.addChild(new gui::TextAtom("Press h for menu", uiFont14, textcolor,
                                       POS_BOTTOM_LEFT, 5, 0, 1024, 105));
 }
@@ -679,8 +682,7 @@ void ofApp::scalePotential(float min_x, float min_y, float max_x, float max_y, s
                 - coloured by its velocity,
                 - with width and height determined by the x/y forces acting on it.
                 - Trails of the 10th and 15th previous positions.
-            5. If helpOn (UI showing), draws the UI. Otherwise, draws message
-                on how to turn on UI in bottom left corner.
+            5. Draw the menu UI
  */
 void ofApp::draw(){
     
@@ -754,11 +756,12 @@ void ofApp::draw(){
     }
     
     
-    // Draw the UI if helpOn, otherwise draw message on how to turn the UI on.
+    // Draw the potential UI if drawOn
     if (drawOn) {
         drawPotentialUI();
     }
     
+    // draw the menu
     menuUI.draw();
 }
 
@@ -829,7 +832,6 @@ void ofApp::keyPressed(int key){
     
     else if (key == 'h' || key == 'H'){ // Show/hide UI
         if (!drawOn) {
-            helpOn = !helpOn;
             menuUI.toggleVisible();
         }
     }
@@ -845,7 +847,7 @@ void ofApp::keyPressed(int key){
     }
     
     else if (key == 'd' || key == 'D') { // Drawing interface
-        if (!helpOn) {
+        if (not menuUI.getVisible()) {
             drawOn = !drawOn;
         }
     }
@@ -859,14 +861,14 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-    if (helpOn) {
+    if (menuUI.getVisible()) {
         menuUI.mouseMoved(x, y);
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    if (helpOn) {
+    if (menuUI.getVisible()) {
         menuUI.mouseMoved(x, y);
     } else {
 
@@ -948,7 +950,7 @@ void ofApp::mousePressed(int x, int y, int button){
             }
         }
         
-    } else if (helpOn && menuUI.getRect().inside(x, y)) { // Mouse controls menu
+    } else if (menuUI.getVisible() && menuUI.getRect().inside(x, y)) { // Mouse controls menu
         // pass through event to children
         menuUI.mousePressed(x, y, button);
         
@@ -1005,7 +1007,7 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    if (helpOn) {
+    if (menuUI.getVisible()) {
         menuUI.mouseReleased(x, y, button);
     }
 }
