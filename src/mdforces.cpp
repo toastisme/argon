@@ -18,8 +18,7 @@ namespace md {
     /*
         DEFAULT CONSTRUCTOR:
             Initially sets the box dimensions to 10 x 10, the rcutoff to 3,
-            and the timstep to 0.002. Initialises maximum energies, and enCounter,
-            to zero.
+            and the timstep to 0.002. Initialises maximum energies to zero.
      */
     MDContainer::MDContainer()
     {
@@ -28,7 +27,6 @@ namespace md {
         dt = 0.002;
         maxEKin = 0.0;
         maxEPot = 0.0;
-        enCounter = 0;
         potential = &lj;
     }
     
@@ -36,7 +34,7 @@ namespace md {
         ROUTINE clearSystem:
             Cleans out all vectors/matrices, so that the system can be completely
             reset and the simulation started again. This includes setting the number of particles
-            back to zero, as all particles are removed, and resetting enCounter
+            back to zero, as all particles are removed
      */
     void MDContainer::clearSystem()
     {
@@ -47,7 +45,6 @@ namespace md {
         prevEKin.clear();
         prevEPot.clear();
         N = 0;
-        enCounter = 0;
     }
     
     //----------------------GETTERS--------------------------------
@@ -55,7 +52,6 @@ namespace md {
     
     // Return values of private variables without altering them
     int    MDContainer::getN()         const { return N; }
-    int    MDContainer::getSteps()     const { return enCounter; }
     double MDContainer::getEPot()      const { return epot; }
     double MDContainer::getEKin()      const { return ekin; }
     double MDContainer::getTemp()      const { return T; }
@@ -474,8 +470,6 @@ namespace md {
             ekin += velocities[i].y * velocities[i].y;
         }
         ekin *= 0.5;
-
-        enCounter++; // Incremement the number of timesteps performed
     }
     
     /*

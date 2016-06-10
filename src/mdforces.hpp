@@ -45,7 +45,6 @@ namespace md{
         double dt, T; // MD timestep and desired temperature
         double maxEKin, maxEPot, minEKin, minEPot; // Maximum/minimum kinetic and potential energies in prevEPot, prevEKin
         double v_avg; // Current average speed of particles
-        int enCounter; // Counter so that only every nth energy is stored
         
         // Default potential is Lennard-Jones
         LennardJones lj;
