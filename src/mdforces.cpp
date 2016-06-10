@@ -19,6 +19,7 @@ namespace md {
         DEFAULT CONSTRUCTOR:
             Initially sets the box dimensions to 10 x 10, the rcutoff to 3,
             and the timstep to 0.002. Initialises maximum energies to zero.
+            Starts system as running.
      */
     MDContainer::MDContainer()
     {
@@ -28,15 +29,15 @@ namespace md {
         maxEKin = 0.0;
         maxEPot = 0.0;
         potential = &lj;
+        running = true;
     }
     
     /*
-        ROUTINE clearSystem:
-            Cleans out all vectors/matrices, so that the system can be completely
-            reset and the simulation started again. This includes setting the number of particles
-            back to zero, as all particles are removed
+        ROUTINE resetSystem:
+            Cleans out all vectors/matrices, so that they contain no particles. Then,
+            add NAfterReset particles to the system in a grid.
      */
-    void MDContainer::clearSystem()
+    void MDContainer::resetSystem()
     {
         positions.clear();
         velocities.clear();
@@ -45,38 +46,44 @@ namespace md {
         prevEKin.clear();
         prevEPot.clear();
         N = 0;
+        
+        addParticlesGrid(NAfterReset);
+        forcesEnergies(1); // one thread
+        savePreviousValues();
     }
     
     //----------------------GETTERS--------------------------------
     
     
     // Return values of private variables without altering them
-    int    MDContainer::getN()         const { return N; }
-    double MDContainer::getEPot()      const { return epot; }
-    double MDContainer::getEKin()      const { return ekin; }
-    double MDContainer::getTemp()      const { return T; }
-    double MDContainer::getVAvg()      const { return v_avg; }
-    double MDContainer::getTimestep()  const { return dt; }
-    double MDContainer::getCutoff()    const { return rcutoff; }
-    coord  MDContainer::getBox()       const { return box_dimensions; }
-    double MDContainer::getWidth()     const { return box_dimensions.x; }
-    double MDContainer::getHeight()    const { return box_dimensions.y; }
-    double MDContainer::getMaxEkin()   const { return maxEKin; }
-    double MDContainer::getMaxEpot()   const { return maxEPot; }
-    double MDContainer::getMinEkin()   const { return minEKin; }
-    double MDContainer::getMinEpot()   const { return minEPot; }
+    bool   MDContainer::getRunning()     const { return running; }
+    int    MDContainer::getN()           const { return N; }
+    int    MDContainer::getNAfterReset() const { return NAfterReset; }
+    double MDContainer::getEPot()        const { return epot; }
+    double MDContainer::getEKin()        const { return ekin; }
+    double MDContainer::getTemp()        const { return T; }
+    double MDContainer::getVAvg()        const { return v_avg; }
+    double MDContainer::getTimestep()    const { return dt; }
+    double MDContainer::getCutoff()      const { return rcutoff; }
+    coord  MDContainer::getBox()         const { return box_dimensions; }
+    double MDContainer::getWidth()       const { return box_dimensions.x; }
+    double MDContainer::getHeight()      const { return box_dimensions.y; }
+    double MDContainer::getMaxEkin()     const { return maxEKin; }
+    double MDContainer::getMaxEpot()     const { return maxEPot; }
+    double MDContainer::getMinEkin()     const { return minEKin; }
+    double MDContainer::getMinEpot()     const { return minEPot; }
     
     // Return sizes of gaussians, prevPos, and energies vectors, i.e. the number
     // of gaussians, positions and energies stored
-    int MDContainer::getNGaussians()   const { return gaussians.size(); }
-    int MDContainer::getNEnergies()    const { return prevEKin.size(); }
-    int MDContainer::getNPrevPos()     const { return prevPositions.size(); }
+    int MDContainer::getNGaussians()     const { return gaussians.size(); }
+    int MDContainer::getNEnergies()      const { return prevEKin.size(); }
+    int MDContainer::getNPrevPos()       const { return prevPositions.size(); }
     
     // Return (x, y) vectors of the dynamical variables of particle i
     // Safety checks could be added, but index checking is usually slow
-    coord MDContainer::getPos(int i)   const { return positions[i]; }
-    coord MDContainer::getVel(int i)   const { return velocities[i]; }
-    coord MDContainer::getForce(int i) const { return forces[i]; }
+    coord MDContainer::getPos(int i)     const { return positions[i]; }
+    coord MDContainer::getVel(int i)     const { return velocities[i]; }
+    coord MDContainer::getForce(int i)   const { return forces[i]; }
     
     // Return the (x, y) position vector of particle npart, from nstep timesteps previously
     coord MDContainer::getPos(int npart, int nstep) const { return prevPositions[nstep][npart]; }
@@ -98,6 +105,12 @@ namespace md {
     
     //--------------------------------------SETTERS----------------------------------------
     
+    // Set running to a value, or its boolean negation
+    void MDContainer::setRunning(bool _running) { running = _running; }
+    void MDContainer::toggleRunning() { running = not running; }
+    
+    // Set the number of particles to use when the system is reset
+    void MDContainer::setNAfterReset(int N) { NAfterReset = N; }
     
     // Set the position of particle i to (x, y)
     void MDContainer::setPos(int i, double x, double y)
@@ -132,10 +145,12 @@ namespace md {
     void MDContainer::setPotential(PotentialFunctor* _potential) { potential = _potential; }
     
 /*
-    ROUTINE setupSystem:
-        Clears the system (removes all particles, and resets all parameters), before resetting the system
-        to have the parameters listed in the arguments. Places the particles on a grid, and gives them random velocities
-        sampled from a Maxwell distribution of the chosen temperature. Calculates the initial forces and energies.
+    ROUTINE addParticlesGrid:
+        Adds numParticles to the system, in a grid-like manner. The grid chosen is centred in the
+        box, has points evenly spaced, and is chosen to have at least as many points as numParticles.
+        We add particles at grid positions, starting from the top left - depending on the ratio
+        between the box width and height and the number of particles the gridding may be too biased
+        in the top of the box.
  */
     void MDContainer::addParticlesGrid(int numParticles) {
         int i = 0, j = 0;
@@ -507,11 +522,13 @@ namespace md {
             all nsteps integrations are completed
      */
     void MDContainer::run(int nsteps, double freq, int nthreads) {
-        for (int i = 0; i < nsteps; ++i) {
-            integrate(nthreads);
-            berendsen(freq);
+        if (running) {
+            for (int i = 0; i < nsteps; ++i) {
+                integrate(nthreads);
+                berendsen(freq);
+            }
+            savePreviousValues();
         }
-        savePreviousValues();
     }
     
     

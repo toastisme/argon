@@ -81,12 +81,17 @@ void ofApp::setup()
     uiFont10.load("Montserrat-Bold.ttf", 10);
     
     // Initialise theSystem
-    setupSystem(numParticles, TEMPERATURE, BOX_WIDTH, BOX_HEIGHT, TIMESTEP, CUTOFF);
+    theSystem.setTemp(TEMPERATURE);
+    theSystem.setBox(BOX_WIDTH, BOX_HEIGHT);
+    theSystem.setTimestep(TIMESTEP);
+    theSystem.setCutoff(CUTOFF);
+    theSystem.setNAfterReset(numParticles);
+    theSystem.resetSystem();
+    
     // Set the booleans so that the audio input is turned on, as is the simulation,
     // but the UI, secret-Logan-mode, and energy graphs are off.
     loganOn = false;
     graphOn = false;
-    playOn  = true;
     drawOn  = false;
     customPotentialOn = false;
 
@@ -117,8 +122,8 @@ void ofApp::setup()
                                              5, 5, 150, 450, 70, 30));
     
     menuUI.addChild(new gui::SliderContainer("Particles",
-                                             [&] () { return numParticles; },
-                                             [&] (double set) { numParticles = (int)set; },
+                                             [&] () { return theSystem.getNAfterReset(); },
+                                             [&] (double set) { theSystem.setNAfterReset(int(set)); },
                                              2, 200, uiFont12, textcolor, 0,
                                              5, 40, 150, 450, 70, 30));
     
@@ -138,9 +143,10 @@ void ofApp::setup()
     
     // buttons
     menuUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
-    menuUI.addChild(new gui::ButtonToggleAtom(playOn, playButton, pauseButton,
+    menuUI.addChild(new gui::ButtonToggleAtom([&] () { return theSystem.getRunning(); }, [&] (bool set) { theSystem.setRunning(set); },
+                                              playButton, pauseButton,
                                               800, 5, 30, 30));
-    menuUI.addChild(new gui::ButtonAtom([&] () { setupSystem(); }, resetButton,
+    menuUI.addChild(new gui::ButtonAtom([&] () { theSystem.resetSystem(); }, resetButton,
                                               800, 40, 30, 30));
     menuUI.addChild(new gui::ButtonToggleAtom([&] () { return micInput.getActive(); }, [&] (bool set) { micInput.setActive(set); },
                                               audioOnButton, audioOffButton,
@@ -187,35 +193,6 @@ void ofApp::setup()
                                       POS_BOTTOM_LEFT, 5, 0, 1024, 105));
 }
 
-/*
-    ROUTINE setupSystem:
-        Sets up and regrids the system. First clears all particles, then sets basic constants. Then, add the
-        particles on a grid, initialise the forces and energies and save initial positions to prevousPositions
- 
-        Overloaded version takes no parameters, just regridding the system based on ofApp.numParticles
- */
-void ofApp::setupSystem(int particles, double temperature, double box_width, double box_height, double timestep, double cutoff) {
-    theSystem.clearSystem();
-    
-    theSystem.setBox(box_width, box_height);
-    theSystem.setTemp(temperature);
-    theSystem.setTimestep(timestep);
-    theSystem.setCutoff(cutoff);
-    
-    theSystem.addParticlesGrid(particles);
-    
-    theSystem.forcesEnergies(N_THREADS);
-    theSystem.savePreviousValues();
-}
-    
-void ofApp::setupSystem() {
-    theSystem.clearSystem();
-    theSystem.addParticlesGrid(numParticles);
-    theSystem.forcesEnergies(N_THREADS);
-    theSystem.savePreviousValues();
-}
-
-
 //--------------------------------------------------------------
 // UPDATE
 //--------------------------------------------------------------
@@ -237,7 +214,7 @@ void ofApp::setupSystem() {
 void ofApp::update(){
     
     // If not paused, integrate 5 times with a thermostat frequency of 0.1
-    if (playOn) { theSystem.run(5, thermFreq, N_THREADS); }
+    theSystem.run(5, thermFreq, N_THREADS);
         
     if (micInput.getActive()) {
         // get volume, scaled to between 0 and 1
@@ -837,13 +814,11 @@ void ofApp::keyPressed(int key){
     }
     
     else if (key == 'r' || key == 'R') { // Reset the system to have the current values of the sliders
-        coord box = theSystem.getBox();
-        setupSystem();
-        //setupSystem(numParticles, theSystem.getTemp(), box.x, box.y, theSystem.getTimestep(), theSystem.getCutoff());
+        theSystem.resetSystem();
     }
     
-    else if (key == 'p' || key == 'P') { // Pause/restart the simulation
-        playOn = !playOn;
+    else if (key == 'p' || key == 'P') { // Play/pause the simulation
+        theSystem.toggleRunning();
     }
     
     else if (key == 'd' || key == 'D') { // Drawing interface

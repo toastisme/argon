@@ -54,13 +54,6 @@ public:
     double box2screen_y(double y, double y0 = 0.0);
     ofPoint box2screen(double x, double y, double x0 = 0.0, double y0 = 0.0);
     ofPoint box2screen(coord point, coord origin = {0.0, 0.0});
-    
-    // Assign random initial velocities from an appropriate Maxwell distribution
-    //void randomiseVelocity(vector<double> &vel, double T);
-    
-    // Set the parameters for the system
-    void setupSystem(int numParticles, double temperature, double box_length, double box_width, double timestep, double cutoff);
-    void setupSystem();
 
     // Events
     void keyPressed(int key);
@@ -126,7 +119,6 @@ private:
     // Logical variables
     bool loganOn; // Is secret-Logan-mode turned on?
     bool graphOn; // Are the energy graphs showing?
-    bool playOn; // Is the simulation playing?
     bool drawOn; // Is the drawing UI open?
     bool customPotentialOn; // Has the custom potential been selected?
     

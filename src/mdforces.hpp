@@ -23,7 +23,10 @@ namespace md{
     class MDContainer
     {
     private:
-        int N; // Number of particles
+        bool running; // is the system running?
+        
+        int N;           // Current number of particles in system
+        int NAfterReset; // Number of particles to be used when the system is reset
         
         // Matrices of dynamical variables
         std::vector <coord> positions, velocities, forces;
@@ -55,14 +58,17 @@ namespace md{
     public:
         MDContainer(); // Default constructor
         
-        void clearSystem(); // Reset object
+        bool getRunning() const;         // getter for running
+        void setRunning(bool running);   // setter for running
+        void toggleRunning();            // toggle whether the system is running
+        void resetSystem();              // Clears the system & regrids everything
         
         // Accessors
         // Getters
         
         // Return values of private variables
-        int getN() const;
-        int getSteps() const;
+        int    getN() const;
+        int    getNAfterReset() const;
         double getTemp() const;
         double getVAvg() const;
         
@@ -105,6 +111,8 @@ namespace md{
         double getGaussianY0(int i) const;
         
         //Setters
+        void setNAfterReset(int N);
+        
         void setPos(int i, double x, double y);
         void setVel(int i, double vx, double vy);
         
