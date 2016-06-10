@@ -121,10 +121,10 @@ void ofApp::setup()
                                              2, 200, uiFont12, textcolor, 0,
                                              5, 40, 150, 450, 70, 30));
     
-    menuUI.addChild(new gui::SliderContainer("Mic sensitivity",
-                                             [&] () { return micInput.getMaxAmplitude(); },
-                                             [&] (double set) { micInput.setMaxAmplitude(set); },
-                                             0.005, 0.135, uiFont12, textcolor, 3,
+    menuUI.addChild(new gui::SliderContainer("Simulation speed",
+                                             [&] () { return theSystem.getStepsPerUpdate(); },
+                                             [&] (double set) { theSystem.setStepsPerUpdate(set); },
+                                             1, 20, uiFont12, textcolor, 0,
                                              5, 75, 150, 450, 70, 30));
     
     // button text
