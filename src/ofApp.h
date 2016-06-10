@@ -48,7 +48,6 @@ public:
     void scalePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
     
     
-    // Routines to setup the system
     // Convert box coordinates to screen coordinates
     double box2screen_x(double x, double x0 = 0.0);
     double box2screen_y(double y, double y0 = 0.0);
@@ -72,10 +71,6 @@ public:
 private:
    
     md::MDContainer theSystem; // The MD simulation system
-    
-    // Store the number of particles locally until the system
-    // is reset with 'r' and we can regrid everything
-    int numParticles;
     
     // Thermostat frequency
     double thermFreq;

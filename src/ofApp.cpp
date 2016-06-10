@@ -36,20 +36,7 @@ void ofApp::setup()
 {
     
     // Default values for system parameters
-    numParticles = 50;
     thermFreq = 0.1;
-    
-    double TEMPERATURE = 0.5;
-    double BOX_WIDTH = 17.0;
-    
-    // NOTE: ofGetWidth and ofGetHeight do not give the right values here if
-    // the screen we're trying to draw is to the right values later, but not
-    // in ofApp::setup(). If this happens, we get regions where the particles
-    // are inside the MD box, but not inside the screen.
-    // This is an openFrameworks issue.
-    double BOX_HEIGHT = BOX_WIDTH / ofGetWidth() * ofGetHeight();
-    double TIMESTEP = 0.002;
-    double CUTOFF = 3.0;
     
     // Set the potential UI parameters
     topHeight = ofGetHeight()/8;
@@ -80,12 +67,21 @@ void ofApp::setup()
     uiFont12.load("Montserrat-Bold.ttf", 12);
     uiFont10.load("Montserrat-Bold.ttf", 10);
     
-    // Initialise theSystem
-    theSystem.setTemp(TEMPERATURE);
+    // Initialise theSystem with 50 particles at 60K
+    theSystem.setTemp(0.5);
+    theSystem.setTimestep(0.002);
+    theSystem.setCutoff(3.0);
+    theSystem.setNAfterReset(50);
+    
+    double BOX_WIDTH = 17.0;
+    // NOTE: ofGetWidth and ofGetHeight do not give the right values here if
+    // the screen we're trying to draw is to the right values later, but not
+    // in ofApp::setup(). If this happens, we get regions where the particles
+    // are inside the MD box, but not inside the screen.
+    // This is an openFrameworks issue.
+    double BOX_HEIGHT = BOX_WIDTH / ofGetWidth() * ofGetHeight();
     theSystem.setBox(BOX_WIDTH, BOX_HEIGHT);
-    theSystem.setTimestep(TIMESTEP);
-    theSystem.setCutoff(CUTOFF);
-    theSystem.setNAfterReset(numParticles);
+    
     theSystem.resetSystem();
     
     // Set the booleans so that the audio input is turned on, as is the simulation,
@@ -116,14 +112,14 @@ void ofApp::setup()
     
     // sliders
     menuUI.addChild(new gui::SliderContainer("Temperature (K)",
-                                             [&] () { return theSystem.getTemp() * 120; },
+                                             [&] () { return theSystem.getTemp() * 120; },   // factor of 120 to convert to kelvin
                                              [&] (double set) { theSystem.setTemp(set / 120.0); },
                                              0, 1000, uiFont12, textcolor, 1,
                                              5, 5, 150, 450, 70, 30));
     
     menuUI.addChild(new gui::SliderContainer("Particles",
                                              [&] () { return theSystem.getNAfterReset(); },
-                                             [&] (double set) { theSystem.setNAfterReset(int(set)); },
+                                             [&] (double set) { theSystem.setNAfterReset(set); },
                                              2, 200, uiFont12, textcolor, 0,
                                              5, 40, 150, 450, 70, 30));
     
