@@ -117,13 +117,14 @@ void ofApp::setup()
     
     menuUI.addChild(new gui::SliderContainer("Particles",
                                              [&] () { return theSystem.getNAfterReset(); },
-                                             [&] (double set) { theSystem.setNAfterReset(set); },
+                                                    // N is an int: add 0.5 to the argument to set N to round(set) instead of floor(set)
+                                             [&] (double set) { theSystem.setNAfterReset(set + 0.5); },
                                              2, 200, uiFont12, textcolor, 0,
                                              5, 40, 150, 450, 70, 30));
     
     menuUI.addChild(new gui::SliderContainer("Simulation speed",
                                              [&] () { return theSystem.getStepsPerUpdate(); },
-                                             [&] (double set) { theSystem.setStepsPerUpdate(set); },
+                                             [&] (double set) { theSystem.setStepsPerUpdate(set + 0.5); },
                                              1, 20, uiFont12, textcolor, 0,
                                              5, 75, 150, 450, 70, 30));
     
