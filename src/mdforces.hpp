@@ -23,7 +23,8 @@ namespace md{
     class MDContainer
     {
     private:
-        bool running; // is the system running?
+        bool running;         // is the system running?
+        int stepsPerUpdate;   // number of time steps to take when run() is called
         
         int N;           // Current number of particles in system
         int NAfterReset; // Number of particles to be used when the system is reset
@@ -69,6 +70,7 @@ namespace md{
         // Getters
         
         // Return values of private variables
+        int    getStepsPerUpdate() const;
         int    getN() const;
         int    getNAfterReset() const;
         double getTemp() const;
@@ -114,6 +116,7 @@ namespace md{
         double getGaussianY0(int i) const;
         
         //Setters
+        void setStepsPerUpdate(int steps);
         void setNAfterReset(int N);
         
         void setPos(int i, double x, double y);
@@ -152,8 +155,8 @@ namespace md{
         // save positions and energies in prevPos, prevEPot, prevEKin
         void savePreviousValues();
         
-        // run for nsteps time steps on nthreads threads; default to 1 thread
-        void run(int nsteps, int nthreads = 1);
+        // run for stepsPerUpdate time steps on nthreads threads; default to 1 thread
+        void run(int nthreads = 1);
 
         // Thermostats
         coord randomVel();

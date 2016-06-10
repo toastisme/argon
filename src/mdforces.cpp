@@ -57,35 +57,36 @@ namespace md {
     
     
     // Return values of private variables without altering them
-    bool   MDContainer::getRunning()     const { return running; }
-    int    MDContainer::getN()           const { return N; }
-    int    MDContainer::getNAfterReset() const { return NAfterReset; }
-    double MDContainer::getEPot()        const { return epot; }
-    double MDContainer::getEKin()        const { return ekin; }
-    double MDContainer::getTemp()        const { return T; }
-    double MDContainer::getVAvg()        const { return v_avg; }
-    double MDContainer::getTimestep()    const { return dt; }
-    double MDContainer::getCutoff()      const { return rcutoff; }
-    coord  MDContainer::getBox()         const { return box_dimensions; }
-    double MDContainer::getWidth()       const { return box_dimensions.x; }
-    double MDContainer::getHeight()      const { return box_dimensions.y; }
-    double MDContainer::getFreq()        const { return freq; }
-    double MDContainer::getMaxEkin()     const { return maxEKin; }
-    double MDContainer::getMaxEpot()     const { return maxEPot; }
-    double MDContainer::getMinEkin()     const { return minEKin; }
-    double MDContainer::getMinEpot()     const { return minEPot; }
+    bool   MDContainer::getRunning()        const { return running; }
+    int    MDContainer::getStepsPerUpdate() const { return stepsPerUpdate; }
+    int    MDContainer::getN()              const { return N; }
+    int    MDContainer::getNAfterReset()    const { return NAfterReset; }
+    double MDContainer::getEPot()           const { return epot; }
+    double MDContainer::getEKin()           const { return ekin; }
+    double MDContainer::getTemp()           const { return T; }
+    double MDContainer::getVAvg()           const { return v_avg; }
+    double MDContainer::getTimestep()       const { return dt; }
+    double MDContainer::getCutoff()         const { return rcutoff; }
+    coord  MDContainer::getBox()            const { return box_dimensions; }
+    double MDContainer::getWidth()          const { return box_dimensions.x; }
+    double MDContainer::getHeight()         const { return box_dimensions.y; }
+    double MDContainer::getFreq()           const { return freq; }
+    double MDContainer::getMaxEkin()        const { return maxEKin; }
+    double MDContainer::getMaxEpot()        const { return maxEPot; }
+    double MDContainer::getMinEkin()        const { return minEKin; }
+    double MDContainer::getMinEpot()        const { return minEPot; }
     
     // Return sizes of gaussians, prevPos, and energies vectors, i.e. the number
     // of gaussians, positions and energies stored
-    int MDContainer::getNGaussians()     const { return gaussians.size(); }
-    int MDContainer::getNEnergies()      const { return prevEKin.size(); }
-    int MDContainer::getNPrevPos()       const { return prevPositions.size(); }
+    int MDContainer::getNGaussians()        const { return gaussians.size(); }
+    int MDContainer::getNEnergies()         const { return prevEKin.size(); }
+    int MDContainer::getNPrevPos()          const { return prevPositions.size(); }
     
     // Return (x, y) vectors of the dynamical variables of particle i
     // Safety checks could be added, but index checking is usually slow
-    coord MDContainer::getPos(int i)     const { return positions[i]; }
-    coord MDContainer::getVel(int i)     const { return velocities[i]; }
-    coord MDContainer::getForce(int i)   const { return forces[i]; }
+    coord MDContainer::getPos(int i)        const { return positions[i]; }
+    coord MDContainer::getVel(int i)        const { return velocities[i]; }
+    coord MDContainer::getForce(int i)      const { return forces[i]; }
     
     // Return the (x, y) position vector of particle npart, from nstep timesteps previously
     coord MDContainer::getPos(int npart, int nstep) const { return prevPositions[nstep][npart]; }
@@ -110,6 +111,9 @@ namespace md {
     // Set running to a value, or its boolean negation
     void MDContainer::setRunning(bool _running) { running = _running; }
     void MDContainer::toggleRunning() { running = not running; }
+    
+    // Set the number of steps to make each time run is called
+    void MDContainer::setStepsPerUpdate(int steps) { stepsPerUpdate = steps; }
     
     // Set the number of particles to use when the system is reset
     void MDContainer::setNAfterReset(int N) { NAfterReset = N; }
@@ -524,9 +528,9 @@ namespace md {
             freq, on nthreads threads. Saves the positions and energies after
             all nsteps integrations are completed
      */
-    void MDContainer::run(int nsteps, int nthreads) {
+    void MDContainer::run(int nthreads) {
         if (running) {
-            for (int i = 0; i < nsteps; ++i) {
+            for (int i = 0; i < stepsPerUpdate; ++i) {
                 integrate(nthreads);
                 berendsen(freq);
             }

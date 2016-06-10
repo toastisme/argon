@@ -68,6 +68,7 @@ void ofApp::setup()
     theSystem.setTimestep(0.002);
     theSystem.setCutoff(3.0);
     theSystem.setFreq(0.1);
+    theSystem.setStepsPerUpdate(5);
     theSystem.setNAfterReset(50);
     
     double BOX_WIDTH = 17.0;
@@ -206,8 +207,8 @@ void ofApp::setup()
  */
 void ofApp::update(){
     
-    // If not paused, integrate 5 times
-    theSystem.run(5, N_THREADS);
+    // If not paused, integrate the system
+    theSystem.run();
         
     if (micInput.getActive()) {
         // get volume, scaled to between 0 and 1
