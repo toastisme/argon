@@ -72,9 +72,6 @@ private:
    
     md::MDContainer theSystem; // The MD simulation system
     
-    // Thermostat frequency
-    double thermFreq;
-    
     // For the potential UI
     float topHeight, sideWidth, buttonHeight;
     

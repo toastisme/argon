@@ -34,10 +34,6 @@ ofPoint ofApp::box2screen(coord point, coord origin) {
  */
 void ofApp::setup() 
 {
-    
-    // Default values for system parameters
-    thermFreq = 0.1;
-    
     // Set the potential UI parameters
     topHeight = ofGetHeight()/8;
     sideWidth = ofGetWidth()/7;
@@ -71,6 +67,7 @@ void ofApp::setup()
     theSystem.setTemp(0.5);
     theSystem.setTimestep(0.002);
     theSystem.setCutoff(3.0);
+    theSystem.setFreq(0.1);
     theSystem.setNAfterReset(50);
     
     double BOX_WIDTH = 17.0;
@@ -84,8 +81,8 @@ void ofApp::setup()
     
     theSystem.resetSystem();
     
-    // Set the booleans so that the audio input is turned on, as is the simulation,
-    // but the UI, secret-Logan-mode, and energy graphs are off.
+    // Set the booleans so that the secret-Logan-mode, energy graphs,
+    // potential viewer and custom potential are initially turned off
     loganOn = false;
     graphOn = false;
     drawOn  = false;
@@ -209,8 +206,8 @@ void ofApp::setup()
  */
 void ofApp::update(){
     
-    // If not paused, integrate 5 times with a thermostat frequency of 0.1
-    theSystem.run(5, thermFreq, N_THREADS);
+    // If not paused, integrate 5 times
+    theSystem.run(5, N_THREADS);
         
     if (micInput.getActive()) {
         // get volume, scaled to between 0 and 1

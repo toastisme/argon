@@ -17,15 +17,16 @@ namespace md {
 
     /*
         DEFAULT CONSTRUCTOR:
-            Initially sets the box dimensions to 10 x 10, the rcutoff to 3,
-            and the timstep to 0.002. Initialises maximum energies to zero.
-            Starts system as running.
+            Initially sets the box dimensions to 10 x 10, the rcutoff to 3, the
+            timestep to 0.002, and the thermostat frequency to 0.1.
+            Initialises maximum energies to zero, and starts system as running.
      */
     MDContainer::MDContainer()
     {
-        box_dimensions = {0, 0};
+        box_dimensions = {10, 10};
         rcutoff = 3.0;
         dt = 0.002;
+        freq = 0.1;
         maxEKin = 0.0;
         maxEPot = 0.0;
         potential = &lj;
@@ -68,6 +69,7 @@ namespace md {
     coord  MDContainer::getBox()         const { return box_dimensions; }
     double MDContainer::getWidth()       const { return box_dimensions.x; }
     double MDContainer::getHeight()      const { return box_dimensions.y; }
+    double MDContainer::getFreq()        const { return freq; }
     double MDContainer::getMaxEkin()     const { return maxEKin; }
     double MDContainer::getMaxEpot()     const { return maxEPot; }
     double MDContainer::getMinEkin()     const { return minEKin; }
@@ -139,6 +141,7 @@ namespace md {
     void MDContainer::setTemp(double temperature) { T = temperature >= 0 ? temperature : 0.5; }
     void MDContainer::setTimestep(double timestep) { dt = timestep > 0 ? timestep : 0.002; }
     void MDContainer::setCutoff(double cutoff) { rcutoff = cutoff > 0 ? cutoff : 3.0; }
+    void MDContainer::setFreq(double frequency) { freq = frequency >= 0 ? frequency : 0.1; }
     
     // Set the potential
     
@@ -521,7 +524,7 @@ namespace md {
             freq, on nthreads threads. Saves the positions and energies after
             all nsteps integrations are completed
      */
-    void MDContainer::run(int nsteps, double freq, int nthreads) {
+    void MDContainer::run(int nsteps, int nthreads) {
         if (running) {
             for (int i = 0; i < nsteps; ++i) {
                 integrate(nthreads);

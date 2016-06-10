@@ -44,8 +44,10 @@ namespace md{
         std::vector<Gaussian> gaussians;
         
         double epot, ekin; // Potential and kinetic energies
-        double rcutoff; // Cutoff radius for pair potential
-        double dt, T; // MD timestep and desired temperature
+        double rcutoff;    // Cutoff radius for pair potential
+        double dt, T;      // MD timestep and desired temperature
+        double freq;       // thermostat frequency
+        
         double maxEKin, maxEPot, minEKin, minEPot; // Maximum/minimum kinetic and potential energies in prevEPot, prevEKin
         double v_avg; // Current average speed of particles
         
@@ -74,6 +76,7 @@ namespace md{
         
         double getTimestep() const;
         double getCutoff() const;
+        double getFreq() const;
         
         coord  getBox() const;
         double getWidth() const;
@@ -121,6 +124,7 @@ namespace md{
         void setCutoff(double cutoff);
         void setTimestep(double timestep);
         void setTemp(double temperature);
+        void setFreq(double frequency);
         
         // Set the potential
         void setPotential(PotentialFunctor* _potential);
@@ -148,8 +152,8 @@ namespace md{
         // save positions and energies in prevPos, prevEPot, prevEKin
         void savePreviousValues();
         
-        // run for nsteps time steps
-        void run(int nsteps, double freq, int nthreads);
+        // run for nsteps time steps on nthreads threads; default to 1 thread
+        void run(int nsteps, int nthreads = 1);
 
         // Thermostats
         coord randomVel();
