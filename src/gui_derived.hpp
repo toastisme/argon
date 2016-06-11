@@ -60,7 +60,7 @@ namespace gui {
         
     private:
         std::string string;          // string to be drawn
-        rect stringBounds;           // bounding box of the string
+        rect stringBounds;           // bounding box of the string itself (which is different to ofBase::bounds)
         double descenderHeight;      // size of descender (maximum size glyphs can go below baseline of text)
         
         const ofTrueTypeFont *font;  // pointer to font asset
@@ -187,9 +187,12 @@ namespace gui {
         void mousePressed(int x, int y, int button);
         void mouseReleased(int x, int y, int button);
         
-        static int BODY_HEIGHT;            // height of slider body (the white background rectangle) - set to 10
-        static int HANDLE_WIDTH;           // width of slider handle (the grey rectangle representing the position of the slider) - set to 7
+        static int BODY_HEIGHT;            // height of slider body (the background rectangle) - set to 10
+        static ofColor BODY_COLOR;         // colour of slider body - set to white (255, 255, 255)
+        
+        static int HANDLE_WIDTH;           // width of slider handle (the rectangle representing the position of the slider) - set to 7
         static int HANDLE_HEIGHT;          // height of slider handle - set to 20
+        static ofColor HANDLE_COLOR;       // colour of slider handle - set to grey (80, 80, 80)
     };
     
     class ButtonAtom : public UIAtom
@@ -221,12 +224,6 @@ namespace gui {
     private:
         virtual void render();     // draws the correct button image to the screen
         
-        bool *toggle;              // pointer to a boolean value tracked by the button
-                                   // this is only used (and only not NULL) if a boolean is given to the constructor
-                                   // instead of a getter / setter pair
-                                   // when things are properly moved into classes so that booleans to be tracked all
-                                   // have proper getter / setter pairs, this can be removed
-        
         FuncGetterBool getBool;    // getter function (void -> bool) for the boolean represented by the button
         FuncSetterBool setBool;    // setter function (bool -> void) for the boolean represented by the button
         
@@ -236,7 +233,6 @@ namespace gui {
     public:
         ButtonToggleAtom();
         ButtonToggleAtom(FuncGetterBool getBool, FuncSetterBool setBool, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
-        ButtonToggleAtom(bool &toggle, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height); //DEPRECATED
         
         // handle mouse events
         void mousePressed(int x, int y, int button);
@@ -280,9 +276,8 @@ namespace gui {
         
     public:
         SliderContainer();
-        SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &colour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
-        
-        static int PADDING;   // padding between the indidivual UI elements in the container -- set to 5
+        // a whole bunch of stuff to pass through to the indivisual elements
+        SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &textColour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double padding, double height);
     };
     
 }
