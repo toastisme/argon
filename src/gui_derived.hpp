@@ -142,7 +142,7 @@ namespace gui {
     class ValueAtom : public UIAtom, TextComponent
     {
         /*
-            UI Atom for drawing a double outputted from a member function of an LJContainer.
+            UI Atom for drawing a double outputted from a member function of an MDContainer.
          */
         
     private:
