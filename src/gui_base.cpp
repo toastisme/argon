@@ -174,15 +174,22 @@ namespace gui {
         }
     }
     
-    // Add a child: set its parent to this object
-    // Then make sure size matches the total size spanned by the children
+    // Add a child
     void UIContainer::addChild(UIBase *child) {
         children.push_back(child);
-        
-        // set bounds to match total size
-        // TODO: this doesn't handle origins properly
-        //rect childRect = child->getRect();
-        //bounds.expandToFit(childRect);
+    }
+    
+    // Add a child and index it, returning the index
+    int UIContainer::addIndexedChild(gui::UIBase *child) {
+        addChild(child);
+        indexedChildren.push_back(child);
+        return indexedChildren.size()-1;
+    }
+    
+    // Return a pointer to the ith child
+    
+    UIBase* UIContainer::getChild(int i) {
+        return indexedChildren.at(i);
     }
 
     // remainder of methods just pass the call through to its children

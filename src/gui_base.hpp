@@ -143,6 +143,7 @@ namespace gui {
         
     protected:
         std::vector <UIBase *> children;
+        std::vector <UIBase *> indexedChildren;
         
     public:
         UIContainer();
@@ -150,6 +151,9 @@ namespace gui {
         virtual ~UIContainer();
         
         void addChild(UIBase *child);
+        int addIndexedChild(UIBase *child);
+        
+        UIBase* getChild(int i);
         
         virtual void draw();
         

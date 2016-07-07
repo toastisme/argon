@@ -40,13 +40,6 @@ public:
     // Draw the user interface components
     void drawUI();
     
-    // Draw potential functions
-    void drawCustomPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
-    
-    //Scale potential functions to UI
-    void scalePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
-    
-    
     // Routines to setup the system
     // Convert box coordinates to screen coordinates
     double box2screen_x(double x, double x0 = 0.0);
@@ -139,7 +132,7 @@ private:
     // UI Containers
     gui::UIContainer menuUI;
     gui::UIContainer potentialUI;
-    gui::UIContainer customPotentialUI;
+    int potentialIndex, customPotentialIndex; // Indices of potential atoms in potentialUI
     gui::UIContainer presshUI;
     gui::UIContainer testUI;
 

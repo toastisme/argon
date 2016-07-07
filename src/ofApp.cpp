@@ -188,40 +188,43 @@ void ofApp::setup()
     // Setup Potential UI
     
     potentialUI = gui::UIContainer(0, 0 , 1024, 600);
+    
+    // Setup potential atoms
+    potentialIndex = potentialUI.addIndexedChild(new gui::PotentialAtom(theSystem, 0.9, 3.0, 150, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
+    customPotentialIndex = potentialUI.addIndexedChild(new gui::CustomPotentialAtom(theSystem, 0.9, 3.0, 150, sideWidth, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
+
     potentialUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 600)); //
     
     potentialUI.addChild(new gui::TextAtom("Select a pair potential", uiFont14, textcolor, gui::LEFT, 1.2*sideWidth, topHeight/5, 100, 30));
     
     potentialUI.addChild(new gui::TextAtom("Lennard-Jones", uiFont12, textcolor, gui::LEFT, 30, topHeight+1.5*buttonHeight/2, 100, 30));
-    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::LENNARD_JONES); }, ljThumbnail, 30, topHeight, 85, 85));
+    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::LENNARD_JONES);
+                                                    potentialUI.getChild(potentialIndex)->makeVisible();
+                                                    potentialUI.getChild(customPotentialIndex)->makeInvisible(); },
+                                                    ljThumbnail, 30, topHeight, 85, 85));
     
     potentialUI.addChild(new gui::TextAtom("Square Well", uiFont12, textcolor, gui::LEFT, 30, topHeight+3.55*buttonHeight/2, 100, 30));
-    potentialUI.addChild(new gui::ButtonAtom([&] () {  theSystem.setPotential(md::SQUARE_WELL); }, squareThumbnail, 30, topHeight+2*buttonHeight/2, 85, 85));
+    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::SQUARE_WELL);
+                                                    potentialUI.getChild(potentialIndex)->makeVisible();
+                                                    potentialUI.getChild(customPotentialIndex)->makeInvisible(); },
+                                                    squareThumbnail, 30, topHeight+2*buttonHeight/2, 85, 85));
     
     potentialUI.addChild(new gui::TextAtom("Morse", uiFont12, textcolor, gui::LEFT, 30, topHeight+5.4*buttonHeight/2, 100, 30));
-    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::MORSE); }, morseThumbnail, 30, topHeight+4.0*buttonHeight/2, 85, 85));
+    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::MORSE);
+                                                    potentialUI.getChild(potentialIndex)->makeVisible();
+                                                    potentialUI.getChild(customPotentialIndex)->makeInvisible(); },
+                                                    morseThumbnail, 30, topHeight+4.0*buttonHeight/2, 85, 85));
     
     potentialUI.addChild(new gui::TextAtom("Custom", uiFont12, textcolor, gui::LEFT, 30, topHeight+7.3*buttonHeight/2, 100, 30));
-    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::CUSTOM); }, squareThumbnail, 30, topHeight+6.0*buttonHeight/2, 85, 85));
-    potentialUI.addChild(new gui::PotentialAtom(theSystem, 0.5, 6.0, 150, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
+    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::CUSTOM);
+                                                    potentialUI.getChild(potentialIndex)->makeInvisible();
+                                                    potentialUI.getChild(customPotentialIndex)->makeVisible(); },
+                                                    squareThumbnail, 30, topHeight+6.0*buttonHeight/2, 85, 85));
     
     potentialUI.makeInvisible();
+    potentialUI.getChild(customPotentialIndex)->makeVisible();
     potentialUI.mouseReleased(0, 0, 0);
     
-    // Setup Custom Potential UI
-    
-    customPotentialUI = gui::UIContainer(0, 0 , 1024, 600);
-    customPotentialUI.addChild(new gui::TextAtom("Add points:", uiFont10, textcolor, gui::CENTRE, 3.0*sideWidth, topHeight/4.5, 100, 30));
-    //customPotentialUI.addChild(new gui::ButtonAtom([&] () { selectCustomButton(1); }, addPointsButton, 3.65*sideWidth, topHeight/4.5, 30, 30));
-    customPotentialUI.addChild(new gui::TextAtom("Move points:", uiFont10, textcolor, gui::CENTRE, 3.90*sideWidth, topHeight/4.5, 100, 30));
-    //customPotentialUI.addChild(new gui::ButtonAtom([&] () { selectCustomButton(2); }, movePointsButton, 4.58*sideWidth, topHeight/4.5, 30, 30));
-    customPotentialUI.addChild(new gui::TextAtom("Change slope:", uiFont10, textcolor, gui::CENTRE, 4.9*sideWidth, topHeight/4.5, 100, 30));
-    //customPotentialUI.addChild(new gui::ButtonAtom([&] () { selectCustomButton(3); }, changeSlopeButton, 5.60*sideWidth, topHeight/4.5, 30, 30));
-    customPotentialUI.addChild(new gui::TextAtom("Remove points:", uiFont10, textcolor, gui::CENTRE, 5.95*sideWidth, topHeight/4.5, 100, 30));
-    //customPotentialUI.addChild(new gui::ButtonAtom([&] () { selectCustomButton(4); }, removePointsButton, 6.70*sideWidth, topHeight/4.5, 30, 30));
-    
-    customPotentialUI.makeInvisible();
-    customPotentialUI.mouseReleased(0, 0, 0);
 }
 
 /*
@@ -442,78 +445,6 @@ void ofApp::drawGraph()
     uiFont14.drawString("Potential energy", 0.05*ofGetWidth(), 0.15*ofGetHeight() );
     
 }
-
-
-// Custom potential function
-void ofApp::drawCustomPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints, std::vector<float> partx,std::vector<float> party){
-    
-    float x,y;
-    
-    CustomPotential& customPotential = theSystem.getCustomPotential();
-    
-    // Rescale the default position of the four-point spline
-    // Only occurs the first time the custom potential is selected
-    if (customPotentialOn == false){
-        double x0 = ofMap(min_x*1.025, min_x, max_x,sideWidth + 40, ofGetWidth() - 40, true);
-        double x_end = ofMap(max_x, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
-        double y0 = ofGetHeight()/5.5;
-        double y_end = ofGetHeight()/1.8;
-    
-        // Move the two points to the scaled position;
-        customPotential.getSpline().movePoint(1, x_end, y_end, 0);
-        customPotential.getSpline().movePoint(0, x0, y0, 0);
-        
-        // After calling the custom potential the first time, skip this block
-        customPotentialOn = !customPotentialOn;
-    }
-    
-    // Once the initial two-point spline has been rescaled, update the spline each iteration
-    else {
-        // Set color, position of each point in the spline
-        for (int i = 1; (i < customPotential.getSpline().points()+1); i++){
-            ofSetColor(0, 200, 240,200);
-            ofFill();
-            ofDrawCircle(customPotential.getSpline().getPoint(i-1).x, customPotential.getSpline().getPoint(i-1).y, 10);
-            ofSetColor(255, 255, 255,90);
-            ofNoFill();
-            ofDrawCircle(customPotential.getSpline().getPoint(i-1).x, customPotential.getSpline().getPoint(i-1).y, 10);
-        }
-        
-        // Map every x value to the UI and obtain y, add each value to ypoints
-        for (int i = 0; i < xpoints.size(); i++){
-            xpoints[i] = ofMap(xpoints[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true );
-            y = customPotential.getSpline().value(xpoints[i]);
-            // If y is out of the y limits, set y to the limit
-            max_y = ( y > max_y ? y : max_y);
-            min_y = ( y < min_y ? y : min_y);
-            ypoints.push_back(y);
-        }
-        
-        // Map every x particle value to the UI and obtain y, add each value to party
-        for (int i = 0; i < theSystem.getN() - 1; i++){
-            partx[i] = ofMap(partx[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
-            y = customPotential.getSpline().value(partx[i]);
-            party.push_back(y);
-            
-        }
-        
-        // Draw the potential
-        ofSetColor(255,255,255, 220);
-        for (int i = 1; i < xpoints.size() - 1; i++){
-            ofDrawLine(xpoints[i], ypoints[i], xpoints[i+1], ypoints[i+1]);
-        }
-        
-        // Draw the particles on the potential
-        ofSetColor(0, 100, 220, 220);
-        for (int i = 0; i < theSystem.getN() - 1; i++){
-            ofFill();
-            ofDrawCircle(partx[i], party[i], 4);
-        }
-
-    }
-    
-}
-
 
 /*
     ROUTINE draw:
@@ -796,19 +727,7 @@ void ofApp::mousePressed(int x, int y, int button){
         theSystem.addGaussian(GAMP, GALPHA, scaled_x, scaled_y);
         selectedGaussian = theSystem.getNGaussians() - 1;
     }
-    /*
-    if (selectedPotential == 4){ // Mouse controls custom potential modification
-        customPotentialUI.mousePressed(x,y,button);
-        // Add customPotential points at clicked location when 'add points' button is on
-        if (customPotentialButton == 1){
-            // Ensure the point is created within the box
-                    }
-    
-        // Remove clicked customPotential points when the 'remove points' button is on
-        else if (customPotentialButton == 4){
-        }
-    }
-     */
+
 }
 
 //--------------------------------------------------------------

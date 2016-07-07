@@ -209,7 +209,6 @@ namespace gui {
     /*
         UI atom to plot a function
      */
-
     
     public:
         
@@ -219,10 +218,11 @@ namespace gui {
         
     private:
         virtual void render();
+        
+    protected:
         md::MDContainer& theSystem;
         double min_x, max_x;
         double numPoints;
-        
         
     };
     
@@ -236,7 +236,7 @@ namespace gui {
         
         void DrawPotential(PotentialFunctor& pot);
         
-        CustomPotentialAtom(md::MDContainer &system, int minx, int maxx, int numPoints, int x, int y, int width, int height);
+        CustomPotentialAtom(md::MDContainer &system, int minx, int maxx, int numPoints, int sideWidth, int x, int y, int width, int height);
         
     private:
         virtual void render();

@@ -233,7 +233,7 @@ namespace gui {
     void PotentialAtom::DrawPotential(PotentialFunctor& pot){
         std::vector<double> xpoints, ypoints, partx, party;
         
-        float x,y;
+        double x, y;
         double min_y = 9999, max_y = 0;
         double x_spacing = (max_x - min_x) / (numPoints - 1);
         
@@ -268,7 +268,7 @@ namespace gui {
         }
         // Map the potential values to the UI
         for (int i = 0; i < xpoints.size(); i++){
-            xpoints[i] = ofMap(xpoints[i], min_x, max_x, getRect().top, getRect().bottom, true);
+            xpoints[i] = ofMap(xpoints[i], min_x, max_x, getRect().left, getRect().right, true);
             ypoints[i] = ofMap(ypoints[i], min_y, max_y, getRect().top, getRect().bottom, true);
         }
         
@@ -301,11 +301,50 @@ namespace gui {
       CustomPotentialAtom
      */
     
-    CustomPotentialAtom::CustomPotentialAtom(md::MDContainer &system, int minx, int maxx, int numPoints, int x, int y, int width, int height) : PotentialAtom(system, minx, maxx, numPoints, x, y, width, height) {}
+    CustomPotentialAtom::CustomPotentialAtom(md::MDContainer &system, int minx, int maxx, int numPoints, int sideWidth, int x, int y, int width, int height) : PotentialAtom(system, minx, maxx, numPoints, x, y, width, height) {
+    
+        // Rescale the default position of the four-point spline
+        // Only occurs the first time the custom potential is selected
+        double x0 = ofMap(min_x*1.025, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
+        double x_end = ofMap(max_x, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
+        double y0 = ofGetHeight()/5.5;
+        double y_end = ofGetHeight()/1.8;
+        
+        // Move the two points to the scaled position;
+        CustomPotential& customPotential = theSystem.getCustomPotential();
+        customPotential.getSpline().movePoint(1, x_end, y_end, 0);
+        customPotential.getSpline().movePoint(0, x0, y0, 0);
+
+    
+    }
     
     void CustomPotentialAtom::DrawPotential(PotentialFunctor &pot) {
         
+        CustomPotential& customPotential = theSystem.getCustomPotential();
+        
+        // Once the initial two-point spline has been rescaled, update the spline each iteration
+ 
+        // Set color, position of each point in the spline
+        for (int i = 1; (i < customPotential.getSpline().points()+1); i++){
+            ofSetColor(0, 200, 240,200);
+            ofFill();
+            ofDrawCircle(customPotential.getSpline().getPoint(i-1).x, customPotential.getSpline().getPoint(i-1).y, 10);
+            ofSetColor(255, 255, 255,90);
+            ofNoFill();
+            ofDrawCircle(customPotential.getSpline().getPoint(i-1).x, customPotential.getSpline().getPoint(i-1).y, 10);
+        }
+            
+        // Map every x value to the UI and obtain y, add each value to ypoints
+        PotentialAtom::DrawPotential(pot);
     }
+    
+    void CustomPotentialAtom::render() {
+        DrawPotential(theSystem.getCustomPotential());
+    }
+    
+    void CustomPotentialAtom::mouseMoved(int x, int y) {}
+    void CustomPotentialAtom::mousePressed(int x, int y, int button) {}
+    void CustomPotentialAtom::mouseReleased(int x, int y, int button) {}
     
     /*
         SliderContainer
@@ -324,6 +363,7 @@ namespace gui {
     }
     
     int SliderContainer::PADDING = 5;
+    
     
     
     
