@@ -215,12 +215,12 @@ namespace gui {
         
         virtual void DrawPotential(PotentialFunctor& pot);
         
-        PotentialAtom(md::MDContainer &system, int minx, int maxx, int x, int y, int width, int height);
+        PotentialAtom(md::MDContainer &system, int minx, int maxx, int numPoints, int x, int y, int width, int height);
         
     private:
         virtual void render();
         md::MDContainer& theSystem;
-        int min_x, max_x;
+        int min_x, max_x, numPoints;
         
         
     };
@@ -235,7 +235,7 @@ namespace gui {
         
         void DrawPotential(PotentialFunctor& pot);
         
-        CustomPotentialAtom(md::MDContainer &system, int minx, int maxx, int x, int y, int width, int height);
+        CustomPotentialAtom(md::MDContainer &system, int minx, int maxx, int numPoints, int x, int y, int width, int height);
         
     private:
         virtual void render();

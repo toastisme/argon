@@ -203,7 +203,7 @@ void ofApp::setup()
     
     potentialUI.addChild(new gui::TextAtom("Custom", uiFont12, textcolor, gui::LEFT, 30, topHeight+7.3*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::CUSTOM); }, squareThumbnail, 30, topHeight+6.0*buttonHeight/2, 85, 85));
-    potentialUI.addChild(new gui::PotentialAtom(0, 0, 0, 0, 2, theSystem));
+    potentialUI.addChild(new gui::PotentialAtom(theSystem, 0.5, theSystem.getCutoff(), 150, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
     
     potentialUI.makeInvisible();
     potentialUI.mouseReleased(0, 0, 0);
@@ -212,13 +212,13 @@ void ofApp::setup()
     
     customPotentialUI = gui::UIContainer(0, 0 , 1024, 600);
     customPotentialUI.addChild(new gui::TextAtom("Add points:", uiFont10, textcolor, gui::CENTRE, 3.0*sideWidth, topHeight/4.5, 100, 30));
-    customPotentialUI.addChild(new gui::ButtonAtom([&] () { selectCustomButton(1); }, addPointsButton, 3.65*sideWidth, topHeight/4.5, 30, 30));
+    //customPotentialUI.addChild(new gui::ButtonAtom([&] () { selectCustomButton(1); }, addPointsButton, 3.65*sideWidth, topHeight/4.5, 30, 30));
     customPotentialUI.addChild(new gui::TextAtom("Move points:", uiFont10, textcolor, gui::CENTRE, 3.90*sideWidth, topHeight/4.5, 100, 30));
-    customPotentialUI.addChild(new gui::ButtonAtom([&] () { selectCustomButton(2); }, movePointsButton, 4.58*sideWidth, topHeight/4.5, 30, 30));
+    //customPotentialUI.addChild(new gui::ButtonAtom([&] () { selectCustomButton(2); }, movePointsButton, 4.58*sideWidth, topHeight/4.5, 30, 30));
     customPotentialUI.addChild(new gui::TextAtom("Change slope:", uiFont10, textcolor, gui::CENTRE, 4.9*sideWidth, topHeight/4.5, 100, 30));
-    customPotentialUI.addChild(new gui::ButtonAtom([&] () { selectCustomButton(3); }, changeSlopeButton, 5.60*sideWidth, topHeight/4.5, 30, 30));
+    //customPotentialUI.addChild(new gui::ButtonAtom([&] () { selectCustomButton(3); }, changeSlopeButton, 5.60*sideWidth, topHeight/4.5, 30, 30));
     customPotentialUI.addChild(new gui::TextAtom("Remove points:", uiFont10, textcolor, gui::CENTRE, 5.95*sideWidth, topHeight/4.5, 100, 30));
-    customPotentialUI.addChild(new gui::ButtonAtom([&] () { selectCustomButton(4); }, removePointsButton, 6.70*sideWidth, topHeight/4.5, 30, 30));
+    //customPotentialUI.addChild(new gui::ButtonAtom([&] () { selectCustomButton(4); }, removePointsButton, 6.70*sideWidth, topHeight/4.5, 30, 30));
     
     customPotentialUI.makeInvisible();
     customPotentialUI.mouseReleased(0, 0, 0);
@@ -733,60 +733,6 @@ void ofApp::keyPressed(int key){
         if (!controlsOn) {
             drawOn = !drawOn;
             potentialUI.toggleVisible();
-        }
-    }
-    
-    // If the UI is showing, the sliders are in focus
-    if (controlsOn == true){
-        if (key == OF_KEY_TAB)  // Switch slider
-            selectedSlider = (selectedSlider+1)%3;
-        if (key == OF_KEY_RIGHT){
-            switch(selectedSlider) {
-                case 0: { // Temperature
-                    if (((theSystem.getTemp()*120) + 10.0) <= 980){ //Bounds the upper end of the temperature slider
-                        theSystem.setTemp(theSystem.getTemp()+(10/120.0));
-                    }
-                    break;
-                }
-                case 1: { // N particles
-                    if (numParticles + 5 <= 245) { //Bounds the upper end of the particle slider
-                        numParticles += 5;
-                    }
-                    break;
-                }
-                case 2: { // Sensitivity
-                    if (sensitivity + 0.005 < 0.140){ //Bounds the upper end of the sensitivity slider
-                        sensitivity += 0.005;
-                    }
-                    break;
-                }
-                default:
-                {}
-            }
-        }
-        else if (key == OF_KEY_LEFT){
-            switch(selectedSlider) {
-                case 0: { // Temperature
-                    if ((theSystem.getTemp() - (10/120.0)) > 0){ //Bounds the lower end of the temperature slider
-                        theSystem.setTemp(theSystem.getTemp()-(10/120.0));
-                    }
-                    break;
-                }
-                case 1: { // N particles
-                    if ((numParticles - 5) >= 0 ) { //Bounds the lower end of the particle slider
-                        numParticles -= 5;
-                    }
-                    break;
-                }
-                case 2: { // Sensitivity
-                    if (sensitivity - 0.005 >= 0.000){ //Bounds the lower end of the sensitivity slider
-                        sensitivity -= 0.005;
-                    }
-                    break;
-                }
-                default:
-                {}
-            }
         }
     }
     

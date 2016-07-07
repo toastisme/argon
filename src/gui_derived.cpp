@@ -221,7 +221,7 @@ namespace gui {
      PotentialAtom
      */
     
-    PotentialAtom::PotentialAtom(md::MDContainer &system, int minx, int maxx, int x, int y, int width, int height): theSystem(system), min_x(minx), max_x(maxx), UIAtom(x, y, width, height){
+    PotentialAtom::PotentialAtom(md::MDContainer &system, int minx, int maxx, int _numPoints, int x, int y, int width, int height): theSystem(system), min_x(minx), max_x(maxx), numPoints(_numPoints), UIAtom(x, y, width, height) {
 
     }
     void PotentialAtom::render(){
@@ -231,18 +231,11 @@ namespace gui {
     }
      
     void PotentialAtom::DrawPotential(PotentialFunctor& pot){
-        std::vector<float> xpoints, ypoints, partx, party;
+        std::vector<double> xpoints, ypoints, partx, party;
         
         float x,y;
-        int sideWidth = 146, topHeight = 75;
-        double min_y = 0, max_y = 0;
-        float max_separation = sqrt(pow(theSystem.getWidth(), 2) + pow(theSystem.getHeight(), 2));
-        int fineness = 150;
-        float x_spacing = max_separation/(6*float(fineness));
-        double scale_factor = 43.7;
-        min_x = scale_factor * x_spacing;
-        max_x = (fineness+scale_factor) * x_spacing;
-        
+        double min_y = 9999, max_y = 0;
+        double x_spacing = (max_x - min_x) / (numPoints - 1);
         
         // Set up particle separations, relative to particle 0
         coord pos1 = theSystem.getPos(0);
@@ -254,21 +247,17 @@ namespace gui {
             partx.push_back(x);
         }
         
-        // Obtain x values for potential calculations
-        for (int i = 0; i < fineness; i++){
-            x = (i+scale_factor) * x_spacing;
+        // Obtain x and y values for potential calculations
+        for (int i = 0; i < numPoints; i++){
+            x = min_x + i * x_spacing;
             xpoints.push_back(x);
-        }
-        
-        // Calculate y values for the potential and add to ypoints
-        for (int i = 0; i< xpoints.size(); i++){
-            x = xpoints[i];
             y = pot.potential(x);
             max_y = ( y > max_y ? y : max_y);
             min_y = ( y < min_y ? y : min_y);
             ypoints.push_back(y);
         }
         
+        // TODO: do we need to truncate min_y as well?
         max_y = ( max_y > 2.0 ? 2.0 : max_y );
         
         // Calculate y values for the particles and add to party
@@ -279,14 +268,14 @@ namespace gui {
         }
         // Map the potential values to the UI
         for (int i = 0; i < xpoints.size(); i++){
-            xpoints[i] = ofMap(xpoints[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true );
-            ypoints[i] = ofMap(ypoints[i], min_y, max_y, 40, ofGetHeight()-topHeight - 40, true);
+            xpoints[i] = ofMap(xpoints[i], min_x, max_x, getRect().top, getRect().bottom, true);
+            ypoints[i] = ofMap(ypoints[i], min_y, max_y, getRect().top, getRect().bottom, true);
         }
         
         // Map the particle values to the UI
         for (int i = 0; i < theSystem.getN()-1; i++){
-            partx[i] = ofMap(partx[i], min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
-            party[i] = ofMap(party[i], min_y, max_y, 40, ofGetHeight() - topHeight - 40, true);
+            partx[i] = ofMap(partx[i], min_x, max_x, getRect().left, getRect().right, true);
+            party[i] = ofMap(party[i], min_y, max_y, getRect().top, getRect().bottom, true);
         }
         
         // Plot the potential
@@ -312,7 +301,7 @@ namespace gui {
       CustomPotentialAtom
      */
     
-    CustomPotentialAtom::CustomPotentialAtom(md::MDContainer &system, int minx, int maxx, int x, int y, int width, int height) : PotentialAtom(system, minx, maxx, x, y, width, height) {}
+    CustomPotentialAtom::CustomPotentialAtom(md::MDContainer &system, int minx, int maxx, int numPoints, int x, int y, int width, int height) : PotentialAtom(system, minx, maxx, numPoints, x, y, width, height) {}
     
     void CustomPotentialAtom::DrawPotential(PotentialFunctor &pot) {
         
