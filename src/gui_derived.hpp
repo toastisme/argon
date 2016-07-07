@@ -15,6 +15,8 @@
 #include "ofMain.h"
 #include "gui_base.hpp"
 #include "mdforces.hpp"
+#include "potentials.hpp"
+
 
 namespace gui {
     
@@ -200,6 +202,48 @@ namespace gui {
         ButtonToggleAtom(bool &toggle, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
         
         void mousePressed(int x, int y, int button);
+    };
+    
+    class PotentialAtom : public UIAtom
+    {
+    /*
+        UI atom to plot a function
+     */
+
+    
+    public:
+        
+        virtual void DrawPotential(PotentialFunctor& pot);
+        
+        PotentialAtom(md::MDContainer &system, int minx, int maxx, int x, int y, int width, int height);
+        
+    private:
+        virtual void render();
+        md::MDContainer& theSystem;
+        int min_x, max_x;
+        
+        
+    };
+    
+    class CustomPotentialAtom : public PotentialAtom
+    {
+    /* 
+        UI atom for the custom potential
+     */
+        
+    public:
+        
+        void DrawPotential(PotentialFunctor& pot);
+        
+        CustomPotentialAtom(md::MDContainer &system, int minx, int maxx, int x, int y, int width, int height);
+        
+    private:
+        virtual void render();
+        
+        void mouseMoved(int x, int y);
+        void mousePressed(int x, int y, int button);
+        void mouseReleased(int x, int y, int button);
+        
     };
     
     /*

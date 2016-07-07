@@ -39,13 +39,11 @@ public:
     void drawGraph();
     // Draw the user interface components
     void drawUI();
-    void drawPotentialUI();
     
     // Draw potential functions
     void drawCustomPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
-    void drawPotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party, PotentialFunctor& pot);
     
-    // Scale potential functions to UI
+    //Scale potential functions to UI
     void scalePotential(float min_x, float min_y, float max_x, float max_y, std::vector<float> xpoints, std::vector<float> ypoints,std::vector<float> partx,std::vector<float> party);
     
     
@@ -90,23 +88,11 @@ private:
     
     // For the potential UI
     float topHeight, sideWidth, buttonHeight;
-    
-    // Variable potentials
-    LennardJones ljPotential;
-    SquareWell squarePotential;
-    Morse morsePotential;
-    CustomPotential customPotential;
 
     // Counters
     // Keep track of which Gaussian potential is selected
     // a value of -1 implies there are no Gaussians
     int selectedGaussian;
-    // Keep track of which UI control slider is selected
-    int selectedSlider;
-    // Keep track of which pair potential is being used
-    int selectedPotential;
-    // Keep track of which customPotential button is being used
-    int customPotentialButton;
     
     // Font and images needed for UI
     ofTrueTypeFont uiFont14;
@@ -119,6 +105,13 @@ private:
     ofImage audioOffButton;
     ofImage menuButton;
     ofImage circGradient;
+    ofImage ljThumbnail;
+    ofImage squareThumbnail;
+    ofImage morseThumbnail;
+    ofImage addPointsButton;
+    ofImage removePointsButton;
+    ofImage movePointsButton;
+    ofImage changeSlopeButton;
     
     // Audio data
     ofSoundStream soundStream; // Audio input stream
@@ -145,6 +138,8 @@ private:
     
     // UI Containers
     gui::UIContainer menuUI;
+    gui::UIContainer potentialUI;
+    gui::UIContainer customPotentialUI;
     gui::UIContainer presshUI;
     gui::UIContainer testUI;
 

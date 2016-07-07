@@ -22,6 +22,7 @@ public:
     // Pure virtual functions, must be overridden in child classes
     virtual double operator()(double rij, coord& force) = 0;
     virtual double potential(double rij) = 0;
+    
 };
 
 
@@ -102,6 +103,7 @@ class CustomPotential : public PotentialFunctor
 {
 private:
     cubic::Spline spline;
+    int drawingMode;
     
 public:
     // Constructor
@@ -114,6 +116,16 @@ public:
     
     // Get spline
     cubic::Spline& getSpline();
+    
+    // Get/set drawingMode
+    int getMode() const;
+    void setMode(int mode);
+    
+    // Update spline routines
+    void addPoint(int x, int y, int sideWidth, int topHeight);
+    void removePoint(int x, int y);
+    void movePoint(int x, int y);
+    void changeSlope(int x, int y, int topHeight);
     
 };
 

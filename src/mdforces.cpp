@@ -97,8 +97,9 @@ namespace md {
     double MDContainer::getGaussianX0(int i)    const { return gaussians[i].getgex0(); }
     double MDContainer::getGaussianY0(int i)    const { return gaussians[i].getgey0(); }
     
-    
-    
+    // Return reference to current PotentialFunctor
+    PotentialFunctor& MDContainer::getPotential()      { return *potential; }
+    CustomPotential& MDContainer::getCustomPotential() { return customPotential; }
     
     //--------------------------------------SETTERS----------------------------------------
     
@@ -134,6 +135,21 @@ namespace md {
     // Set the potential
     
     void MDContainer::setPotential(PotentialFunctor* _potential) { potential = _potential; }
+    void MDContainer::setPotential(Potential _potential) {
+        switch (_potential) {
+            case SQUARE_WELL:
+                potential = &squareWell;
+                break;
+            case MORSE:
+                potential = &morse;
+                break;
+            case CUSTOM:
+                potential = &customPotential;
+                break;
+            default:
+                potential = &lj;
+        }
+    }
     
 /*
     ROUTINE setupSystem:

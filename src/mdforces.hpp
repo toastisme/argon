@@ -19,6 +19,10 @@
 #include "potentials.hpp"
 
 namespace md{
+    
+    enum Potential {
+        LENNARD_JONES, SQUARE_WELL, MORSE, CUSTOM
+    };
 
     class MDContainer
     {
@@ -49,6 +53,9 @@ namespace md{
         
         // Default potential is Lennard-Jones
         LennardJones lj;
+        Morse morse;
+        SquareWell squareWell;
+        CustomPotential customPotential;
         
         // Reference to the potential functor to be used to calculate the forces
         PotentialFunctor* potential;
@@ -105,6 +112,10 @@ namespace md{
         double getGaussianX0(int i) const;
         double getGaussianY0(int i) const;
         
+        // Get a reference to current potential
+        PotentialFunctor& getPotential();
+        CustomPotential& getCustomPotential();
+        
         //Setters
         void setPos(int i, double x, double y);
         void setVel(int i, double vx, double vy);
@@ -117,6 +128,7 @@ namespace md{
         
         // Set the potential
         void setPotential(PotentialFunctor* _potential);
+        void setPotential(Potential potential);
         
         // Add and remove particles
         void addParticle(double x, double y, double vx, double vy);

@@ -10,6 +10,8 @@
 #include <cmath>
 #include <iostream>
 #include "ofApp.h"
+#include "gui_derived.hpp"
+
 
 //------ LENNARD-JONES POTENTIAL -----
 
@@ -179,11 +181,22 @@ double Morse::potential(double rij)
 
 // Constructor (does nothing currently)
 
-CustomPotential::CustomPotential() {}
+CustomPotential::CustomPotential() {
+    drawingMode = 1;
+}
 
 // Get a reference to the spline
 
 cubic::Spline& CustomPotential::getSpline() { return spline; }
+
+// Get/set the drawing mode
+
+int CustomPotential::getMode() const { return drawingMode; }
+void CustomPotential::setMode(int mode) {
+    if (mode > 0 && mode < 5) {
+        drawingMode = mode;
+    }
+}
 
 // Force and energy calculation
 
@@ -199,4 +212,61 @@ double CustomPotential::operator()(double rij, coord& force)
 double CustomPotential::potential(double rij)
 {
     return spline.value(rij);
+}
+
+// Update the spline
+void CustomPotential::addPoint (int x, int y, int sideWidth, int topHeight) {
+    if (x > sideWidth + 30 && x < ofGetWidth()-30){
+        if (y > topHeight + 30 && y < ofGetHeight()-30){
+            // Prevent particles being created on top of each other
+            int count_close_points = 0;
+            for (int i = 1; (i < spline.points()+1); i++){
+                if (x > spline.getPoint(i).x - 10 && x < spline.getPoint(i).x + 10){
+                    count_close_points++;
+                }
+            }
+            if (count_close_points == 0){
+                spline.addPoint(x, y, 0);
+            }
+        }
+    }
+}
+
+void CustomPotential::removePoint (int x, int y) {
+    for (int i = 1; (i < spline.points()-1); i++){
+        if (x > spline.getPoint(i).x - 10 && x < spline.getPoint(i).x + 10){
+            if (y > spline.getPoint(i).y - 10 && y < spline.getPoint(i).y + 10){
+                
+                spline.removePoint(i);
+            }
+        }
+    }
+ 
+}
+
+void CustomPotential::movePoint (int x, int y) {
+    for (int i = 1; (i < spline.points()-1); i++){
+        if (x > spline.getPoint(i).x - 20 && x < spline.getPoint(i).x + 20){
+            if (y > spline.getPoint(i).y - 20 && y < spline.getPoint(i).y + 20){
+                int xpos = x;
+                int ypos = y;
+                // Prevent points being moved across each other
+                xpos = (x < spline.getPoint(i-1).x + 5 ? spline.getPoint(i-1).x + 5 : xpos);
+                xpos = (x > spline.getPoint(i+1).x - 5 ? spline.getPoint(i+1).x - 5 : xpos);
+                // Prevent points being moved outside of the screen
+                
+                spline.movePoint(i, xpos, ypos, spline.getPoint(i).m);
+            }
+        }
+    }
+}
+
+void CustomPotential::changeSlope(int x, int y, int topHeight) {
+    for (int i=1; (i < spline.points()); i++) {
+        if (x > spline.getPoint(i).x - 30 && x < spline.getPoint(i).x + 30){
+            float slope_y = ofMap(y, topHeight + 30, ofGetHeight()-30, -3.0, 3.0);
+            spline.movePoint(i, spline.getPoint(i).x , spline.getPoint(i).y, slope_y);
+        }
+    }
+
 }
