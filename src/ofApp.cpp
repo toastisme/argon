@@ -203,7 +203,7 @@ void ofApp::setup()
     
     potentialUI.addChild(new gui::TextAtom("Custom", uiFont12, textcolor, gui::LEFT, 30, topHeight+7.3*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::CUSTOM); }, squareThumbnail, 30, topHeight+6.0*buttonHeight/2, 85, 85));
-    potentialUI.addChild(new gui::PotentialAtom(theSystem, 0.5, theSystem.getCutoff(), 150, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
+    potentialUI.addChild(new gui::PotentialAtom(theSystem, 0.5, 6.0, 150, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
     
     potentialUI.makeInvisible();
     potentialUI.mouseReleased(0, 0, 0);

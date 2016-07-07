@@ -221,7 +221,7 @@ namespace gui {
      PotentialAtom
      */
     
-    PotentialAtom::PotentialAtom(md::MDContainer &system, int minx, int maxx, int _numPoints, int x, int y, int width, int height): theSystem(system), min_x(minx), max_x(maxx), numPoints(_numPoints), UIAtom(x, y, width, height) {
+    PotentialAtom::PotentialAtom(md::MDContainer &system, double minx, double maxx, int _numPoints, int x, int y, int width, int height): theSystem(system), min_x(minx), max_x(maxx), numPoints(_numPoints), UIAtom(x, y, width, height) {
 
     }
     void PotentialAtom::render(){
