@@ -1,15 +1,31 @@
-//
-//  gui_derived.hpp
-//  StarredMD
-//
-//  Created by Staszek Welsh on 21/05/2016.
-//
-//
+/*
+ StarredMD
+ 
+ Copyright (c) 2016 David McDonagh, Robert Shaw, Staszek Welsh
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ */
 
 #ifndef gui_derived_hpp
 #define gui_derived_hpp
 
-#include <stdio.h>
+#include <ios>
 #include <functional>
 #include "ofApp.h"
 #include "ofMain.h"
@@ -18,11 +34,35 @@
 #include "potentials.hpp"
 
 
+/*
+    Note on order of arguments to constructors:
+    The constuctors for some of these gui elements can be lengthy due to the number of variables, so the
+    parameters are put in a standard order:
+ 
+        1. What:  parameters describing what is actually drawn
+        2. How:   parameters describing how it is drawn (colour, size, etc.)
+        3. Where: parameters describing where it is drawn on the screen (usually x, y, width, height)
+ 
+    For example, the parameters for SliderConstructor (label + slider + value) are in the following order:
+ 
+        SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &colour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
+ 
+        1. What:  label text, value to track (getter, setter, min, max)
+        2. How:   font, colour, precision of value
+        3. Where: x, y, width of label text, width of slider, width of value text, height
+ */
+
 namespace gui {
     
-    typedef std::function <double()>     FuncGetter;   // function void -> double
-    typedef std::function <void(double)> FuncSetter;   // function double -> void
-    typedef std::function <void()>       FuncAction;   // function void -> void
+    // Some typedefs for the function arguments, allowing the gui classes to interact with other objects
+    // in an arbirtary manner. When declaring functions of these types in constructors, it is easiest to
+    // use a lambda function
+    
+    typedef std::function <double()>     FuncGetter;       // function void -> double
+    typedef std::function <void(double)> FuncSetter;       // function double -> void
+    typedef std::function <bool()>       FuncGetterBool;   // function void -> bool
+    typedef std::function <void(bool)>   FuncSetterBool;   // function void -> bool
+    typedef std::function <void()>       FuncAction;       // function void -> void
     
     /*
         Components
@@ -32,34 +72,41 @@ namespace gui {
     {
         /*
             Defines behaviour for an atom which draws text to the screen. Compensates for openFrameworks
-            being dumb about the origin for drawing text.
+            being dumb about the origin for drawing text, and allows easy alignment of text within a given
+            rectangle.
          */
         
     private:
-        std::string string;
-        rect stringBounds;
-        Position align;
+        std::string string;          // string to be drawn
+        rect stringBounds;           // bounding box of the string itself (which is different to ofBase::bounds)
+        double descenderHeight;      // size of descender (maximum size glyphs can go below baseline of text)
         
-        const ofTrueTypeFont *font;
-        ofColor colour;
+        const ofTrueTypeFont *font;  // pointer to font asset
+        ofColor colour;              // text colour
         
+        // reset the bounding box of the string and the descender height if the string is changed
         void resetBounds();
         
-    public:
+    protected:
         TextComponent();
-        TextComponent(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position align);
+        TextComponent(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour);
         
+        // set the string either directly or by formatting a double into a string with precision decimal places
         void setString(const std::string &string);
-        void setString(double value, const std::string &format);
+        void setString(double value, int precision);
+        
+        // setters for colour and font of the drawn string
         void setColour(const ofColor &colour);
         void setFont(const ofTrueTypeFont &font);
-        void setAlign(Position align);
         
+        // return the bounding box of the string
         rect getStringBounds() const;
         
-        void renderString(int left, int top) const;
-        void renderString(rect bounds) const;
+        // render the string to the screen, align within a rectangle
+        void renderString(rect bounds, Position align) const;
     };
+    
+    
     
     /*
         Atoms
@@ -72,7 +119,7 @@ namespace gui {
          */
         
     private:
-        virtual void render();
+        virtual void render();   // call ofSetColor(colour);
         ofColor colour;
         
     public:
@@ -87,8 +134,8 @@ namespace gui {
          */
         
     private:
-        virtual void render();
-        ofColor colour;
+        virtual void render();   // draw a rectangle of size bounds
+        ofColor colour;          // colour of rect
         
     public:
         RectAtom();
@@ -102,12 +149,12 @@ namespace gui {
          */
         
     private:
-        virtual void render();
-        Position anchor;
+        virtual void render();   // draws the text string within the rect bounds
+        Position align;          // where the string is aligned within bounds
         
     public:
         TextAtom();
-        TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height);
+        TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position align, double x, double y, double width, double height);
     };
     
     class ValueAtom : public UIAtom, TextComponent
@@ -117,18 +164,15 @@ namespace gui {
          */
         
     private:
-        virtual void render();
+        virtual void render();   // draws the value string within the rect bounds
+        Position align;          // where the string is aligned within bounds
         
-        double *value;
-        FuncGetter getValue;
-        
-        std::string format;
+        FuncGetter getValue;     // getter function (void -> double) returning the value to be drawn
+        int precision;           // number of decimal places to draw - set to zero to draw an integer
         
     public:
         ValueAtom();
-        ValueAtom(FuncGetter getValue, const std::string &_format, const ofTrueTypeFont &font, const ofColor &colour, Position anchor, double x, double y, double width, double height);
-        
-        std::string getString() const;
+        ValueAtom(FuncGetter getValue, int precision, const ofTrueTypeFont &font, const ofColor &colour, Position align, double x, double y, double width, double height);
     };
     
     class SliderAtom : public UIAtom
@@ -138,31 +182,35 @@ namespace gui {
          */
         
     private:
-        virtual void render();
+        virtual void render();             // draws slider to screen with width given by bounds and in the
+                                           // centre of the rect vertically - the actual height of the slider
+                                           // is given by the static variables BODY_HEIGHT and HANDLE_HEIGHT
         
-        double *value;
-        FuncGetter getValue;
-        FuncSetter setValue;
+        FuncGetter getValue;               // getter function (void -> double) for the value represented by the slider
+        FuncSetter setValue;               // setter function (double -> void) for the value represented by the slider
         
-        double min, max;
+        double min, max;                   // minimum and maxiumum values for the slider
         
-        bool mouseFocus;
+        bool mouseFocus;                   // whether the slider is being clicked + dragged
+        
+        double getSliderPos();             // get position of slider by calling getValue()
+        void setFromSliderPos(double x);   // set value from position of slider by calling setValue()
         
     public:
         SliderAtom();
         SliderAtom(FuncGetter getValue, FuncSetter setValue, double min, double max, double x, double y, double width, double height);
-        
-        double getSliderPos();
-        void setFromSliderPos(double x);
         
         // handle mouse events
         void mouseMoved(int x, int y);
         void mousePressed(int x, int y, int button);
         void mouseReleased(int x, int y, int button);
         
-        static int BODY_HEIGHT;
-        static int HANDLE_WIDTH;
-        static int HANDLE_HEIGHT;
+        static int BODY_HEIGHT;            // height of slider body (the background rectangle) - set to 10
+        static ofColor BODY_COLOR;         // colour of slider body - set to white (255, 255, 255)
+        
+        static int HANDLE_WIDTH;           // width of slider handle (the rectangle representing the position of the slider) - set to 7
+        static int HANDLE_HEIGHT;          // height of slider handle - set to 20
+        static ofColor HANDLE_COLOR;       // colour of slider handle - set to grey (80, 80, 80)
     };
     
     class ButtonAtom : public UIAtom
@@ -172,35 +220,39 @@ namespace gui {
          */
         
     private:
-        virtual void render();
+        virtual void render();   // draws the button image to the screen
         
-        FuncAction doAction;
-        const ofImage *image;
+        FuncAction doAction;     // function (void -> void) called when the button is pressed
+        const ofImage *image;    // pointer to image asset
         
     public:
         ButtonAtom();
         ButtonAtom(FuncAction doAction, const ofImage &image, double x, double y, double width, double height);
         
+        // handle mouse events
         void mousePressed(int x, int y, int button);
     };
     
     class ButtonToggleAtom : public UIAtom
     {
         /*
-            UI Atom for a button which toggles a boolean value, stored by reference
+            UI Atom for a button which toggles a boolean value, stored as a getter / setter pair
          */
         
     private:
-        virtual void render();
+        virtual void render();     // draws the correct button image to the screen
         
-        bool *toggle;
-        const ofImage *imageOn;
-        const ofImage *imageOff;
+        FuncGetterBool getBool;    // getter function (void -> bool) for the boolean represented by the button
+        FuncSetterBool setBool;    // setter function (bool -> void) for the boolean represented by the button
+        
+        const ofImage *imageOn;    // pointer to 'on' image asset
+        const ofImage *imageOff;   // pointer to 'off' image asset
         
     public:
         ButtonToggleAtom();
-        ButtonToggleAtom(bool &toggle, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
+        ButtonToggleAtom(FuncGetterBool getBool, FuncSetterBool setBool, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
         
+        // handle mouse events
         void mousePressed(int x, int y, int button);
     };
     
@@ -247,6 +299,31 @@ namespace gui {
         
     };
     
+    class ButtonPairAtom : public UIAtom
+    {
+        /*
+            UI Atom for a button which has two states, 'on' and 'off' (starting on) and toggles between them
+         */
+        
+    private:
+        virtual void render();     // draws the correct button image to the screen
+        bool status;               // boolean for whether in the 'on' (true) or 'off' (false) state
+        
+        FuncAction doActionOn;     // function to call when clicked in 'on' state
+        const ofImage *imageOn;    // pointer to 'on' image asset
+        
+        FuncAction doActionOff;    // function to call when clicked in 'off' state
+        const ofImage *imageOff;   // pointer to 'off' image asset
+        
+    public:
+        ButtonPairAtom();
+        ButtonPairAtom(FuncAction doActionOn, const ofImage &imageOn, FuncAction doActionOff, const ofImage &imageOff, double x, double y, double width, double height);
+        
+        // handle mouse events
+        void mousePressed(int x, int y, int button);
+    };
+    
+    
     /*
         Containers
      */
@@ -259,8 +336,9 @@ namespace gui {
         
     public:
         SliderContainer();
-        SliderContainer(const std::string &label, const ofTrueTypeFont &font, const ofColor &colour, FuncGetter getValue, FuncSetter setValue, double min, double max, const std::string &format, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
-        
+        // a whole bunch of stuff to pass through to the indivisual elements
+        SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &textColour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double padding, double height);
+
         static int PADDING;
     };
     

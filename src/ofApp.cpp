@@ -1,3 +1,27 @@
+/*
+ StarredMD
+ 
+ Copyright (c) 2016 David McDonagh, Robert Shaw, Staszek Welsh
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ */
+
 #include "ofApp.h"
 
 /*
@@ -34,23 +58,6 @@ ofPoint ofApp::box2screen(coord point, coord origin) {
  */
 void ofApp::setup() 
 {
-    
-    // Default values for system parameters
-    numParticles = 50;
-    thermFreq = 0.1;
-    
-    double TEMPERATURE = 0.5;
-    double BOX_WIDTH = 17.0;
-    
-    // NOTE: ofGetWidth and ofGetHeight do not give the right values here if
-    // the screen we're trying to draw is to the right values later, but not
-    // in ofApp::setup(). If this happens, we get regions where the particles
-    // are inside the MD box, but not inside the screen.
-    // This is an openFrameworks issue.
-    double BOX_HEIGHT = BOX_WIDTH / ofGetWidth() * ofGetHeight();
-    double TIMESTEP = 0.002;
-    double CUTOFF = 3.0;
-    
     // Set the potential UI parameters
     topHeight = ofGetHeight()/8;
     sideWidth = ofGetWidth()/7;
@@ -90,98 +97,115 @@ void ofApp::setup()
     uiFont12.load("Montserrat-Bold.ttf", 12);
     uiFont10.load("Montserrat-Bold.ttf", 10);
     
-    // Initialise theSystem
-    setupSystem(numParticles, TEMPERATURE, BOX_WIDTH, BOX_HEIGHT, TIMESTEP, CUTOFF);
-    // Set the booleans so that the audio input is turned on, as is the simulation,
-    // but the UI, secret-Logan-mode, and energy graphs are off.
-    audioOn = true;
-    controlsOn  = false;
+    // Initialise theSystem with 50 particles at 60K
+    theSystem.setTemp(0.5);
+    theSystem.setTimestep(0.002);
+    theSystem.setCutoff(3.0);
+    theSystem.setFreq(0.1);
+    theSystem.setStepsPerUpdate(5);
+    theSystem.setNAfterReset(50);
+    
+    double BOX_WIDTH = 17.0;
+    // NOTE: ofGetWidth and ofGetHeight do not give the right values here if
+    // the screen we're trying to draw is to the right values later, but not
+    // in ofApp::setup(). If this happens, we get regions where the particles
+    // are inside the MD box, but not inside the screen.
+    // This is an openFrameworks issue.
+    double BOX_HEIGHT = BOX_WIDTH / ofGetWidth() * ofGetHeight();
+    theSystem.setBox(BOX_WIDTH, BOX_HEIGHT);
+    
+    theSystem.resetSystem();
+    
+    // Set the booleans so that the secret-Logan-mode, energy graphs,
+    // potential viewer and custom potential are initially turned off
     loganOn = false;
     graphOn = false;
-    playOn  = true;
     drawOn  = false;
     customPotentialOn = false;
 
     selectedGaussian = -1; // No gaussian selected
     
-    // Setup the sound
-    int bufferSize = 256;
+    /*
+         Setup menu UI
+     */
     
-    left.assign(bufferSize, 0.0);
-    right.assign(bufferSize, 0.0);
-    
-    smoothedVol = 0.0;
-    scaledVol   = 0.0;
-    sensitivity = 0.04;
-    
-    soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
-    
-    // Setup menu UI
-    
-    int mt = 490; // top of menu
+    // colours
     ofColor bgcolor = ofColor(80, 80, 80, 80);
     ofColor textcolor = ofColor(255, 255, 240);
     
-    menuUI = gui::UIContainer(0, mt, 1024, 600 - mt);
+    // setup base container
+    menuUI = gui::UIContainer(0, 490, 1024, 110);
     
-    menuUI.addChild(new gui::RectAtom(bgcolor, 0, mt, 1024, 190));
+    // menu background
+    menuUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 110));
     
-    menuUI.addChild(new gui::SliderContainer("Temperature (K)", uiFont12, textcolor,
-                                             [&] () { return theSystem.getTemp() * 120; },
+    // sliders
+    menuUI.addChild(new gui::SliderContainer("Temperature (K)",
+                                             [&] () { return theSystem.getTemp() * 120; },   // factor of 120 to convert to kelvin
                                              [&] (double set) { theSystem.setTemp(set / 120.0); },
-                                             0, 1000, "%1.1lf", 5, mt + 5, 150, 450, 70, 30));
+                                             0, 1000, uiFont12, textcolor, 1,
+                                             5, 5, 150, 450, 70, 5, 30));
     
-    menuUI.addChild(new gui::SliderContainer("Particles", uiFont12, textcolor,
-                                             [&] () { return numParticles; },
-                                             [&] (double set) { numParticles = (int)set; },
-                                             2, 200, "%1.0lf", 5, mt + 40, 150, 450, 70, 30));
+    menuUI.addChild(new gui::SliderContainer("Particles",
+                                             [&] () { return theSystem.getNAfterReset(); },
+                                                    // N is an int: add 0.5 to the argument to set N to round(set) instead of floor(set)
+                                             [&] (double set) { theSystem.setNAfterReset(set + 0.5); },
+                                             2, 200, uiFont12, textcolor, 0,
+                                             5, 40, 150, 450, 70, 5, 30));
     
-    menuUI.addChild(new gui::SliderContainer("Mic sensitivity", uiFont12, textcolor,
-                                             [&] () { return sensitivity; },
-                                             [&] (double set) { sensitivity = (float)set; },
-                                             0.005, 0.135, "%1.3lf", 5, mt + 75, 150, 450, 70, 30));
+    menuUI.addChild(new gui::SliderContainer("Simulation speed",
+                                             [&] () { return theSystem.getStepsPerUpdate(); },
+                                             [&] (double set) { theSystem.setStepsPerUpdate(set + 0.5); },
+                                             1, 20, uiFont12, textcolor, 0,
+                                             5, 75, 150, 450, 70, 5, 30));
     
+    // button text
     menuUI.addChild(new gui::TextAtom("Play / pause:", uiFont10, textcolor,
-                                      gui::RIGHT, 690, mt + 5, 100, 30));
+                                      POS_RIGHT, 690, 5, 100, 30));
     menuUI.addChild(new gui::TextAtom("Reset:", uiFont10, textcolor,
-                                      gui::RIGHT, 690, mt + 40, 100, 30));
+                                      POS_RIGHT, 690, 40, 100, 30));
     menuUI.addChild(new gui::TextAtom("Mic on/off:", uiFont10, textcolor,
-                                      gui::RIGHT, 690, mt + 75, 100, 30));
+                                      POS_RIGHT, 690, 75, 100, 30));
     
+    // buttons
     menuUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
-    menuUI.addChild(new gui::ButtonToggleAtom(playOn, playButton, pauseButton,
-                                              800, mt + 5, 30, 30));
-    menuUI.addChild(new gui::ButtonAtom([&] () { setupSystem(); }, removePointsButton,
-                                              800, mt + 40, 30, 30));
-    menuUI.addChild(new gui::ButtonToggleAtom(audioOn, audioOnButton, audioOffButton,
-                                              800, mt + 75, 30, 30));
+    menuUI.addChild(new gui::ButtonToggleAtom([&] () { return theSystem.getRunning(); }, [&] (bool set) { theSystem.setRunning(set); },
+                                              playButton, pauseButton,
+                                              800, 5, 30, 30));
+    menuUI.addChild(new gui::ButtonAtom([&] () { theSystem.resetSystem(); }, resetButton,
+                                              800, 40, 30, 30));
+    menuUI.addChild(new gui::ButtonToggleAtom([&] () { return micInput.getActive(); }, [&] (bool set) { micInput.setActive(set); },
+                                              audioOnButton, audioOffButton,
+                                              800, 75, 30, 30));
     
+    // controls list
     menuUI.addChild(new gui::TextAtom("Key Commands", uiFont12, textcolor,
-                                      gui::TOP, 850, mt + 5, 174, 20));
+                                      POS_TOP, 850, 5, 174, 20));
     
     menuUI.addChild(new gui::TextAtom("Change gaussian:", uiFont10, textcolor,
-                                      gui::RIGHT, 850, mt + 25, 140, 20));
+                                      POS_RIGHT, 850, 25, 140, 20));
     menuUI.addChild(new gui::TextAtom("g", uiFont10, textcolor,
-                                      gui::LEFT, 995, mt + 25, 24, 20));
+                                      POS_LEFT, 995, 25, 24, 20));
     
     menuUI.addChild(new gui::TextAtom("Remove gaussian:", uiFont10, textcolor,
-                                      gui::RIGHT, 850, mt + 45, 140, 20));
+                                      POS_RIGHT, 850, 45, 140, 20));
     menuUI.addChild(new gui::TextAtom("k", uiFont10, textcolor,
-                                      gui::LEFT, 995, mt + 45, 24, 20));
+                                      POS_LEFT, 995, 45, 24, 20));
     
     menuUI.addChild(new gui::TextAtom("Show energies:", uiFont10, textcolor,
-                                      gui::RIGHT, 850, mt + 65, 140, 20));
+                                      POS_RIGHT, 850, 65, 140, 20));
     menuUI.addChild(new gui::TextAtom("e", uiFont10, textcolor,
-                                      gui::LEFT, 995, mt + 65, 24, 20));
+                                      POS_LEFT, 995, 65, 24, 20));
     
     menuUI.addChild(new gui::TextAtom("Show potentials:", uiFont10, textcolor,
-                                      gui::RIGHT, 850, mt + 85, 140, 20));
+                                      POS_RIGHT, 850, 85, 140, 20));
     menuUI.addChild(new gui::TextAtom("d", uiFont10, textcolor,
-                                      gui::LEFT, 995, mt + 85, 24, 20));
+                                      POS_LEFT, 995, 85, 24, 20));
     
+    // framerate counter
     menuUI.addChild(new gui::ValueAtom([&] () { return ofGetFrameRate(); },
-                                       "%4.1lf", uiFont14, textcolor,
-                                       gui::TOP_RIGHT, 819, 5, 200, 100));
+                                       1, uiFont14, textcolor,
+                                       POS_BOTTOM_RIGHT, 819, -105, 200, 100));
     menuUI.makeInvisible();
     menuUI.mouseReleased(0, 0, 0);
     
@@ -195,27 +219,27 @@ void ofApp::setup()
 
     potentialUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 600)); //
     
-    potentialUI.addChild(new gui::TextAtom("Select a pair potential", uiFont14, textcolor, gui::LEFT, 1.2*sideWidth, topHeight/5, 100, 30));
+    potentialUI.addChild(new gui::TextAtom("Select a pair potential", uiFont14, textcolor, POS_LEFT, 1.2*sideWidth, topHeight/5, 100, 30));
     
-    potentialUI.addChild(new gui::TextAtom("Lennard-Jones", uiFont12, textcolor, gui::LEFT, 30, topHeight+1.5*buttonHeight/2, 100, 30));
+    potentialUI.addChild(new gui::TextAtom("Lennard-Jones", uiFont12, textcolor, POS_LEFT, 30, topHeight+1.5*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::LENNARD_JONES);
                                                     potentialUI.getChild(potentialIndex)->makeVisible();
                                                     potentialUI.getChild(customPotentialIndex)->makeInvisible(); },
                                                     ljThumbnail, 30, topHeight, 85, 85));
     
-    potentialUI.addChild(new gui::TextAtom("Square Well", uiFont12, textcolor, gui::LEFT, 30, topHeight+3.55*buttonHeight/2, 100, 30));
+    potentialUI.addChild(new gui::TextAtom("Square Well", uiFont12, textcolor, POS_LEFT, 30, topHeight+3.55*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::SQUARE_WELL);
                                                     potentialUI.getChild(potentialIndex)->makeVisible();
                                                     potentialUI.getChild(customPotentialIndex)->makeInvisible(); },
                                                     squareThumbnail, 30, topHeight+2*buttonHeight/2, 85, 85));
     
-    potentialUI.addChild(new gui::TextAtom("Morse", uiFont12, textcolor, gui::LEFT, 30, topHeight+5.4*buttonHeight/2, 100, 30));
+    potentialUI.addChild(new gui::TextAtom("Morse", uiFont12, textcolor, POS_LEFT, 30, topHeight+5.4*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::MORSE);
                                                     potentialUI.getChild(potentialIndex)->makeVisible();
                                                     potentialUI.getChild(customPotentialIndex)->makeInvisible(); },
                                                     morseThumbnail, 30, topHeight+4.0*buttonHeight/2, 85, 85));
     
-    potentialUI.addChild(new gui::TextAtom("Custom", uiFont12, textcolor, gui::LEFT, 30, topHeight+7.3*buttonHeight/2, 100, 30));
+    potentialUI.addChild(new gui::TextAtom("Custom", uiFont12, textcolor, POS_LEFT, 30, topHeight+7.3*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::CUSTOM);
                                                     potentialUI.getChild(potentialIndex)->makeInvisible();
                                                     potentialUI.getChild(customPotentialIndex)->makeVisible(); },
@@ -225,36 +249,17 @@ void ofApp::setup()
     potentialUI.getChild(customPotentialIndex)->makeVisible();
     potentialUI.mouseReleased(0, 0, 0);
     
+    // start menu as invisible
+    menuUI.makeInvisible();
+    
+    // 'Press h for menu' text
+    // This defaults to visible, but we're adding it to a menu we've just set to invisible
+    // This means the text is visible when the rest of the menu is invisible and vice-versa
+    // Calling toggleVisible toggles everything correctly
+    // This might need to be moved to a separate UI container to work well with other UI elements
+    menuUI.addChild(new gui::TextAtom("Press h for menu", uiFont14, textcolor,
+                                      POS_BOTTOM_LEFT, 5, 0, 1024, 105));
 }
-
-/*
-    ROUTINE setupSystem:
-        Sets up and regrids the system. First clears all particles, then sets basic constants. Then, add the
-        particles on a grid, initialise the forces and energies and save initial positions to prevousPositions
- 
-        Overloaded version takes no parameters, just regridding the system based on ofApp.numParticles
- */
-void ofApp::setupSystem(int particles, double temperature, double box_width, double box_height, double timestep, double cutoff) {
-    theSystem.clearSystem();
-    
-    theSystem.setBox(box_width, box_height);
-    theSystem.setTemp(temperature);
-    theSystem.setTimestep(timestep);
-    theSystem.setCutoff(cutoff);
-    
-    theSystem.addParticlesGrid(particles);
-    
-    theSystem.forcesEnergies(N_THREADS);
-    theSystem.savePreviousValues();
-}
-    
-void ofApp::setupSystem() {
-    theSystem.clearSystem();
-    theSystem.addParticlesGrid(numParticles);
-    theSystem.forcesEnergies(N_THREADS);
-    theSystem.savePreviousValues();
-}
-
 
 //--------------------------------------------------------------
 // UPDATE
@@ -276,52 +281,25 @@ void ofApp::setupSystem() {
  */
 void ofApp::update(){
     
-    // If not paused, integrate 5 times with a thermostat frequency of 0.1
-    if (playOn) { theSystem.run(5, thermFreq, N_THREADS); }
+    // If not paused, integrate the system
+    theSystem.run();
         
-    // scale the audio between 0 and 1
-    if (audioOn) {
-        // Scale smoothedVol between 0 and 1, taking account of the sensitivity
-        // to the audioInput.
-        scaledVol = ofMap(smoothedVol, 0.0, sensitivity, 0.0, 1.0, true);
+    if (micInput.getActive()) {
+        // get volume, scaled to between 0 and 1
+        double scaledVol = micInput.getVolume();
         
         // Update the currently selected Gaussian, so that quiet-> loud results in
         // a change from an attractive, wide Gaussian, to a repulsive, narrow Gaussian.
         if ( selectedGaussian > -1)
             theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 0.8 - 0.5*scaledVol,
                                      theSystem.getGaussianX0(selectedGaussian),
-                                     theSystem.getGaussianY0(selectedGaussian), scaledVol);
+                                     theSystem.getGaussianY0(selectedGaussian));
     }
 }
 
 //--------------------------------------------------------------
 // DRAWING
 //--------------------------------------------------------------
-
-/*
-    ROUTINE drawData:
-        Draws a string name with floating point data value at position x and y. 
- 
-        Overloaded version has extra argument length which sets the length of the floating point displayed.
- */
-void ofApp::drawData(const ofTrueTypeFont &font, string name, double value, int x, int y) { //Converts data as int to string
-    char drawstr[255];
-    sprintf(drawstr, "%s %lf", name.c_str(), value);
-    font.drawString(drawstr, x, y);
-}
-
-void ofApp::drawData(const ofTrueTypeFont &font, string name, double value, int x, int y, int length) { //Converts data as int to string
-    //TODO: use iomanip
-    char drawstr[255];
-    sprintf(drawstr, "%s %lf", name.c_str(), value);
-    stringstream convert_to_string;
-    string drawstr_string;
-    convert_to_string << drawstr;
-    convert_to_string  >> drawstr_string;
-    string data_string = drawstr_string.substr(0, length);
-    
-    font.drawString(data_string, x, y);
-}
 
 /*
     ROUTINE drawParticle:
@@ -459,8 +437,7 @@ void ofApp::drawGraph()
                 - coloured by its velocity,
                 - with width and height determined by the x/y forces acting on it.
                 - Trails of the 10th and 15th previous positions.
-            5. If controlsOn (UI showing), draws the UI. Otherwise, draws message
-                on how to turn on UI in bottom left corner.
+            5. Draw the menu UI
  */
 void ofApp::draw(){
     
@@ -533,16 +510,11 @@ void ofApp::draw(){
         }
     }
     
-
     if (drawOn) {
         potentialUI.draw();
     }
-    // Draw the UI if controlsOn, otherwise draw message on how to turn the UI on.
-    else if (not controlsOn) {
-        ofSetColor(255, 255, 240);
-        uiFont14.drawString("press 'h' for controls", 10, ofGetHeight()-10);
-    }
-    
+
+    // draw the menu
     menuUI.draw();
 }
 
@@ -550,39 +522,7 @@ void ofApp::draw(){
 // INPUT & EVENT HANDLING
 //--------------------------------------------------------------------
 
-/*
-    EVENT audioIn:
-        If audio is coming in to the primary input (built-in microphone by default
-        on a Mac), this is triggered. It takes the amplitudes of the left and right
-        audio streams and determines the root mean square averaged volume and then
-        updates the previous value of the volume in a 93:7 ratio of old:new, so that
-        volume changes are smoothed. Places this value in smoothedVol.
- */
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){
-    
-    float curVol = 0.0;
-    
-    // samples are "interleaved"
-    int numCounted = 0;
-    
-    //lets go through each sample and calculate the root mean square which is a rough way to calculate volume
-    for (int i = 0; i < bufferSize; i++){
-        left[i]  = input[i*2]*0.5;
-        right[i] = input[i*2+1]*0.5;
-        
-        curVol += left[i] * left[i];
-        curVol += right[i] * right[i];
-        numCounted+=2;
-    }
-    
-    //this is how we get the mean of rms
-    curVol /= (float)numCounted;
-    
-    // this is how we get the root of rms
-    curVol = sqrt( curVol );
-    
-    smoothedVol *= 0.93;
-    smoothedVol += 0.07 * curVol;
     
 }
 
@@ -610,7 +550,7 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 void ofApp::keyPressed(int key){
     
     if (key == 'a' || key == 'A') { // Audio on/off
-        audioOn = !audioOn;
+        micInput.toggleActive();
     }
     
     else if ((key == 'g' || key == 'G') && theSystem.getNGaussians() > 0) { // Change selected gaussian
@@ -645,23 +585,20 @@ void ofApp::keyPressed(int key){
     
     else if (key == 'h' || key == 'H'){ // Show/hide UI
         if (!drawOn) {
-            controlsOn = !controlsOn;
             menuUI.toggleVisible();
         }
     }
     
     else if (key == 'r' || key == 'R') { // Reset the system to have the current values of the sliders
-        coord box = theSystem.getBox();
-        setupSystem();
-        //setupSystem(numParticles, theSystem.getTemp(), box.x, box.y, theSystem.getTimestep(), theSystem.getCutoff());
+        theSystem.resetSystem();
     }
     
-    else if (key == 'p' || key == 'P') { // Pause/restart the simulation
-        playOn = !playOn;
+    else if (key == 'p' || key == 'P') { // Play/pause the simulation
+        theSystem.toggleRunning();
     }
     
     else if (key == 'd' || key == 'D') { // Drawing interface
-        if (!controlsOn) {
+        if (not menuUI.getVisible()) {
             drawOn = !drawOn;
             potentialUI.toggleVisible();
         }
@@ -676,14 +613,14 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-    if (controlsOn) {
+    if (menuUI.getVisible()) {
         menuUI.mouseMoved(x, y);
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    if (controlsOn) {
+    if (menuUI.getVisible()) {
         menuUI.mouseMoved(x, y);
     }
 }
@@ -707,7 +644,7 @@ void ofApp::mousePressed(int x, int y, int button){
         //theSystem.setPotential(&customPotential);
 
         
-    } else if (controlsOn && menuUI.getRect().inside(x, y)) { // Mouse controls menu
+    } else if (menuUI.getVisible() && menuUI.getRect().inside(x, y)) { // Mouse controls menu
         // pass through event to children
         menuUI.mousePressed(x, y, button);
         
@@ -727,12 +664,11 @@ void ofApp::mousePressed(int x, int y, int button){
         theSystem.addGaussian(GAMP, GALPHA, scaled_x, scaled_y);
         selectedGaussian = theSystem.getNGaussians() - 1;
     }
-
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    if (controlsOn) {
+    if (menuUI.getVisible()) {
         menuUI.mouseReleased(x, y, button);
     }
 }

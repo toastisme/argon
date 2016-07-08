@@ -1,12 +1,26 @@
-//
-//  gaussian.cpp
-//  StarredMD
-//
-//  Implementation of gaussian.hpp
-//
-//  Created by Robert Shaw on 05/05/2016.
-//
-//
+/*
+ StarredMD
+ 
+ Copyright (c) 2016 David McDonagh, Robert Shaw, Staszek Welsh
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ */
 
 #include "gaussian.hpp"
 #include <cmath>
@@ -15,9 +29,9 @@
     CONSTRUCTOR:
       Currently just sets the parameters
  */
-Gaussian::Gaussian(double _gAmp, double _gAlpha, double _gex0, double _gey0, double _scale)
+Gaussian::Gaussian(double _gAmp, double _gAlpha, double _gex0, double _gey0)
 {
-    setParams(_gAmp, _gAlpha, _gex0, _gey0, _scale);
+    setParams(_gAmp, _gAlpha, _gex0, _gey0);
 }
 
 /*
@@ -28,7 +42,7 @@ Gaussian::Gaussian(double _gAmp, double _gAlpha, double _gex0, double _gey0, dou
  */
 Gaussian::Gaussian(const Gaussian& other)
 {
-    setParams(other.gAmp, other.gAlpha, other.gex0, other.gey0, other.scale);
+    setParams(other.gAmp, other.gAlpha, other.gex0, other.gey0);
 }
 
 
@@ -41,19 +55,17 @@ double Gaussian::getgAlpha() const { return gAlpha; }
 double Gaussian::getgAmp()   const { return gAmp; }
 double Gaussian::getgex0()   const { return gex0; }
 double Gaussian::getgey0()   const { return gey0; }
-double Gaussian::getScale()  const { return scale; }
 
 /*
     ROUTINE setParams:
         Sets each private variable, var, of the class, as:  var = _var
         Ideally, checks should be included as to the suitability of the values being set.
  */
-void Gaussian::setParams(double _gAmp, double _gAlpha, double _gex0, double _gey0, double _scale){
+void Gaussian::setParams(double _gAmp, double _gAlpha, double _gex0, double _gey0){
     gAmp = _gAmp;
     gAlpha = _gAlpha;
     gex0 = _gex0;
     gey0 = _gey0;
-    scale = _scale;
 }
 
 

@@ -1,87 +1,60 @@
-//
-//  gui_base.hpp
-//  StarredMD
-//
-//  Created by Staszek Welsh on 20/05/2016.
-//
-//
+/*
+ StarredMD
+ 
+ Copyright (c) 2016 David McDonagh, Robert Shaw, Staszek Welsh
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ */
 
 #ifndef gui_base_hpp
 #define gui_base_hpp
 
 #include <vector>
+#include "utilities.hpp"
 
 namespace gui {
-    enum Position
-    {
-        /*
-            Enum defining nine positions within a UI element.
-         */
-        
-        TOP_LEFT, TOP, TOP_RIGHT,
-        LEFT, CENTRE, RIGHT,
-        BOTTOM_LEFT, BOTTOM, BOTTOM_RIGHT
-    };
-    
-    struct point
-    {
-        /*
-            Struct defining a 2-D point.
-         */
-        
-        double x, y;
-        
-        point operator+(const point &other);
-        point operator-(const point &other);
-    };
-    
-    struct rect
-    {
-        /*
-            Struct defining a rectangle. Data is stored as the position of each side of the
-            rectangle, and various methods are given to get the width, height, centre, etc.
-         */
-        
-        double left, right, top, bottom;
-        
-        double width()   const;
-        double height()  const;
-        double centreX() const;
-        double centreY() const;
-        
-        void setLRTB(double left, double right, double top, double bottom);
-        void setXYWH(double x, double y, double width, double height);
-        
-        point getPos(Position position) const;
-        
-        void setVertex(Position position, point pos);
-        
-        void moveAnchor(Position position, point pos);
-        
-        bool inside(double x, double y) const;
-        void expandToFit(rect other);
-        
-        rect offset(point origin) const;
-        rect offset(double x, double y) const;
-        
-    };
     
     class UIBase
     {
         /*
-            Abstract class defining a base UI element.
+            Abstract class defining a base UI element. It is not inteded for direct use;
+            instead use the UIAtom and UIContainer classes below which inherit from UIBase.
+            It defines a few common features of all UI elements, which are:
          
-            Has a bounding box, defined by rect bounds,and various methods
-            to get this position and size in both left/right/top/bottom and x/y/width/height
-            formats.
+            Has a bounding box, defined by rect bounds, and a getter for this rect.
          
-            Has a pure virtual draw() method to implement drawing to the screen.
+            Has a pure virtual draw() method to implement drawing to the screen, which should
+            be called whenever the main ofApp calls its draw method.
          
-            Has pure virtual visibility methods to implement making it visible or not.
+            Has a flag, visible, which says whether the element is visible or not. Also has a
+            getter for this flag, and methods to set the element visible, invisible, or toggle
+            the visibility, which just sets this flag accordingly.
+         
+            Has methods to handle mouse events, implemented in UIBase as empty methods.
+            These should be overloaded by UI elements which need to react to the mouse,
+            using UIBase.getRect().inside(x, y) to check if mouse events occur within the
+            bounding box.
          */
         
     protected:
         rect bounds;    // position and size
+        bool visible;
     
     public:
         UIBase();
@@ -91,12 +64,19 @@ namespace gui {
         // return bounding box rectangle (bounds)
         const rect getRect() const;
         
+        // move UI element by offset
+        virtual void moveBy(coord offset);
+        
+        // draw element; called from ofApp.draw()
         virtual void draw() = 0;
         
-        virtual void makeVisible() = 0;
-        virtual void makeInvisible() = 0;
-        virtual void toggleVisible() = 0;
+        // pure virtual methods to handle visibility
+        bool getVisible() const;
+        virtual void makeVisible();
+        virtual void makeInvisible();
+        virtual void toggleVisible();
         
+        // methods to handle mouse events
         virtual void mouseMoved(int x, int y);
         virtual void mousePressed(int x, int y, int button);
         virtual void mouseReleased(int x, int y, int button);
@@ -106,29 +86,22 @@ namespace gui {
     class UIAtom : public UIBase
     {
         /*
-            Abstract class containing a single, basic drawable UI element's behaviour.
+            Abstract class defining a single atomistic piece of UI which is drawn to the screen.
          
-            Has a visibility flag, which defines whether the element is visible or not, and
-            overrides the makeVisible() etc. methods so that they control this flag.
-            
-            Has a protected virtual method render(), which controls actually drawing the
-            element to the screen. draw() is overridden so that it calls render() if visibile
-            is set to true.
+            Has a protected virtual method render(), which is the function that actually draws the
+            UI element to the screen. draw() is overridden to call render() only if the visible
+            flag is set to true.
          */
         
     protected:
         virtual void render() = 0;
-        bool visible;
         
     public:
         UIAtom();
-        UIAtom(double x, double y, double width = 0, double height = 0, bool visible = true);
+        UIAtom(double x, double y, double width = 0, double height = 0);
         
+        // if visible, calls render
         virtual void draw();
-        
-        virtual void makeVisible();
-        virtual void makeInvisible();
-        virtual void toggleVisible();
     };
     
     class UIContainer : public UIBase
@@ -136,31 +109,52 @@ namespace gui {
         /*
             (Non-abstract) class defining a container for UI elements.
          
-            Aside from being a UIBase itself (which must have a size, be drawable, etc.), it has a
-            container for child UIBases, which could be UIAtoms or other UIContainers. Methods such
-            as draw(), toggleVisible(), mouseMoved(), etc. pass the call through to its children.
+            Contains a vector of child UIBases (which could be UIAtoms or other UIContainers), and
+            a method to add a child element.
+         
+            The passCallToChildren is a helper method to pass a method call to every child element.
+         
+            The draw, mouseMoved, mousePressed, and mouseReleased methods simply pass their call to
+            the children.
+         
+            The makeVisible, makeInvisible, and toggleVisible methods set the container's visibility
+            flag as required, and then passes the call to the children.
+         
+            This allows collective control over a group of related UI elements, such as all objects
+            within a single menu.
          */
         
     protected:
         std::vector <UIBase *> children;
         std::vector <UIBase *> indexedChildren;
         
+        // pass function call and arguments to all children
+        template<typename T, typename ...Args>
+        void passCallToChildren(T (UIBase::*func)(Args...), Args ... args);
+        
     public:
         UIContainer();
         UIContainer(double x, double y, double width = 0, double height = 0);
+        
+        // destructor calls all childrens' destructors, and frees their memory
         virtual ~UIContainer();
         
+        // add a child, or add a child and return an index to get it back later
         void addChild(UIBase *child);
         int addIndexedChild(UIBase *child);
         
         UIBase* getChild(int i);
         
-        virtual void draw();
+        // move the container, which also moves all children by the same amount
+        virtual void moveBy(coord offset);
         
+        // change visibility flag and pass call through to children
         virtual void makeVisible();
         virtual void makeInvisible();
         virtual void toggleVisible();
         
+        // remaining methods just pass call through to children
+        virtual void draw();
         virtual void mouseMoved(int x, int y);
         virtual void mousePressed(int x, int y, int button);
         virtual void mouseReleased(int x, int y, int button);

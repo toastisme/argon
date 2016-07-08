@@ -1,136 +1,55 @@
-//
-//  gui_base.cpp
-//  StarredMD
-//
-//  Created by Staszek Welsh on 20/05/2016.
-//
-//
+/*
+ StarredMD
+ 
+ Copyright (c) 2016 David McDonagh, Robert Shaw, Staszek Welsh
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ */
 
 #include "gui_base.hpp"
 
 namespace gui {
     
     /*
-        point
-     */
-    
-    point point::operator+(const point &other) {
-        return { x + other.x, y + other.y };
-    }
-    
-    point point::operator-(const point &other) {
-        return { x - other.x, y - other.y };
-    }
-    
-    /*
-        rect
-     */
-    
-    double rect::width()   const { return right - left; }
-    double rect::height()  const { return bottom - top; }
-    double rect::centreX() const { return (left + right) / 2.0; }
-    double rect::centreY() const { return (top + bottom) / 2.0; }
-    
-    void rect::setLRTB(double _left, double _right, double _top, double _bottom) {
-        left = _left; right = _right; top = _top; bottom = _bottom;
-    }
-    
-    void rect::setXYWH(double x, double y, double width, double height) {
-        left = x; right = x + width; top = y; bottom = y + height;
-    }
-    
-    point rect::getPos(Position position) const {
-        point ret;
-        
-        switch (position) {
-            case TOP_LEFT:     { ret.x = left;      ret.y = top;       } break;
-            case TOP:          { ret.x = centreX(); ret.y = top;       } break;
-            case TOP_RIGHT:    { ret.x = right;     ret.y = top;       } break;
-            case LEFT:         { ret.x = left;      ret.y = centreY(); } break;
-            case CENTRE:       { ret.x = centreX(); ret.y = centreY(); } break;
-            case RIGHT:        { ret.x = right;     ret.y = centreY(); } break;
-            case BOTTOM_LEFT:  { ret.x = left;      ret.y = bottom;    } break;
-            case BOTTOM:       { ret.x = centreX(); ret.y = bottom;    } break;
-            case BOTTOM_RIGHT: { ret.x = right;     ret.y = bottom;    } break;
-            default:           { ret.x = 0;         ret.y = 0;         } break;
-        }
-        
-        return ret;
-    }
-    
-    void rect::setVertex(Position position, point pos) {
-        switch (position) {
-            case TOP_LEFT:     { left  = pos.x; top    = pos.y; } break;
-            case TOP_RIGHT:    { right = pos.x; top    = pos.y; } break;
-            case BOTTOM_LEFT:  { left  = pos.x; bottom = pos.y; } break;
-            case BOTTOM_RIGHT: { right = pos.x; bottom = pos.y; } break;
-            default:           { } break;
-        }
-    }
-    
-    void rect::moveAnchor(Position anchor, point pos) {
-        double x = pos.x;
-        double y = pos.y;
-        double W = width();
-        double H = height();
-        
-        switch(anchor) {
-            case TOP_LEFT:     { setXYWH(x,           y,           W, H); } break;
-            case TOP:          { setXYWH(x - W / 2.0, y,           W, H); } break;
-            case TOP_RIGHT:    { setXYWH(x - W,       y,           W, H); } break;
-            case LEFT:         { setXYWH(x,           y - H / 2.0, W, H); } break;
-            case CENTRE:       { setXYWH(x - W / 2.0, y - H / 2.0, W, H); } break;
-            case RIGHT:        { setXYWH(x - W,       y - H / 2.0, W, H); } break;
-            case BOTTOM_LEFT:  { setXYWH(x,           y - H,       W, H); } break;
-            case BOTTOM:       { setXYWH(x - W / 2.0, y - H,       W, H); } break;
-            case BOTTOM_RIGHT: { setXYWH(x - W,       y - H,       W, H); } break;
-            default:           { } break;
-        }
-    }
-    
-    bool rect::inside(double x, double y) const {
-        if (x >= left && x <= right && y >= top && y <= bottom) {
-            return true;
-        }
-        return false;
-    }
-    
-    void rect::expandToFit(rect other) {
-        if (other.left   < left  ) { left   = other.left; }
-        if (other.right  < right ) { right  = other.right; }
-        if (other.top    < top   ) { top    = other.top; }
-        if (other.bottom < bottom) { bottom = other.bottom; }
-    }
-    
-    rect rect::offset(point origin) const { return offset(origin.x, origin.y); }
-                                      
-    rect rect::offset(double x, double y) const {
-    rect ret;
-
-        ret.left   = x + left;
-        ret.right  = x + right;
-        ret.top    = y + top;
-        ret.bottom = y + bottom;
-        
-        return ret;
-    }
-    
-    
-    /*
         UIBase
      */
     
     // Default constructor: initialise position and size to 0, 0 and parent to NULL
-    UIBase::UIBase() { bounds.setXYWH(0, 0, 0, 0); }
+    UIBase::UIBase() : visible(false) { bounds.setXYWH(0, 0, 0, 0); }
     
     // Overloaded constructor: initialise position to x, y; size and origin to 0, 0
-    UIBase::UIBase(double x, double y, double width, double height) { bounds.setXYWH(x, y, width, height); }
+    UIBase::UIBase(double x, double y, double width, double height) : visible(true) { bounds.setXYWH(x, y, width, height); }
     
     // Default destructor: no memory needs freeing, so do nothing
     UIBase::~UIBase() {}
     
     // return bounds
     const rect UIBase::getRect() const { return bounds; }
+    
+    // move by offset
+    void UIBase::moveBy(coord offset) { bounds.moveBy(offset); }
+    
+    // getter and setters for visibility flag
+    bool UIBase::getVisible() const { return visible; }
+    void UIBase::makeVisible()   { visible = true; }
+    void UIBase::makeInvisible() { visible = false; }
+    void UIBase::toggleVisible() { visible = not visible; }
     
     // Default handling of mouse events is to do nothing
     void UIBase::mouseMoved(int x, int y) {}
@@ -142,20 +61,15 @@ namespace gui {
      */
     
     // Default constructor: start invisible since no position was given
-    UIAtom::UIAtom() : visible(false) {}
+    UIAtom::UIAtom() {}
     
     // Overloaded constructor: start visible, pass pos through to base
-    UIAtom::UIAtom(double x, double y, double width, double height, bool _visible) : UIBase(x, y, width, height), visible(_visible) {}
+    UIAtom::UIAtom(double x, double y, double width, double height) : UIBase(x, y, width, height) {}
     
     // draw checks if visible, and then calls render()
     void UIAtom::draw() {
         if (visible) { render(); }
     }
-    
-    // visibility methods just alter the visibility flag
-    void UIAtom::makeVisible()   { visible = true; }
-    void UIAtom::makeInvisible() { visible = false; }
-    void UIAtom::toggleVisible() { visible = not visible; }
     
     /*
         Container
@@ -174,8 +88,12 @@ namespace gui {
         }
     }
     
-    // Add a child
+    // Add a child: move it so that its coordinates are given relative to the top-left corner of the container
+    // then add to the vector of children
+    // i.e. a child originally positioned at (100, 100) relative to the top-left corner of the screen becomes
+    // positioned at (100, 100) relative to the top-left corner of bounds
     void UIContainer::addChild(UIBase *child) {
+        child->moveBy(bounds.getPos(POS_TOP_LEFT));
         children.push_back(child);
     }
     
@@ -187,53 +105,47 @@ namespace gui {
     }
     
     // Return a pointer to the ith child
-    
     UIBase* UIContainer::getChild(int i) {
         return indexedChildren.at(i);
+    }
+    
+    // move container and all children
+    void UIContainer::moveBy(coord offset) {
+        bounds.moveBy(offset);
+        passCallToChildren(&UIBase::moveBy, offset);
+    }
+    
+    // templated function to pass an arbitrary function call and its arguments to each child element
+    // just some trivial templating, easy stuff really...
+    template<typename T, typename ...Args>
+    void UIContainer::passCallToChildren(T (UIBase::*func)(Args...), Args ... args) {
+        for (int i = 0; i < children.size(); ++i) {
+            (children[i]->*func)(std::forward<Args>(args)...);
+        }
+    }
+    
+    // set visibility flag and also pass call through to children
+    
+    void UIContainer::makeVisible() {
+        visible = true;
+        passCallToChildren(&UIBase::makeVisible);
+    }
+    
+    void UIContainer::makeInvisible() {
+        visible = false;
+        passCallToChildren(&UIBase::makeInvisible);
+    }
+    
+    void UIContainer::toggleVisible() {
+        visible = not visible;
+        passCallToChildren(&UIBase::toggleVisible);
     }
 
     // remainder of methods just pass the call through to its children
     
-    void UIContainer::draw() {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->draw();
-        }
-    }
-    
-    void UIContainer::makeVisible() {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->makeVisible();
-        }
-    }
-    
-    void UIContainer::makeInvisible() {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->makeInvisible();
-        }
-    }
-    
-    void UIContainer::toggleVisible() {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->toggleVisible();
-        }
-    }
-    
-    void UIContainer::mouseMoved(int x, int y) {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->mouseMoved(x, y);
-        }
-    }
-    
-    void UIContainer::mousePressed(int x, int y, int button) {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->mousePressed(x, y, button);
-        }
-    }
-    
-    void UIContainer::mouseReleased(int x, int y, int button) {
-        for (int i = 0; i < children.size(); ++i) {
-            children[i]->mouseReleased(x, y, button);
-        }
-    }
+    void UIContainer::draw() { passCallToChildren(&UIBase::draw); }
+    void UIContainer::mouseMoved(int x, int y) { passCallToChildren(&UIBase::mouseMoved, x, y); }
+    void UIContainer::mousePressed(int x, int y, int button) { passCallToChildren(&UIBase::mousePressed, x, y, button); }
+    void UIContainer::mouseReleased(int x, int y, int button) { passCallToChildren(&UIBase::mouseReleased, x, y, button); }
     
 }

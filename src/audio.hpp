@@ -22,42 +22,41 @@
  SOFTWARE.
  */
 
-//  Defines a class for containing Gaussian external potentials
-//  which take the form:
-//       A * exp( -a * ( (x - x0)^2 + (y-y0)^2 ) )
+#ifndef audio_hpp
+#define audio_hpp
 
-#ifndef gaussian_hpp
-#define gaussian_hpp
+#include "ofMain.h"
 
-#include <vector>
-#include <array>
-#include "utilities.hpp"
-
-class Gaussian
+// inherit from ofBaseSoundInput so that we can set the class itself to handle stream's input events
+class AudioStream : ofBaseSoundInput
 {
 private:
-    double gAmp; // Amplitude of Gaussian, A above
-    double gAlpha; // Exponent, a above
-    double gex0, gey0; // (x0, y0) centre of Gaussian
+    ofSoundStream stream;   // interal sound stream
+    bool active;            // whether the stream is active or not
+    
+    double maxAmplitude;    // the maximum amplitude needed to max out the scaled volume (renamed from sensitivity)
+    double volume;          // internal, unscaled volume
+    
+    // handle audio input event
+    void audioIn(ofSoundBuffer &buffer);
     
 public:
+    // default constructor sets everything up and starts the stream
+    AudioStream();
     
-    Gaussian(double _gAmp, double _gAlpha, double _gex0, double _gey0); // Constructor
-    Gaussian(const Gaussian& other); // Copy constructor
+    double getRawVolume() const;   // get raw value of volume
+    double getVolume() const;      // get volume scaled between 0 and 1 based on maxAmplitude
     
-    // Get private variables
-    double getgAmp() const;
-    double getgAlpha() const;
-    double getgex0() const;
-    double getgey0() const;
+    // getter and setter for whether the stream is active
+    bool getActive() const;
+    void setActive(bool active);
     
-    // Set the parameters
-    void setParams(double _gAmp, double _gAlpha, double _gex0, double _gey0);
+    // toggles whether the stream is active
+    void toggleActive();
     
-    // Calculate the force vector at (x, y) due to the Gaussian
-    std::vector<double> calcForceEnergy(double x, double y);
-    void calcForceEnergy(double x, double y, std::array<double, 3> &forceEnergy);
-    
+    // getter and setter for maximum amplitude
+    double getMaxAmplitude() const;
+    void setMaxAmplitude(double maxAmplitude);
 };
 
-#endif /* gaussian_hpp */
+#endif /* audio_hpp */

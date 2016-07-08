@@ -13,3 +13,6 @@ obj/**
 
 *.swp
 *~
+
+# wiki folder so you can clone the documentation locally
+wiki/**
