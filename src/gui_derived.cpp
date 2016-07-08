@@ -199,21 +199,24 @@ namespace gui {
     }
     
     // if the mouse is left-clicked inside the slider, take mouse focus and update the slider's position
-    void SliderAtom::mousePressed(int x, int y, int button) {
+    bool SliderAtom::mousePressed(int x, int y, int button) {
         if (button == 0 && bounds.inside(x, y)) {
             mouseFocus = true;
             setFromSliderPos(x);
-        }
+            return true;
+        } else { return false; }
     }
     
     // if the mouse is moved, and we have mouse focus, update the slider's position
-    void SliderAtom::mouseMoved(int x, int y) {
-        if (mouseFocus) { setFromSliderPos(x); }
+    bool SliderAtom::mouseMoved(int x, int y) {
+        if (mouseFocus) { setFromSliderPos(x); return true; }
+        else { return false; }
     }
     
     // if the mouse is released (anywhere on the screen), lose mouse focus
-    void SliderAtom::mouseReleased(int x, int y, int button) {
+    bool SliderAtom::mouseReleased(int x, int y, int button) {
         mouseFocus = false;
+        return false;   // we do not want to capture the mouse release, so return false
     }
     
     // some static varaibles to ensure sliders are drawn the same
@@ -242,8 +245,9 @@ namespace gui {
     }
     
     // if the mouse is left-clicked inside the button, do its action
-    void ButtonAtom::mousePressed(int x, int y, int button) {
-        if (button == 0 && bounds.inside(x, y)) { doAction(); }
+    bool ButtonAtom::mousePressed(int x, int y, int button) {
+        if (button == 0 && bounds.inside(x, y)) { doAction(); return true; }
+        else { return false; }
     }
     
     /*
@@ -265,138 +269,10 @@ namespace gui {
     }
     
     // if the mouse is left-clicked inside the button, invert the value of the boolean
-    void ButtonToggleAtom::mousePressed(int x, int y, int button) {
-        if (button == 0 && bounds.inside(x, y)) { setBool(not getBool()); }
+    bool ButtonToggleAtom::mousePressed(int x, int y, int button) {
+        if (button == 0 && bounds.inside(x, y)) { setBool(not getBool()); return true; }
+        else { return false; }
     }
-    
-    /*
-     PotentialAtom
-     */
-    
-    PotentialAtom::PotentialAtom(md::MDContainer &system, double minx, double maxx, int _numPoints, int x, int y, int width, int height): theSystem(system), min_x(minx), max_x(maxx), numPoints(_numPoints), UIAtom(x, y, width, height) {
-
-    }
-    void PotentialAtom::render(){
-
-        DrawPotential(theSystem.getPotential());
-        
-    }
-     
-    void PotentialAtom::DrawPotential(PotentialFunctor& pot){
-        std::vector<double> xpoints, ypoints, partx, party;
-        
-        double x, y;
-        double min_y = 9999, max_y = 0;
-        double x_spacing = (max_x - min_x) / (numPoints - 1);
-        
-        // Set up particle separations, relative to particle 0
-        coord pos1 = theSystem.getPos(0);
-        for (int i = 1; i < theSystem.getN(); i++){
-            coord pos = theSystem.getPos(i);
-            x = pos.x - pos1.x;
-            y = pos.y - pos1.y;
-            x = sqrt(x*x + y*y);
-            partx.push_back(x);
-        }
-        
-        // Obtain x and y values for potential calculations
-        for (int i = 0; i < numPoints; i++){
-            x = min_x + i * x_spacing;
-            xpoints.push_back(x);
-            y = pot.potential(x);
-            max_y = ( y > max_y ? y : max_y);
-            min_y = ( y < min_y ? y : min_y);
-            ypoints.push_back(y);
-        }
-        
-        // TODO: do we need to truncate min_y as well?
-        max_y = ( max_y > 2.0 ? 2.0 : max_y );
-        
-        // Calculate y values for the particles and add to party
-        for (int i = 0; i < theSystem.getN() - 1; i++){
-            x = partx[i];
-            y = pot.potential(x);
-            party.push_back(y);
-        }
-        // Map the potential values to the UI
-        for (int i = 0; i < xpoints.size(); i++){
-            xpoints[i] = ofMap(xpoints[i], min_x, max_x, getRect().left, getRect().right, true);
-            ypoints[i] = ofMap(ypoints[i], min_y, max_y, getRect().top, getRect().bottom, true);
-        }
-        
-        // Map the particle values to the UI
-        for (int i = 0; i < theSystem.getN()-1; i++){
-            partx[i] = ofMap(partx[i], min_x, max_x, getRect().left, getRect().right, true);
-            party[i] = ofMap(party[i], min_y, max_y, getRect().top, getRect().bottom, true);
-        }
-        
-        // Plot the potential
-        
-        ofSetLineWidth(3.5);
-        ofSetColor(255,255,255, 220);
-        for (int i = 0; i < xpoints.size() - 1; i++){
-            ofDrawLine(xpoints[i], ofGetHeight()- ypoints[i], xpoints[i+1], ofGetHeight() - ypoints[i+1]);
-        }
-        
-        // Plot the particles along the curve
-       
-        ofSetCircleResolution(10);
-        ofSetColor(0, 100, 220, 220);
-        for (int i = 0; i < theSystem.getN(); i++){
-            ofDrawCircle(partx[i], ofGetHeight() - party[i], 4);
-        }
-        
-    }
-    
-    
-    /*
-      CustomPotentialAtom
-     */
-    
-    CustomPotentialAtom::CustomPotentialAtom(md::MDContainer &system, int minx, int maxx, int numPoints, int sideWidth, int x, int y, int width, int height) : PotentialAtom(system, minx, maxx, numPoints, x, y, width, height) {
-    
-        // Rescale the default position of the four-point spline
-        // Only occurs the first time the custom potential is selected
-        double x0 = ofMap(min_x*1.025, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
-        double x_end = ofMap(max_x, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
-        double y0 = ofGetHeight()/5.5;
-        double y_end = ofGetHeight()/1.8;
-        
-        // Move the two points to the scaled position;
-        CustomPotential& customPotential = theSystem.getCustomPotential();
-        customPotential.getSpline().movePoint(1, x_end, y_end, 0);
-        customPotential.getSpline().movePoint(0, x0, y0, 0);
-
-    
-    }
-    
-    void CustomPotentialAtom::DrawPotential(PotentialFunctor &pot) {
-        
-        CustomPotential& customPotential = theSystem.getCustomPotential();
-        
-        // Once the initial two-point spline has been rescaled, update the spline each iteration
- 
-        // Set color, position of each point in the spline
-        for (int i = 1; (i < customPotential.getSpline().points()+1); i++){
-            ofSetColor(0, 200, 240,200);
-            ofFill();
-            ofDrawCircle(customPotential.getSpline().getPoint(i-1).x, customPotential.getSpline().getPoint(i-1).y, 10);
-            ofSetColor(255, 255, 255,90);
-            ofNoFill();
-            ofDrawCircle(customPotential.getSpline().getPoint(i-1).x, customPotential.getSpline().getPoint(i-1).y, 10);
-        }
-            
-        // Map every x value to the UI and obtain y, add each value to ypoints
-        PotentialAtom::DrawPotential(pot);
-    }
-    
-    void CustomPotentialAtom::render() {
-        DrawPotential(theSystem.getCustomPotential());
-    }
-    
-    void CustomPotentialAtom::mouseMoved(int x, int y) {}
-    void CustomPotentialAtom::mousePressed(int x, int y, int button) {}
-    void CustomPotentialAtom::mouseReleased(int x, int y, int button) {}
     
     /*
         SliderContainer

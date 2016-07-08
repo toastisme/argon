@@ -201,9 +201,9 @@ namespace gui {
         SliderAtom(FuncGetter getValue, FuncSetter setValue, double min, double max, double x, double y, double width, double height);
         
         // handle mouse events
-        void mouseMoved(int x, int y);
-        void mousePressed(int x, int y, int button);
-        void mouseReleased(int x, int y, int button);
+        bool mouseMoved(int x, int y);
+        bool mousePressed(int x, int y, int button);
+        bool mouseReleased(int x, int y, int button);
         
         static int BODY_HEIGHT;            // height of slider body (the background rectangle) - set to 10
         static ofColor BODY_COLOR;         // colour of slider body - set to white (255, 255, 255)
@@ -230,7 +230,7 @@ namespace gui {
         ButtonAtom(FuncAction doAction, const ofImage &image, double x, double y, double width, double height);
         
         // handle mouse events
-        void mousePressed(int x, int y, int button);
+        bool mousePressed(int x, int y, int button);
     };
     
     class ButtonToggleAtom : public UIAtom
@@ -253,7 +253,7 @@ namespace gui {
         ButtonToggleAtom(FuncGetterBool getBool, FuncSetterBool setBool, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
         
         // handle mouse events
-        void mousePressed(int x, int y, int button);
+        bool mousePressed(int x, int y, int button);
     };
     
     class PotentialAtom : public UIAtom
@@ -293,9 +293,9 @@ namespace gui {
     private:
         virtual void render();
         
-        void mouseMoved(int x, int y);
-        void mousePressed(int x, int y, int button);
-        void mouseReleased(int x, int y, int button);
+        bool mouseMoved(int x, int y);
+        bool mousePressed(int x, int y, int button);
+        bool mouseReleased(int x, int y, int button);
         
     };
     
@@ -320,7 +320,7 @@ namespace gui {
         ButtonPairAtom(FuncAction doActionOn, const ofImage &imageOn, FuncAction doActionOff, const ofImage &imageOff, double x, double y, double width, double height);
         
         // handle mouse events
-        void mousePressed(int x, int y, int button);
+        bool mousePressed(int x, int y, int button);
     };
     
     
