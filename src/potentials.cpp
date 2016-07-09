@@ -29,266 +29,149 @@
 #include "gui_derived.hpp"
 
 
+//------ POTENTIALFUNCTOR -----
+
+// return the potential
+// if within the wall, use the LJ potential
+// else use the actual potential
+double PotentialFunctor::potential(double r) {
+    if (r < LJ_AT_3) { return calcEnergyLJ(r); }
+    else { return calcEnergy(r); }
+}
+
+// return the force
+// if within the wall, use the LJ force
+// else use the actual force
+double PotentialFunctor::force(double r) {
+    if (r < LJ_AT_3) { return calcForceLJ(r); }
+    else { return calcForce(r); }
+}
+
+// LJ potential
+double PotentialFunctor::calcEnergyLJ(double r) {
+    double rm6 = 1.0 / pow(r, 6); // r^(-6)
+    return 4 * (rm6 * rm6 - rm6);
+}
+
+// LJ force
+double PotentialFunctor::calcForceLJ(double r) {
+    double rm6 = 1.0 / pow(r, 6);
+    return 24 * r * (rm6 - 2 * rm6 * rm6);
+}
+
+
+
 //------ LENNARD-JONES POTENTIAL -----
 
 // Constructor, sets parameters to default values
-LennardJones::LennardJones() : repelPow(12), attractPow(6), epsilon(1.0), sigma(1.0)
-{ }
-
-// Setters
-
-void LennardJones::setPowers(int _repel, int _attract)
-{
-    repelPow = ( _repel > 0 ? _repel : repelPow );
-    attractPow = ( _attract > 0 ? _attract : attractPow );
-}
-
-void LennardJones::setEpsilon(double _epsilon)
-{
-    epsilon = _epsilon;
-}
-
-void LennardJones::setSigma(double _sigma)
-{
-    sigma = ( _sigma > 0 ? _sigma : sigma);
-}
-
-// Force and energy calculation
-
-double LennardJones::operator()(double rij, coord& force)
-{
-    double epot = 0; // Potential energy
-    
-    double od = sigma/rij;
-    
-    double odRepel, odAttract; // (sigma/rij)^repelPow and (sigma/rij)^attractPow
-    odRepel = pow(od, repelPow);
-    odAttract = pow(od, attractPow);
-    
-    epot = 4 * epsilon * ( odRepel - odAttract );
-    
-    double forceCoeff = 4 * epsilon * ( double(attractPow) * odAttract - double(repelPow) * odRepel) / pow(rij, 2);
-    
-    force.x = forceCoeff;
-    force.y = forceCoeff;
-    
-    return epot;
-}
+LennardJones::LennardJones() {}
 
 // Just energy calculation
+double LennardJones::calcEnergy(double r) { return calcEnergyLJ(r); }
 
-double LennardJones::potential(double rij)
-{
-    double epot = 0;
-    
-    double od = sigma/rij;
-    
-    double odRepel, odAttract; // (sigma/rij)^repelPow and (sigma/rij)^attractPow
-    odRepel = pow(od, repelPow);
-    odAttract = pow(od, attractPow);
-    
-    epot = 4 * epsilon * ( odRepel - odAttract );
-    
-    return epot;
-}
+// Force calculation
+double LennardJones::calcForce(double r) { return calcForceLJ(r); }
 
-
-//------ SQUARE WELL POTENTIAL -----
-
-// Constructor, sets default values of parameters
-SquareWell::SquareWell() : V0(-1.0), rMin(1.0), rMax(2.0), intercept(40.0)
-{
-    calcSteepness();
-}
-
-// Setters
-
-void SquareWell::setBounds(double _rMin, double _rMax)
-{
-    rMin = ( _rMin > 0 ? _rMin : rMin);
-    rMax = ( _rMax > 0 ? _rMax : rMax);
-    rMax = ( rMax > rMin ? rMax : rMin + 1.0);
-}
-
-void SquareWell::setV0(double _v0)
-{
-    V0 = _v0;
-}
-
-void SquareWell::setIntercept(double _intercept)
-{
-    intercept = (_intercept > 0 ? _intercept : intercept);
-}
-
-void SquareWell::calcSteepness()
-{
-    steepness = (V0 - intercept) / rMin;
-}
-
-// Force and energy calculation
-double SquareWell::operator()(double rij, coord& force)
-{
-    double epot = 0; // Potential zero to right of well
-    double forceCoeff = 0; // Forces are zero inside or to right of well
-    
-    if ( rij < rMin ) { // Use a steep wall approximation to a hard wall
-        epot = steepness * rij + intercept;
-        forceCoeff = steepness;
-    } else if ( rij < rMax ) { // Inside well
-        epot = V0;
-    } else if ( rij <  1.05 * rMax ) {
-        forceCoeff = -20.0*V0/rMax;
-    }
-    
-    force.x = forceCoeff;
-    force.y = forceCoeff;
-    
-    return epot;
-    
-}
-
-// Just the energy
-double SquareWell::potential(double rij)
-{
-    double epot = 0;
-    if ( rij < rMin ) epot = steepness * rij + intercept;
-    else if ( rij < rMax ) epot = V0;
-    
-    return epot;
-}
 
 
 //------ MORSE POTENTIAL ------
 
 // Constructor, set default parameter values
-Morse::Morse() : De(1.0), a(1.0), req(2.0)
-{}
-
-// Setters
-
-void Morse::setDepth(double _de) { De = _de; }
-void Morse::setWidth(double _a) { a = ( _a > 0 ? _a : a); }
-void Morse::setREq(double _req) { req = ( _req > 0 ? _req : req); }
+Morse::Morse() : a(5.85), r_eq(pow(2, 1.0 / 6)) {}
 
 // Force and energy calculation
 
-double Morse::operator()(double rij, coord& force)
+
+// Morse potential, lerped to an LJ repulsive wall
+double Morse::calcEnergy(double r)
 {
-    double epot = 0;
+    double omExp = 1.0 - exp(-a * (r - r_eq));
+    double E_Morse = omExp * omExp - 1;
     
-    double exponential = exp(-a * (rij - req));
+    if (r < LJ_AT_2) {
+        double E_LJ = calcEnergyLJ(r);
+        double t = (r - LJ_AT_3) / (LJ_AT_2 - LJ_AT_3);
+        return t * E_Morse + (1 - t) * E_LJ;
+    } else {
+        return E_Morse;
+    }
+}
+
+// Morse force, lerped to an LJ repulsive wall
+double Morse::calcForce(double r)
+{
+    double exponential = exp(-a * (r - r_eq));
     double omExp = 1.0 - exponential;
+    double F_Morse = 2 * a * omExp * exponential;
     
-    epot = De * omExp * omExp;
-    double forceCoeff = 2 * a * De * omExp * exponential;
-    
-    force.x = forceCoeff;
-    force.y = forceCoeff;
-    
-    return epot;
+    if (r < LJ_AT_2) {
+        double F_LJ = calcForceLJ(r);
+        double t = (r - LJ_AT_3) / (LJ_AT_2 - LJ_AT_3);
+        return t * F_Morse + (1 - t) * F_LJ;
+    } else {
+        return F_Morse;
+    }
 }
 
 
-// Just energy
-double Morse::potential(double rij)
+
+//------ SQUARE WELL POTENTIAL -----
+
+// Constructor, sets default values of parameters
+SquareWell::SquareWell() : lambda(1.85) {}
+
+// Square well potential
+double SquareWell::calcEnergy(double r)
 {
     double epot = 0;
-    double omExp = 1.0 - exp(-a * (rij - req));
-    epot = De * omExp * omExp;
+    if ( r < 1.0 ) { epot = (r - 1.0) * LJ_F_3; }
+    else if ( r < lambda ) { epot = -1; }
+    else if ( r < lambda + 0.015 ) { epot = (r - lambda) / 0.015 - 1; }
     return epot;
 }
+
+// Square well force
+double SquareWell::calcForce(double r)
+{
+    double force = 0;
+    if ( r < 1.0 ) { // Use a steep wall approximation to a hard wall
+        force = LJ_F_3;
+    } else if ( lambda < r && r < lambda + 0.015 ) {
+        force = 1 / 0.015;
+    }
+    
+    return force;
+}
+
 
 
 //------ CUSTOM POTENTIAL ------
 
-// Constructor (does nothing currently)
-
+// Constructor
 CustomPotential::CustomPotential() {
-    drawingMode = 1;
+    // define fixed points on the spline, corresponding to the repulsive wall and the cutoff of 3.0
+    pointWall = {LJ_AT_3, 3, LJ_F_3}; // LJ wall
+    pointCutoff = {3.0, 0, 0};
+    spline = cubic::Spline(pointWall.x, pointWall.y, pointWall.m, pointCutoff.x, pointCutoff.y, pointCutoff.m);
 }
 
 // Get a reference to the spline
-
 cubic::Spline& CustomPotential::getSpline() { return spline; }
 
-// Get/set the drawing mode
-
-int CustomPotential::getMode() const { return drawingMode; }
-void CustomPotential::setMode(int mode) {
-    if (mode > 0 && mode < 5) {
-        drawingMode = mode;
-    }
-}
-
-// Force and energy calculation
-
-double CustomPotential::operator()(double rij, coord& force)
-{
-    force.x = spline.slope(rij);
-    force.y = force.x;
-    return spline.value(rij);
-}
-
-
-// Just the energy
-double CustomPotential::potential(double rij)
-{
-    return spline.value(rij);
-}
+// return the potential
+double CustomPotential::calcEnergy(double r) { return spline.value(r); }
+double CustomPotential::calcForce(double r)  { return spline.slope(r); }
 
 // Update the spline
-void CustomPotential::addPoint (int x, int y, int sideWidth, int topHeight) {
-    if (x > sideWidth + 30 && x < ofGetWidth()-30){
-        if (y > topHeight + 30 && y < ofGetHeight()-30){
-            // Prevent particles being created on top of each other
-            int count_close_points = 0;
-            for (int i = 1; (i < spline.points()+1); i++){
-                if (x > spline.getPoint(i).x - 10 && x < spline.getPoint(i).x + 10){
-                    count_close_points++;
-                }
-            }
-            if (count_close_points == 0){
-                spline.addPoint(x, y, 0);
-            }
-        }
-    }
-}
-
-void CustomPotential::removePoint (int x, int y) {
-    for (int i = 1; (i < spline.points()-1); i++){
-        if (x > spline.getPoint(i).x - 10 && x < spline.getPoint(i).x + 10){
-            if (y > spline.getPoint(i).y - 10 && y < spline.getPoint(i).y + 10){
-                
-                spline.removePoint(i);
-            }
-        }
-    }
- 
-}
-
-void CustomPotential::movePoint (int x, int y) {
-    for (int i = 1; (i < spline.points()-1); i++){
-        if (x > spline.getPoint(i).x - 20 && x < spline.getPoint(i).x + 20){
-            if (y > spline.getPoint(i).y - 20 && y < spline.getPoint(i).y + 20){
-                int xpos = x;
-                int ypos = y;
-                // Prevent points being moved across each other
-                xpos = (x < spline.getPoint(i-1).x + 5 ? spline.getPoint(i-1).x + 5 : xpos);
-                xpos = (x > spline.getPoint(i+1).x - 5 ? spline.getPoint(i+1).x - 5 : xpos);
-                // Prevent points being moved outside of the screen
-                
-                spline.movePoint(i, xpos, ypos, spline.getPoint(i).m);
-            }
-        }
-    }
-}
-
-void CustomPotential::changeSlope(int x, int y, int topHeight) {
-    for (int i=1; (i < spline.points()); i++) {
-        if (x > spline.getPoint(i).x - 30 && x < spline.getPoint(i).x + 30){
-            float slope_y = ofMap(y, topHeight + 30, ofGetHeight()-30, -3.0, 3.0);
-            spline.movePoint(i, spline.getPoint(i).x , spline.getPoint(i).y, slope_y);
-        }
-    }
-
+void CustomPotential::updatePoints(std::vector <cubic::Point> &points) {
+    std::vector <cubic::Point> splinePoints;
+    
+    // add fixed points onto start and end
+    splinePoints.push_back(pointWall);
+    splinePoints.insert(splinePoints.end(), points.begin(), points.end());
+    splinePoints.push_back(pointCutoff);
+    
+    // update spline
+    spline.setPoints(splinePoints);
+    spline.reconstruct();
 }

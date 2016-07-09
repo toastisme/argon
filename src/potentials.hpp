@@ -34,116 +34,107 @@
 
 class PotentialFunctor
 {
-public:
-    // Pure virtual functions, must be overridden in child classes
-    virtual double operator()(double rij, coord& force) = 0;
-    virtual double potential(double rij) = 0;
+protected:
+    // pure virtual functions, must be overridden in child classes
+    // this is where the potential is defined
+    // this should connect cleanly to an LJ potential at r <= LJ_AT_3 (the potential does
+    // not need to be defined below this value)
+    virtual double calcEnergy(double r) = 0;
+    virtual double calcForce(double r)  = 0;
     
+    // 12-6 Lennard-Jones potential to lerp to, so that the repulsive wall is always LJ-like
+    double calcEnergyLJ(double r);
+    double calcForceLJ(double r);
+    
+public:
+    // magic numbers indicating particular values of the LJ potential
+    // value of r such that V_LJ(r) = 2
+    constexpr static const double LJ_AT_2 =   0.94934;
+    // value of r such that V_LJ(r) = 3
+    constexpr static const double LJ_AT_3 =   0.93466;
+    // LJ force at r = 2 - is this needed?
+    //constexpr static const double LJ_F_2  = -53.90812;
+    // LJ force at r = 3
+    constexpr static const double LJ_F_3  = -67.29518;
+    
+    // how the potential is surfaced to the MD system
+    //double operator()(double rij, coord& force);
+    double potential(double r);
+    double force(double r);
 };
 
 
 // Lennard-Jones potential
-// V(rij) = 4 * epsilon * [ (sigma/rij)^repelPow - (sigma/rij)^attractPow ]
+// V(r) = 4 * [ r^(-12) - r^(-6) ]
 class LennardJones : public PotentialFunctor
 {
 private:
-    int repelPow, attractPow; // E.g. 12-6 potential would be repelPow = 12, attractPow = 6
-    double epsilon, sigma; // The well-depth and zero-potential distance
+    // return an LJ potential
+    double calcEnergy(double r);
+    double calcForce(double r);
+    
 public:
     // Constructor
-    LennardJones(); // Defaults to a 12-6 potential with epsilon = sigma = 1
-    
-    // Force/energy calculation
-    double operator()(double rij, coord& force);
-    // Just energy
-    double potential(double rij);
-    
-    // Set the repel/attract powers
-    void setPowers(int _repel, int _attract);
-    // Set epsilon and sigma
-    void setEpsilon(double _epsilon);
-    void setSigma(double _sigma);
+    LennardJones(); // A 12-6 potential with epsilon = sigma = 1
 };
 
-// Square well potential
-// V(rij) = V0 for  rMin < rij < rMax, and `infinity' otherwise
-class SquareWell : public PotentialFunctor
-{
-private:
-    double V0; // Value of potential in the well
-    double rMin, rMax; // The potential is V0 for rMin < rij < rMax
-    double steepness, intercept; // Hard wall approximation at left of well
-public:
-    // Constructor
-    SquareWell(); // Defaults to V0 = -1, rMin = 1 and rMax = 2
-    
-    // Force/energy calculation
-    double operator()(double rij, coord& force);
-    // Just energy
-    double potential(double rij);
-    
-    // Set well-depth, rMin and rMax
-    void setV0(double _v0);
-    void setBounds(double _rMin, double _rMax);
-    void setIntercept(double _intercept);
-    
-    // Determine steepness
-    void calcSteepness();
-};
 
 // Morse potential
-// V(rij) = De( 1 - exp( -a( rij - req ) ) )^2
+// V(r) = (1 - exp[-a(r - r_eq)])^2 - 1
+// r_eq = 2^(1/6), a = 5.85 to match LJ potential
 class Morse : public PotentialFunctor
 {
 private:
-    double De; // The well-depth
-    double a; // The `width' of the potential
-    double req; // The equilibrium `bond' length
+    double a;    // The `width' of the potential, set to 5.85
+    double r_eq; // The equilibrium `bond' length, set to 2^(1/6)
+    
+    // return a Morse potential, connected to an LJ repulsive wall
+    double calcEnergy(double r);
+    double calcForce(double r);
+    
 public:
     // Constructor
-    Morse(); // Defaults to De = 1, a = 1, req = 2
-    
-    // Force/energy calculation
-    double operator()(double rij, coord& force);
-    // Just energy
-    double potential(double rij);
-    
-    // Set well-depth, width and req
-    void setDepth(double _de);
-    void setWidth(double _a);
-    void setREq(double _req);
-    
+    Morse();
 };
+
+
+// Square well potential
+// V(r) = -1 for 1.0 < r < 1.85, 0 for r > 1.85, and 'infinity' for r < 1.0
+// in practice, 'infinity' is a steep slope which connects to an LJ repulsion
+class SquareWell : public PotentialFunctor
+{
+private:
+    double lambda; // well goes from r = 1 to r = lambda (= 1.85)
+public:
+    // Constructor
+    SquareWell();
+    
+    // return the potential
+    double calcEnergy(double r);
+    double calcForce(double r);
+};
+
 
 // Custom potential, defined by spline
 class CustomPotential : public PotentialFunctor
 {
 private:
     cubic::Spline spline;
-    int drawingMode;
+    cubic::Point pointWall, pointCutoff;
+    
+    // return the potential
+    double calcEnergy(double r);
+    double calcForce(double r);
     
 public:
     // Constructor
     CustomPotential();
     
-    // Force/energy calculation
-    double operator()(double rij, coord& force);
-    // Just energy
-    double potential(double rij);
-    
     // Get spline
     cubic::Spline& getSpline();
     
-    // Get/set drawingMode
-    int getMode() const;
-    void setMode(int mode);
-    
-    // Update spline routines
-    void addPoint(int x, int y, int sideWidth, int topHeight);
-    void removePoint(int x, int y);
-    void movePoint(int x, int y);
-    void changeSlope(int x, int y, int topHeight);
-    
+    // Rebuild spline from points
+    void updatePoints(std::vector <cubic::Point> &points);
 };
 
 
