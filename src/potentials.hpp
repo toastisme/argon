@@ -25,6 +25,7 @@
 #ifndef potentials_hpp
 #define potentials_hpp
 
+#include <cmath>
 #include "utilities.hpp"
 #include "cubicspline.hpp"
 
@@ -49,13 +50,11 @@ protected:
 public:
     // magic numbers indicating particular values of the LJ potential
     // value of r such that V_LJ(r) = 2
-    constexpr static const double LJ_AT_2 =   0.94934;
+    constexpr static const double LJ_AT_2 = 0.949343841329228; // ((1 + sqrt(3) / 2)^(-1/6)
     // value of r such that V_LJ(r) = 3
-    constexpr static const double LJ_AT_3 =   0.93466;
-    // LJ force at r = 2 - is this needed?
-    //constexpr static const double LJ_F_2  = -53.90812;
-    // LJ force at r = 3
-    constexpr static const double LJ_F_3  = -67.29518;
+    constexpr static const double LJ_AT_3 = 0.934655265184067; // (3/2)^(-1/6)
+    // gradient of V_LJ(r) at r = LJ_AT_3
+    constexpr static const double LJ_F_3  = -72 * LJ_AT_3;
     
     // how the potential is surfaced to the MD system
     //double operator()(double rij, coord& force);
@@ -120,7 +119,7 @@ class CustomPotential : public PotentialFunctor
 {
 private:
     cubic::Spline spline;
-    cubic::Point pointWall, pointCutoff;
+    cubic::Point pointWallL, pointWallR, pointCutoff;
     
     // return the potential
     double calcEnergy(double r);

@@ -214,8 +214,8 @@ void ofApp::setup()
     potentialUI = gui::UIContainer(0, 0 , 1024, 600);
     
     // Setup potential atoms
-    potentialIndex = potentialUI.addIndexedChild(new gui::PotentialAtom(theSystem, 0.9, 3.0, 150, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
-    customPotentialIndex = potentialUI.addIndexedChild(new gui::CustomPotentialAtom(theSystem, 0.9, 3.0, 150, sideWidth, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
+    potentialIndex = potentialUI.addIndexedChild(new gui::PotentialAtom(theSystem, 150, 0.95, 3.0, -2, 2, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
+    customPotentialIndex = potentialUI.addIndexedChild(new gui::PotentialAtom(theSystem, 150, 0.95, 3.0, -2, 2, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
 
     potentialUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 600)); //
     

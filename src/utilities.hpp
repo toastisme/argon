@@ -72,6 +72,7 @@ struct rect
     
     // true if the point x, y is inside (or on the boundary of) the rect
     bool inside(double x, double y) const;
+    bool inside(coord point) const;
 };
 
 // bilinear clamp, returning a coord clamped inside a rect

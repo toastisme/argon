@@ -23,8 +23,6 @@
  */
 
 #include "potentials.hpp"
-#include <cmath>
-#include <iostream>
 #include "ofApp.h"
 #include "gui_derived.hpp"
 
@@ -124,7 +122,7 @@ SquareWell::SquareWell() : lambda(1.85) {}
 double SquareWell::calcEnergy(double r)
 {
     double epot = 0;
-    if ( r < 1.0 ) { epot = (r - 1.0) * LJ_F_3; }
+    if ( r < 1.0 ) { epot = -1 + (r - 1.0) * LJ_F_3; }
     else if ( r < lambda ) { epot = -1; }
     else if ( r < lambda + 0.015 ) { epot = (r - lambda) / 0.015 - 1; }
     return epot;
@@ -150,9 +148,12 @@ double SquareWell::calcForce(double r)
 // Constructor
 CustomPotential::CustomPotential() {
     // define fixed points on the spline, corresponding to the repulsive wall and the cutoff of 3.0
-    pointWall = {LJ_AT_3, 3, LJ_F_3}; // LJ wall
+    pointWallL = {LJ_AT_3, 3, LJ_F_3}; // LJ wall
+    pointWallR = {LJ_AT_2, 2, -10};
     pointCutoff = {3.0, 0, 0};
-    spline = cubic::Spline(pointWall.x, pointWall.y, pointWall.m, pointCutoff.x, pointCutoff.y, pointCutoff.m);
+    
+    spline = cubic::Spline(pointWallL.x, pointWallL.y, pointWallL.m, pointCutoff.x, pointCutoff.y, pointCutoff.m);
+    spline.addPoint(pointWallR.x, pointWallR.y, pointWallR.m);
 }
 
 // Get a reference to the spline
@@ -167,7 +168,8 @@ void CustomPotential::updatePoints(std::vector <cubic::Point> &points) {
     std::vector <cubic::Point> splinePoints;
     
     // add fixed points onto start and end
-    splinePoints.push_back(pointWall);
+    splinePoints.push_back(pointWallL);
+    splinePoints.push_back(pointWallR);
     splinePoints.insert(splinePoints.end(), points.begin(), points.end());
     splinePoints.push_back(pointCutoff);
     

@@ -100,6 +100,9 @@ bool rect::inside(double x, double y) const {
     }
     return false;
 }
+bool rect::inside(coord point) const {
+    return inside(point.x, point.y);
+}
 
 
 
