@@ -268,11 +268,22 @@ namespace gui {
     
     bool SplineContainer::mouseMoved(int x, int y) {
         bool handled = false;
-        for (int i = 0; i < children.size(); ++i) {
-            if (!controlPointNear(x, i)) {
-                handled = children[i]->mouseMoved(x, y);
+        
+            for (int i = 0; i < children.size(); ++i) {
+                
+                // test to avoid moving one control point on top of another
+                if (!controlPointNear(x, i)) {
+                    
+                    // if mouse is outside the spline controls window, we need to be
+                    // careful because controlPointNear won't test properly. The solution
+                    // is to only move vertically if the mouse is too far left or right
+                    if (x < pointRegion.left || x > pointRegion.right) {
+                        handled = children[i]->mouseMoved(children[i]->getRect().centreX(), y);
+                    } else {
+                        handled = children[i]->mouseMoved(x, y);
+                    }
+                }
             }
-        }
         if (handled) { updateSpline(); }
         return false;
     }
