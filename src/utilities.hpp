@@ -74,4 +74,17 @@ struct rect
     bool inside(double x, double y) const;
 };
 
+// bilinear clamp, returning a coord clamped inside a rect
+// essentially just a normal linear clamp on both x and y
+coord BilinearClamp(coord point, rect out);
+
+// bilinear map from space defined by rect in to space defined by rect out
+// e.g. maps from MD space to screen space
+// if the rect is passed in as a coord, then use (0, 0) as the x, y coordinates and
+// (coord.x, coord.y) as the width and height
+coord BilinearMap(coord point, rect  in, rect  out, bool clamp = false);
+coord BilinearMap(coord point, rect  in, coord out, bool clamp = false);
+coord BilinearMap(coord point, coord in, rect  out, bool clamp = false);
+coord BilinearMap(coord point, coord in, coord out, bool clamp = false);
+
 #endif /* utilities_hpp */
