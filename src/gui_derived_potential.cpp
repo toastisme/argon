@@ -77,15 +77,17 @@ namespace gui {
         
         // Plot the potential
         ofSetLineWidth(3.5);
-        ofSetColor(255,255,255, 220);
-        for (int i = 0; i < potPoints.size() - 1; i++){
-            coord lPoint = potPoints[i];
-            coord rPoint = potPoints[i + 1];
-            
-            if (bounds.inside(lPoint) && bounds.inside(rPoint)) {
-                ofDrawLine(lPoint.x, lPoint.y, rPoint.x, rPoint.y);
-            }
+        ofSetColor(255,255,255,220);
+        ofPolyline line;
+        for (int i = 0; i < potPoints.size(); i++){
+            line.lineTo(potPoints[i].x, potPoints[i].y);
         }
+        
+        // draw potential, clipping to rectangle of size bounds
+        glScissor(bounds.left, bounds.top, bounds.width(), bounds.height());
+        glEnable(GL_SCISSOR_TEST);
+        line.draw();
+        glDisable(GL_SCISSOR_TEST);
         
         // Plot the particles along the curve
         ofSetCircleResolution(10);
