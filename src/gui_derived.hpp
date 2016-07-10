@@ -372,6 +372,9 @@ namespace gui {
     public:
         SplineContainer(CustomPotential &potential, double x_min, double x_max, double y_min, double y_max, double controlPointRadius, double x, double y, double width, double height);
         
+        // override moveBy to adjust pointRegion simultaneously
+        virtual void moveBy(coord offset);
+        
         // returns true if the mouse event caused the spline to be updated
         bool mousePressed(int x, int y, int button);
         

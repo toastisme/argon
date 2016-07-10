@@ -187,6 +187,11 @@ namespace gui {
         pointRegion.setLRTB(bounds.left + radius, bounds.right - radius, bounds.top + radius, bounds.bottom - radius);
     }
     
+    void SplineContainer::moveBy(coord offset) {
+        bounds.moveBy(offset);
+        pointRegion.moveBy(offset);
+    }
+    
     // map the spline points and pass to the potential
     void SplineContainer::updateSpline() {
         std::vector <cubic::Point> points;

@@ -58,11 +58,6 @@ ofPoint ofApp::box2screen(coord point, coord origin) {
  */
 void ofApp::setup() 
 {
-    // Set the potential UI parameters
-    topHeight = ofGetHeight()/8;
-    sideWidth = ofGetWidth()/7;
-    buttonHeight = (ofGetHeight() - topHeight)/4;
-    
     // openFrameworks initialisation
     ofSetFrameRate(60);
     ofBackground(0, 0, 0);
@@ -210,37 +205,41 @@ void ofApp::setup()
     menuUI.mouseReleased(0, 0, 0);
     
     // Setup Potential UI
+    //topHeight = ofGetHeight()/8;
+    //sideWidth = ofGetWidth()/7;
+    //buttonHeight = ()/4;
     
-    potentialUI = gui::UIContainer(0, 0 , 1024, 600);
+    potentialUI = gui::UIContainer(50, 50, 50, 50);
+    potentialUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 924, 500));
+    potentialUI.addChild(new gui::RectAtom(bgcolor, 150, 0, 774, 500));
     
     // Setup potential atoms
-    potentialUI.addChild(new gui::PotentialAtom(theSystem, 300, 0.95, 3.0, -2, 2, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
+    potentialUI.addChild(new gui::PotentialAtom(theSystem, 300, 0.95, 3.0, -2, 2,
+                                                150, 0, 774, 500));
+    splineContainerIndex = potentialUI.addIndexedChild(new gui::SplineContainer(theSystem.getCustomPotential(), 0.95, 3.0, -2, 2, 12,
+                                                                                150, 0, 774, 500));
     
-    splineContainerIndex = potentialUI.addIndexedChild(new gui::SplineContainer(theSystem.getCustomPotential(), 0.95, 3.0, -2, 2, 12, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
-
-    potentialUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 600)); //
+    potentialUI.addChild(new gui::SetColour(textcolor));
     
-    potentialUI.addChild(new gui::TextAtom("Select a pair potential", uiFont14, textcolor, POS_LEFT, 1.2*sideWidth, topHeight/5, 100, 30));
-    
-    potentialUI.addChild(new gui::TextAtom("Lennard-Jones", uiFont12, textcolor, POS_LEFT, 30, topHeight+1.5*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::LENNARD_JONES);
-                                                    potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
-                                                    ljThumbnail, 30, topHeight, 85, 85));
+                                                      potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
+                                             ljThumbnail, 25, 0, 100, 100));
+    potentialUI.addChild(new gui::TextAtom("Lennard-Jones", uiFont12, textcolor, POS_TOP, 0, 100, 150, 25));
     
-    potentialUI.addChild(new gui::TextAtom("Square Well", uiFont12, textcolor, POS_LEFT, 30, topHeight+3.55*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::SQUARE_WELL);
-                                                    potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
-                                                    squareThumbnail, 30, topHeight+2*buttonHeight/2, 85, 85));
+                                                      potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
+                                             squareThumbnail, 25, 125, 100, 100));
+    potentialUI.addChild(new gui::TextAtom("Square Well", uiFont12, textcolor, POS_TOP, 0, 225, 150, 25));
     
-    potentialUI.addChild(new gui::TextAtom("Morse", uiFont12, textcolor, POS_LEFT, 30, topHeight+5.4*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::MORSE);
-                                                    potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
-                                                    morseThumbnail, 30, topHeight+4.0*buttonHeight/2, 85, 85));
+                                                      potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
+                                             morseThumbnail, 25, 250, 100, 100));
+    potentialUI.addChild(new gui::TextAtom("Morse", uiFont12, textcolor, POS_TOP, 0, 350, 150, 25));
     
-    potentialUI.addChild(new gui::TextAtom("Custom", uiFont12, textcolor, POS_LEFT, 30, topHeight+7.3*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::CUSTOM);
-                                                    potentialUI.getChild(splineContainerIndex)->makeVisible(); },
-                                                    squareThumbnail, 30, topHeight+6.0*buttonHeight/2, 85, 85));
+                                                      potentialUI.getChild(splineContainerIndex)->makeVisible(); },
+                                             squareThumbnail, 25, 375, 100, 100));
+    potentialUI.addChild(new gui::TextAtom("Custom", uiFont12, textcolor, POS_TOP, 0, 475, 150, 25));
     
     potentialUI.makeInvisible();
     potentialUI.getChild(splineContainerIndex)->makeVisible();
