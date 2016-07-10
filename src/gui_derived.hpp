@@ -278,24 +278,25 @@ namespace gui {
         
     };
     
-    class CustomPotentialAtom : public PotentialAtom
+    class SplineControlPoint : public UIAtom
     {
-    /* 
-        UI atom for the custom potential
-     */
-        
-    public:
-        
-        void DrawPotential(PotentialFunctor& pot);
-        
-        CustomPotentialAtom(md::MDContainer &system, int minx, int maxx, int numPoints, int sideWidth, int x, int y, int width, int height);
-        
+        /*
+            UI Atom corresponding to a point on a spline
+         */
     private:
         virtual void render();
+        rect range;
+        bool mouseFocus;
+    
+    public:
+        SplineControlPoint(int x, int y, rect range);
         
-        bool mouseMoved(int x, int y);
+        // x and y stored in screen space, m stored in spline space
+        double x, y, m;
+        
         bool mousePressed(int x, int y, int button);
         bool mouseReleased(int x, int y, int button);
+        bool mouseMoved(int x, int y);
         
     };
     
@@ -336,7 +337,7 @@ namespace gui {
         
     public:
         SliderContainer();
-        // a whole bunch of stuff to pass through to the indivisual elements
+        // a whole bunch of stuff to pass through to the individual elements
         SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &textColour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double padding, double height);
 
         static int PADDING;

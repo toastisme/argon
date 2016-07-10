@@ -24,7 +24,7 @@
 
 #include "gui_derived.hpp"
 
-// implements PotentialAtom and CustomPotentialAtom
+// implements PotentialAtom, SplineContainer and SplineControlPoint
 
 namespace gui {
     
@@ -100,54 +100,60 @@ namespace gui {
         
     }
     
+    
+    
     /*
-        CustomPotentialAtom
+        SplineControlPoint
      */
     
-    //CustomPotentialAtom::CustomPotentialAtom(md::MDContainer &system, int minx, int maxx, int numPoints, int sideWidth, int x, int y, int width, int height) : PotentialAtom(system, minx, maxx, numPoints, x, y, width, height) {
-    //    
-    //    // Rescale the default position of the four-point spline
-    //    // Only occurs the first time the custom potential is selected
-    //    double x0 = ofMap(min_x*1.025, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
-    //    double x_end = ofMap(max_x, min_x, max_x, sideWidth + 40, ofGetWidth() - 40, true);
-    //    double y0 = ofGetHeight()/5.5;
-    //    double y_end = ofGetHeight()/1.8;
-    //    
-    //    // Move the two points to the scaled position;
-    //    CustomPotential& customPotential = theSystem.getCustomPotential();
-    //    customPotential.getSpline().movePoint(1, x_end, y_end, 0);
-    //    customPotential.getSpline().movePoint(0, x0, y0, 0);
-    //    
-    //    
-    //}
+    SplineControlPoint::SplineControlPoint(int _x, int _y, rect _range) : x(_x), y(_y), m(0), range(_range), mouseFocus(false)
+    {}
     
-    void CustomPotentialAtom::DrawPotential(PotentialFunctor &pot) {
+    void SplineControlPoint::render() {
+        double radius = bounds.width() / 2;
         
-        CustomPotential& customPotential = theSystem.getCustomPotential();
+        ofSetCircleResolution(20);
         
-        // Once the initial two-point spline has been rescaled, update the spline each iteration
- 
-        // Set color, position of each point in the spline
-        for (int i = 1; (i < customPotential.getSpline().points()+1); i++){
-            ofSetColor(0, 200, 240,200);
-            ofFill();
-            ofDrawCircle(customPotential.getSpline().getPoint(i-1).x, customPotential.getSpline().getPoint(i-1).y, 10);
-            ofSetColor(255, 255, 255,90);
-            ofNoFill();
-            ofDrawCircle(customPotential.getSpline().getPoint(i-1).x, customPotential.getSpline().getPoint(i-1).y, 10);
-        }
-            
-        // Map every x value to the UI and obtain y, add each value to ypoints
-        PotentialAtom::DrawPotential(pot);
+        ofSetColor(0, 0, 0);
+        ofDrawCircle(x, y, radius);
+        
+        ofSetColor(255, 255, 255);
+        ofDrawCircle(x, y, radius - 2);
     }
     
-    void CustomPotentialAtom::render() {
-        DrawPotential(theSystem.getCustomPotential());
+    bool SplineControlPoint::mousePressed(int x, int y, int button) {
+        if (bounds.inside(x, y)) {
+            switch (button) {
+                case 0:   // left click
+                    mouseFocus = true;
+                    bounds.movePos(POS_CENTRE, {(double)x, (double)y});
+                    goto handled;
+                case 2:   // right click
+                    goto handled;
+                case 3:   // left button
+                    m = m <= 5 ? 5 : m - 0.1;
+                    goto handled;
+                case 4:   // right button
+                    m = m >= 5 ? 5 : m + 0.1;
+                    goto handled;
+                handled:
+                    return true;
+                    break;
+                default:
+                    return false;
+            }
+        } else { return false; }
     }
     
-    bool CustomPotentialAtom::mouseMoved(int x, int y) { return false; }
-    bool CustomPotentialAtom::mousePressed(int x, int y, int button) { return false; }
-    bool CustomPotentialAtom::mouseReleased(int x, int y, int button) { return false; }
+    bool SplineControlPoint::mouseReleased(int x, int y, int button) {
+        mouseFocus = false;
+        return false;
+    }
     
-    
+    bool SplineControlPoint::mouseMoved(int x, int y) {
+        if (mouseFocus) {
+            bounds.movePos(POS_CENTRE, {(double)x, (double)y});
+            return true;
+        } else { return false; }
+    }
 }
