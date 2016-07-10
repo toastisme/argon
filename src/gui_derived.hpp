@@ -32,6 +32,7 @@
 #include "gui_base.hpp"
 #include "mdforces.hpp"
 #include "potentials.hpp"
+#include "cubicspline.hpp"
 
 
 /*
@@ -256,6 +257,30 @@ namespace gui {
         bool mousePressed(int x, int y, int button);
     };
     
+    class ButtonPairAtom : public UIAtom
+    {
+        /*
+            UI Atom for a button which has two states, 'on' and 'off' (starting on) and toggles between them
+         */
+        
+    private:
+        virtual void render();     // draws the correct button image to the screen
+        bool status;               // boolean for whether in the 'on' (true) or 'off' (false) state
+        
+        FuncAction doActionOn;     // function to call when clicked in 'on' state
+        const ofImage *imageOn;    // pointer to 'on' image asset
+        
+        FuncAction doActionOff;    // function to call when clicked in 'off' state
+        const ofImage *imageOff;   // pointer to 'off' image asset
+        
+    public:
+        ButtonPairAtom();
+        ButtonPairAtom(FuncAction doActionOn, const ofImage &imageOn, FuncAction doActionOff, const ofImage &imageOff, double x, double y, double width, double height);
+        
+        // handle mouse events
+        bool mousePressed(int x, int y, int button);
+    };
+    
     class PotentialAtom : public UIAtom
     {
     /*
@@ -285,11 +310,14 @@ namespace gui {
          */
     private:
         virtual void render();
+        double radius;
         rect range;
         bool mouseFocus;
+        
+        void movePoint(double x, double y);
     
     public:
-        SplineControlPoint(int x, int y, rect range);
+        SplineControlPoint(int x, int y, double radius, rect range);
         
         // x and y stored in screen space, m stored in spline space
         double x, y, m;
@@ -300,29 +328,6 @@ namespace gui {
         
     };
     
-    class ButtonPairAtom : public UIAtom
-    {
-        /*
-            UI Atom for a button which has two states, 'on' and 'off' (starting on) and toggles between them
-         */
-        
-    private:
-        virtual void render();     // draws the correct button image to the screen
-        bool status;               // boolean for whether in the 'on' (true) or 'off' (false) state
-        
-        FuncAction doActionOn;     // function to call when clicked in 'on' state
-        const ofImage *imageOn;    // pointer to 'on' image asset
-        
-        FuncAction doActionOff;    // function to call when clicked in 'off' state
-        const ofImage *imageOff;   // pointer to 'off' image asset
-        
-    public:
-        ButtonPairAtom();
-        ButtonPairAtom(FuncAction doActionOn, const ofImage &imageOn, FuncAction doActionOff, const ofImage &imageOff, double x, double y, double width, double height);
-        
-        // handle mouse events
-        bool mousePressed(int x, int y, int button);
-    };
     
     
     /*
@@ -341,6 +346,26 @@ namespace gui {
         SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &textColour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double padding, double height);
 
         static int PADDING;
+    };
+    
+    class SplineContainer : public UIContainer
+    {
+        /*
+            UI Container to control a spline with the mouse
+         */
+    private:
+        CustomPotential &potential;
+        double radius;
+        rect splineRegion, pointRegion;
+        
+    public:
+        SplineContainer(CustomPotential &potential, double x_min, double x_max, double y_min, double y_max, double controlPointRadius, double x, double y, double width, double height);
+        
+        bool mousePressed(int x, int y, int button);
+        //bool mouseReleased(int x, int y, int button);
+        //bool mouseMoved(int x, int y);
+        
+        void updateSpline();
     };
     
 }

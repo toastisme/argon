@@ -38,10 +38,7 @@ namespace gui {
     }
     
     void PotentialAtom::render() {
-        DrawPotential(theSystem.getPotential());
-    }
-     
-    void PotentialAtom::DrawPotential(PotentialFunctor& pot){
+        PotentialFunctor &pot = theSystem.getPotential();
         std::vector<coord> potPoints, particlePoints;
         
         double x, y;
@@ -106,12 +103,10 @@ namespace gui {
         SplineControlPoint
      */
     
-    SplineControlPoint::SplineControlPoint(int _x, int _y, rect _range) : x(_x), y(_y), m(0), range(_range), mouseFocus(false)
+    SplineControlPoint::SplineControlPoint(int _x, int _y, double _radius, rect _range) : x(_x), y(_y), m(0), radius(_radius), range(_range), mouseFocus(false), UIAtom(x - radius, y - radius, radius, radius)
     {}
     
     void SplineControlPoint::render() {
-        double radius = bounds.width() / 2;
-        
         ofSetCircleResolution(20);
         
         ofSetColor(0, 0, 0);
@@ -121,12 +116,18 @@ namespace gui {
         ofDrawCircle(x, y, radius - 2);
     }
     
+    void SplineControlPoint::movePoint(double x, double y) {
+        coord target = {x, y};
+        target = BilinearClamp(target, range);
+        bounds.movePos(POS_CENTRE, target);
+    }
+    
     bool SplineControlPoint::mousePressed(int x, int y, int button) {
         if (bounds.inside(x, y)) {
             switch (button) {
                 case 0:   // left click
                     mouseFocus = true;
-                    bounds.movePos(POS_CENTRE, {(double)x, (double)y});
+                    movePoint(x, y);
                     goto handled;
                 case 2:   // right click
                     goto handled;
@@ -152,8 +153,102 @@ namespace gui {
     
     bool SplineControlPoint::mouseMoved(int x, int y) {
         if (mouseFocus) {
-            bounds.movePos(POS_CENTRE, {(double)x, (double)y});
+            movePoint(x, y);
             return true;
         } else { return false; }
     }
+    
+    
+    
+    /*
+        SplineContainer
+     */
+    
+    SplineContainer::SplineContainer(CustomPotential &_potential, double min_x, double max_x, double min_y, double max_y, double _radius, double x, double y, double width, double height) : potential(_potential), radius(_radius), UIContainer(x, y, width, height)
+    {
+        splineRegion = {min_x, max_x, max_y, min_y};
+        pointRegion  = {min_x + radius, max_x - radius, max_y - radius, min_y + radius};
+    }
+    
+    void SplineContainer::updateSpline() {
+        std::vector <cubic::Point> points;
+        
+        coord pos;
+        double m;
+        for (int i = 0; i < children.size(); ++i) {
+            pos.x = ((SplineControlPoint*)children[i])->x;
+            pos.y = ((SplineControlPoint*)children[i])->y;
+            m     = ((SplineControlPoint*)children[i])->m;
+            
+            pos = BilinearMap(pos, splineRegion, bounds);
+            points.push_back({pos.x, pos.y, m});
+        }
+        
+        potential.updatePoints(points);
+    }
+    
+    bool SplineContainer::mousePressed(int x, int y, int button) {
+        if (visible && bounds.inside(x, y)) {
+            switch (button) {
+                    
+                case 0: {
+                    bool handled = false;
+                    for (int i = 0; i < children.size(); ++i) {
+                        handled = children[i]->mousePressed(x, y, 0);
+                        
+                        if (handled) {
+                            // move child to back of list to draw this child on top
+                            UIBase *child = children[i];
+                            children.erase(children.begin() + i);
+                            children.push_back(child);
+                            break;
+                        }
+                    }
+                    
+                    if (!handled) {
+                        addChild(new SplineControlPoint(x, y, radius, pointRegion));
+                    }
+                } goto handled;
+                    
+                case 2: {
+                    bool handled = false;
+                    for (int i = 0; i < children.size(); ++i) {
+                        handled = children[i]->mousePressed(x, y, 2);
+                        
+                        if (handled) {
+                            delete children[i];
+                            children.erase(children.begin() + i);
+                            break;
+                        }
+                    }
+                } goto handled;
+                    
+                case 3: {
+                    bool handled = false;
+                    for (int i = 0; i < children.size(); ++i) {
+                        handled = children[i]->mousePressed(x, y, 3);
+                        
+                        if (handled) { break; }
+                    }
+                } goto handled;
+                    
+                case 4: {
+                    bool handled = false;
+                    for (int i = 0; i < children.size(); ++i) {
+                        handled = children[i]->mousePressed(x, y, 4);
+                        
+                        if (handled) { break; }
+                    }
+                } goto handled;
+                    
+                handled:
+                    updateSpline();
+                    return true;
+                    break;
+                default:
+                    return false;
+            }
+        } else { return false; }
+    }
+    
 }
