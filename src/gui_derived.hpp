@@ -294,9 +294,9 @@ namespace gui {
         virtual void render();
         
     protected:
-        md::MDContainer& theSystem;
-        rect potBounds;
-        double numPoints;
+        md::MDContainer& theSystem;   // reference to the MD system
+        rect potBounds;               // region of the potential curve to plot
+        double numPoints;             // resolution of plot
         
     };
     
@@ -307,18 +307,22 @@ namespace gui {
          */
     private:
         virtual void render();
-        double radius;
-        rect range;
-        bool mouseFocus;
         
+        double radius;      // radius of drawn point
+        rect pointBounds;   // boundary of allowed points
+        bool mouseFocus;    // whether the point is being dragged
+        
+        // move the point to position (x, y) with appropriate bounds checking
         void movePoint(double x, double y);
     
     public:
         SplineControlPoint(int x, int y, double radius, rect range);
         
-        // x and y stored in screen space (in bounds), m stored in spline space
+        // x and y stored in screen space (in bounds)
+        // m stored here in spline space
         double m;
         
+        // handle mouse events
         bool mousePressed(int x, int y, int button);
         bool mouseReleased(int x, int y, int button);
         bool mouseMoved(int x, int y);
@@ -348,12 +352,15 @@ namespace gui {
     class SplineContainer : public UIContainer
     {
         /*
-            UI Container to control a spline with the mouse
+            UI Container to control a custom potential's spline with the mouse
          */
     private:
         CustomPotential &potential;
-        double radius;
-        rect splineRegion, pointRegion;
+        double radius;       // visual size of control points
+        rect splineRegion;   // region of spline to control
+        rect pointRegion;    // region in which the centres of the control points are allowed to be, which
+                             // is slightly smaller than the region of the controller to avoid control points
+                             // sticking out of the sides
         
         // update the spline with the contained control points
         void updateSpline();
@@ -365,7 +372,10 @@ namespace gui {
     public:
         SplineContainer(CustomPotential &potential, double x_min, double x_max, double y_min, double y_max, double controlPointRadius, double x, double y, double width, double height);
         
+        // returns true if the mouse event caused the spline to be updated
         bool mousePressed(int x, int y, int button);
+        
+        // returns true if a point was moved
         bool mouseMoved(int x, int y);
     };
     

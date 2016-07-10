@@ -103,10 +103,8 @@ namespace gui {
         SplineControlPoint
      */
     
-    SplineControlPoint::SplineControlPoint(int x, int y, double _radius, rect _range) : m(0), radius(_radius), range(_range), mouseFocus(false), UIAtom(0, 0, 2 * _radius, 2 * _radius)
-    {
-        movePoint(x, y);
-    }
+    SplineControlPoint::SplineControlPoint(int x, int y, double _radius, rect _pointBounds) : m(0), radius(_radius), pointBounds(_pointBounds), mouseFocus(false), UIAtom(x - _radius, y - _radius, 2 * _radius, 2 * _radius)
+    {}
     
     void SplineControlPoint::render() {
         ofSetCircleResolution(20);
@@ -120,46 +118,61 @@ namespace gui {
     
     void SplineControlPoint::movePoint(double x, double y) {
         coord target = {x, y};
-        target = BilinearClamp(target, range);
+        target = BilinearClamp(target, pointBounds);
         bounds.movePos(POS_CENTRE, target);
     }
     
     bool SplineControlPoint::mousePressed(int x, int y, int button) {
         if (bounds.inside(x, y)) {
             switch (button) {
-                case 0:   // left click
+                    
+                case 0:   // left click, start being dragged
                     mouseFocus = true;
-                    //movePoint(x, y);
                     goto handled;
-                case 2:   // right click
+                    
+                case 2:   // right click, delete point
+                    // do nothing (other than return true)
                     goto handled;
-                case 3:   // left button
+                    
+                case 3:   // left button, decrease slope
                     m -= 0.4;
                     if (m < -4) { m = -4; }
                     goto handled;
-                case 4:   // right button
+                    
+                case 4:   // right button, increase slope
                     m += 0.4;
                     if (m > 4) { m = 4; }
                     goto handled;
+                    
                 handled:
                     return true;
                     break;
+                    
                 default:
                     return false;
             }
-        } else { return false; }
+        } else {
+            return false;
+        }
     }
     
+    // if left-click was released, lose mouse focus
+    // return false so that we don't capture the mouse release event
     bool SplineControlPoint::mouseReleased(int x, int y, int button) {
-        if (button == 0) { mouseFocus = false; }
+        if (button == 0) {
+            mouseFocus = false;
+        }
         return false;
     }
     
+    // if we have mouse focus, move the point
     bool SplineControlPoint::mouseMoved(int x, int y) {
         if (mouseFocus) {
             movePoint(x, y);
             return true;
-        } else { return false; }
+        } else {
+            return false;
+        }
     }
     
     
@@ -170,11 +183,11 @@ namespace gui {
     
     SplineContainer::SplineContainer(CustomPotential &_potential, double min_x, double max_x, double min_y, double max_y, double _radius, double x, double y, double width, double height) : potential(_potential), radius(_radius), UIContainer(x, y, width, height)
     {
-        splineRegion = {min_x, max_x, max_y, min_y};
-        pointRegion  = {bounds.left + radius, bounds.right - radius, bounds.top + radius, bounds.bottom - radius};
-        
+        splineRegion.setLRTB(min_x, max_x, max_y, min_y);
+        pointRegion.setLRTB(bounds.left + radius, bounds.right - radius, bounds.top + radius, bounds.bottom - radius);
     }
     
+    // map the spline points and pass to the potential
     void SplineContainer::updateSpline() {
         std::vector <cubic::Point> points;
         
@@ -192,6 +205,8 @@ namespace gui {
         potential.updatePoints(points);
     }
     
+    // return true if there is a control point with x-coordinate close to the given x
+    // optionally can exclude the point with index except from the check
     bool SplineContainer::controlPointNear(double x, int except) {
         for (int i = 0; i < children.size(); ++i) {
             if (i == except) { continue; }
@@ -200,17 +215,22 @@ namespace gui {
         return false;
     }
     
+    // handle mouse click events
     bool SplineContainer::mousePressed(int x, int y, int button) {
         if (visible && bounds.inside(x, y)) {
             switch (button) {
-                    
+                // left click: set mouseFocus to true or create new control point
                 case 0: {
-                    bool handled = false;
-                    // loop through backwards so that the point drawn on top is clicked first
+                    bool hitChild = false;   // slightly unfortunate variable name...
+                    
+                    // loop through backwards so that the point drawn on top is clicked first (which,
+                    // since they are drawn in forward-order, is the last child)
                     for (int i = children.size() - 1; i >= 0; --i) {
-                        handled = children[i]->mousePressed(x, y, 0);
                         
-                        if (handled) {
+                        // handled is true if children[i] was just clicked on
+                        hitChild = children[i]->mousePressed(x, y, 0);
+                        
+                        if (hitChild) {
                             // move child to back of list to draw this child on top
                             UIBase *child = children[i];
                             children.erase(children.begin() + i);
@@ -219,51 +239,64 @@ namespace gui {
                         }
                     }
                     
-                    if (!handled && !controlPointNear(x)) {
-                        children.push_back(new SplineControlPoint(x, y, radius, pointRegion));
-                        children.back()->mousePressed(x, y, 0);
+                    // if we haven't clicked on a child, then make a new control point if the x-
+                    // coordinate doesn't overlap another point
+                    if (!hitChild) {
+                        if (pointRegion.inside(x, y) && !controlPointNear(x)) {
+                            // use push_back, not addChild, so that we make the child directly at (x, y),
+                            // instead of at (x, y) relative to the top-left corner of the container
+                            children.push_back(new SplineControlPoint(x, y, radius, pointRegion));
+                            children.back()->mousePressed(x, y, 0);
+                        } else {
+                            // only return here if we haven't clicked on a child, and if we couldn't
+                            // create a new point at the mouse position
+                            return false;
+                        }
                     }
                 } goto handled;
                     
+                // right click: remove control point
                 case 2: {
-                    bool handled = false;
+                    bool hitChild = false;
                     for (int i = 0; i < children.size(); ++i) {
-                        handled = children[i]->mousePressed(x, y, 2);
+                        hitChild = children[i]->mousePressed(x, y, 2);
                         
-                        if (handled) {
+                        if (hitChild) {
+                            // free the memory, then delete the pointer
                             delete children[i];
                             children.erase(children.begin() + i);
                             break;
                         }
                     }
+                    if (!hitChild) { return false; }
                 } goto handled;
                     
-                case 3: {
-                    bool handled = false;
-                    for (int i = 0; i < children.size(); ++i) {
-                        handled = children[i]->mousePressed(x, y, 3);
-                        
-                        if (handled) { break; }
-                    }
-                } goto handled;
-                    
+                // left button: decrease gradient
+                // right button: increase gradient
+                // both behave exactly the same, so can use the same case
+                case 3:
                 case 4: {
-                    bool handled = false;
+                    bool hitChild = false;
                     for (int i = 0; i < children.size(); ++i) {
-                        handled = children[i]->mousePressed(x, y, 4);
+                        hitChild = children[i]->mousePressed(x, y, button);
                         
-                        if (handled) { break; }
+                        if (hitChild) { break; }
                     }
+                    if (!hitChild) { return false; }
                 } goto handled;
                     
+                // we hit the goto if we need to update the spline
                 handled:
                     updateSpline();
                     return true;
                     break;
+                    
                 default:
                     return false;
             }
-        } else { return false; }
+        } else {
+            return false;
+        }
     }
     
     bool SplineContainer::mouseMoved(int x, int y) {
@@ -284,7 +317,12 @@ namespace gui {
                     }
                 }
             }
-        if (handled) { updateSpline(); }
-        return false;
+        
+        if (handled) {
+            updateSpline();
+            return true;
+        } else {
+            return false;
+        }
     }
 }
