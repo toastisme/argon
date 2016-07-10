@@ -129,7 +129,7 @@ namespace gui {
             switch (button) {
                 case 0:   // left click
                     mouseFocus = true;
-                    movePoint(x, y);
+                    //movePoint(x, y);
                     goto handled;
                 case 2:   // right click
                     goto handled;
@@ -195,7 +195,7 @@ namespace gui {
     bool SplineContainer::controlPointNear(double x, int except) {
         for (int i = 0; i < children.size(); ++i) {
             if (i == except) { continue; }
-            if (abs(x - children[i]->getRect().centreX()) < 5) { return true; }
+            if (abs(x - children[i]->getRect().centreX()) < 8) { return true; }
         }
         return false;
     }
@@ -206,7 +206,8 @@ namespace gui {
                     
                 case 0: {
                     bool handled = false;
-                    for (int i = 0; i < children.size(); ++i) {
+                    // loop through backwards so that the point drawn on top is clicked first
+                    for (int i = children.size() - 1; i >= 0; --i) {
                         handled = children[i]->mousePressed(x, y, 0);
                         
                         if (handled) {
@@ -219,7 +220,8 @@ namespace gui {
                     }
                     
                     if (!handled && !controlPointNear(x)) {
-                        addChild(new SplineControlPoint(x - bounds.left, y - bounds.top, radius, pointRegion));
+                        children.push_back(new SplineControlPoint(x, y, radius, pointRegion));
+                        children.back()->mousePressed(x, y, 0);
                     }
                 } goto handled;
                     
@@ -265,13 +267,13 @@ namespace gui {
     }
     
     bool SplineContainer::mouseMoved(int x, int y) {
-        if (!controlPointNear(x)) {
-            bool handled = false;
-            for (int i = 0; i < children.size(); ++i) {
+        bool handled = false;
+        for (int i = 0; i < children.size(); ++i) {
+            if (!controlPointNear(x, i)) {
                 handled = children[i]->mouseMoved(x, y);
             }
-            if (handled) { updateSpline(); }
         }
+        if (handled) { updateSpline(); }
         return false;
     }
 }

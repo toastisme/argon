@@ -214,9 +214,9 @@ void ofApp::setup()
     potentialUI = gui::UIContainer(0, 0 , 1024, 600);
     
     // Setup potential atoms
-    potentialUI.addChild(new gui::PotentialAtom(theSystem, 150, 0.9, 3.0, -2, 2, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
+    potentialUI.addChild(new gui::PotentialAtom(theSystem, 300, 0.95, 3.0, -2, 2, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
     
-    splineContainerIndex = potentialUI.addIndexedChild(new gui::SplineContainer(theSystem.getCustomPotential(), 0.9, 3.0, -2, 2, 12, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
+    splineContainerIndex = potentialUI.addIndexedChild(new gui::SplineContainer(theSystem.getCustomPotential(), 0.95, 3.0, -2, 2, 12, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
 
     potentialUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 600)); //
     
