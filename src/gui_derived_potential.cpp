@@ -134,10 +134,12 @@ namespace gui {
                 case 2:   // right click
                     goto handled;
                 case 3:   // left button
-                    m = m <= 5 ? 5 : m - 0.1;
+                    m -= 0.4;
+                    if (m < -4) { m = -4; }
                     goto handled;
                 case 4:   // right button
-                    m = m >= 5 ? 5 : m + 0.1;
+                    m += 0.4;
+                    if (m > 4) { m = 4; }
                     goto handled;
                 handled:
                     return true;
