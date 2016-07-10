@@ -132,10 +132,6 @@ namespace gui {
         std::vector <UIBase *> children;
         std::vector <UIBase *> indexedChildren;
         
-        // pass function call and arguments to all children
-        template<typename T, typename ...Args>
-        void passCallToChildren(T (UIBase::*func)(Args...), Args ... args);
-        
     public:
         UIContainer();
         UIContainer(double x, double y, double width = 0, double height = 0);
@@ -157,8 +153,10 @@ namespace gui {
         virtual void makeInvisible();
         virtual void toggleVisible();
         
-        // remaining methods just pass call through to children
+        // draw is just passed to all children
         virtual void draw();
+        
+        // only pass mouse event to the first child to handle it
         virtual bool mouseMoved(int x, int y);
         virtual bool mousePressed(int x, int y, int button);
         virtual bool mouseReleased(int x, int y, int button);

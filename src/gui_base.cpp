@@ -115,17 +115,7 @@ namespace gui {
         passCallToChildren(&UIBase::moveBy, offset);
     }
     
-    // templated function to pass an arbitrary function call and its arguments to each child element
-    // just some trivial templating, easy stuff really...
-    template<typename T, typename ...Args>
-    void UIContainer::passCallToChildren(T (UIBase::*func)(Args...), Args ... args) {
-        for (int i = 0; i < children.size(); ++i) {
-            (children[i]->*func)(std::forward<Args>(args)...);
-        }
-    }
-    
     // set visibility flag and also pass call through to children
-    
     void UIContainer::makeVisible() {
         visible = true;
         for (int i = 0; i < children.size(); ++i) { children[i]->makeVisible(); }
@@ -141,10 +131,12 @@ namespace gui {
         for (int i = 0; i < children.size(); ++i) { children[i]->toggleVisible(); }
     }
 
-    // remainder of methods just pass the call through to its children
+    // draw just passes the call through to its children
+    void UIContainer::draw() {
+        for (int i = 0; i < children.size(); ++i) { children[i]->draw(); }
+    }
     
-    void UIContainer::draw() { passCallToChildren(&UIBase::draw); }
-    
+    // mouse events by default only pass through the event to the first child to handle them
     bool UIContainer::mouseMoved(int x, int y) {
         bool handled = false;
         for (int i = 0; i < children.size(); ++i) {
