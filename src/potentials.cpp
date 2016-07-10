@@ -31,17 +31,21 @@
 
 // return the potential
 // if within the wall, use the LJ potential
+// else if past the cutoff, use 0
 // else use the actual potential
 double PotentialFunctor::potential(double r) {
     if (r < LJ_AT_3) { return calcEnergyLJ(r); }
+    else if (r > 3.0) { return 0; }
     else { return calcEnergy(r); }
 }
 
 // return the force
 // if within the wall, use the LJ force
+// else if past the cutoff, use 0
 // else use the actual force
 double PotentialFunctor::force(double r) {
     if (r < LJ_AT_3) { return calcForceLJ(r); }
+    else if (r > 3.0) { return 0; }
     else { return calcForce(r); }
 }
 
