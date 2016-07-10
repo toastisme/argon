@@ -288,9 +288,6 @@ namespace gui {
      */
     
     public:
-        
-        virtual void DrawPotential(PotentialFunctor& pot);
-        
         PotentialAtom(md::MDContainer &system, int numPoints, double min_x, double max_x, double min_y, double max_y, int x, int y, int width, int height);
         
     private:
@@ -319,8 +316,8 @@ namespace gui {
     public:
         SplineControlPoint(int x, int y, double radius, rect range);
         
-        // x and y stored in screen space, m stored in spline space
-        double x, y, m;
+        // x and y stored in screen space (in bounds), m stored in spline space
+        double m;
         
         bool mousePressed(int x, int y, int button);
         bool mouseReleased(int x, int y, int button);
@@ -358,14 +355,18 @@ namespace gui {
         double radius;
         rect splineRegion, pointRegion;
         
+        // update the spline with the contained control points
+        void updateSpline();
+        
+        // return if a control point is horizontally close to the given x-coordinate
+        // optionally exclude the point with index except
+        bool controlPointNear(double x, int except = -1);
+        
     public:
         SplineContainer(CustomPotential &potential, double x_min, double x_max, double y_min, double y_max, double controlPointRadius, double x, double y, double width, double height);
         
         bool mousePressed(int x, int y, int button);
-        //bool mouseReleased(int x, int y, int button);
-        //bool mouseMoved(int x, int y);
-        
-        void updateSpline();
+        bool mouseMoved(int x, int y);
     };
     
 }

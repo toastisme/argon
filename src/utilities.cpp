@@ -107,15 +107,13 @@ bool rect::inside(coord point) const {
 
 
 // clamp point inside rect
-coord BilinearClamp(coord point, rect out) {
-    coord ret;
+coord BilinearClamp(coord point, rect region) {
+    point.x = point.x < region.left   ? region.left   : point.x;
+    point.x = point.x > region.right  ? region.right  : point.x;
+    point.y = point.y < region.top    ? region.top    : point.y;
+    point.y = point.y > region.bottom ? region.bottom : point.y;
     
-    ret.x = ret.x > out.right  ? out.right  : ret.x;
-    ret.x = ret.x < out.left   ? out.left   : ret.x;
-    ret.y = ret.y < out.top    ? out.top    : ret.y;
-    ret.y = ret.y < out.bottom ? out.bottom : ret.y;
-    
-    return ret;
+    return point;
 }
 
 // map point from one rect to another

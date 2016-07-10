@@ -23,6 +23,7 @@
  */
 
 #include "cubicspline.hpp"
+#include <cmath>
 #include <algorithm>
 
 namespace cubic {

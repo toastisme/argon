@@ -112,7 +112,7 @@ namespace gui {
     // move container and all children
     void UIContainer::moveBy(coord offset) {
         bounds.moveBy(offset);
-        passCallToChildren(&UIBase::moveBy, offset);
+        for (int i = 0; i < children.size(); ++i) { children[i]->moveBy(offset); }
     }
     
     // set visibility flag and also pass call through to children

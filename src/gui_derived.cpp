@@ -215,7 +215,7 @@ namespace gui {
     
     // if the mouse is released (anywhere on the screen), lose mouse focus
     bool SliderAtom::mouseReleased(int x, int y, int button) {
-        mouseFocus = false;
+        if (button == 0) { mouseFocus = false; }
         return false;   // we do not want to capture the mouse release, so return false
     }
     

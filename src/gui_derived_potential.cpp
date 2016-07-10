@@ -103,17 +103,19 @@ namespace gui {
         SplineControlPoint
      */
     
-    SplineControlPoint::SplineControlPoint(int _x, int _y, double _radius, rect _range) : x(_x), y(_y), m(0), radius(_radius), range(_range), mouseFocus(false), UIAtom(x - radius, y - radius, radius, radius)
-    {}
+    SplineControlPoint::SplineControlPoint(int x, int y, double _radius, rect _range) : m(0), radius(_radius), range(_range), mouseFocus(false), UIAtom(0, 0, 2 * _radius, 2 * _radius)
+    {
+        movePoint(x, y);
+    }
     
     void SplineControlPoint::render() {
         ofSetCircleResolution(20);
         
         ofSetColor(0, 0, 0);
-        ofDrawCircle(x, y, radius);
+        ofDrawCircle(bounds.centreX(), bounds.centreY(), radius);
         
         ofSetColor(255, 255, 255);
-        ofDrawCircle(x, y, radius - 2);
+        ofDrawCircle(bounds.centreX(), bounds.centreY(), radius - 3);
     }
     
     void SplineControlPoint::movePoint(double x, double y) {
@@ -147,7 +149,7 @@ namespace gui {
     }
     
     bool SplineControlPoint::mouseReleased(int x, int y, int button) {
-        mouseFocus = false;
+        if (button == 0) { mouseFocus = false; }
         return false;
     }
     
@@ -167,7 +169,8 @@ namespace gui {
     SplineContainer::SplineContainer(CustomPotential &_potential, double min_x, double max_x, double min_y, double max_y, double _radius, double x, double y, double width, double height) : potential(_potential), radius(_radius), UIContainer(x, y, width, height)
     {
         splineRegion = {min_x, max_x, max_y, min_y};
-        pointRegion  = {min_x + radius, max_x - radius, max_y - radius, min_y + radius};
+        pointRegion  = {bounds.left + radius, bounds.right - radius, bounds.top + radius, bounds.bottom - radius};
+        
     }
     
     void SplineContainer::updateSpline() {
@@ -176,15 +179,23 @@ namespace gui {
         coord pos;
         double m;
         for (int i = 0; i < children.size(); ++i) {
-            pos.x = ((SplineControlPoint*)children[i])->x;
-            pos.y = ((SplineControlPoint*)children[i])->y;
+            pos.x = children[i]->getRect().getPos(POS_CENTRE).x;
+            pos.y = children[i]->getRect().getPos(POS_CENTRE).y;
             m     = ((SplineControlPoint*)children[i])->m;
             
-            pos = BilinearMap(pos, splineRegion, bounds);
+            pos = BilinearMap(pos, bounds, splineRegion);
             points.push_back({pos.x, pos.y, m});
         }
         
         potential.updatePoints(points);
+    }
+    
+    bool SplineContainer::controlPointNear(double x, int except) {
+        for (int i = 0; i < children.size(); ++i) {
+            if (i == except) { continue; }
+            if (abs(x - children[i]->getRect().centreX()) < 5) { return true; }
+        }
+        return false;
     }
     
     bool SplineContainer::mousePressed(int x, int y, int button) {
@@ -205,8 +216,8 @@ namespace gui {
                         }
                     }
                     
-                    if (!handled) {
-                        addChild(new SplineControlPoint(x, y, radius, pointRegion));
+                    if (!handled && !controlPointNear(x)) {
+                        addChild(new SplineControlPoint(x - bounds.left, y - bounds.top, radius, pointRegion));
                     }
                 } goto handled;
                     
@@ -251,4 +262,14 @@ namespace gui {
         } else { return false; }
     }
     
+    bool SplineContainer::mouseMoved(int x, int y) {
+        if (!controlPointNear(x)) {
+            bool handled = false;
+            for (int i = 0; i < children.size(); ++i) {
+                handled = children[i]->mouseMoved(x, y);
+            }
+            if (handled) { updateSpline(); }
+        }
+        return false;
+    }
 }

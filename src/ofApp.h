@@ -131,8 +131,9 @@ private:
     // UI Containers
     gui::UIContainer menuUI;
     gui::UIContainer potentialUI;
-    int potentialIndex, customPotentialIndex; // Indices of potential atoms in potentialUI
     gui::UIContainer presshUI;
     gui::UIContainer testUI;
+    
+    int splineContainerIndex; // Indices of potential atoms in potentialUI
 
 };

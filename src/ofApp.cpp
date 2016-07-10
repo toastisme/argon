@@ -214,8 +214,9 @@ void ofApp::setup()
     potentialUI = gui::UIContainer(0, 0 , 1024, 600);
     
     // Setup potential atoms
-    potentialIndex = potentialUI.addIndexedChild(new gui::PotentialAtom(theSystem, 150, 0.95, 3.0, -2, 2, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
-    customPotentialIndex = potentialUI.addIndexedChild(new gui::PotentialAtom(theSystem, 150, 0.95, 3.0, -2, 2, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
+    potentialUI.addChild(new gui::PotentialAtom(theSystem, 150, 0.9, 3.0, -2, 2, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
+    
+    splineContainerIndex = potentialUI.addIndexedChild(new gui::SplineContainer(theSystem.getCustomPotential(), 0.9, 3.0, -2, 2, 12, 146, 75, 1024 - 40 - 146, 600 - 40 - 75));
 
     potentialUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 600)); //
     
@@ -223,30 +224,26 @@ void ofApp::setup()
     
     potentialUI.addChild(new gui::TextAtom("Lennard-Jones", uiFont12, textcolor, POS_LEFT, 30, topHeight+1.5*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::LENNARD_JONES);
-                                                    potentialUI.getChild(potentialIndex)->makeVisible();
-                                                    potentialUI.getChild(customPotentialIndex)->makeInvisible(); },
+                                                    potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
                                                     ljThumbnail, 30, topHeight, 85, 85));
     
     potentialUI.addChild(new gui::TextAtom("Square Well", uiFont12, textcolor, POS_LEFT, 30, topHeight+3.55*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::SQUARE_WELL);
-                                                    potentialUI.getChild(potentialIndex)->makeVisible();
-                                                    potentialUI.getChild(customPotentialIndex)->makeInvisible(); },
+                                                    potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
                                                     squareThumbnail, 30, topHeight+2*buttonHeight/2, 85, 85));
     
     potentialUI.addChild(new gui::TextAtom("Morse", uiFont12, textcolor, POS_LEFT, 30, topHeight+5.4*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::MORSE);
-                                                    potentialUI.getChild(potentialIndex)->makeVisible();
-                                                    potentialUI.getChild(customPotentialIndex)->makeInvisible(); },
+                                                    potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
                                                     morseThumbnail, 30, topHeight+4.0*buttonHeight/2, 85, 85));
     
     potentialUI.addChild(new gui::TextAtom("Custom", uiFont12, textcolor, POS_LEFT, 30, topHeight+7.3*buttonHeight/2, 100, 30));
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::CUSTOM);
-                                                    potentialUI.getChild(potentialIndex)->makeInvisible();
-                                                    potentialUI.getChild(customPotentialIndex)->makeVisible(); },
+                                                    potentialUI.getChild(splineContainerIndex)->makeVisible(); },
                                                     squareThumbnail, 30, topHeight+6.0*buttonHeight/2, 85, 85));
     
     potentialUI.makeInvisible();
-    potentialUI.getChild(customPotentialIndex)->makeVisible();
+    potentialUI.getChild(splineContainerIndex)->makeVisible();
     potentialUI.mouseReleased(0, 0, 0);
     
     // start menu as invisible
@@ -615,6 +612,8 @@ void ofApp::keyReleased(int key){
 void ofApp::mouseMoved(int x, int y ){
     if (menuUI.getVisible()) {
         menuUI.mouseMoved(x, y);
+    } else if (potentialUI.getVisible()) {
+        potentialUI.mouseMoved(x, y);
     }
 }
 
@@ -622,6 +621,8 @@ void ofApp::mouseMoved(int x, int y ){
 void ofApp::mouseDragged(int x, int y, int button){
     if (menuUI.getVisible()) {
         menuUI.mouseMoved(x, y);
+    } else if (potentialUI.getVisible()) {
+        potentialUI.mouseMoved(x, y);
     }
 }
 
@@ -638,11 +639,8 @@ void ofApp::mouseDragged(int x, int y, int button){
 void ofApp::mousePressed(int x, int y, int button){
     
     
-    if ( drawOn ) { // Mouse controls drawing UI
+    if (potentialUI.getVisible()) { // Mouse controls drawing UI
         potentialUI.mousePressed(x, y, button);
-
-        //theSystem.setPotential(&customPotential);
-
         
     } else if (menuUI.getVisible() && menuUI.getRect().inside(x, y)) { // Mouse controls menu
         // pass through event to children
@@ -670,6 +668,8 @@ void ofApp::mousePressed(int x, int y, int button){
 void ofApp::mouseReleased(int x, int y, int button){
     if (menuUI.getVisible()) {
         menuUI.mouseReleased(x, y, button);
+    } else if (potentialUI.getVisible()) {
+        potentialUI.mouseReleased(x, y, button);
     }
 }
 
