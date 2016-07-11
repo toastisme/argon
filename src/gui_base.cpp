@@ -57,6 +57,9 @@ namespace gui {
     bool UIBase::mousePressed(int x, int y, int button) { return false; }
     bool UIBase::mouseReleased(int x, int y, int button) { return false; }
     
+    // Default handling of audio event is to do nothing
+    void UIBase::audioIn(double volume) { }
+    
     /*
         UIAtom
      */
@@ -164,4 +167,7 @@ namespace gui {
         }
         return handled;
     }
+    
+    // audio events do nothing still
+    void UIContainer::audioIn(double volume) {}
 }

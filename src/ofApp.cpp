@@ -118,7 +118,10 @@ void ofApp::setup()
     drawOn  = false;
     customPotentialOn = false;
 
-    selectedGaussian = -1; // No gaussian selected
+    // Setup system UI
+    systemUI = gui::UIContainer(0, 0, ofGetWidth(), ofGetHeight());
+    gaussianContainerIndex = systemUI.addIndexedChild(new gui::GaussianContainer(theSystem, circGradient, 20.0, 0, 0, ofGetWidth(), ofGetHeight()));
+    systemUI.makeVisible();
     
     /*
          Setup menu UI
@@ -286,10 +289,8 @@ void ofApp::update(){
         
         // Update the currently selected Gaussian, so that quiet-> loud results in
         // a change from an attractive, wide Gaussian, to a repulsive, narrow Gaussian.
-        if ( selectedGaussian > -1)
-            theSystem.updateGaussian(selectedGaussian, 50 - scaledVol*100, 0.8 - 0.5*scaledVol,
-                                     theSystem.getGaussianX0(selectedGaussian),
-                                     theSystem.getGaussianY0(selectedGaussian));
+        systemUI.getChild(gaussianContainerIndex)->audioIn(scaledVol);
+        
     }
 }
 
@@ -322,51 +323,6 @@ void ofApp::drawParticle(int index, double radius_x, double radius_y, int nframe
 void ofApp::drawParticle(int index, double radius, int nframes) {
     coord pos = theSystem.getPos(index, nframes);
     ofDrawCircle(box2screen(pos), radius);
-}
-
-/*
-    ROUTINE drawGaussian:
-        Takes a reference to a Gaussian object and whether this Gaussian is the one
-        currently in focus (selected), and draws the Gaussian as a circular gradient
-        texture, coloured based on the amplitude of the Gaussian
- 
- */
-void ofApp::drawGaussian(Gaussian& g, bool selected){
-    double gA = g.getgAmp();       // amplitude
-    double galpha = g.getgAlpha(); // inverse width
-    // Centre
-    double gx = g.getgex0();
-    double gy = g.getgey0();
-    
-    // Rescale between box size and window size
-    double xscale = ofGetWidth() / theSystem.getWidth();
-    double yscale = ofGetHeight() / theSystem.getHeight();
-    
-    // Determine the colour of the Gaussian, based on the amplitude
-    ofColor color;
-    u_char hue = 200;
-    u_char saturation = gA > 0 ? 255 : 0;
-    u_char brightness = 180;
-    
-    // Brighten if selected
-    if (selected) {
-        brightness = 255;
-    }
-    
-    color.setHsb(hue, saturation, brightness);
-    color.a = ofMap(abs(gA), 0, 50, 100, 255);
-    ofSetColor(color);
-    
-    // Rescale the width and height of the Gaussian
-    double scaleFactor = 2.5;
-    double width  = scaleFactor * xscale / galpha;
-    double height = scaleFactor * yscale / galpha;
-    
-    double x = gx * xscale - width / 2;
-    double y = gy * yscale - height / 2;
-    
-    // Draw as circGradient
-    circGradient.draw(x, y, width, height);
 }
 
 
@@ -427,13 +383,12 @@ void ofApp::drawGraph()
  
             1. Draws the frame rate in top left corner.
             2. If graphOn, draws the energy graphs in the background.
-            3. Draws the Gaussian external potentials; selectedGaussian is at front of these.
-            4. For each particle in the system, draws:
+            3. For each particle in the system, draws:
                 - An ellipse of the particle,
                 - coloured by its velocity,
                 - with width and height determined by the x/y forces acting on it.
                 - Trails of the 10th and 15th previous positions.
-            5. Draw the menu UI
+            4. Draw the menu UI
  */
 void ofApp::draw(){
     
@@ -442,15 +397,6 @@ void ofApp::draw(){
     ofSetCircleResolution(10);
     // 2. Draw graphs in background if turned on.
     if (graphOn) drawGraph();
-    
-    // 3. Draw gaussians, with selected on top
-    if (theSystem.getNGaussians() > 0) {
-        for (int g = 0; g < theSystem.getNGaussians(); g++){
-            if (g != selectedGaussian)
-                drawGaussian(theSystem.getGaussian(g), false);
-        }
-        drawGaussian(theSystem.getGaussian(selectedGaussian), true);
-    }
     
     // Setup temporary placeholders
     ofColor particleColor;
@@ -506,12 +452,10 @@ void ofApp::draw(){
         }
     }
     
-    if (drawOn) {
-        potentialUI.draw();
-    }
-
-    // draw the menu
+    // draw the UI
+    systemUI.draw();
     menuUI.draw();
+    potentialUI.draw();
 }
 
 //--------------------------------------------------------------------
@@ -548,29 +492,7 @@ void ofApp::keyPressed(int key){
     if (key == 'a' || key == 'A') { // Audio on/off
         micInput.toggleActive();
     }
-    
-    else if ((key == 'g' || key == 'G') && theSystem.getNGaussians() > 0) { // Change selected gaussian
-        selectedGaussian = (selectedGaussian+1)%theSystem.getNGaussians();
-    }
-    
-    else if (key == 'k' || key == 'K') { // Kill currently selected gaussian
         
-        // Remove the selected Gaussian and select the one before it, if it is not
-        // the zeroth Gaussian
-        if (selectedGaussian > 0) {
-            theSystem.removeGaussian(selectedGaussian);
-            selectedGaussian--;
-        } else if (selectedGaussian == 0) {
-            // Otherwise, remove the zeroth Gaussian, without changing
-            // the selected Gaussian, unless there are none left
-            // selectedGaussian = -1 implies there are no Gaussians
-            theSystem.removeGaussian(selectedGaussian);
-            if (theSystem.getNGaussians() == 0) {
-                selectedGaussian = -1;
-            }
-        }
-    }
-    
     else if (key == 'l' || key == 'L') { // Secret-Logan-Mode on/off
         loganOn = !loganOn;
     }
@@ -613,6 +535,8 @@ void ofApp::mouseMoved(int x, int y ){
         menuUI.mouseMoved(x, y);
     } else if (potentialUI.getVisible()) {
         potentialUI.mouseMoved(x, y);
+    } else {
+        systemUI.mouseMoved(x, y);
     }
 }
 
@@ -622,6 +546,8 @@ void ofApp::mouseDragged(int x, int y, int button){
         menuUI.mouseMoved(x, y);
     } else if (potentialUI.getVisible()) {
         potentialUI.mouseMoved(x, y);
+    } else {
+        systemUI.mouseMoved(x, y);
     }
 }
 
@@ -645,21 +571,8 @@ void ofApp::mousePressed(int x, int y, int button){
         // pass through event to children
         menuUI.mousePressed(x, y, button);
         
-    } else { // Mouse controls Gaussian placement
-        // Default values for the amplitude and exponent of a Gaussian
-        // Should they really be stored here?
-        double GAMP =  50.0;
-        double GALPHA = 0.3;
-    
-        // Rescale the (x, y) coordinates of the mouse input so that they
-        // are within the dimensions of the box
-        double scaled_x = x * theSystem.getWidth()/ofGetWidth();
-        double scaled_y = y * theSystem.getHeight()/ofGetHeight();
-    
-        // Add a Gaussian external potential to the system, and make this new
-        // Gaussian be the one currently in focus.
-        theSystem.addGaussian(GAMP, GALPHA, scaled_x, scaled_y);
-        selectedGaussian = theSystem.getNGaussians() - 1;
+    } else {
+        systemUI.mousePressed(x, y, button);
     }
 }
 
@@ -669,6 +582,8 @@ void ofApp::mouseReleased(int x, int y, int button){
         menuUI.mouseReleased(x, y, button);
     } else if (potentialUI.getVisible()) {
         potentialUI.mouseReleased(x, y, button);
+    } else {
+        systemUI.mouseReleased(x, y, button);
     }
 }
 

@@ -94,7 +94,7 @@ namespace gui {
         ofSetColor(0, 100, 220, 220);
         for (int i = 0; i < particlePoints.size(); i++){
             pos = particlePoints[i];
-            if (bounds.inside(pos)) { ofDrawCircle(pos.x, pos.y, 4); }
+            if (bounds.inside(pos)) { ofDrawCircle(pos.x, pos.y, 6); }
         }
         
     }
@@ -111,10 +111,10 @@ namespace gui {
     void SplineControlPoint::render() {
         ofSetCircleResolution(20);
         
-        ofSetColor(0, 0, 0);
+        ofSetColor(10, 174, 199);
         ofDrawCircle(bounds.centreX(), bounds.centreY(), radius);
         
-        ofSetColor(255, 255, 255);
+        ofSetColor(82, 225, 247);
         ofDrawCircle(bounds.centreX(), bounds.centreY(), radius - 3);
     }
     
@@ -327,9 +327,8 @@ namespace gui {
         
         if (handled) {
             updateSpline();
-            return true;
-        } else {
-            return false;
         }
+        
+        return handled;
     }
 }

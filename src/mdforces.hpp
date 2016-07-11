@@ -164,7 +164,7 @@ namespace md{
         void removeParticle();
         
         // Add a Gaussian, or remove or update the ith Gaussian
-        void addGaussian(double gAmp, double gAlpha, double gex0, double gey0);
+        void addGaussian(double gex0, double gey0);
         void removeGaussian(int i = 0);
         void updateGaussian(int i, double gAmp, double gAlpha, double gex0, double gey0);
 

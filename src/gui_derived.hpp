@@ -32,6 +32,7 @@
 #include "gui_base.hpp"
 #include "mdforces.hpp"
 #include "potentials.hpp"
+#include "gaussian.hpp"
 #include "cubicspline.hpp"
 
 
@@ -329,6 +330,33 @@ namespace gui {
         
     };
     
+    class GaussianAtom : public UIAtom
+    {
+        /*
+            UI Atom corresponding to a Gaussian external potential
+         */
+        
+    private:
+        Gaussian& g;
+        md::MDContainer& theSystem;
+        ofImage& circGradient;
+        
+        virtual void render();
+        
+        double radius;
+        bool mouseFocus;
+        
+        // Move the potential to (x, y)
+        void moveGaussian(double x, double y);
+        
+    public:
+        GaussianAtom(Gaussian &g, md::MDContainer& theSystem, ofImage& circGradient, int x, int y, double radius);
+        
+        // handle mouse events
+        bool mousePressed(int x, int y, int button);
+        bool mouseReleased(int x, int y, int button);
+        bool mouseMoved(int x, int y);
+    };
     
     
     /*
@@ -365,7 +393,7 @@ namespace gui {
         // update the spline with the contained control points
         void updateSpline();
         
-        // return if a control point is horizontally close to the given x-coordinate
+        // return true if a control point is horizontally close to the given x-coordinate
         // optionally exclude the point with index except
         bool controlPointNear(double x, int except = -1);
         
@@ -380,6 +408,35 @@ namespace gui {
         
         // returns true if a point was moved
         bool mouseMoved(int x, int y);
+    };
+    
+    class GaussianContainer : public UIContainer
+    {
+        /*
+            UI Container to control the positions of Gaussian external potentials with the mouse
+         */
+        
+    private:
+        md::MDContainer &system;
+        ofImage& circGradient;
+        
+        double radius;
+        int selectedGaussian;
+        
+        // Return true if there is another Gaussian nearby, ignoring the gaussian referred to by index (if specified)
+        bool gaussianNear(double x, double y, int index = -1);
+        
+    public:
+        GaussianContainer(md::MDContainer& system, ofImage& circGradient, double radius, double x, double y, double width, double height);
+        
+        // Returns true if mouse event caused Gaussians to be updated
+        bool mousePressed(int x, int y, int button);
+        
+        // Returns true if Gaussian was moved
+        bool mouseMoved(int x, int y);
+        
+        void audioIn(double volume);
+        
     };
     
 }

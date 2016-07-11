@@ -270,9 +270,13 @@ namespace md {
             If there are already 4 gaussians, it removes the first Gaussian in the
             gaussians array.
      */
-    void MDContainer::addGaussian(double gAmp, double gAlpha, double gex0, double gey0){
+    void MDContainer::addGaussian(double gex0, double gey0){
+        // Set amplitude/alpha to default values
+        double GAMP =  50.0;
+        double GALPHA = 0.3;
+        
         // Create new gaussian
-        Gaussian newGaussian(gAmp, gAlpha, gex0, gey0);
+        Gaussian newGaussian(GAMP, GALPHA, gex0, gey0);
         
         // Push onto the end of the gaussians array
         gaussians.push_back(newGaussian);

@@ -83,6 +83,9 @@ namespace gui {
         virtual bool mousePressed(int x, int y, int button);
         virtual bool mouseReleased(int x, int y, int button);
         
+        // method for audio input
+        virtual void audioIn(double volume);
+        
     };
     
     class UIAtom : public UIBase
@@ -160,6 +163,9 @@ namespace gui {
         virtual bool mouseMoved(int x, int y);
         virtual bool mousePressed(int x, int y, int button);
         virtual bool mouseReleased(int x, int y, int button);
+        
+        // audio events
+        virtual void audioIn(double volume);
     };
     
 }

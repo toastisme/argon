@@ -56,8 +56,7 @@ public:
     void drawParticle(int index, double radius, ofColor color, int nframes = 0);
     void drawParticle(int index, double radius_x, double radius_y, int nframes = 0);
     void drawParticle(int index, double radius, int nframes = 0);
-    // Draw the Gaussian external potentials
-    void drawGaussian(Gaussian& g, bool selected);
+
     // Draw the kinetic/potential energy graphs
     void drawGraph();
     // Draw the user interface components
@@ -89,11 +88,6 @@ private:
     
     // For the potential UI
     float topHeight, sideWidth, buttonHeight;
-
-    // Counters
-    // Keep track of which Gaussian potential is selected
-    // a value of -1 implies there are no Gaussians
-    int selectedGaussian;
     
     // Font and images needed for UI
     ofTrueTypeFont uiFont14;
@@ -133,7 +127,9 @@ private:
     gui::UIContainer potentialUI;
     gui::UIContainer presshUI;
     gui::UIContainer testUI;
+    gui::UIContainer systemUI;
     
-    int splineContainerIndex; // Indices of potential atoms in potentialUI
+    int splineContainerIndex; // Index of spline container in potentialUI
+    int gaussianContainerIndex; // Index of gaussian container in systemUI
 
 };
