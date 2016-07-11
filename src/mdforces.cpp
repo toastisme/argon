@@ -284,7 +284,7 @@ namespace md {
         // If too many gaussians, remove the first in the array
         // First in - first out (FIFO)
         // removeGaussian has default argument i = 0
-        if (gaussians.size() > 4) removeGaussian();
+        if (gaussians.size() > 6) removeGaussian();
     }
     
     /*

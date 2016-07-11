@@ -120,7 +120,7 @@ void ofApp::setup()
 
     // Setup system UI
     systemUI = gui::UIContainer(0, 0, ofGetWidth(), ofGetHeight());
-    gaussianContainerIndex = systemUI.addIndexedChild(new gui::GaussianContainer(theSystem, circGradient, 20.0, 0, 0, ofGetWidth(), ofGetHeight()));
+    gaussianContainerIndex = systemUI.addIndexedChild(new gui::GaussianContainer(theSystem, circGradient, 30.0, 0, 0, ofGetWidth(), ofGetHeight()));
     systemUI.makeVisible();
     
     /*

@@ -31,7 +31,7 @@ namespace gui {
     /* 
         GaussianAtom
      */
-    GaussianAtom::GaussianAtom(Gaussian& _g, md::MDContainer& _theSystem, ofImage& _circGradient, int x, int y, double _radius) : g(_g), theSystem(_theSystem), circGradient(_circGradient), radius(_radius), mouseFocus(false),
+    GaussianAtom::GaussianAtom(md::MDContainer& _theSystem, ofImage& _circGradient, int _gaussianID, int x, int y, double _radius) : theSystem(_theSystem), circGradient(_circGradient), gaussianID(_gaussianID), selected(false), radius(_radius), mouseFocus(false),
         UIAtom(x - _radius, y - _radius, 2*_radius, 2*_radius)
     {}
 
@@ -41,6 +41,9 @@ namespace gui {
          currently in focus (selected), and draws the Gaussian as a circular gradient
          texture, coloured based on the amplitude of the Gaussian
          */
+        
+        Gaussian& g = theSystem.getGaussian(gaussianID);
+        
         double gA = g.getgAmp();       // amplitude
         double galpha = g.getgAlpha(); // inverse width
         // Centre
@@ -58,7 +61,7 @@ namespace gui {
         u_char brightness = 180;
         
         // Brighten if selected
-        if (mouseFocus) {
+        if (selected) {
             brightness = 255;
         }
         
@@ -87,7 +90,20 @@ namespace gui {
         double scaled_y = y * theSystem.getHeight()/ofGetHeight();
         
         // Update position of Gaussian
+        Gaussian& g = theSystem.getGaussian(gaussianID);
         g.setParams(g.getgAmp(), g.getgAlpha(), scaled_x, scaled_y);
+    }
+    
+    void GaussianAtom::deselect() {
+        selected = false;
+    }
+    
+    void GaussianAtom::select() {
+        selected = true;
+    }
+    
+    void GaussianAtom::updateID(int _id) {
+        gaussianID = _id < gaussianID ? (gaussianID - 1) : gaussianID;
     }
     
     bool GaussianAtom::mousePressed(int x, int y, int button) {
@@ -97,6 +113,7 @@ namespace gui {
                     
                 case 0: // Left click, get focus
                     mouseFocus = true;
+                    selected = true;
                     retVal = true;
                     break;
                     
@@ -142,7 +159,11 @@ namespace gui {
         bool retVal = false;
         for (int i = 0; i < children.size(); i++) {
             if ( i == index ) { continue; }
-            else if( (x - children[i]->getRect().centreX() < 1.5*radius) && (y - children[i]->getRect().centreY() < 1.5*radius) ) {
+            
+            double xdist = fabs(x - children[i]->getRect().centreX());
+            double ydist = fabs(y - children[i]->getRect().centreY());
+            
+            if( (xdist < 1.2*radius) && (ydist < 1.2*radius) ) {
                 retVal = true;
             }
         }
@@ -163,9 +184,13 @@ namespace gui {
                     // loop through backwards so that the point drawn on top is clicked first (which,
                     // since they are drawn in forward-order, is the last child)
                     for (int i = children.size() - 1; i >= 0; --i) {
-
-                        hitChild = children[i]->mousePressed(x, y, 0);
-                        if (hitChild) { selectedGaussian = i; }
+                        
+                        GaussianAtom* g = (GaussianAtom*) children[i];
+                        hitChild = g->mousePressed(x, y, 0);
+                        if (hitChild) {
+                            selectedGaussian = i;
+                            deselectGaussians(i);
+                        }
                     
                     }
                     
@@ -173,10 +198,11 @@ namespace gui {
                     if (!hitChild) {
                         if (!gaussianNear(x, y)) {
                             // Make a new Gaussian
-                            if (system.getNGaussians() == 4) {
+                            if (system.getNGaussians() == 6) {
                                 // Delete the first child to make room for new one
                                 delete children[0];
                                 children.erase(children.begin());
+                                updateGaussianIDs(0);
                             }
                             // Rescale the (x, y) coordinates of the mouse input so that they
                             // are within the dimensions of the box
@@ -187,13 +213,15 @@ namespace gui {
                             
                             // use push_back, not addChild, so that we make the child directly at (x, y),
                             // instead of at (x, y) relative to the top-left corner of the container
-                            children.push_back(new GaussianAtom(system.getGaussian(system.getNGaussians() - 1), system, circGradient, x, y, radius));
+                            children.push_back(new GaussianAtom(system, circGradient, system.getNGaussians() - 1, x, y, radius));
                             children.back()->mousePressed(x, y, 0);
                             
                             selectedGaussian = system.getNGaussians() - 1;
+                            deselectGaussians(system.getNGaussians() - 1);
                         } else {
                             retVal = false;
                         }
+    
                     }
                 } break;
                     
@@ -207,12 +235,14 @@ namespace gui {
                             // free the memory, then delete the pointer
                             delete children[i];
                             children.erase(children.begin() + i);
+                            updateGaussianIDs(i);
                             
                             // remove the Gaussian from the system
                             system.removeGaussian(i);
                             
                             if (selectedGaussian > 0) { selectedGaussian--; }
                             else if (system.getNGaussians() == 0) { selectedGaussian = -1; }
+                            selectGaussian(selectedGaussian);
                         }
                     }
                     if (!hitChild) { retVal = false; }
@@ -249,6 +279,31 @@ namespace gui {
                                      system.getGaussianX0(selectedGaussian),
                                      system.getGaussianY0(selectedGaussian));
         }
+    }
+    
+    void GaussianContainer::updateGaussianIDs(int deletedID) {
+        for (int i = 0; i < children.size(); i++) {
+            
+            GaussianAtom* g = (GaussianAtom*) children[i];
+            g->updateID(deletedID);
+            
+        }
+    }
+    
+    void GaussianContainer::deselectGaussians(int id) {
+        for (int i = 0; i < children.size(); i++) {
+            
+            if ( i != id ) {
+                GaussianAtom* g = (GaussianAtom*) children[i];
+                g->deselect();
+            }
+            
+        }
+    }
+    
+    void GaussianContainer::selectGaussian(int id) {
+        GaussianAtom* g = (GaussianAtom*) children[id];
+        g->select();
     }
 
     

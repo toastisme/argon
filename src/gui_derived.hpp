@@ -337,25 +337,32 @@ namespace gui {
          */
         
     private:
-        Gaussian& g;
+        
         md::MDContainer& theSystem;
         ofImage& circGradient;
         
-        virtual void render();
-        
+        int gaussianID;
         double radius;
+        bool selected;
         bool mouseFocus;
+        
+        virtual void render();
         
         // Move the potential to (x, y)
         void moveGaussian(double x, double y);
         
     public:
-        GaussianAtom(Gaussian &g, md::MDContainer& theSystem, ofImage& circGradient, int x, int y, double radius);
+        GaussianAtom( md::MDContainer& theSystem, ofImage& circGradient, int gaussianID, int x, int y, double radius);
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
         bool mouseReleased(int x, int y, int button);
         bool mouseMoved(int x, int y);
+        
+        void deselect();
+        void select();
+        void updateID(int _id);
+        
     };
     
     
@@ -425,6 +432,15 @@ namespace gui {
         
         // Return true if there is another Gaussian nearby, ignoring the gaussian referred to by index (if specified)
         bool gaussianNear(double x, double y, int index = -1);
+        
+        // Update the IDs of the GaussianAtoms after one is deleted
+        void updateGaussianIDs(int deletedID);
+        
+        // Deselect all Gaussians except the one with the given id
+        void deselectGaussians(int id);
+        
+        // Select a particular Gaussian
+        void selectGaussian(int id);
         
     public:
         GaussianContainer(md::MDContainer& system, ofImage& circGradient, double radius, double x, double y, double width, double height);
