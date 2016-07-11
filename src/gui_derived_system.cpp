@@ -142,6 +142,7 @@ namespace gui {
          This rescales the values for the graphs using minEKin/Pot and maxEKin/Pot
          as the minimum/maximum values respectively.
          */
+        
         float winLeft = ofGetWidth()/6;
         float winTop = ofGetHeight()/6;
         float winWidth = 2*ofGetWidth()/3;
@@ -156,6 +157,10 @@ namespace gui {
         // Draw graph
         float radius = 3;
         float ekin, epot;
+        
+        // Set fill and resolution
+        ofFill();
+        ofSetCircleResolution(10);
         
         // Loop over all data points stored in the previous energy arrays in theSystem
         // and draw them as small circles.

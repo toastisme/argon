@@ -193,11 +193,6 @@ void ofApp::setup()
     menuUI.makeInvisible();
     menuUI.mouseReleased(0, 0, 0);
     
-    // Setup Potential UI
-    //topHeight = ofGetHeight()/8;
-    //sideWidth = ofGetWidth()/7;
-    //buttonHeight = ()/4;
-    
     potentialUI = gui::UIContainer(50, 50, 50, 50);
     potentialUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 924, 500));
     potentialUI.addChild(new gui::RectAtom(bgcolor, 150, 0, 774, 500));
@@ -289,11 +284,7 @@ void ofApp::update(){
         Part of the infinite update / draw loop.
  */
 void ofApp::draw(){
-    
-    // Set the resolution and fill settings for drawing the energy graphs if necessary
-    ofFill();
-    ofSetCircleResolution(10);
-    // 2. Draw graphs in background if turned on.
+
     
     // draw the UI
     graphUI.draw();

@@ -68,9 +68,6 @@ private:
    
     md::MDContainer theSystem; // The MD simulation system
     
-    // For the potential UI
-    float topHeight, sideWidth, buttonHeight;
-    
     // Font and images needed for UI
     ofTrueTypeFont uiFont14;
     ofTrueTypeFont uiFont12;
