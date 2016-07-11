@@ -31,6 +31,9 @@
 #include "ofMain.h"
 #include "gui_base.hpp"
 #include "mdforces.hpp"
+#include "potentials.hpp"
+#include "cubicspline.hpp"
+
 
 /*
     Note on order of arguments to constructors:
@@ -199,9 +202,9 @@ namespace gui {
         SliderAtom(FuncGetter getValue, FuncSetter setValue, double min, double max, double x, double y, double width, double height);
         
         // handle mouse events
-        void mouseMoved(int x, int y);
-        void mousePressed(int x, int y, int button);
-        void mouseReleased(int x, int y, int button);
+        bool mouseMoved(int x, int y);
+        bool mousePressed(int x, int y, int button);
+        bool mouseReleased(int x, int y, int button);
         
         static int BODY_HEIGHT;            // height of slider body (the background rectangle) - set to 10
         static ofColor BODY_COLOR;         // colour of slider body - set to white (255, 255, 255)
@@ -228,7 +231,7 @@ namespace gui {
         ButtonAtom(FuncAction doAction, const ofImage &image, double x, double y, double width, double height);
         
         // handle mouse events
-        void mousePressed(int x, int y, int button);
+        bool mousePressed(int x, int y, int button);
     };
     
     class ButtonToggleAtom : public UIAtom
@@ -251,7 +254,7 @@ namespace gui {
         ButtonToggleAtom(FuncGetterBool getBool, FuncSetterBool setBool, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
         
         // handle mouse events
-        void mousePressed(int x, int y, int button);
+        bool mousePressed(int x, int y, int button);
     };
     
     class ButtonPairAtom : public UIAtom
@@ -275,7 +278,55 @@ namespace gui {
         ButtonPairAtom(FuncAction doActionOn, const ofImage &imageOn, FuncAction doActionOff, const ofImage &imageOff, double x, double y, double width, double height);
         
         // handle mouse events
-        void mousePressed(int x, int y, int button);
+        bool mousePressed(int x, int y, int button);
+    };
+    
+    class PotentialAtom : public UIAtom
+    {
+    /*
+        UI atom to plot a function
+     */
+    
+    public:
+        PotentialAtom(md::MDContainer &system, int numPoints, double min_x, double max_x, double min_y, double max_y, int x, int y, int width, int height);
+        
+    private:
+        virtual void render();
+        
+    protected:
+        md::MDContainer& theSystem;   // reference to the MD system
+        rect potBounds;               // region of the potential curve to plot
+        double numPoints;             // resolution of plot
+        
+    };
+    
+    class SplineControlPoint : public UIAtom
+    {
+        /*
+            UI Atom corresponding to a point on a spline
+         */
+    private:
+        virtual void render();
+        
+        double radius;      // radius of drawn point
+        rect pointBounds;   // boundary of allowed points
+        bool mouseFocus;    // whether the point is being dragged
+        
+        // move the point to position (x, y) with appropriate bounds checking
+        void movePoint(double x, double y);
+    
+    public:
+        SplineControlPoint(int x, int y, double radius, rect range);
+        
+        // x and y stored in screen space (in bounds)
+        // m stored here in spline space
+        double m;
+        
+        // handle mouse events
+        bool mousePressed(int x, int y, int button);
+        bool mouseReleased(int x, int y, int button);
+        bool mouseMoved(int x, int y);
+        
     };
     
     
@@ -292,8 +343,43 @@ namespace gui {
         
     public:
         SliderContainer();
-        // a whole bunch of stuff to pass through to the indivisual elements
+        // a whole bunch of stuff to pass through to the individual elements
         SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &textColour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double padding, double height);
+
+        static int PADDING;
+    };
+    
+    class SplineContainer : public UIContainer
+    {
+        /*
+            UI Container to control a custom potential's spline with the mouse
+         */
+    private:
+        CustomPotential &potential;
+        double radius;       // visual size of control points
+        rect splineRegion;   // region of spline to control
+        rect pointRegion;    // region in which the centres of the control points are allowed to be, which
+                             // is slightly smaller than the region of the controller to avoid control points
+                             // sticking out of the sides
+        
+        // update the spline with the contained control points
+        void updateSpline();
+        
+        // return if a control point is horizontally close to the given x-coordinate
+        // optionally exclude the point with index except
+        bool controlPointNear(double x, int except = -1);
+        
+    public:
+        SplineContainer(CustomPotential &potential, double x_min, double x_max, double y_min, double y_max, double controlPointRadius, double x, double y, double width, double height);
+        
+        // override moveBy to adjust pointRegion simultaneously
+        virtual void moveBy(coord offset);
+        
+        // returns true if the mouse event caused the spline to be updated
+        bool mousePressed(int x, int y, int button);
+        
+        // returns true if a point was moved
+        bool mouseMoved(int x, int y);
     };
     
 }

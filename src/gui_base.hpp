@@ -49,7 +49,9 @@ namespace gui {
             Has methods to handle mouse events, implemented in UIBase as empty methods.
             These should be overloaded by UI elements which need to react to the mouse,
             using UIBase.getRect().inside(x, y) to check if mouse events occur within the
-            bounding box.
+            bounding box. These methods return true if the mouse event is properly handled, or
+            false if it is not; the default behaviour is to return false as the mouse event is
+            not handled.
          */
         
     protected:
@@ -77,9 +79,9 @@ namespace gui {
         virtual void toggleVisible();
         
         // methods to handle mouse events
-        virtual void mouseMoved(int x, int y);
-        virtual void mousePressed(int x, int y, int button);
-        virtual void mouseReleased(int x, int y, int button);
+        virtual bool mouseMoved(int x, int y);
+        virtual bool mousePressed(int x, int y, int button);
+        virtual bool mouseReleased(int x, int y, int button);
         
     };
     
@@ -115,7 +117,9 @@ namespace gui {
             The passCallToChildren is a helper method to pass a method call to every child element.
          
             The draw, mouseMoved, mousePressed, and mouseReleased methods simply pass their call to
-            the children.
+            the children. The mouse events pass calls to the first child to handle the event; if one
+            of its children handles the event, the container returns true, and if none of them handle
+            it (i.e. all the children return false) the container returns false.
          
             The makeVisible, makeInvisible, and toggleVisible methods set the container's visibility
             flag as required, and then passes the call to the children.
@@ -126,10 +130,7 @@ namespace gui {
         
     protected:
         std::vector <UIBase *> children;
-        
-        // pass function call and arguments to all children
-        template<typename T, typename ...Args>
-        void passCallToChildren(T (UIBase::*func)(Args...), Args ... args);
+        std::vector <UIBase *> indexedChildren;
         
     public:
         UIContainer();
@@ -138,22 +139,27 @@ namespace gui {
         // destructor calls all childrens' destructors, and frees their memory
         virtual ~UIContainer();
         
+        // add a child, or add a child and return an index to get it back later
+        void addChild(UIBase *child);
+        int addIndexedChild(UIBase *child);
+        
+        UIBase* getChild(int i);
+        
         // move the container, which also moves all children by the same amount
         virtual void moveBy(coord offset);
-        
-        // add a child UIAtom or UIContainer
-        void addChild(UIBase *child);
         
         // change visibility flag and pass call through to children
         virtual void makeVisible();
         virtual void makeInvisible();
         virtual void toggleVisible();
         
-        // remaining methods just pass call through to children
+        // draw is just passed to all children
         virtual void draw();
-        virtual void mouseMoved(int x, int y);
-        virtual void mousePressed(int x, int y, int button);
-        virtual void mouseReleased(int x, int y, int button);
+        
+        // only pass mouse event to the first child to handle it
+        virtual bool mouseMoved(int x, int y);
+        virtual bool mousePressed(int x, int y, int button);
+        virtual bool mouseReleased(int x, int y, int button);
     };
     
 }

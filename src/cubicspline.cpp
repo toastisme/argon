@@ -23,6 +23,7 @@
  */
 
 #include "cubicspline.hpp"
+#include <cmath>
 #include <algorithm>
 
 namespace cubic {
@@ -134,9 +135,7 @@ namespace cubic {
     // Default constructor
     Spline::Spline(){
         spline.clear();
-        spline.push_back(Segment(0,1,-5,1,0,0));
-        //addPoint(3, 1, 1);
-        //addPoint(4,1,1);
+        spline.push_back(Segment(0,0,1,2,0,1));
     }
     
     // Create a new Spline with one segment

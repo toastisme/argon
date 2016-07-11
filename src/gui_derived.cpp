@@ -199,21 +199,24 @@ namespace gui {
     }
     
     // if the mouse is left-clicked inside the slider, take mouse focus and update the slider's position
-    void SliderAtom::mousePressed(int x, int y, int button) {
+    bool SliderAtom::mousePressed(int x, int y, int button) {
         if (button == 0 && bounds.inside(x, y)) {
             mouseFocus = true;
             setFromSliderPos(x);
-        }
+            return true;
+        } else { return false; }
     }
     
     // if the mouse is moved, and we have mouse focus, update the slider's position
-    void SliderAtom::mouseMoved(int x, int y) {
-        if (mouseFocus) { setFromSliderPos(x); }
+    bool SliderAtom::mouseMoved(int x, int y) {
+        if (mouseFocus) { setFromSliderPos(x); return true; }
+        else { return false; }
     }
     
     // if the mouse is released (anywhere on the screen), lose mouse focus
-    void SliderAtom::mouseReleased(int x, int y, int button) {
-        mouseFocus = false;
+    bool SliderAtom::mouseReleased(int x, int y, int button) {
+        if (button == 0) { mouseFocus = false; }
+        return false;   // we do not want to capture the mouse release, so return false
     }
     
     // some static varaibles to ensure sliders are drawn the same
@@ -242,8 +245,9 @@ namespace gui {
     }
     
     // if the mouse is left-clicked inside the button, do its action
-    void ButtonAtom::mousePressed(int x, int y, int button) {
-        if (button == 0 && bounds.inside(x, y)) { doAction(); }
+    bool ButtonAtom::mousePressed(int x, int y, int button) {
+        if (button == 0 && bounds.inside(x, y)) { doAction(); return true; }
+        else { return false; }
     }
     
     /*
@@ -265,8 +269,9 @@ namespace gui {
     }
     
     // if the mouse is left-clicked inside the button, invert the value of the boolean
-    void ButtonToggleAtom::mousePressed(int x, int y, int button) {
-        if (button == 0 && bounds.inside(x, y)) { setBool(not getBool()); }
+    bool ButtonToggleAtom::mousePressed(int x, int y, int button) {
+        if (button == 0 && bounds.inside(x, y)) { setBool(not getBool()); return true; }
+        else { return false; }
     }
     
     /*
@@ -292,4 +297,5 @@ namespace gui {
         addChild(new ValueAtom(getValue, precision, font, colour, POS_LEFT, valueLeft, y, valueWidth, height));
     }
     
+    int SliderContainer::PADDING = 5;
 }

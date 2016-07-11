@@ -119,8 +119,9 @@ namespace md {
     double MDContainer::getGaussianX0(int i)    const { return gaussians[i].getgex0(); }
     double MDContainer::getGaussianY0(int i)    const { return gaussians[i].getgey0(); }
     
-    
-    
+    // Return reference to current PotentialFunctor
+    PotentialFunctor& MDContainer::getPotential()      { return *potential; }
+    CustomPotential& MDContainer::getCustomPotential() { return customPotential; }
     
     //--------------------------------------SETTERS----------------------------------------
     
@@ -166,6 +167,21 @@ namespace md {
     // Set the potential
     
     void MDContainer::setPotential(PotentialFunctor* _potential) { potential = _potential; }
+    void MDContainer::setPotential(Potential _potential) {
+        switch (_potential) {
+            case SQUARE_WELL:
+                potential = &squareWell;
+                break;
+            case MORSE:
+                potential = &morse;
+                break;
+            case CUSTOM:
+                potential = &customPotential;
+                break;
+            default:
+                potential = &lj;
+        }
+    }
     
 /*
     ROUTINE addParticlesGrid:
@@ -420,7 +436,8 @@ namespace md {
         // and the position of particle i (ipos)
         coord rij, fij, ipos;
 
-        double d2, r; // d2 = |rij|^2, r = |rij|
+        double d2, r;  // d2 = |rij|^2, r = |rij|
+        double f; // force(rij) / rij
 
         // Loop over all particles from start to end
         for (int i = start; i < end; ++i) {
@@ -438,10 +455,11 @@ namespace md {
                     r = sqrt(d2);
                     
                     // Energy and forces
-                    eptemp += (*potential)(r, fij);
+                    eptemp += potential->potential(r);
+                    f = potential->force(r) / r;
                     
-                    fij.x *= rij.x;
-                    fij.y *= rij.y;
+                    fij.x = f * rij.x;
+                    fij.y = f * rij.y;
                     
                     ftemp[i].x += fij.x;
                     ftemp[i].y += fij.y;

@@ -100,3 +100,42 @@ bool rect::inside(double x, double y) const {
     }
     return false;
 }
+bool rect::inside(coord point) const {
+    return inside(point.x, point.y);
+}
+
+
+
+// clamp point inside rect
+coord BilinearClamp(coord point, rect region) {
+    point.x = point.x < region.left   ? region.left   : point.x;
+    point.x = point.x > region.right  ? region.right  : point.x;
+    point.y = point.y < region.top    ? region.top    : point.y;
+    point.y = point.y > region.bottom ? region.bottom : point.y;
+    
+    return point;
+}
+
+// map point from one rect to another
+coord BilinearMap(coord point, rect in, rect out, bool clamp) {
+    coord ret;
+    ret.x = out.left + (point.x - in.left) / in.width()  * out.width();
+    ret.y = out.top  + (point.y - in.top ) / in.height() * out.height();
+    
+    if (clamp) {
+        return BilinearClamp(ret, out);
+    } else {
+        return ret;
+    }
+}
+
+// overloads assume that x and y of rects are zero
+coord BilinearMap(coord point, rect in, coord out, bool clamp) {
+    return BilinearMap(point, in, {0, out.x, 0, out.y}, clamp);
+}
+coord BilinearMap(coord point, coord in, rect out, bool clamp) {
+    return BilinearMap(point, {0, in.x, 0, in.y}, out, clamp);
+}
+coord BilinearMap(coord point, coord in, coord out, bool clamp) {
+    return BilinearMap(point, {0, in.x, 0, in.y}, {0, out.x, 0, out.y}, clamp);
+}

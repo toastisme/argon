@@ -52,10 +52,10 @@ namespace gui {
     void UIBase::makeInvisible() { visible = false; }
     void UIBase::toggleVisible() { visible = not visible; }
     
-    // Default handling of mouse events is to do nothing
-    void UIBase::mouseMoved(int x, int y) {}
-    void UIBase::mousePressed(int x, int y, int button) {}
-    void UIBase::mouseReleased(int x, int y, int button) {}
+    // Default handling of mouse events is to return false (mouse event not handled)
+    bool UIBase::mouseMoved(int x, int y) { return false; }
+    bool UIBase::mousePressed(int x, int y, int button) { return false; }
+    bool UIBase::mouseReleased(int x, int y, int button) { return false; }
     
     /*
         UIAtom
@@ -89,21 +89,6 @@ namespace gui {
         }
     }
     
-    // move container and all children
-    void UIContainer::moveBy(coord offset) {
-        bounds.moveBy(offset);
-        passCallToChildren(&UIBase::moveBy, offset);
-    }
-    
-    // templated function to pass an arbitrary function call and its arguments to each child element
-    // just some trivial templating, easy stuff really...
-    template<typename T, typename ...Args>
-    void UIContainer::passCallToChildren(T (UIBase::*func)(Args...), Args ... args) {
-        for (int i = 0; i < children.size(); ++i) {
-            (children[i]->*func)(std::forward<Args>(args)...);
-        }
-    }
-    
     // Add a child: move it so that its coordinates are given relative to the top-left corner of the container
     // then add to the vector of children
     // i.e. a child originally positioned at (100, 100) relative to the top-left corner of the screen becomes
@@ -113,28 +98,70 @@ namespace gui {
         children.push_back(child);
     }
     
-    // set visibility flag and also pass call through to children
+    // Add a child and index it, returning the index
+    int UIContainer::addIndexedChild(gui::UIBase *child) {
+        addChild(child);
+        indexedChildren.push_back(child);
+        return indexedChildren.size()-1;
+    }
     
+    // Return a pointer to the ith child
+    UIBase* UIContainer::getChild(int i) {
+        return indexedChildren.at(i);
+    }
+    
+    // move container and all children
+    void UIContainer::moveBy(coord offset) {
+        bounds.moveBy(offset);
+        for (int i = 0; i < children.size(); ++i) { children[i]->moveBy(offset); }
+    }
+    
+    // set visibility flag and also pass call through to children
     void UIContainer::makeVisible() {
         visible = true;
-        passCallToChildren(&UIBase::makeVisible);
+        for (int i = 0; i < children.size(); ++i) { children[i]->makeVisible(); }
     }
     
     void UIContainer::makeInvisible() {
         visible = false;
-        passCallToChildren(&UIBase::makeInvisible);
+        for (int i = 0; i < children.size(); ++i) { children[i]->makeInvisible(); }
     }
     
     void UIContainer::toggleVisible() {
         visible = not visible;
-        passCallToChildren(&UIBase::toggleVisible);
+        for (int i = 0; i < children.size(); ++i) { children[i]->toggleVisible(); }
     }
 
-    // remainder of methods just pass the call through to its children
+    // draw just passes the call through to its children
+    void UIContainer::draw() {
+        for (int i = 0; i < children.size(); ++i) { children[i]->draw(); }
+    }
     
-    void UIContainer::draw() { passCallToChildren(&UIBase::draw); }
-    void UIContainer::mouseMoved(int x, int y) { passCallToChildren(&UIBase::mouseMoved, x, y); }
-    void UIContainer::mousePressed(int x, int y, int button) { passCallToChildren(&UIBase::mousePressed, x, y, button); }
-    void UIContainer::mouseReleased(int x, int y, int button) { passCallToChildren(&UIBase::mouseReleased, x, y, button); }
+    // mouse events by default only pass through the event to the first child to handle them
+    bool UIContainer::mouseMoved(int x, int y) {
+        bool handled = false;
+        for (int i = 0; i < children.size(); ++i) {
+            handled = children[i]->mouseMoved(x, y);
+            if (handled) { break; }
+        }
+        return handled;
+    }
     
+    bool UIContainer::mousePressed(int x, int y, int button) {
+        bool handled = false;
+        for (int i = 0; i < children.size(); ++i) {
+            handled = children[i]->mousePressed(x, y, button);
+            if (handled) { break; }
+        }
+        return handled;
+    }
+    
+    bool UIContainer::mouseReleased(int x, int y, int button) {
+        bool handled = false;
+        for (int i = 0; i < children.size(); ++i) {
+            handled = children[i]->mouseReleased(x, y, button);
+            if (handled) { break; }
+        }
+        return handled;
+    }
 }
