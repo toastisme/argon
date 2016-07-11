@@ -85,16 +85,29 @@ void ofApp::setup()
     theSystem.setBox(BOX_WIDTH, BOX_HEIGHT);
     
     theSystem.resetSystem();
-    
-    // Set the booleans so that the secret-Logan-mode, energy graphs,
-    // potential viewer and custom potential are initially turned off
-    graphOn = false;
 
     // Setup system UI
     systemUI = gui::UIContainer(0, 0, ofGetWidth(), ofGetHeight());
+    
+    // Add the gaussian container
     gaussianContainerIndex = systemUI.addIndexedChild(new gui::GaussianContainer(theSystem, circGradient, 30.0, 0, 0, ofGetWidth(), ofGetHeight()));
-    systemUI.makeVisible();
+    
+    // And the particles themselves
     systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, 0, 0, ofGetWidth(), ofGetHeight()));
+    
+    // Setup graph UI
+    graphUI = gui::UIContainer(ofGetWidth()/6, ofGetHeight()/6, 2*ofGetWidth()/3, 2*ofGetHeight()/3);
+    
+    // Add the graph itself
+    graphUI.addChild(new gui::EnergyGraphAtom(theSystem, 0, 0, 2*ofGetWidth()/3, 2*ofGetHeight()/3));
+    
+    // Add a legend
+    graphUI.addChild(new gui::TextAtom("Kinetic Energy", uiFont14, ofColor(200, 0, 0),
+                                       POS_RIGHT, 500, 320, 100, 30));
+    graphUI.addChild(new gui::TextAtom("Potential Energy", uiFont14, ofColor(255, 255, 255),
+                                       POS_RIGHT, 500, 355, 100, 30));
+    
+    graphUI.makeInvisible();
     
     /*
          Setup menu UI
@@ -272,68 +285,8 @@ void ofApp::update(){
 //--------------------------------------------------------------
 
 /*
-    ROUTINE drawGraph:
-        Draws the kinetic/potential energy graphs as small red/blue circles
-        in the background. 
- 
-        This rescales the values for the graphs using minEKin/Pot and maxEKin/Pot
-        as the minimum/maximum values respectively.
- */
-void ofApp::drawGraph()
-{
-    // Draw `window'
-    float winLeft = ofGetWidth()/6;
-    float winTop = ofGetHeight()/6;
-    float winWidth = 2*ofGetWidth()/3;
-    float winHeight = 2*ofGetHeight()/3;
-    float xOffset = 1.1*winLeft;
-    float yOffset = 7*winHeight/6;
-    float ekinMaxScale = theSystem.getMaxEkin();
-    float ekinMinScale = theSystem.getMinEkin();
-    float epotMaxScale = theSystem.getMaxEpot();
-    float epotMinScale = theSystem.getMinEpot();
-    //ofFill();
-    //ofSetColor(255, 255, 255, 100);
-    //ofDrawRectangle(winLeft, winTop, winWidth, winHeight);
-    
-    // Draw graph
-    float radius = 3;
-    float ekin, epot;
-    
-    // Loop over all data points stored in the previous energy arrays in theSystem
-    // and draw them as small circles.
-    for (int i = 0; i < theSystem.getNEnergies(); i++){
-        ofSetColor(200, 0, 0);
-        ekin = ofMap(theSystem.getPreviousEkin(i), ekinMinScale, ekinMaxScale, 0, 0.9*winHeight);
-        ofDrawCircle(xOffset + 5*i, yOffset - ekin, radius);
-        
-        ofSetColor(255, 255, 255);
-        epot = ofMap(fabs(theSystem.getPreviousEpot(i)), epotMinScale, epotMaxScale, 0, 0.9*winHeight);
-        ofDrawCircle(xOffset + 5*i, yOffset - epot, radius);
-
-    }
-    
-    // Label the two graphs in the top left corner.
-    ofSetColor(200, 0, 0);
-    uiFont14.drawString("Kinetic energy", 0.05*ofGetWidth(), 0.1*ofGetHeight());
-    ofSetColor(255, 255, 255);
-    uiFont14.drawString("Potential energy", 0.05*ofGetWidth(), 0.15*ofGetHeight() );
-    
-}
-
-/*
     ROUTINE draw:
         Part of the infinite update / draw loop.
-        Draws the frame in the following sequence:
- 
-            1. Draws the frame rate in top left corner.
-            2. If graphOn, draws the energy graphs in the background.
-            3. For each particle in the system, draws:
-                - An ellipse of the particle,
-                - coloured by its velocity,
-                - with width and height determined by the x/y forces acting on it.
-                - Trails of the 10th and 15th previous positions.
-            4. Draw the menu UI
  */
 void ofApp::draw(){
     
@@ -341,12 +294,13 @@ void ofApp::draw(){
     ofFill();
     ofSetCircleResolution(10);
     // 2. Draw graphs in background if turned on.
-    if (graphOn) drawGraph();
     
     // draw the UI
+    graphUI.draw();
     systemUI.draw();
     menuUI.draw();
     potentialUI.draw();
+    
 }
 
 //--------------------------------------------------------------------
@@ -390,7 +344,7 @@ void ofApp::keyPressed(int key){
     }
     
     else if (key == 'e' || key == 'E') { // Show/hide energy graphs
-        graphOn = !graphOn;
+        graphUI.toggleVisible();
     }
     
     else if (key == 'h' || key == 'H'){ // Show/hide UI

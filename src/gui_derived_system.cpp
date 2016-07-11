@@ -24,7 +24,7 @@
 
 #include "gui_derived.hpp"
 
-// implements SystemAtom, GaussianAtom, GaussianContainer
+// implements SystemAtom, EnergyGraphAtom, GaussianAtom, GaussianContainer
 
 namespace gui {
     
@@ -128,7 +128,49 @@ namespace gui {
         inflictTorture = !inflictTorture;
     }
     
-    /* 
+    /*
+        EnergyGraphAtom
+     */
+    
+    EnergyGraphAtom::EnergyGraphAtom(md::MDContainer& _theSystem, int x, int y, int width, int height) : theSystem(_theSystem), UIAtom(x, y, width, height) {}
+    
+    void EnergyGraphAtom::render() {
+        /*
+         Draws the kinetic/potential energy graphs as small red/blue circles
+         in the background.
+         
+         This rescales the values for the graphs using minEKin/Pot and maxEKin/Pot
+         as the minimum/maximum values respectively.
+         */
+        float winLeft = ofGetWidth()/6;
+        float winTop = ofGetHeight()/6;
+        float winWidth = 2*ofGetWidth()/3;
+        float winHeight = 2*ofGetHeight()/3;
+        float xOffset = 1.1*winLeft;
+        float yOffset = 7*winHeight/6;
+        float ekinMaxScale = theSystem.getMaxEkin();
+        float ekinMinScale = theSystem.getMinEkin();
+        float epotMaxScale = theSystem.getMaxEpot();
+        float epotMinScale = theSystem.getMinEpot();
+        
+        // Draw graph
+        float radius = 3;
+        float ekin, epot;
+        
+        // Loop over all data points stored in the previous energy arrays in theSystem
+        // and draw them as small circles.
+        for (int i = 0; i < theSystem.getNEnergies(); i++){
+            ofSetColor(200, 0, 0);
+            ekin = ofMap(theSystem.getPreviousEkin(i), ekinMinScale, ekinMaxScale, 0, 0.9*winHeight);
+            ofDrawCircle(xOffset + 5*i, yOffset - ekin, radius);
+            
+            ofSetColor(255, 255, 255);
+            epot = ofMap(fabs(theSystem.getPreviousEpot(i)), epotMinScale, epotMaxScale, 0, 0.9*winHeight);
+            ofDrawCircle(xOffset + 5*i, yOffset - epot, radius);
+        }
+    }
+    
+    /*
         GaussianAtom
      */
     GaussianAtom::GaussianAtom(md::MDContainer& _theSystem, ofImage& _circGradient, int _gaussianID, int x, int y, double _radius) : theSystem(_theSystem), circGradient(_circGradient), gaussianID(_gaussianID), selected(false), radius(_radius), mouseFocus(false),

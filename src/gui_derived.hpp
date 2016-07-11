@@ -396,6 +396,23 @@ namespace gui {
         void toggleTheHorrors();
     };
     
+    class EnergyGraphAtom : public UIAtom
+    {
+        /*
+         UI Atom for graph of kinetic and potential energies
+         */
+        
+    private:
+        
+        md::MDContainer& theSystem;
+        virtual void render();
+        
+    public:
+        
+        EnergyGraphAtom(md::MDContainer& theSystem, int x, int y, int width, int height);
+        
+    };
+    
     /*
         Containers
      */

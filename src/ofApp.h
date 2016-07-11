@@ -50,11 +50,6 @@ public:
     void update();
     void draw();
 
-    // Draw the kinetic/potential energy graphs
-    void drawGraph();
-    // Draw the user interface components
-    void drawUI();
-
     // Events
     void keyPressed(int key);
     void keyReleased(int key);
@@ -99,9 +94,6 @@ private:
     // Audio data
     AudioStream micInput;
     
-    // Logical variables
-    bool graphOn; // Are the energy graphs showing?
-    
     // ~Trivial~ variables
     ofImage loganLeft, loganRight;
     
@@ -111,6 +103,7 @@ private:
     gui::UIContainer presshUI;
     gui::UIContainer testUI;
     gui::UIContainer systemUI;
+    gui::UIContainer graphUI;
     
     int splineContainerIndex; // Index of spline container in potentialUI
     int gaussianContainerIndex; // Index of gaussian container in systemUI
