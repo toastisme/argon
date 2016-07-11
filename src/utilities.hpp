@@ -25,6 +25,8 @@
 #ifndef utilities_hpp
 #define utilities_hpp
 
+#include "ofMain.h"
+
 enum Position
 {
     /*
@@ -87,5 +89,13 @@ coord BilinearMap(coord point, rect  in, rect  out, bool clamp = false);
 coord BilinearMap(coord point, rect  in, coord out, bool clamp = false);
 coord BilinearMap(coord point, coord in, rect  out, bool clamp = false);
 coord BilinearMap(coord point, coord in, coord out, bool clamp = false);
+
+// Convert box coordinates to screen coordinates
+double box2screen_x(double x, double x0, double screenWidth, double systemWidth);
+double box2screen_y(double y, double y0, double screenHeight, double systemHeight);
+ofPoint box2screen(double x, double y, double x0, double y0, double screenWidth, double screenHeight, double systemWidth, double systemHeight);
+ofPoint box2screen(coord point, coord origin, coord screen, coord system);
+
+
 
 #endif /* utilities_hpp */

@@ -139,3 +139,26 @@ coord BilinearMap(coord point, coord in, rect out, bool clamp) {
 coord BilinearMap(coord point, coord in, coord out, bool clamp) {
     return BilinearMap(point, {0, in.x, 0, in.y}, {0, out.x, 0, out.y}, clamp);
 }
+
+/*
+ ROUTINE box2screen_x:
+ ROUTINE box2screen_y:
+ ROUTINE box2screen:
+ Scales coordinates from the box dimensions to the window size, measuring
+ positions from a specified (on-screen) origin (defaulting to 0, 0)
+ */
+double box2screen_x(double x, double x0, double screenWidth, double systemWidth) {
+    return x * screenWidth / systemWidth - x0;
+}
+
+double box2screen_y(double y, double y0, double screenHeight, double systemHeight) {
+    return y * screenHeight / systemHeight - y0;
+}
+
+ofPoint box2screen(double x, double y, double x0, double y0, double screenWidth, double screenHeight, double systemWidth, double systemHeight) {
+    return ofPoint(box2screen_x(x, x0, screenWidth, systemWidth), box2screen_y(y, y0, screenHeight, systemHeight));
+}
+
+ofPoint box2screen(coord point, coord origin, coord screen, coord system) {
+    return box2screen(point.x, point.y, origin.x, origin.y, screen.x, screen.y, system.x, system.y);
+}

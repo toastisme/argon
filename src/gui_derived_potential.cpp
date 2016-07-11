@@ -91,7 +91,7 @@ namespace gui {
         
         // Plot the particles along the curve
         ofSetCircleResolution(10);
-        ofSetColor(0, 100, 220, 220);
+        ofSetColor(186, 255, 163, 220);
         for (int i = 0; i < particlePoints.size(); i++){
             pos = particlePoints[i];
             if (bounds.inside(pos)) { ofDrawCircle(pos.x, pos.y, 6); }

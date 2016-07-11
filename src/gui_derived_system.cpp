@@ -24,9 +24,109 @@
 
 #include "gui_derived.hpp"
 
-// implements GaussianAtom, GaussianContainer
+// implements SystemAtom, GaussianAtom, GaussianContainer
 
 namespace gui {
+    
+    /*
+        SystemAtom
+     */
+    
+    SystemAtom::SystemAtom(md::MDContainer& _theSystem, ofImage& _loganLeft, ofImage& _loganRight, int x, int y, int width, int height) :
+                            theSystem(_theSystem), loganLeft(_loganLeft), loganRight(_loganRight), inflictTorture(false),
+                            UIAtom(x, y, width, height)
+    { }
+    
+    void SystemAtom::render() {
+        // Setup temporary placeholders
+        ofColor particleColor;
+        coord tempVel;
+        coord tempAcc;
+        
+        double radius_x;
+        double radius_y;
+        double radius;
+        double hue;
+        
+        double loganShiftx = loganLeft.getWidth() / 2;
+        double loganShifty = loganLeft.getHeight() / 2;
+        
+        double v_avg = theSystem.getVAvg(); // Get average velocity for scaling purposes
+        ofSetCircleResolution(20);
+        
+        // Draw all the particles and trails
+        for (int i = 0; i < theSystem.getN(); ++i) {
+            tempVel = theSystem.getVel(i);
+            tempAcc = theSystem.getForce(i);
+            
+            hue = ofMap(abs(tempVel.x) + abs(tempVel.y), 0, 3 * v_avg, 170, 210, true);
+            particleColor.setHsb(hue, 255, 255);
+            
+            radius_x = ofMap(log(1.0 + abs(tempAcc.x)), 0, 10, 10, 25);
+            radius_y = ofMap(log(1.0 + abs(tempAcc.y)), 0, 10, 10, 25);
+            radius = (radius_x + radius_y) / 2;
+            
+            if (inflictTorture) {
+                ofSetColor(particleColor);
+                coord pos = theSystem.getPos(i);
+                
+                if (tempVel.x >= 0)
+                    loganRight.draw(box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
+                else
+                    loganLeft.draw( box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
+            } else {
+                //trail
+                if (theSystem.getNPrevPos() >= 15) {
+                    particleColor.a = 100;
+                    drawParticle(i, radius * 0.25, particleColor, 14);
+                }
+                if (theSystem.getNPrevPos() >= 10) {
+                    particleColor.a = 150;
+                    drawParticle(i, radius * 0.5,  particleColor, 9);
+                }
+                if (theSystem.getNPrevPos() >= 5) {
+                    particleColor.a = 200;
+                    drawParticle(i, radius * 0.75, particleColor, 4);
+                }
+                
+                //particle
+                particleColor.a = 255;
+                drawParticle(i, radius_x, radius_y, particleColor);
+            }
+        }
+
+    }
+    
+    /*
+     ROUTINE drawParticle:
+     Draws a particle, specified by index and a size given either as x and y radii (ellipse)
+     or by a single constant radius (circle).
+     Optional: set the colour before drawing
+     Optional: draws the particle with position nframes frames in the past
+     */
+    void SystemAtom::drawParticle(int index, double radius_x, double radius_y, ofColor color, int nframes) {
+        ofSetColor(color);
+        drawParticle(index, radius_x, radius_y, nframes);
+    }
+    
+    void SystemAtom::drawParticle(int index, double radius, ofColor color, int nframes) {
+        ofSetColor(color);
+        drawParticle(index, radius, nframes);
+    }
+    
+    void SystemAtom::drawParticle(int index, double radius_x, double radius_y, int nframes) {
+        coord pos = theSystem.getPos(index, nframes);
+        ofDrawEllipse(box2screen(pos.x, pos.y, 0.0, 0.0, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 2, radius_y * 2);
+    }
+    
+    void SystemAtom::drawParticle(int index, double radius, int nframes) {
+        coord pos = theSystem.getPos(index, nframes);
+        ofDrawCircle(box2screen(pos.x, pos.y, 0.0, 0.0, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius);
+    }
+
+    void SystemAtom::toggleTheHorrors() {
+        inflictTorture = !inflictTorture;
+    }
     
     /* 
         GaussianAtom

@@ -34,6 +34,7 @@
 #include "potentials.hpp"
 #include "gaussian.hpp"
 #include "cubicspline.hpp"
+#include "utilities.hpp"
 
 
 /*
@@ -365,6 +366,35 @@ namespace gui {
         
     };
     
+    class SystemAtom : public UIAtom
+    {
+        /* 
+            UI Atom of the system simulation, i.e. the drawing of the particles
+         */
+        
+    private:
+        
+        md::MDContainer& theSystem;
+        
+        // Super secret variables
+        ofImage& loganLeft;
+        ofImage& loganRight;
+        bool inflictTorture;
+        
+        virtual void render();
+        
+        // Helper functions for drawing particles
+        void drawParticle(int index, double radius_x, double radius_y, ofColor color, int nframes = 0);
+        void drawParticle(int index, double radius, ofColor color, int nframes = 0);
+        void drawParticle(int index, double radius_x, double radius_y, int nframes = 0);
+        void drawParticle(int index, double radius, int nframes = 0);
+        
+    public:
+        
+        SystemAtom(md::MDContainer& theSystem, ofImage& loganLeft, ofImage& loganRight, int x, int y, int width, int height);
+        
+        void toggleTheHorrors();
+    };
     
     /*
         Containers

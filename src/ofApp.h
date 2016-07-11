@@ -50,23 +50,10 @@ public:
     void update();
     void draw();
 
-    // Custom drawing routines
-    // Draw a particle
-    void drawParticle(int index, double radius_x, double radius_y, ofColor color, int nframes = 0);
-    void drawParticle(int index, double radius, ofColor color, int nframes = 0);
-    void drawParticle(int index, double radius_x, double radius_y, int nframes = 0);
-    void drawParticle(int index, double radius, int nframes = 0);
-
     // Draw the kinetic/potential energy graphs
     void drawGraph();
     // Draw the user interface components
     void drawUI();
-    
-    // Convert box coordinates to screen coordinates
-    double box2screen_x(double x, double x0 = 0.0);
-    double box2screen_y(double y, double y0 = 0.0);
-    ofPoint box2screen(double x, double y, double x0 = 0.0, double y0 = 0.0);
-    ofPoint box2screen(coord point, coord origin = {0.0, 0.0});
 
     // Events
     void keyPressed(int key);
@@ -113,14 +100,10 @@ private:
     AudioStream micInput;
     
     // Logical variables
-    bool loganOn; // Is secret-Logan-mode turned on?
     bool graphOn; // Are the energy graphs showing?
-    bool drawOn; // Is the drawing UI open?
-    bool customPotentialOn; // Has the custom potential been selected?
     
     // ~Trivial~ variables
     ofImage loganLeft, loganRight;
-    int loganShiftx, loganShifty;
     
     // UI Containers
     gui::UIContainer menuUI;
@@ -131,5 +114,6 @@ private:
     
     int splineContainerIndex; // Index of spline container in potentialUI
     int gaussianContainerIndex; // Index of gaussian container in systemUI
+    int systemAtomIndex; // Index of the system atom in systemUI
 
 };

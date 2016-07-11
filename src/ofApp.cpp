@@ -24,29 +24,6 @@
 
 #include "ofApp.h"
 
-/*
-    ROUTINE box2screen_x:
-    ROUTINE box2screen_y:
-    ROUTINE box2screen:
-        Scales coordinates from the box dimensions to the window size, measuring
-        positions from a specified (on-screen) origin (defaulting to 0, 0)
- */
-double ofApp::box2screen_x(double x, double x0) {
-    return x * ofGetWidth() / theSystem.getWidth() - x0;
-}
-
-double ofApp::box2screen_y(double y, double y0) {
-    return y * ofGetWidth() / theSystem.getWidth() - y0;
-}
-
-ofPoint ofApp::box2screen(double x, double y, double x0, double y0) {
-    return ofPoint(box2screen_x(x, x0), box2screen_y(y, y0));
-}
-
-ofPoint ofApp::box2screen(coord point, coord origin) {
-    return box2screen(point.x, point.y, origin.x, origin.y);
-}
-
 //--------------------------------------------------------------
 // SETUP
 //--------------------------------------------------------------
@@ -84,8 +61,6 @@ void ofApp::setup()
     
     loganLeft.load("david-logan-posing-left.png");
     loganRight.load("david-logan-posing-right.png");
-    loganShiftx = loganLeft.getWidth() / 2;
-    loganShifty = loganLeft.getHeight() / 2;
     
     // fonts
     uiFont14.load("Montserrat-Bold.ttf", 14);
@@ -113,15 +88,13 @@ void ofApp::setup()
     
     // Set the booleans so that the secret-Logan-mode, energy graphs,
     // potential viewer and custom potential are initially turned off
-    loganOn = false;
     graphOn = false;
-    drawOn  = false;
-    customPotentialOn = false;
 
     // Setup system UI
     systemUI = gui::UIContainer(0, 0, ofGetWidth(), ofGetHeight());
     gaussianContainerIndex = systemUI.addIndexedChild(new gui::GaussianContainer(theSystem, circGradient, 30.0, 0, 0, ofGetWidth(), ofGetHeight()));
     systemUI.makeVisible();
+    systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, 0, 0, ofGetWidth(), ofGetHeight()));
     
     /*
          Setup menu UI
@@ -299,34 +272,6 @@ void ofApp::update(){
 //--------------------------------------------------------------
 
 /*
-    ROUTINE drawParticle:
-        Draws a particle, specified by index and a size given either as x and y radii (ellipse)
-        or by a single constant radius (circle).
-        Optional: set the colour before drawing
-        Optional: draws the particle with position nframes frames in the past
- */
-void ofApp::drawParticle(int index, double radius_x, double radius_y, ofColor color, int nframes) {
-    ofSetColor(color);
-    drawParticle(index, radius_x, radius_y, nframes);
-}
-
-void ofApp::drawParticle(int index, double radius, ofColor color, int nframes) {
-    ofSetColor(color);
-    drawParticle(index, radius, nframes);
-}
-
-void ofApp::drawParticle(int index, double radius_x, double radius_y, int nframes) {
-    coord pos = theSystem.getPos(index, nframes);
-    ofDrawEllipse(box2screen(pos), radius_x * 2, radius_y * 2);
-}
-
-void ofApp::drawParticle(int index, double radius, int nframes) {
-    coord pos = theSystem.getPos(index, nframes);
-    ofDrawCircle(box2screen(pos), radius);
-}
-
-
-/*
     ROUTINE drawGraph:
         Draws the kinetic/potential energy graphs as small red/blue circles
         in the background. 
@@ -398,60 +343,6 @@ void ofApp::draw(){
     // 2. Draw graphs in background if turned on.
     if (graphOn) drawGraph();
     
-    // Setup temporary placeholders
-    ofColor particleColor;
-    coord tempVel;
-    coord tempAcc;
-    
-    double radius_x;
-    double radius_y;
-    double radius;
-    
-    double hue;
-    
-    double v_avg = theSystem.getVAvg(); // Get average velocity for scaling purposes
-    ofSetCircleResolution(20);
-    
-    // Draw all the particles and trails
-    for (int i = 0; i < theSystem.getN(); ++i) {
-        tempVel = theSystem.getVel(i);
-        tempAcc = theSystem.getForce(i);
-        
-        hue = ofMap(abs(tempVel.x) + abs(tempVel.y), 0, 3 * v_avg, 170, 210, true);
-        particleColor.setHsb(hue, 255, 255);
-        
-        radius_x = ofMap(log(1.0 + abs(tempAcc.x)), 0, 10, 10, 25);
-        radius_y = ofMap(log(1.0 + abs(tempAcc.y)), 0, 10, 10, 25);
-        radius = (radius_x + radius_y) / 2;
-        
-        if (loganOn) {
-            ofSetColor(particleColor);
-            coord pos = theSystem.getPos(i);
-            if (tempVel.x >= 0)
-                loganRight.draw(box2screen(pos.x, pos.y, loganShiftx, loganShifty), radius_x * 4, radius_y * 4);
-            else
-                loganLeft.draw( box2screen(pos.x, pos.y, loganShiftx, loganShifty), radius_x * 4, radius_y * 4);
-        } else {
-            //trail
-            if (theSystem.getNPrevPos() >= 15) {
-                particleColor.a = 100;
-                drawParticle(i, radius * 0.25, particleColor, 14);
-            }
-            if (theSystem.getNPrevPos() >= 10) {
-                particleColor.a = 150;
-                drawParticle(i, radius * 0.5,  particleColor, 9);
-            }
-            if (theSystem.getNPrevPos() >= 5) {
-                particleColor.a = 200;
-                drawParticle(i, radius * 0.75, particleColor, 4);
-            }
-            
-            //particle
-            particleColor.a = 255;
-            drawParticle(i, radius_x, radius_y, particleColor);
-        }
-    }
-    
     // draw the UI
     systemUI.draw();
     menuUI.draw();
@@ -494,7 +385,8 @@ void ofApp::keyPressed(int key){
     }
         
     else if (key == 'l' || key == 'L') { // Secret-Logan-Mode on/off
-        loganOn = !loganOn;
+        gui::SystemAtom* sys = (gui::SystemAtom*) systemUI.getChild(systemAtomIndex);
+        sys->toggleTheHorrors();
     }
     
     else if (key == 'e' || key == 'E') { // Show/hide energy graphs
@@ -502,7 +394,7 @@ void ofApp::keyPressed(int key){
     }
     
     else if (key == 'h' || key == 'H'){ // Show/hide UI
-        if (!drawOn) {
+        if (not potentialUI.getVisible()) {
             menuUI.toggleVisible();
         }
     }
@@ -517,7 +409,6 @@ void ofApp::keyPressed(int key){
     
     else if (key == 'd' || key == 'D') { // Drawing interface
         if (not menuUI.getVisible()) {
-            drawOn = !drawOn;
             potentialUI.toggleVisible();
         }
     }
