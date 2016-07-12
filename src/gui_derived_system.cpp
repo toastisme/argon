@@ -449,8 +449,10 @@ namespace gui {
     }
     
     void GaussianContainer::selectGaussian(int id) {
-        GaussianAtom* g = (GaussianAtom*) children[id];
-        g->select();
+        if (id > -1) {
+            GaussianAtom* g = (GaussianAtom*) children[id];
+            g->select();
+        }
     }
 
     
