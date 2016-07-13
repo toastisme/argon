@@ -312,15 +312,11 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
         following mappings:
         
             - a/A           = toggle audio on or off
-            - g/G           = change which Gaussian is currently selected
-            - k/K           = kill the currently selected Gaussian if any exist
             - l/L           = secret-Logan-mode
             - e/E           = toggle the energy graphs showing in the background
             - h/H           = toggle whether the UI is showing
             - r/R           = reset the system
             - p/P           = pause/restart the simulation
-            - TAB           = switch which UI slider has focus
-            - RIGHT/LEFT    = move the currently selected slider up/down
             - d/D           = open/close drawable pair potential
  */
 void ofApp::keyPressed(int key){
