@@ -48,16 +48,15 @@ void ofApp::setup()
     resetButton.load("ButtonReset.png");
     audioOnButton.load("ButtonMic.png");
     audioOffButton.load("ButtonNoMic.png");
-    addPointsButton.load("AddPointsButton.png");
-    removePointsButton.load("RemovePointsButton.png");
-    movePointsButton.load("MovePointsButton.png");
-    changeSlopeButton.load("ChangeSlopeButton.png");
+    optionsButtonUp.load("OptionsButtonUp.png");
+    optionsButtonDown.load("OptionsButtonDown.png");
     
     // potential graphics
     
     ljThumbnail.load("LJThumbnail.png");
     squareThumbnail.load("SquareThumbnail.png");
     morseThumbnail.load("MorseThumbnail.png");
+    customThumbnail.load("CustomThumbnail.png");
     
     loganLeft.load("david-logan-posing-left.png");
     loganRight.load("david-logan-posing-right.png");
@@ -193,7 +192,10 @@ void ofApp::setup()
     menuUI.makeInvisible();
     menuUI.mouseReleased(0, 0, 0);
     
-    potentialUI = gui::UIContainer(50, 50, 50, 50);
+    
+    
+    
+    potentialUI = gui::UIContainer(50, 50, 985, 600);
     potentialUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 924, 500));
     potentialUI.addChild(new gui::RectAtom(bgcolor, 150, 0, 774, 500));
     
@@ -222,7 +224,7 @@ void ofApp::setup()
     
     potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::CUSTOM);
                                                       potentialUI.getChild(splineContainerIndex)->makeVisible(); },
-                                             squareThumbnail, 25, 375, 100, 100));
+                                             customThumbnail, 25, 375, 100, 100));
     potentialUI.addChild(new gui::TextAtom("Custom", uiFont12, textcolor, POS_TOP, 0, 475, 150, 25));
     
     potentialUI.makeInvisible();
@@ -232,6 +234,8 @@ void ofApp::setup()
     // start menu as invisible
     menuUI.makeInvisible();
     
+
+    
     // 'Press h for menu' text
     // This defaults to visible, but we're adding it to a menu we've just set to invisible
     // This means the text is visible when the rest of the menu is invisible and vice-versa
@@ -239,6 +243,38 @@ void ofApp::setup()
     // This might need to be moved to a separate UI container to work well with other UI elements
     menuUI.addChild(new gui::TextAtom("Press h for menu", uiFont14, textcolor,
                                       POS_BOTTOM_LEFT, 5, 0, 1024, 105));
+    
+    //Options menu
+    
+    optionsUI = gui::UIContainer(0, 0, 1024, 60);
+    optionsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 45));
+    optionsUI.addChild(new gui::TextAtom("Controls:", uiFont12, textcolor, POS_TOP, 50, 18, 150, 25));
+    optionsUI.addChild(new gui::TextAtom("Change potential:", uiFont12, textcolor, POS_TOP, 252, 18, 150, 25));
+    optionsUI.addChild(new gui::TextAtom("Display energy graph:", uiFont12, textcolor, POS_TOP, 500, 18, 150, 25));
+    optionsUI.addChild(new gui::TextAtom("Main menu:", uiFont12, textcolor, POS_TOP, 740, 18, 150, 25));
+    
+    optionsUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeInvisible(); }, optionsButtonUp,
+                                        990, 10, 30, 30));
+    
+    optionsUI.addChild(new gui::ButtonAtom([&] () { if (not potentialUI.getVisible()) {
+        menuUI.toggleVisible();}; }, optionsButtonDown, 170, 10, 30, 30));
+    
+    optionsUI.addChild(new gui::ButtonAtom([&] () { if (not menuUI.getVisible()) {
+        potentialUI.toggleVisible();} }, optionsButtonDown, 408, 10, 30, 30));
+
+    optionsUI.addChild(new gui::ButtonAtom([&] () { graphUI.toggleVisible(); }, optionsButtonDown,
+                                           672, 10, 30, 30));
+    optionsUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); }, optionsButtonDown,
+                                           867, 10, 30, 30));
+    optionsUI.makeInvisible();
+    optionsUI.mouseReleased(0, 0, 0);
+    
+    optionsOffUI = gui::UIContainer(985, 0, 40, 40);
+    optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); }, optionsButtonDown,
+                                           5, 10, 30, 30));
+    
+    optionsOffUI.makeVisible();
+    
 }
 
 //--------------------------------------------------------------
@@ -272,6 +308,7 @@ void ofApp::update(){
         // a change from an attractive, wide Gaussian, to a repulsive, narrow Gaussian.
         systemUI.getChild(gaussianContainerIndex)->audioIn(scaledVol);
         
+        
     }
 }
 
@@ -291,6 +328,11 @@ void ofApp::draw(){
     systemUI.draw();
     menuUI.draw();
     potentialUI.draw();
+    optionsUI.draw();
+    optionsOffUI.draw();
+    
+    if (optionsUI.getVisible()){optionsOffUI.makeInvisible();}
+    else {optionsOffUI.makeVisible();}
     
 }
 
@@ -400,12 +442,18 @@ void ofApp::mouseDragged(int x, int y, int button){
 void ofApp::mousePressed(int x, int y, int button){
     
     
-    if (potentialUI.getVisible()) { // Mouse controls drawing UI
+    if (potentialUI.getVisible() && potentialUI.getRect().inside(x, y)) { // Mouse controls drawing UI
         potentialUI.mousePressed(x, y, button);
         
     } else if (menuUI.getVisible() && menuUI.getRect().inside(x, y)) { // Mouse controls menu
         // pass through event to children
         menuUI.mousePressed(x, y, button);
+        
+    } else if (optionsUI.getVisible() && optionsUI.getRect().inside(x, y)){
+        optionsUI.mousePressed(x, y, button);
+        
+    } else if (optionsOffUI.getVisible() && optionsOffUI.getRect().inside(x, y)){
+        optionsOffUI.mousePressed(x, y, button);
         
     } else {
         systemUI.mousePressed(x, y, button);

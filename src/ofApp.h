@@ -83,10 +83,13 @@ private:
     ofImage ljThumbnail;
     ofImage squareThumbnail;
     ofImage morseThumbnail;
+    ofImage customThumbnail;
     ofImage addPointsButton;
     ofImage removePointsButton;
     ofImage movePointsButton;
     ofImage changeSlopeButton;
+    ofImage optionsButtonUp;
+    ofImage optionsButtonDown;
     
     // Audio data
     AudioStream micInput;
@@ -101,6 +104,8 @@ private:
     gui::UIContainer testUI;
     gui::UIContainer systemUI;
     gui::UIContainer graphUI;
+    gui::UIContainer optionsUI;
+    gui::UIContainer optionsOffUI;
     
     int splineContainerIndex; // Index of spline container in potentialUI
     int gaussianContainerIndex; // Index of gaussian container in systemUI
