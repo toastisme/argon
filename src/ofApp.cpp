@@ -50,6 +50,10 @@ void ofApp::setup()
     audioOffButton.load("ButtonNoMic.png");
     optionsButtonUp.load("OptionsButtonUp.png");
     optionsButtonDown.load("OptionsButtonDown.png");
+    optionsEnergyButton.load("OptionsEnergyButton.png");
+    optionsMainMenuButton.load("OptionsMainMenuButton.png");
+    optionsPotentialButton.load("OptionsPotentialButton.png");
+    optionsControlsButton.load("OptionsControlsButton.png");
     
     // potential graphics
     
@@ -257,14 +261,14 @@ void ofApp::setup()
                                         990, 10, 30, 30));
     
     optionsUI.addChild(new gui::ButtonAtom([&] () { if (not potentialUI.getVisible()) {
-        menuUI.toggleVisible();}; }, optionsButtonDown, 170, 10, 30, 30));
+        menuUI.toggleVisible();}; }, optionsControlsButton, 170, 10, 30, 30));
     
     optionsUI.addChild(new gui::ButtonAtom([&] () { if (not menuUI.getVisible()) {
-        potentialUI.toggleVisible();} }, optionsButtonDown, 408, 10, 30, 30));
+        potentialUI.toggleVisible();} }, optionsPotentialButton, 408, 10, 30, 30));
 
-    optionsUI.addChild(new gui::ButtonAtom([&] () { graphUI.toggleVisible(); }, optionsButtonDown,
+    optionsUI.addChild(new gui::ButtonAtom([&] () { graphUI.toggleVisible(); }, optionsEnergyButton,
                                            672, 10, 30, 30));
-    optionsUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); }, optionsButtonDown,
+    optionsUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); }, optionsMainMenuButton,
                                            867, 10, 30, 30));
     optionsUI.makeInvisible();
     optionsUI.mouseReleased(0, 0, 0);

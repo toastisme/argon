@@ -90,6 +90,10 @@ private:
     ofImage changeSlopeButton;
     ofImage optionsButtonUp;
     ofImage optionsButtonDown;
+    ofImage optionsEnergyButton;
+    ofImage optionsMainMenuButton;
+    ofImage optionsPotentialButton;
+    ofImage optionsControlsButton;
     
     // Audio data
     AudioStream micInput;
