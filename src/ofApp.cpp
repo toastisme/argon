@@ -238,16 +238,6 @@ void ofApp::setup()
     // start menu as invisible
     menuUI.makeInvisible();
     
-
-    
-    // 'Press h for menu' text
-    // This defaults to visible, but we're adding it to a menu we've just set to invisible
-    // This means the text is visible when the rest of the menu is invisible and vice-versa
-    // Calling toggleVisible toggles everything correctly
-    // This might need to be moved to a separate UI container to work well with other UI elements
-    menuUI.addChild(new gui::TextAtom("Press h for menu", uiFont14, textcolor,
-                                      POS_BOTTOM_LEFT, 5, 0, 1024, 105));
-    
     //Options menu
     
     optionsUI = gui::UIContainer(0, 0, 1024, 60);
@@ -274,6 +264,7 @@ void ofApp::setup()
     optionsUI.mouseReleased(0, 0, 0);
     
     optionsOffUI = gui::UIContainer(985, 0, 40, 40);
+    optionsOffUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
     optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); }, optionsButtonDown,
                                            5, 10, 30, 30));
     
