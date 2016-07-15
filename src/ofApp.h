@@ -115,5 +115,8 @@ private:
     int splineContainerIndex; // Index of spline container in potentialUI
     int gaussianContainerIndex; // Index of gaussian container in systemUI
     int systemAtomIndex; // Index of the system atom in systemUI
+    
+    // Store current screen dimensions so that resizing can occur in update if they change
+    int screenWidth, screenHeight;
 
 };

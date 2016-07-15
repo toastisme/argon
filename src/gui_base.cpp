@@ -60,6 +60,11 @@ namespace gui {
     // Default handling of audio event is to do nothing
     void UIBase::audioIn(double volume) { }
     
+    // Default resizing of element
+    void UIBase::resize(float xScale, float yScale) {
+        bounds.setXYWH(bounds.left*xScale, bounds.top*yScale, bounds.width()*xScale, bounds.height()*yScale);
+    }
+    
     /*
         UIAtom
      */
@@ -73,6 +78,11 @@ namespace gui {
     // draw checks if visible, and then calls render()
     void UIAtom::draw() {
         if (visible) { render(); }
+    }
+    
+    // Resize currently just calls parent method
+    void UIAtom::resize(float xScale, float yScale) {
+        UIBase::resize(xScale, yScale);
     }
     
     /*
@@ -138,6 +148,12 @@ namespace gui {
     // draw just passes the call through to its children
     void UIContainer::draw() {
         for (int i = 0; i < children.size(); ++i) { children[i]->draw(); }
+    }
+    
+    // resize passes the call to all its children, and resizes container
+    void UIContainer::resize(float xScale, float yScale) {
+        UIBase::resize(xScale, yScale);
+        for (int i = 0; i < children.size(); ++i) { children[i]->resize(xScale, yScale); }
     }
     
     // mouse events by default only pass through the event to the first child to handle them

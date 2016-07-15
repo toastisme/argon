@@ -107,6 +107,7 @@ namespace gui {
         
         // render the string to the screen, align within a rectangle
         void renderString(rect bounds, Position align) const;
+        
     };
     
     
@@ -234,6 +235,9 @@ namespace gui {
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
+        
+        // Override resize method so that button does not distort
+        virtual void resize(float xScale, float yScale);
     };
     
     class ButtonToggleAtom : public UIAtom
@@ -257,6 +261,9 @@ namespace gui {
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
+        
+        // Override resize method so that button does not distort
+        virtual void resize(float xScale, float yScale);
     };
     
     class ButtonPairAtom : public UIAtom
@@ -281,6 +288,9 @@ namespace gui {
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
+        
+        // Override resize method so that button does not distort
+        virtual void resize(float xScale, float yScale);
     };
     
     class PotentialAtom : public UIAtom
@@ -466,6 +476,9 @@ namespace gui {
         
         // Override draw method
         virtual void draw();
+        
+        // override resize method
+        virtual void resize(float xScale, float yScale);
     };
     
     class GaussianContainer : public UIContainer

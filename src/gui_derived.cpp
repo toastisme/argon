@@ -250,6 +250,12 @@ namespace gui {
         else { return false; }
     }
     
+    // resize with the smaller of xScale and yScale
+    void ButtonAtom::resize(float xScale, float yScale) {
+        float scale = xScale < yScale ? xScale : yScale;
+        bounds.setXYWH(bounds.left*xScale, bounds.top*yScale, bounds.width()*scale, bounds.height()*scale);
+    }
+    
     /*
         ButtonToggleAtom
      */
@@ -272,6 +278,12 @@ namespace gui {
     bool ButtonToggleAtom::mousePressed(int x, int y, int button) {
         if (button == 0 && bounds.inside(x, y)) { setBool(not getBool()); return true; }
         else { return false; }
+    }
+    
+    // resize with the smaller of xScale and yScale
+    void ButtonToggleAtom::resize(float xScale, float yScale) {
+        float scale = xScale < yScale ? xScale : yScale;
+        bounds.setXYWH(bounds.left*xScale, bounds.top*yScale, bounds.width()*scale, bounds.height()*scale);
     }
     
     /*

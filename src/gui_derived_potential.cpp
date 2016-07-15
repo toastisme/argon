@@ -99,8 +99,6 @@ namespace gui {
         
     }
     
-    
-    
     /*
         SplineControlPoint
      */
@@ -337,5 +335,11 @@ namespace gui {
         if ( system.getPotential().getType() == CUSTOM ) {
             UIContainer::draw();
         }
+    }
+    
+    // Override resize so that the pointRegion is updated
+    void SplineContainer::resize(float xScale, float yScale) {
+        UIContainer::resize(xScale, yScale);
+        pointRegion.setXYWH(pointRegion.left*xScale, pointRegion.top*yScale, pointRegion.width()*xScale, pointRegion.height()*yScale);
     }
 }

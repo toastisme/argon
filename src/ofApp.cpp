@@ -82,31 +82,30 @@ void ofApp::setup()
     theSystem.setStepsPerUpdate(5);
     theSystem.setNAfterReset(50);
     
+    // Initialise screen dimensions
+    screenWidth = ofGetWidth();
+    screenHeight = ofGetHeight();
+    
     double BOX_WIDTH = 17.0;
-    // NOTE: ofGetWidth and ofGetHeight do not give the right values here if
-    // the screen we're trying to draw is to the right values later, but not
-    // in ofApp::setup(). If this happens, we get regions where the particles
-    // are inside the MD box, but not inside the screen.
-    // This is an openFrameworks issue.
-    double BOX_HEIGHT = BOX_WIDTH / ofGetWidth() * ofGetHeight();
+    double BOX_HEIGHT = BOX_WIDTH / screenWidth * screenHeight;
     theSystem.setBox(BOX_WIDTH, BOX_HEIGHT);
     
     theSystem.resetSystem();
 
     // Setup system UI
-    systemUI = gui::UIContainer(0, 0, ofGetWidth(), ofGetHeight());
+    systemUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
     
     // Add the gaussian container
-    gaussianContainerIndex = systemUI.addIndexedChild(new gui::GaussianContainer(theSystem, circGradient, 30.0, 0, 0, ofGetWidth(), ofGetHeight()));
+    gaussianContainerIndex = systemUI.addIndexedChild(new gui::GaussianContainer(theSystem, circGradient, 30.0, 0, 0, screenWidth, screenHeight));
     
     // And the particles themselves
-    systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, 0, 0, ofGetWidth(), ofGetHeight()));
+    systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, 0, 0, screenWidth, screenHeight));
     
     // Setup graph UI
-    graphUI = gui::UIContainer(ofGetWidth()/6, ofGetHeight()/6, 2*ofGetWidth()/3, 2*ofGetHeight()/3);
+    graphUI = gui::UIContainer(screenWidth/6, screenHeight/6, 2*screenWidth/3, 2*screenHeight/3);
     
     // Add the graph itself
-    graphUI.addChild(new gui::EnergyGraphAtom(theSystem, 0, 0, 2*ofGetWidth()/3, 2*ofGetHeight()/3));
+    graphUI.addChild(new gui::EnergyGraphAtom(theSystem, 0, 0, 2*screenWidth/3, 2*screenHeight/3));
     
     // Add a legend
     graphUI.addChild(new gui::TextAtom("Kinetic Energy", uiFont14, ofColor(200, 0, 0),
@@ -290,6 +289,25 @@ void ofApp::update(){
         systemUI.getChild(gaussianContainerIndex)->audioIn(scaledVol);
         
     }
+    
+    // If the screen size has changed, resize the UI
+    if ( screenWidth != ofGetWidth() || screenHeight != ofGetHeight() ) {
+        
+        float xScale =  ofGetWidth() / ( (float) screenWidth  );
+        float yScale = ofGetHeight() / ( (float) screenHeight );
+        
+        std::cout << xScale << " " << yScale << std::endl;
+        
+        menuUI.resize(xScale, yScale);
+        potentialUI.resize(xScale, yScale);
+        optionsUI.resize(xScale, yScale);
+        optionsOffUI.resize(xScale, yScale);
+        graphUI.resize(xScale, yScale);
+        
+        screenWidth = ofGetWidth();
+        screenHeight = ofGetHeight();
+    }
+    
 }
 
 //--------------------------------------------------------------

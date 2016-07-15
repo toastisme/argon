@@ -72,6 +72,9 @@ namespace gui {
         // draw element; called from ofApp.draw()
         virtual void draw() = 0;
         
+        // resize element; called from update when screen size changes
+        virtual void resize(float xScale, float yScale);
+        
         // pure virtual methods to handle visibility
         bool getVisible() const;
         virtual void makeVisible();
@@ -107,6 +110,8 @@ namespace gui {
         
         // if visible, calls render
         virtual void draw();
+        
+        virtual void resize(float xScale, float yScale);
     };
     
     class UIContainer : public UIBase
@@ -158,6 +163,9 @@ namespace gui {
         
         // draw is just passed to all children
         virtual void draw();
+        
+        // resize is passed to all children
+        virtual void resize(float xScale, float yScale);
         
         // only pass mouse event to the first child to handle it
         virtual bool mouseMoved(int x, int y);
