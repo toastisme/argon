@@ -32,10 +32,6 @@
 #include "potentials.hpp"
 
 namespace md{
-    
-    enum Potential {
-        LENNARD_JONES, SQUARE_WELL, MORSE, CUSTOM
-    };
 
     class MDContainer
     {

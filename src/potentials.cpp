@@ -29,6 +29,9 @@
 
 //------ POTENTIALFUNCTOR -----
 
+// constructor
+PotentialFunctor::PotentialFunctor(Potential _type) : type(_type) {}
+
 // return the potential
 // if within the wall, use the LJ potential
 // else if past the cutoff, use 0
@@ -61,12 +64,16 @@ double PotentialFunctor::calcForceLJ(double r) {
     return 24 * r * (rm6 - 2 * rm6 * rm6);
 }
 
+// Get type
+Potential PotentialFunctor::getType() const {
+    return type;
+}
 
 
 //------ LENNARD-JONES POTENTIAL -----
 
 // Constructor, sets parameters to default values
-LennardJones::LennardJones() {}
+LennardJones::LennardJones() : PotentialFunctor(LENNARD_JONES) {}
 
 // Just energy calculation
 double LennardJones::calcEnergy(double r) { return calcEnergyLJ(r); }
@@ -79,7 +86,7 @@ double LennardJones::calcForce(double r) { return calcForceLJ(r); }
 //------ MORSE POTENTIAL ------
 
 // Constructor, set default parameter values
-Morse::Morse() : a(5.85), r_eq(pow(2, 1.0 / 6)) {}
+Morse::Morse() : a(5.85), r_eq(pow(2, 1.0 / 6)), PotentialFunctor(MORSE) {}
 
 // Force and energy calculation
 
@@ -120,7 +127,7 @@ double Morse::calcForce(double r)
 //------ SQUARE WELL POTENTIAL -----
 
 // Constructor, sets default values of parameters
-SquareWell::SquareWell() : lambda(1.85) {}
+SquareWell::SquareWell() : lambda(1.85), PotentialFunctor(SQUARE_WELL) {}
 
 // Square well potential
 double SquareWell::calcEnergy(double r)
@@ -150,7 +157,7 @@ double SquareWell::calcForce(double r)
 //------ CUSTOM POTENTIAL ------
 
 // Constructor
-CustomPotential::CustomPotential() {
+CustomPotential::CustomPotential() : PotentialFunctor(CUSTOM) {
     // define fixed points on the spline, corresponding to the repulsive wall and the cutoff of 3.0
     pointWallL = {LJ_AT_3, 3, LJ_F_3}; // LJ wall
     pointWallR = {LJ_AT_2, 2, -10};

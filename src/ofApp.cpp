@@ -71,7 +71,7 @@ void ofApp::setup()
     uiFont10.load("Montserrat-Bold.ttf", 10);
     
     // Setup audio stream
-    ofSoundStreamSetup(0, 2, this, 44000, 256, 4);
+    ofSoundStreamSetup(0, 1, this, 44000, 256, 1);
     micInput.setStream(&soundStream);
     
     // Initialise theSystem with 50 particles at 60K
@@ -210,27 +210,27 @@ void ofApp::setup()
     // Setup potential atoms
     potentialUI.addChild(new gui::PotentialAtom(theSystem, 300, 0.95, 3.0, -2, 2,
                                                 150, 0, 774, 500));
-    splineContainerIndex = potentialUI.addIndexedChild(new gui::SplineContainer(theSystem.getCustomPotential(), 0.95, 3.0, -2, 2, 12,
+    splineContainerIndex = potentialUI.addIndexedChild(new gui::SplineContainer(theSystem, 0.95, 3.0, -2, 2, 12,
                                                                                 150, 0, 774, 500));
     
     potentialUI.addChild(new gui::SetColour(textcolor));
     
-    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::LENNARD_JONES);
+    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(LENNARD_JONES);
                                                       potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
                                              ljThumbnail, 25, 0, 100, 100));
     potentialUI.addChild(new gui::TextAtom("Lennard-Jones", uiFont12, textcolor, POS_TOP, 0, 100, 150, 25));
     
-    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::SQUARE_WELL);
+    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(SQUARE_WELL);
                                                       potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
                                              squareThumbnail, 25, 125, 100, 100));
     potentialUI.addChild(new gui::TextAtom("Square Well", uiFont12, textcolor, POS_TOP, 0, 225, 150, 25));
     
-    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::MORSE);
+    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(MORSE);
                                                       potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
                                              morseThumbnail, 25, 250, 100, 100));
     potentialUI.addChild(new gui::TextAtom("Morse", uiFont12, textcolor, POS_TOP, 0, 350, 150, 25));
     
-    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(md::CUSTOM);
+    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(CUSTOM);
                                                       potentialUI.getChild(splineContainerIndex)->makeVisible(); },
                                              customThumbnail, 25, 375, 100, 100));
     potentialUI.addChild(new gui::TextAtom("Custom", uiFont12, textcolor, POS_TOP, 0, 475, 150, 25));
@@ -337,8 +337,8 @@ void ofApp::draw(){
 // INPUT & EVENT HANDLING
 //--------------------------------------------------------------------
 
-void ofApp::audioIn(float * input, int bufferSize, int nChannels){
-    
+void ofApp::audioIn(ofSoundBuffer &buffer){
+    micInput.audioIn(buffer);
 }
 
 

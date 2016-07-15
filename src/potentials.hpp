@@ -29,6 +29,12 @@
 #include "utilities.hpp"
 #include "cubicspline.hpp"
 
+
+// Enumerate different potential types
+enum Potential {
+    LENNARD_JONES, SQUARE_WELL, MORSE, CUSTOM
+};
+
 // Base class - currently just an empty functor defining what every potential
 // functor must have, which is a force/energy calculating method with arguments
 // separation rij, force, and returning the potential energy.
@@ -47,7 +53,13 @@ protected:
     double calcEnergyLJ(double r);
     double calcForceLJ(double r);
     
+    // Store type so can safely check type of potential being used
+    Potential type;
+    
 public:
+    
+    PotentialFunctor(Potential type);
+    
     // magic numbers indicating particular values of the LJ potential
     // value of r such that V_LJ(r) = 2
     constexpr static const double LJ_AT_2 = 0.949343841329228; // ((1 + sqrt(3) / 2)^(-1/6)
@@ -60,6 +72,10 @@ public:
     //double operator()(double rij, coord& force);
     double potential(double r);
     double force(double r);
+    
+    // Return the type
+    Potential getType() const;
+
 };
 
 

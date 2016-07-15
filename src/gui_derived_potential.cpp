@@ -183,7 +183,7 @@ namespace gui {
         SplineContainer
      */
     
-    SplineContainer::SplineContainer(CustomPotential &_potential, double min_x, double max_x, double min_y, double max_y, double _radius, double x, double y, double width, double height) : potential(_potential), radius(_radius), UIContainer(x, y, width, height)
+    SplineContainer::SplineContainer(md::MDContainer &_system, double min_x, double max_x, double min_y, double max_y, double _radius, double x, double y, double width, double height) : system(_system), radius(_radius), UIContainer(x, y, width, height)
     {
         splineRegion.setLRTB(min_x, max_x, max_y, min_y);
         pointRegion.setLRTB(bounds.left + radius, bounds.right - radius, bounds.top + radius, bounds.bottom - radius);
@@ -209,7 +209,7 @@ namespace gui {
             points.push_back({pos.x, pos.y, m});
         }
         
-        potential.updatePoints(points);
+        system.getCustomPotential().updatePoints(points);
     }
     
     // return true if there is a control point with x-coordinate close to the given x
@@ -330,5 +330,12 @@ namespace gui {
         }
         
         return handled;
+    }
+    
+    // Override draw so that it only draws if the custom potential is selected
+    void SplineContainer::draw() {
+        if ( system.getPotential().getType() == CUSTOM ) {
+            UIContainer::draw();
+        }
     }
 }

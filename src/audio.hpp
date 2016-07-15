@@ -37,9 +37,6 @@ private:
     double maxAmplitude;    // the maximum amplitude needed to max out the scaled volume (renamed from sensitivity)
     double volume;          // internal, unscaled volume
     
-    // handle audio input event
-    void audioIn(ofSoundBuffer &buffer);
-    
 public:
     // default constructor sets everything up and starts the stream
     AudioStream();
@@ -59,6 +56,9 @@ public:
     // getter and setter for maximum amplitude
     double getMaxAmplitude() const;
     void setMaxAmplitude(double maxAmplitude);
+    
+    // handle audio input event
+    void audioIn(ofSoundBuffer &buffer);
 };
 
 #endif /* audio_hpp */

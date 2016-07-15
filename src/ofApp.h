@@ -62,7 +62,7 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-    void audioIn(float * input, int bufferSize, int nChannels);
+    void audioIn(ofSoundBuffer &buffer);
 
 private:
    

@@ -27,7 +27,7 @@
 // Default constructor
 AudioStream::AudioStream() : volume(0), active(true), maxAmplitude(0.04) {
 
-};
+}
 
 void AudioStream::setStream(ofSoundStream *_stream) {
     stream = _stream;

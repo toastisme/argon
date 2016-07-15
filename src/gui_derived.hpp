@@ -437,7 +437,8 @@ namespace gui {
             UI Container to control a custom potential's spline with the mouse
          */
     private:
-        CustomPotential &potential;
+        md::MDContainer &system; // Get custom potential from the system
+        
         double radius;       // visual size of control points
         rect splineRegion;   // region of spline to control
         rect pointRegion;    // region in which the centres of the control points are allowed to be, which
@@ -452,7 +453,7 @@ namespace gui {
         bool controlPointNear(double x, int except = -1);
         
     public:
-        SplineContainer(CustomPotential &potential, double x_min, double x_max, double y_min, double y_max, double controlPointRadius, double x, double y, double width, double height);
+        SplineContainer(md::MDContainer &system, double x_min, double x_max, double y_min, double y_max, double controlPointRadius, double x, double y, double width, double height);
         
         // override moveBy to adjust pointRegion simultaneously
         virtual void moveBy(coord offset);
@@ -462,6 +463,9 @@ namespace gui {
         
         // returns true if a point was moved
         bool mouseMoved(int x, int y);
+        
+        // Override draw method
+        virtual void draw();
     };
     
     class GaussianContainer : public UIContainer
