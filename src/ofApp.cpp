@@ -210,7 +210,7 @@ void ofApp::setup()
     // Setup potential atoms
     potentialUI.addChild(new gui::PotentialAtom(theSystem, 300, 0.95, 3.0, -2, 2,
                                                 150, 0, 774, 500));
-    splineContainerIndex = potentialUI.addIndexedChild(new gui::SplineContainer(theSystem, 0.95, 3.0, -2, 2, 12,
+    splineContainerIndex = potentialUI.addIndexedChild(new gui::SplineContainer(theSystem, 0.95, 3.0, -2, 2, 15,
                                                                                 150, 0, 774, 500));
     
     potentialUI.addChild(new gui::SetColour(textcolor));

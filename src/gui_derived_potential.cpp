@@ -105,7 +105,7 @@ namespace gui {
         SplineControlPoint
      */
     
-    SplineControlPoint::SplineControlPoint(int x, int y, double _radius, rect _pointBounds) : m(0), radius(_radius), pointBounds(_pointBounds), mouseFocus(false), UIAtom(x - _radius, y - _radius, 2 * _radius, 2 * _radius)
+    SplineControlPoint::SplineControlPoint(int x, int y, double _radius, rect _pointBounds) : m(0), radius(_radius), pointBounds(_pointBounds), mouseFocus(false), UIAtom(x - 2*_radius, y - 2*_radius, 4 * _radius, 4 * _radius)
     {}
     
     void SplineControlPoint::render() {
@@ -217,7 +217,7 @@ namespace gui {
     bool SplineContainer::controlPointNear(double x, int except) {
         for (int i = 0; i < children.size(); ++i) {
             if (i == except) { continue; }
-            if (abs(x - children[i]->getRect().centreX()) < 8) { return true; }
+            if (abs(x - children[i]->getRect().centreX()) < 2*radius) { return true; }
         }
         return false;
     }
