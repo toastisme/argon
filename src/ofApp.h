@@ -105,8 +105,6 @@ private:
     // UI Containers
     gui::UIContainer menuUI;
     gui::UIContainer potentialUI;
-    gui::UIContainer presshUI;
-    gui::UIContainer testUI;
     gui::UIContainer systemUI;
     gui::UIContainer graphUI;
     gui::UIContainer optionsUI;
