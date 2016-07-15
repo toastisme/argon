@@ -71,7 +71,7 @@ void ofApp::setup()
     uiFont10.load("Montserrat-Bold.ttf", 10);
     
     // Setup audio stream
-    ofSoundStreamSetup(0, 1, this, 44000, 256, 1);
+    soundStream.setup(this, 0, 2, 44100, 256, 4);
     micInput.setStream(&soundStream);
     
     // Initialise theSystem with 50 particles at 60K
