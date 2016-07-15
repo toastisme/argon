@@ -82,9 +82,9 @@ void ofApp::setup()
     theSystem.setStepsPerUpdate(5);
     theSystem.setNAfterReset(50);
     
-    // Initialise screen dimensions
-    screenWidth = ofGetWidth();
-    screenHeight = ofGetHeight();
+    // Initialise screen dimensions to default 1024 x 600 pixels
+    screenWidth = 1024;
+    screenHeight = 600;
     
     double BOX_WIDTH = 17.0;
     double BOX_HEIGHT = BOX_WIDTH / screenWidth * screenHeight;
