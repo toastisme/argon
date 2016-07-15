@@ -125,73 +125,55 @@ void ofApp::setup()
     ofColor textcolor = ofColor(255, 255, 240);
     
     // setup base container
-    menuUI = gui::UIContainer(0, 490, 1024, 110);
+    menuUI = gui::UIContainer(0, 455, 1024, 145);
     
     // menu background
-    menuUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 110));
+    menuUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 145));
     
     // sliders
     menuUI.addChild(new gui::SliderContainer("Temperature (K)",
                                              [&] () { return theSystem.getTemp() * 120; },   // factor of 120 to convert to kelvin
                                              [&] (double set) { theSystem.setTemp(set / 120.0); },
                                              0, 1000, uiFont12, textcolor, 1,
-                                             5, 5, 150, 450, 70, 5, 30));
+                                             100, 5, 150, 450, 70, 5, 30));
     
     menuUI.addChild(new gui::SliderContainer("Particles",
                                              [&] () { return theSystem.getNAfterReset(); },
                                                     // N is an int: add 0.5 to the argument to set N to round(set) instead of floor(set)
                                              [&] (double set) { theSystem.setNAfterReset(set + 0.5); },
                                              2, 200, uiFont12, textcolor, 0,
-                                             5, 40, 150, 450, 70, 5, 30));
+                                             100, 40, 150, 450, 70, 5, 30));
     
     menuUI.addChild(new gui::SliderContainer("Simulation speed",
                                              [&] () { return theSystem.getStepsPerUpdate(); },
                                              [&] (double set) { theSystem.setStepsPerUpdate(set + 0.5); },
                                              1, 20, uiFont12, textcolor, 0,
-                                             5, 75, 150, 450, 70, 5, 30));
+                                             100, 75, 150, 450, 70, 5, 30));
+    
+    menuUI.addChild(new gui::SliderContainer("Audio input level",
+                                             [&] () { return micInput.getMaxAmplitude(); },
+                                             [&] (double set) { micInput.setMaxAmplitude(set + 0.005); },
+                                             0.005, 0.1, uiFont12, textcolor, 3,
+                                             100, 110, 150, 450, 70, 5, 30));
     
     // button text
     menuUI.addChild(new gui::TextAtom("Play / pause:", uiFont10, textcolor,
-                                      POS_RIGHT, 690, 5, 100, 30));
+                                      POS_RIGHT, 860, 5, 100, 30));
     menuUI.addChild(new gui::TextAtom("Reset:", uiFont10, textcolor,
-                                      POS_RIGHT, 690, 40, 100, 30));
+                                      POS_RIGHT, 860, 40, 100, 30));
     menuUI.addChild(new gui::TextAtom("Mic on/off:", uiFont10, textcolor,
-                                      POS_RIGHT, 690, 75, 100, 30));
+                                      POS_RIGHT, 860, 75, 100, 30));
     
     // buttons
     menuUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
     menuUI.addChild(new gui::ButtonToggleAtom([&] () { return theSystem.getRunning(); }, [&] (bool set) { theSystem.setRunning(set); },
                                               playButton, pauseButton,
-                                              800, 5, 30, 30));
+                                              970, 5, 30, 30));
     menuUI.addChild(new gui::ButtonAtom([&] () { theSystem.resetSystem(); }, resetButton,
-                                              800, 40, 30, 30));
+                                              970, 40, 30, 30));
     menuUI.addChild(new gui::ButtonToggleAtom([&] () { return micInput.getActive(); }, [&] (bool set) { micInput.setActive(set); },
                                               audioOnButton, audioOffButton,
-                                              800, 75, 30, 30));
-    
-    // controls list
-    menuUI.addChild(new gui::TextAtom("Key Commands", uiFont12, textcolor,
-                                      POS_TOP, 850, 5, 174, 20));
-    
-    menuUI.addChild(new gui::TextAtom("Change gaussian:", uiFont10, textcolor,
-                                      POS_RIGHT, 850, 25, 140, 20));
-    menuUI.addChild(new gui::TextAtom("g", uiFont10, textcolor,
-                                      POS_LEFT, 995, 25, 24, 20));
-    
-    menuUI.addChild(new gui::TextAtom("Remove gaussian:", uiFont10, textcolor,
-                                      POS_RIGHT, 850, 45, 140, 20));
-    menuUI.addChild(new gui::TextAtom("k", uiFont10, textcolor,
-                                      POS_LEFT, 995, 45, 24, 20));
-    
-    menuUI.addChild(new gui::TextAtom("Show energies:", uiFont10, textcolor,
-                                      POS_RIGHT, 850, 65, 140, 20));
-    menuUI.addChild(new gui::TextAtom("e", uiFont10, textcolor,
-                                      POS_LEFT, 995, 65, 24, 20));
-    
-    menuUI.addChild(new gui::TextAtom("Show potentials:", uiFont10, textcolor,
-                                      POS_RIGHT, 850, 85, 140, 20));
-    menuUI.addChild(new gui::TextAtom("d", uiFont10, textcolor,
-                                      POS_LEFT, 995, 85, 24, 20));
+                                              970, 75, 30, 30));
     
     // framerate counter
     menuUI.addChild(new gui::ValueAtom([&] () { return ofGetFrameRate(); },
