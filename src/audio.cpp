@@ -24,16 +24,14 @@
 
 #include "audio.hpp"
 
-// Default constructor sets the stream up with a default maxAmplitude of 0.04
+// Default constructor
 AudioStream::AudioStream() : volume(0), active(true), maxAmplitude(0.04) {
-    // call this class's audioIn event handler if the mic gets input
-    stream.setInput(this);
-    
-    // 0 output channels, 2 input channels
-    // sample rate 44100Hz
-    // buffer size 256, 4 buffers
-    stream.setup(0, 2, 44100, 256, 4);
+
 };
+
+void AudioStream::setStream(ofSoundStream *_stream) {
+    stream = _stream;
+}
 
 void AudioStream::audioIn(ofSoundBuffer &buffer) {
     // smooth input by taking 93:7 ratio of old to new volume
@@ -52,16 +50,16 @@ bool AudioStream::getActive() const { return active; }
 // if setting the stream active, call stream.start(), and vice-versa for stream.stop()
 // otherwise a regular setter for active
 void AudioStream::setActive(bool _active) {
-    if (_active) { stream.start(); }
-    else { stream.stop(); }
+    if (_active) { (*stream).start(); }
+    else { (*stream).stop(); }
     
     active = _active;
 }
 
 // toggles whether the stream is active
 void AudioStream::toggleActive() {
-    if (active) { stream.stop(); }
-    else { stream.start(); }
+    if (active) { (*stream).stop(); }
+    else { (*stream).start(); }
     
     active = not active;
 }

@@ -31,7 +31,7 @@
 class AudioStream : ofBaseSoundInput
 {
 private:
-    ofSoundStream stream;   // interal sound stream
+    ofSoundStream *stream;   // interal sound stream
     bool active;            // whether the stream is active or not
     
     double maxAmplitude;    // the maximum amplitude needed to max out the scaled volume (renamed from sensitivity)
@@ -43,6 +43,8 @@ private:
 public:
     // default constructor sets everything up and starts the stream
     AudioStream();
+    
+    void setStream(ofSoundStream *stream);
     
     double getRawVolume() const;   // get raw value of volume
     double getVolume() const;      // get volume scaled between 0 and 1 based on maxAmplitude

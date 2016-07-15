@@ -70,6 +70,10 @@ void ofApp::setup()
     uiFont12.load("Montserrat-Bold.ttf", 12);
     uiFont10.load("Montserrat-Bold.ttf", 10);
     
+    // Setup audio stream
+    ofSoundStreamSetup(0, 2, this, 44000, 256, 4);
+    micInput.setStream(&soundStream);
+    
     // Initialise theSystem with 50 particles at 60K
     theSystem.setTemp(0.5);
     theSystem.setTimestep(0.002);
@@ -303,7 +307,6 @@ void ofApp::update(){
         // a change from an attractive, wide Gaussian, to a repulsive, narrow Gaussian.
         systemUI.getChild(gaussianContainerIndex)->audioIn(scaledVol);
         
-        
     }
 }
 
@@ -316,8 +319,7 @@ void ofApp::update(){
         Part of the infinite update / draw loop.
  */
 void ofApp::draw(){
-
-    
+  
     // draw the UI
     graphUI.draw();
     systemUI.draw();

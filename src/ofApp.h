@@ -97,6 +97,7 @@ private:
     
     // Audio data
     AudioStream micInput;
+    ofSoundStream soundStream;
     
     // ~Trivial~ variables
     ofImage loganLeft, loganRight;
