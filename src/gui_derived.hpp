@@ -352,9 +352,13 @@ namespace gui {
         md::MDContainer& theSystem;
         ofImage& circGradient;
         
+        // Control whether attractive/repulsive, and whether it reacts to audio
+        UIContainer controlPanel;
+        
         int gaussianID;
         double radius;
         bool selected;
+        bool audioOn;
         bool mouseFocus;
         
         virtual void render();
@@ -363,7 +367,7 @@ namespace gui {
         void moveGaussian(double x, double y);
         
     public:
-        GaussianAtom( md::MDContainer& theSystem, ofImage& circGradient, int gaussianID, int x, int y, double radius);
+        GaussianAtom( md::MDContainer& theSystem, ofImage& circGradient, int gaussianID, ofTrueTypeFont* uiFont10, ofImage* closeButton, ofImage* audioOnButton, ofImage* audioOffButton, int x, int y, double radius);
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
@@ -373,6 +377,9 @@ namespace gui {
         void deselect();
         void select();
         void updateID(int _id);
+        
+        void audioIn(double volume);
+        virtual void resize(float xScale, float yScale);
         
     };
     
@@ -491,6 +498,12 @@ namespace gui {
         md::MDContainer &system;
         ofImage& circGradient;
         
+        // For Gaussian control panel
+        ofTrueTypeFont* uiFont10;
+        ofImage* closeButton;
+        ofImage* audioOnButton;
+        ofImage* audioOffButton;
+        
         double radius;
         int selectedGaussian;
         
@@ -507,7 +520,7 @@ namespace gui {
         void selectGaussian(int id);
         
     public:
-        GaussianContainer(md::MDContainer& system, ofImage& circGradient, double radius, double x, double y, double width, double height);
+        GaussianContainer(md::MDContainer& system, ofImage& circGradient, ofTrueTypeFont* uiFont10, ofImage* closeButton, ofImage* audioOnButton, ofImage* audioOffButton, double radius, double x, double y, double width, double height);
         
         // Returns true if mouse event caused Gaussians to be updated
         bool mousePressed(int x, int y, int button);

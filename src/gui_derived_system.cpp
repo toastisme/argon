@@ -178,9 +178,30 @@ namespace gui {
     /*
         GaussianAtom
      */
-    GaussianAtom::GaussianAtom(md::MDContainer& _theSystem, ofImage& _circGradient, int _gaussianID, int x, int y, double _radius) : theSystem(_theSystem), circGradient(_circGradient), gaussianID(_gaussianID), selected(false), radius(_radius), mouseFocus(false),
+    GaussianAtom::GaussianAtom(md::MDContainer& _theSystem, ofImage& _circGradient, int _gaussianID, ofTrueTypeFont* uiFont10, ofImage* closeButton, ofImage* audioOnButton, ofImage* audioOffButton, int x, int y, double _radius) : theSystem(_theSystem), circGradient(_circGradient), gaussianID(_gaussianID), selected(false), radius(_radius), mouseFocus(false), audioOn(true),
         UIAtom(x - _radius, y - _radius, 2*_radius, 2*_radius)
-    {}
+    {
+        // Define colours
+        ofColor bgcolor(175, 210, 222, 130);
+        ofColor textcolor(255, 255, 240);
+        
+        // Build control panel
+        controlPanel = gui::UIContainer(bounds.left - (200 - radius), bounds.top  - (80 + 2*radius), 385, 80);
+        controlPanel.addChild(new gui::RectAtom(bgcolor, 0, 0, 385, 80));
+        controlPanel.addChild(new gui::TextAtom("Audio on/off", *uiFont10, textcolor, POS_LEFT, 10, 5, 100, 25));
+        controlPanel.addChild(new gui::TextAtom("Attractive", *uiFont10, textcolor, POS_LEFT, 10, 45, 70, 25));
+        controlPanel.addChild(new gui::TextAtom("Repulsive", *uiFont10, textcolor, POS_LEFT, 310, 45, 70, 25));
+        
+        controlPanel.addChild(new gui::ButtonAtom([&] () { controlPanel.makeInvisible(); }, *closeButton,
+                                               345, 5, 30, 30));
+        controlPanel.addChild(new gui::ButtonToggleAtom([&] () { return audioOn; }, [&] (bool set) { audioOn = set; }, *audioOnButton,
+                                                        *audioOffButton, 120, 5, 30, 30));
+        
+        controlPanel.addChild(new gui::SliderAtom([&] () { return (50 - theSystem.getGaussianAmp(gaussianID))/100.0; }, [&] (double set) { theSystem.updateGaussian(gaussianID, 50 - set*100, 0.8 - 0.5*set, theSystem.getGaussianX0(gaussianID), theSystem.getGaussianY0(gaussianID)); }, 0.0, 1.0, 90, 45, 210, 25));
+        
+        controlPanel.makeInvisible();
+        
+    }
 
     void GaussianAtom::render() {
         /*
@@ -226,10 +247,13 @@ namespace gui {
         
         // Draw as circGradient
         circGradient.draw(x, y, width, height);
+        
+        // Draw the control panel
+        controlPanel.draw();
+        
     }
     
     void GaussianAtom::moveGaussian(double x, double y) {
-        bounds.movePos(POS_CENTRE, {x, y});
         
         // Rescale the (x, y) coordinates of the mouse input so that they
         // are within the dimensions of the box
@@ -239,10 +263,15 @@ namespace gui {
         // Update position of Gaussian
         Gaussian& g = theSystem.getGaussian(gaussianID);
         g.setParams(g.getgAmp(), g.getgAlpha(), scaled_x, scaled_y);
+        
+        // Update position of control panel and then Gaussian itself
+        controlPanel.moveBy({x - bounds.centreX(), y - bounds.centreY()});
+        bounds.movePos(POS_CENTRE, {x, y});
     }
     
     void GaussianAtom::deselect() {
         selected = false;
+        controlPanel.makeInvisible();
     }
     
     void GaussianAtom::select() {
@@ -255,12 +284,16 @@ namespace gui {
     
     bool GaussianAtom::mousePressed(int x, int y, int button) {
         bool retVal = false;
-        if (bounds.inside(x, y)) {
+        if (controlPanel.getVisible() && controlPanel.getRect().inside(x, y)) {
+            controlPanel.mousePressed(x, y, button);
+            retVal = true;
+        } else if (bounds.inside(x, y)) {
             switch(button) {
                     
                 case 0: // Left click, get focus
                     mouseFocus = true;
-                    selected = true;
+                    select();
+                    controlPanel.makeVisible();
                     retVal = true;
                     break;
                     
@@ -273,6 +306,7 @@ namespace gui {
                     
             }
         }
+        
         return retVal;
     }
     
@@ -281,6 +315,7 @@ namespace gui {
         if ( button == 0 ) {
             mouseFocus = false;
         }
+        controlPanel.mouseReleased(x, y, button);
         return false;
     }
     
@@ -290,15 +325,33 @@ namespace gui {
         if ( mouseFocus ) {
             moveGaussian(x, y);
             retVal = true;
+        } else if (controlPanel.getVisible() && controlPanel.getRect().inside(x, y)) {
+            controlPanel.mouseMoved(x, y);
+            retVal = true;
         }
         return retVal;
+    }
+    
+    // If audio control is turned on, rescale Gaussian with audio input
+    void GaussianAtom::audioIn(double volume) {
+        if (audioOn) {
+            theSystem.updateGaussian(gaussianID, 50 - volume*100, 0.8 - 0.5*volume,
+                                  theSystem.getGaussianX0(gaussianID),
+                                  theSystem.getGaussianY0(gaussianID));
+        }
+    }
+    
+    // Resize control panel when GaussianAtom resizes
+    void GaussianAtom::resize(float xScale, float yScale) {
+        controlPanel.resize(xScale, yScale);
+        UIAtom::resize(xScale, yScale);
     }
     
     /* 
         GaussianContainer 
      */
     
-    GaussianContainer::GaussianContainer(md::MDContainer& _system, ofImage& _circGradient, double _radius, double x, double y, double width, double height) : system(_system), circGradient(_circGradient), radius(_radius), selectedGaussian(-1), UIContainer(x, y, width, height)
+    GaussianContainer::GaussianContainer(md::MDContainer& _system, ofImage& _circGradient, ofTrueTypeFont* _uiFont10, ofImage* _closeButton, ofImage* _audioOnButton, ofImage* _audioOffButton, double _radius, double x, double y, double width, double height) : system(_system), circGradient(_circGradient), uiFont10(_uiFont10), closeButton(_closeButton), audioOnButton(_audioOnButton), audioOffButton(_audioOffButton), radius(_radius), selectedGaussian(-1), UIContainer(x, y, width, height)
     { }
     
     // Work out if there is already a Gaussian near (x, y) to avoid putting them on top of one another
@@ -328,15 +381,15 @@ namespace gui {
                     
                     bool hitChild = false;
                     
-                    // loop through backwards so that the point drawn on top is clicked first (which,
-                    // since they are drawn in forward-order, is the last child)
-                    for (int i = children.size() - 1; i >= 0; --i) {
+                    // Loop through children
+                    for (int i = 0; i < children.size(); ++i) {
                         
                         GaussianAtom* g = (GaussianAtom*) children[i];
                         hitChild = g->mousePressed(x, y, 0);
                         if (hitChild) {
                             selectedGaussian = i;
                             deselectGaussians(i);
+                            break;
                         }
                     
                     }
@@ -360,7 +413,7 @@ namespace gui {
                             
                             // use push_back, not addChild, so that we make the child directly at (x, y),
                             // instead of at (x, y) relative to the top-left corner of the container
-                            children.push_back(new GaussianAtom(system, circGradient, system.getNGaussians() - 1, x, y, radius));
+                            children.push_back(new GaussianAtom(system, circGradient, system.getNGaussians() - 1, uiFont10, closeButton, audioOnButton, audioOffButton, x, y, radius));
                             children.back()->mousePressed(x, y, 0);
                             
                             selectedGaussian = system.getNGaussians() - 1;
@@ -390,6 +443,8 @@ namespace gui {
                             if (selectedGaussian > 0) { selectedGaussian--; }
                             else if (system.getNGaussians() == 0) { selectedGaussian = -1; }
                             selectGaussian(selectedGaussian);
+                            
+                            break;
                         }
                     }
                     if (!hitChild) { retVal = false; }
@@ -412,7 +467,8 @@ namespace gui {
         for (int i = 0; i < children.size(); ++i) {
             
             // test to avoid moving one Gaussian atop another
-            if (!gaussianNear(x, y, i)) {
+            // but still react to control panel
+            if (!gaussianNear(x, y, i) || children[i]->getRect().inside(x, y) ) {
                 handled = children[i]->mouseMoved(x, y);
             }
         }
@@ -420,11 +476,10 @@ namespace gui {
         return handled;
     }
     
+    // Send an audioIn event to all children
     void GaussianContainer::audioIn(double volume) {
-        if ( selectedGaussian > -1) {
-            system.updateGaussian(selectedGaussian, 50 - volume*100, 0.8 - 0.5*volume,
-                                     system.getGaussianX0(selectedGaussian),
-                                     system.getGaussianY0(selectedGaussian));
+        for (int i = 0; i < children.size(); ++i) {
+            children[i]->audioIn(volume);
         }
     }
     

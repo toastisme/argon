@@ -91,12 +91,17 @@ void ofApp::setup()
     theSystem.setBox(BOX_WIDTH, BOX_HEIGHT);
     
     theSystem.resetSystem();
+    
+    // colours
+    ofColor bgcolor = ofColor(80, 80, 80, 80);
+    ofColor textcolor = ofColor(255, 255, 240);
 
     // Setup system UI
     systemUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
     
     // Add the gaussian container
-    gaussianContainerIndex = systemUI.addIndexedChild(new gui::GaussianContainer(theSystem, circGradient, 30.0, 0, 0, screenWidth, screenHeight));
+    gaussianContainerIndex = systemUI.addIndexedChild(new gui::GaussianContainer(theSystem, circGradient, &uiFont10,
+                                                                                 &optionsButtonDown, &audioOnButton, &audioOffButton, 30.0, 0, 0, screenWidth, screenHeight));
     
     // And the particles themselves
     systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, 0, 0, screenWidth, screenHeight));
@@ -118,10 +123,6 @@ void ofApp::setup()
     /*
          Setup menu UI
      */
-    
-    // colours
-    ofColor bgcolor = ofColor(80, 80, 80, 80);
-    ofColor textcolor = ofColor(255, 255, 240);
     
     // setup base container
     menuUI = gui::UIContainer(0, 455, 1024, 145);
