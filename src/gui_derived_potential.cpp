@@ -238,6 +238,7 @@ namespace gui {
                             UIBase *child = children[i];
                             children.erase(children.begin() + i);
                             children.push_back(child);
+                            handled = true;
                             break;
                         }
                     }
@@ -250,14 +251,14 @@ namespace gui {
                             // instead of at (x, y) relative to the top-left corner of the container
                             children.push_back(new SplineControlPoint(x, y, radius, pointRegion));
                             children.back()->mousePressed(x, y, 0);
+                            handled = true;
                         } else {
                             // only return here if we haven't clicked on a child, and if we couldn't
                             // create a new point at the mouse position
-                            return false;
+                            handled = false;
                         }
                     }
-                    
-                    handled = true;
+                
                     break;
                 }
                     

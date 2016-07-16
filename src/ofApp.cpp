@@ -297,13 +297,12 @@ void ofApp::update(){
         float xScale =  ofGetWidth() / ( (float) screenWidth  );
         float yScale = ofGetHeight() / ( (float) screenHeight );
         
-        std::cout << xScale << " " << yScale << std::endl;
-        
         menuUI.resize(xScale, yScale);
         potentialUI.resize(xScale, yScale);
         optionsUI.resize(xScale, yScale);
         optionsOffUI.resize(xScale, yScale);
         graphUI.resize(xScale, yScale);
+        systemUI.resize(xScale, yScale);
         
         screenWidth = ofGetWidth();
         screenHeight = ofGetHeight();
