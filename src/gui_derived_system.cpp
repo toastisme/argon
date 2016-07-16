@@ -240,7 +240,7 @@ namespace gui {
         // Rescale the width and height of the Gaussian
         double scaleFactor = 2.5;
         double width  = scaleFactor * xscale / galpha;
-        double height = scaleFactor * yscale / galpha;
+        double height = width;
         
         double x = gx * xscale - width / 2;
         double y = gy * yscale - height / 2;
@@ -344,7 +344,10 @@ namespace gui {
     // Resize control panel when GaussianAtom resizes
     void GaussianAtom::resize(float xScale, float yScale) {
         controlPanel.resize(xScale, yScale);
-        UIAtom::resize(xScale, yScale);
+        
+        // Make sure Gaussians stay circular
+        float scale = xScale < yScale ? xScale : yScale;
+        bounds.setXYWH(bounds.left*xScale, bounds.top*yScale, bounds.width()*scale, bounds.height()*scale);
     }
     
     /* 
