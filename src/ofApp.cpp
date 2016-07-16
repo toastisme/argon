@@ -160,7 +160,7 @@ void ofApp::setup()
     // button text
     menuUI.addChild(new gui::TextAtom("Play / pause:", uiFont10, textcolor,
                                       POS_RIGHT, 860, 5, 100, 30));
-    menuUI.addChild(new gui::TextAtom("Reset:", uiFont10, textcolor,
+    menuUI.addChild(new gui::TextAtom("Reset system:", uiFont10, textcolor,
                                       POS_RIGHT, 860, 40, 100, 30));
     menuUI.addChild(new gui::TextAtom("Mic on/off:", uiFont10, textcolor,
                                       POS_RIGHT, 860, 75, 100, 30));
@@ -229,26 +229,26 @@ void ofApp::setup()
     
     optionsUI = gui::UIContainer(0, 0, 1024, 60);
     optionsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 45));
-    optionsUI.addChild(new gui::TextAtom("Controls:", uiFont12, textcolor, POS_TOP, 50, 18, 150, 25));
-    optionsUI.addChild(new gui::TextAtom("Change potential:", uiFont12, textcolor, POS_TOP, 252, 18, 150, 25));
-    optionsUI.addChild(new gui::TextAtom("Display energy graph:", uiFont12, textcolor, POS_TOP, 500, 18, 150, 25));
-    optionsUI.addChild(new gui::TextAtom("About:", uiFont12, textcolor, POS_TOP, 710, 18, 150, 25));
+    optionsUI.addChild(new gui::TextAtom("Controls:", uiFont12, textcolor, POS_TOP, 75, 18, 150, 25));
+    optionsUI.addChild(new gui::TextAtom("Change potential:", uiFont12, textcolor, POS_TOP, 277, 18, 150, 25));
+    optionsUI.addChild(new gui::TextAtom("Display energy graph:", uiFont12, textcolor, POS_TOP, 530, 18, 150, 25));
+    optionsUI.addChild(new gui::TextAtom("About:", uiFont12, textcolor, POS_TOP, 735, 18, 150, 25));
     
-    optionsUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeInvisible(); menuUI.makeInvisible();
-        potentialUI.makeInvisible();graphUI.makeInvisible(); aboutUI.toggleVisible(); optionsOffUI.makeVisible();}, optionsMainMenuButton,
+    optionsUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeInvisible(); menuUI.makeInvisible();potentialUI.makeInvisible();graphUI.makeInvisible(); aboutUI.makeInvisible();
+        optionsOffUI.makeVisible();}, optionsMainMenuButton,
                                         990, 10, 30, 30));
     
     optionsUI.addChild(new gui::ButtonAtom([&] () {potentialUI.makeInvisible(); aboutUI.makeInvisible();
-        menuUI.toggleVisible(); }, optionsControlsButton, 170, 10, 30, 30));
+        menuUI.toggleVisible(); }, optionsControlsButton, 195, 10, 30, 30));
     
     optionsUI.addChild(new gui::ButtonAtom([&] () { menuUI.makeInvisible(); aboutUI.makeInvisible();
-        potentialUI.toggleVisible(); }, optionsPotentialButton, 408, 10, 30, 30));
+        potentialUI.toggleVisible(); }, optionsPotentialButton, 433, 10, 30, 30));
 
     optionsUI.addChild(new gui::ButtonAtom([&] () { graphUI.toggleVisible(); }, optionsEnergyButton,
-                                           672, 10, 30, 30));
+                                           707, 10, 30, 30));
     optionsUI.addChild(new gui::ButtonAtom([&] () {menuUI.makeInvisible(); potentialUI.makeInvisible(); graphUI.makeInvisible();
         aboutUI.toggleVisible(); }, optionsAboutButton,
-                                           817, 10, 30, 30));
+                                           842, 10, 30, 30));
     optionsUI.makeInvisible();
     optionsUI.mouseReleased(0, 0, 0);
     
@@ -422,7 +422,7 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    if (menuUI.getVisible()) {
+    if (menuUI.getVisible() && menuUI.getRect().inside(x, y)) {
         menuUI.mouseMoved(x, y);
     } else if (potentialUI.getVisible()) {
         potentialUI.mouseMoved(x, y);

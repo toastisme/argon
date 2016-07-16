@@ -300,6 +300,7 @@ namespace md {
         gaussians.erase(gaussians.begin()+i, gaussians.begin()+i+1);
     }
     
+
     /*
         ROUTINE updateGaussian:
             Set the amplitude, exponent, centre, and scale of the ith Gaussian to gAmp, gAlpha,
