@@ -123,37 +123,34 @@ namespace gui {
     }
     
     bool SplineControlPoint::mousePressed(int x, int y, int button) {
+        bool handled = true;
         if (bounds.inside(x, y)) {
             switch (button) {
                     
                 case 0:   // left click, start being dragged
                     mouseFocus = true;
-                    goto handled;
+                    break;
                     
                 case 2:   // right click, delete point
                     // do nothing (other than return true)
-                    goto handled;
+                    break;
                     
                 case 3:   // left button, decrease slope
                     m -= 0.4;
                     if (m < -4) { m = -4; }
-                    goto handled;
+                    break;
                     
                 case 4:   // right button, increase slope
                     m += 0.4;
                     if (m > 4) { m = 4; }
-                    goto handled;
-                    
-                handled:
-                    return true;
                     break;
                     
                 default:
-                    return false;
+                    handled = false;
             }
-        } else {
-            return false;
         }
+        
+        return handled;
     }
     
     // if left-click was released, lose mouse focus
@@ -169,10 +166,8 @@ namespace gui {
     bool SplineControlPoint::mouseMoved(int x, int y) {
         if (mouseFocus) {
             movePoint(x, y);
-            return true;
-        } else {
-            return false;
         }
+        return mouseFocus; // Nothing done if false, something done if true
     }
     
     
@@ -222,6 +217,9 @@ namespace gui {
     
     // handle mouse click events
     bool SplineContainer::mousePressed(int x, int y, int button) {
+        
+        bool handled = false;
+        
         if (visible && bounds.inside(x, y)) {
             switch (button) {
                 // left click: set mouseFocus to true or create new control point
@@ -258,7 +256,10 @@ namespace gui {
                             return false;
                         }
                     }
-                } goto handled;
+                    
+                    handled = true;
+                    break;
+                }
                     
                 // right click: remove control point
                 case 2: {
@@ -273,8 +274,9 @@ namespace gui {
                             break;
                         }
                     }
-                    if (!hitChild) { return false; }
-                } goto handled;
+                    if ( hitChild ) { handled = true; }
+                    break;
+                }
                     
                 // left button: decrease gradient
                 // right button: increase gradient
@@ -287,21 +289,16 @@ namespace gui {
                         
                         if (hitChild) { break; }
                     }
-                    if (!hitChild) { return false; }
-                } goto handled;
-                    
-                // we hit the goto if we need to update the spline
-                handled:
-                    updateSpline();
-                    return true;
+                    if (hitChild) { handled = true; }
                     break;
+                }
                     
                 default:
-                    return false;
+                    handled = false;
             }
-        } else {
-            return false;
         }
+        
+        return handled;
     }
     
     bool SplineContainer::mouseMoved(int x, int y) {
