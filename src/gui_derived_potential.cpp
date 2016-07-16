@@ -123,26 +123,30 @@ namespace gui {
     }
     
     bool SplineControlPoint::mousePressed(int x, int y, int button) {
-        bool handled = true;
+        bool handled = false;
         if (bounds.inside(x, y)) {
             switch (button) {
                     
                 case 0:   // left click, start being dragged
                     mouseFocus = true;
+                    handled = true;
                     break;
                     
                 case 2:   // right click, delete point
                     // do nothing (other than return true)
+                    handled = true;
                     break;
                     
                 case 3:   // left button, decrease slope
                     m -= 0.4;
                     if (m < -4) { m = -4; }
+                    handled = true;
                     break;
                     
                 case 4:   // right button, increase slope
                     m += 0.4;
                     if (m > 4) { m = 4; }
+                    handled = true;
                     break;
                     
                 default:
@@ -298,6 +302,8 @@ namespace gui {
                     handled = false;
             }
         }
+        
+        if (handled) { updateSpline(); }
         
         return handled;
     }
