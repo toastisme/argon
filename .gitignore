@@ -1,8 +1,20 @@
-# xcode files
+# OSX files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-**/*.xcconfig
-**/*.xcodeproj/**
-openFrameworks-Info.plist
+# xcode files
+build
+*.pbxuser
+*.perspectivev3
+*.mode1v3
+*~.nib
+*~.xib
+xcuserdata/
 
 # binaries
 
@@ -14,6 +26,6 @@ obj/**
 *.swp
 *~
 
-# wiki folder so you can clone the documentation locally
+# wiki folder for (separately) cloning the documentation into
 wiki
 wiki/**
