@@ -54,6 +54,7 @@ void ofApp::setup()
     optionsMainMenuButton.load("OptionsMainMenuButton.png");
     optionsPotentialButton.load("OptionsPotentialButton.png");
     optionsControlsButton.load("OptionsControlsButton.png");
+    optionsAboutButton.load("OptionsAboutButton2.png");
     
     // potential graphics
     
@@ -231,22 +232,23 @@ void ofApp::setup()
     optionsUI.addChild(new gui::TextAtom("Controls:", uiFont12, textcolor, POS_TOP, 50, 18, 150, 25));
     optionsUI.addChild(new gui::TextAtom("Change potential:", uiFont12, textcolor, POS_TOP, 252, 18, 150, 25));
     optionsUI.addChild(new gui::TextAtom("Display energy graph:", uiFont12, textcolor, POS_TOP, 500, 18, 150, 25));
-    optionsUI.addChild(new gui::TextAtom("Main menu:", uiFont12, textcolor, POS_TOP, 740, 18, 150, 25));
+    optionsUI.addChild(new gui::TextAtom("About:", uiFont12, textcolor, POS_TOP, 710, 18, 150, 25));
     
     optionsUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeInvisible(); menuUI.makeInvisible();
-        potentialUI.makeInvisible();graphUI.makeInvisible();optionsOffUI.makeVisible();}, optionsMainMenuButton,
+        potentialUI.makeInvisible();graphUI.makeInvisible(); aboutUI.toggleVisible(); optionsOffUI.makeVisible();}, optionsMainMenuButton,
                                         990, 10, 30, 30));
     
-    optionsUI.addChild(new gui::ButtonAtom([&] () { if (potentialUI.getVisible()) {
-        potentialUI.makeInvisible();} menuUI.toggleVisible(); }, optionsControlsButton, 170, 10, 30, 30));
+    optionsUI.addChild(new gui::ButtonAtom([&] () {potentialUI.makeInvisible(); aboutUI.makeInvisible();
+        menuUI.toggleVisible(); }, optionsControlsButton, 170, 10, 30, 30));
     
-    optionsUI.addChild(new gui::ButtonAtom([&] () { if (menuUI.getVisible()) {
-        menuUI.makeInvisible();} potentialUI.toggleVisible(); }, optionsPotentialButton, 408, 10, 30, 30));
+    optionsUI.addChild(new gui::ButtonAtom([&] () { menuUI.makeInvisible(); aboutUI.makeInvisible();
+        potentialUI.toggleVisible(); }, optionsPotentialButton, 408, 10, 30, 30));
 
     optionsUI.addChild(new gui::ButtonAtom([&] () { graphUI.toggleVisible(); }, optionsEnergyButton,
                                            672, 10, 30, 30));
-    optionsUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); }, optionsMainMenuButton,
-                                           867, 10, 30, 30));
+    optionsUI.addChild(new gui::ButtonAtom([&] () {menuUI.makeInvisible(); potentialUI.makeInvisible(); graphUI.makeInvisible();
+        aboutUI.toggleVisible(); }, optionsAboutButton,
+                                           817, 10, 30, 30));
     optionsUI.makeInvisible();
     optionsUI.mouseReleased(0, 0, 0);
     
@@ -256,6 +258,14 @@ void ofApp::setup()
                                            5, 10, 30, 30));
     
     optionsOffUI.makeVisible();
+    
+    // About UI
+    
+    aboutUI = gui::UIContainer(50, 50, 985, 600);
+    aboutUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 924, 500));
+    aboutUI.makeInvisible();
+    aboutUI.mouseReleased(0, 0, 0);
+    
     
 }
 
@@ -328,7 +338,7 @@ void ofApp::draw(){
     potentialUI.draw();
     optionsUI.draw();
     optionsOffUI.draw();
-    
+    aboutUI.draw();
     
 }
 

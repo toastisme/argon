@@ -94,6 +94,7 @@ private:
     ofImage optionsMainMenuButton;
     ofImage optionsPotentialButton;
     ofImage optionsControlsButton;
+    ofImage optionsAboutButton;
     
     // Audio data
     AudioStream micInput;
@@ -109,6 +110,7 @@ private:
     gui::UIContainer graphUI;
     gui::UIContainer optionsUI;
     gui::UIContainer optionsOffUI;
+    gui::UIContainer aboutUI;
     
     int splineContainerIndex; // Index of spline container in potentialUI
     int gaussianContainerIndex; // Index of gaussian container in systemUI
