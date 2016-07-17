@@ -314,6 +314,7 @@ void ofApp::update(){
         optionsOffUI.resize(xScale, yScale);
         graphUI.resize(xScale, yScale);
         systemUI.resize(xScale, yScale);
+        aboutUI.resize(xScale, yScale);
         
         screenWidth = ofGetWidth();
         screenHeight = ofGetHeight();

@@ -424,9 +424,13 @@ namespace gui {
         md::MDContainer& theSystem;
         virtual void render();
         
+        float xgap;
+        
     public:
         
         EnergyGraphAtom(md::MDContainer& theSystem, int x, int y, int width, int height);
+        
+        virtual void resize(float xScale, float yScale);
         
     };
     
