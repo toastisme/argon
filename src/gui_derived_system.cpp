@@ -132,7 +132,7 @@ namespace gui {
         EnergyGraphAtom
      */
     
-    EnergyGraphAtom::EnergyGraphAtom(md::MDContainer& _theSystem, int x, int y, int width, int height) : theSystem(_theSystem), UIAtom(x, y, width, height) {}
+    EnergyGraphAtom::EnergyGraphAtom(md::MDContainer& _theSystem, int x, int y, int width, int height) : theSystem(_theSystem), xgap(5.0), UIAtom(x, y, width, height) {}
     
     void EnergyGraphAtom::render() {
         /*
@@ -167,14 +167,19 @@ namespace gui {
         for (int i = 0; i < theSystem.getNEnergies(); i++){
             ofSetColor(200, 0, 0);
             ekin = ofMap(theSystem.getPreviousEkin(i), ekinMinScale, ekinMaxScale, 0, 0.9*winHeight);
-            ofDrawCircle(xOffset + 5*i, yOffset - ekin, radius);
+            ofDrawCircle(xOffset + xgap*i, yOffset - ekin, radius);
             
             ofSetColor(255, 255, 255);
             epot = ofMap(fabs(theSystem.getPreviousEpot(i)), epotMinScale, epotMaxScale, 0, 0.9*winHeight);
-            ofDrawCircle(xOffset + 5*i, yOffset - epot, radius);
+            ofDrawCircle(xOffset + xgap*i, yOffset - epot, radius);
         }
     }
     
+    // Override resize so that xgap is rescaled
+    void EnergyGraphAtom::resize(float xScale, float yScale) {
+        UIAtom::resize(xScale, yScale);
+        xgap *= xScale;
+    }
     /*
         GaussianAtom
      */

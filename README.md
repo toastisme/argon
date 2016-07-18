@@ -8,7 +8,37 @@ The Argon team consists of David McDonagh, Robert Shaw, and Staszek Welsh.
 
 ### Building ###
 
-Argon is built on [openFrameworks](http://openframeworks.cc/), and should be pulled into the main directory of an openFrameworks project to correctly set up the dependencies.
+Argon is built on [openFrameworks](http://openframeworks.cc/), and this repository should be cloned into the main directory of an openFrameworks project to correctly set up the dependencies. Currently, Argon only supports OSX.
+
+#### Build instructions for OSX ####
+
+1. Download the latest version of [openFrameworks](http://openframeworks.cc/download) for OSX.
+2. Extract the .zip file to a directory, and navigate to that directory in a terminal window.
+3. openFrameworks applications are, by default, located within the 'myApps' folder, which can be found by executing
+    ```
+    cd apps/myApps
+    ```.
+4. Make a local clone of the Argon repository by executing
+    ```
+    git clone https://bitbucket.org/starredpeople/starredmd
+    ```.
+5. Navigate into the directory you have just created:
+    ```
+    cd starredmd
+    ```.
+6. Build Argon using the command
+    ```
+    make Release
+    ```.
+This will take some time as openFrameworks is distributed as source code, and so needs to be compiled in full.
+7. Run Argon by opening the application with
+    ```
+    open bin/starredmd.app
+    ```
+, or alternatively using the command
+    ```
+    make RunRelease
+    ```.
 
 ### License ###
 
