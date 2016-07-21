@@ -266,12 +266,16 @@ void ofApp::setup()
     
     // About UI
     
-    aboutUI = gui::UIContainer(256, 150, 512, 240);
-    aboutUI.addChild(new gui::RectAtom(ofColor(201, 209, 212, 240), 0, 0, 512, 240));
+    aboutUI = gui::UIContainer(207, 150, 610, 300);
+    aboutUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 610, 300));
     aboutUI.addChild(new gui::SetColour(textcolor));
-    aboutUI.addChild(new gui::ImageAtom(argonLogo, 5, 5, 288, 126));
-    aboutUI.addChild(new gui::ImageAtom(stargonautsLogo, 5, 136, 119, 99));
-    aboutUI.addChild(new gui::ImageAtom(tmcsLogo, 129, 138, 164, 95));
+    aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170));
+    aboutUI.addChild(new gui::ImageAtom(stargonautsLogo, 395, 5, 205, 170));
+    aboutUI.addChild(new gui::TextAtom("A molecular dynamics simulation with interactive external and", uiFont12, textcolor, POS_LEFT, 25, 195, 600, 20));
+    aboutUI.addChild(new gui::TextAtom("interatomic potentials.", uiFont12, textcolor, POS_LEFT, 25, 215, 600, 20));
+    aboutUI.addChild(new gui::TextAtom("Copyright (C) 2016 David McDonagh, Robert Shaw, Staszek Welsh", uiFont12, textcolor, POS_LEFT, 25, 255, 600, 20));
+    aboutUI.addChild(new gui::TextAtom("Version 0.9.0", uiFont14, textcolor, POS_CENTRE, 202, 120, 195, 20));
+    //aboutUI.addChild(new gui::ImageAtom(tmcsLogo, 129, 138, 164, 95));
     
     aboutUI.makeInvisible();
     aboutUI.mouseReleased(0, 0, 0);
