@@ -1,5 +1,5 @@
 /*
- StarredMD
+ Argon
  
  Copyright (c) 2016 David McDonagh, Robert Shaw, Staszek Welsh
  

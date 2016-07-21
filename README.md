@@ -20,11 +20,11 @@ Argon is built on [openFrameworks](http://openframeworks.cc/), and this reposito
     ```.
 4. Make a local clone of the Argon repository by executing
     ```
-    git clone https://bitbucket.org/starredpeople/starredmd
+    git clone https://bitbucket.org/stargonauts/argon
     ```.
 5. Navigate into the directory you have just created:
     ```
-    cd starredmd
+    cd argon
     ```.
 6. Build Argon using the command
     ```
@@ -33,7 +33,7 @@ Argon is built on [openFrameworks](http://openframeworks.cc/), and this reposito
 This will take some time as openFrameworks is distributed as source code, and so needs to be compiled in full.
 7. Run Argon by opening the application with
     ```
-    open bin/starredmd.app
+    open bin/argon.app
     ```
 , or alternatively using the command
     ```
