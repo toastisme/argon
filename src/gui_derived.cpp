@@ -151,6 +151,28 @@ namespace gui {
     }
     
     /*
+     ImageAtom
+     */
+    
+    ImageAtom::ImageAtom() : UIAtom(), image(NULL) {}
+    
+    ImageAtom::ImageAtom(const ofImage &_image, double x, double y, double width, double height)
+    : UIAtom(x, y, width, height), image(&_image)
+    { }
+    
+    // render just draws the image
+    void ImageAtom::render() {
+        if (image) { image->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
+    }
+
+    // resize with the smaller of xScale and yScale
+    void ImageAtom::resize(float xScale, float yScale) {
+        float scale = xScale < yScale ? xScale : yScale;
+        bounds.setXYWH(bounds.left*xScale, bounds.top*yScale, bounds.width()*scale, bounds.height()*scale);
+    }
+
+    
+    /*
         SliderAtom
      */
     

@@ -146,6 +146,26 @@ namespace gui {
         RectAtom(const ofColor &colour, double x, double y, double width, double height);
     };
     
+    class ImageAtom : public UIAtom
+    {
+        /*
+         UI Atom for an image
+         */
+        
+    private:
+        virtual void render();   // draws the image to the screen
+        
+        const ofImage *image;    // pointer to image asset
+        
+    public:
+        ImageAtom();
+        ImageAtom(const ofImage &image, double x, double y, double width, double height);
+        
+        // Override resize method so that button does not distort
+        virtual void resize(float xScale, float yScale);
+    };
+
+    
     class TextAtom : public UIAtom, TextComponent
     {
         /* 

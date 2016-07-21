@@ -95,6 +95,13 @@ private:
     ofImage optionsPotentialButton;
     ofImage optionsControlsButton;
     ofImage optionsAboutButton;
+    ofImage splashScreen;
+    ofImage stargonautsLogo;
+    ofImage tmcsLogo;
+    ofImage argonLogo;
+    
+    // Booleans
+    bool loading;
     
     // Audio data
     AudioStream micInput;

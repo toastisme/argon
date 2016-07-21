@@ -40,8 +40,10 @@ void ofApp::setup()
     ofBackground(0, 0, 0);
 
     // Load assets
+    loading = true;
     
     // graphics
+    splashScreen.load("argonsplash.png");
     circGradient.load("circ_gradient.png");
     playButton.load("ButtonPlay.png");
     pauseButton.load("ButtonPause.png");
@@ -55,6 +57,9 @@ void ofApp::setup()
     optionsPotentialButton.load("OptionsPotentialButton.png");
     optionsControlsButton.load("OptionsControlsButton.png");
     optionsAboutButton.load("OptionsAboutButton2.png");
+    tmcsLogo.load("tmcslogo.png");
+    stargonautsLogo.load("stargonautslogo.png");
+    argonLogo.load("argonlogo.png");
     
     // potential graphics
     
@@ -261,8 +266,13 @@ void ofApp::setup()
     
     // About UI
     
-    aboutUI = gui::UIContainer(50, 50, 985, 600);
-    aboutUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 924, 500));
+    aboutUI = gui::UIContainer(256, 150, 512, 240);
+    aboutUI.addChild(new gui::RectAtom(ofColor(201, 209, 212, 240), 0, 0, 512, 240));
+    aboutUI.addChild(new gui::SetColour(textcolor));
+    aboutUI.addChild(new gui::ImageAtom(argonLogo, 5, 5, 288, 126));
+    aboutUI.addChild(new gui::ImageAtom(stargonautsLogo, 5, 136, 119, 99));
+    aboutUI.addChild(new gui::ImageAtom(tmcsLogo, 129, 138, 164, 95));
+    
     aboutUI.makeInvisible();
     aboutUI.mouseReleased(0, 0, 0);
     
@@ -331,7 +341,7 @@ void ofApp::update(){
         Part of the infinite update / draw loop.
  */
 void ofApp::draw(){
-  
+    
     // draw the UI
     graphUI.draw();
     systemUI.draw();
@@ -340,7 +350,15 @@ void ofApp::draw(){
     optionsUI.draw();
     optionsOffUI.draw();
     aboutUI.draw();
-    
+    if (loading) {
+        ofColor splashColour = ofColor(255, 255, 255);
+        splashColour.a = ofMap(ofGetElapsedTimef(), 3,5, 255, 0, true);
+        if ( splashColour.a < 1 ) {
+            loading = false;
+        }
+        ofSetColor(splashColour);
+        splashScreen.draw(0, 0, ofGetWidth(), ofGetHeight());
+    }
 }
 
 //--------------------------------------------------------------------
@@ -401,6 +419,10 @@ void ofApp::keyPressed(int key){
         if (not menuUI.getVisible()) {
             potentialUI.toggleVisible();
         }
+    }
+    
+    else if (key == 'x' || key == 'X') { // Skip loading
+        loading = false;
     }
     
 }
