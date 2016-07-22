@@ -38,6 +38,9 @@ void ofApp::setup()
     // openFrameworks initialisation
     ofSetFrameRate(60);
     ofBackground(0, 0, 0);
+    
+    // Change root directory
+    ofSetDataPathRoot("../Resources/data/");
 
     // Load assets
     loading = true;
