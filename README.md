@@ -1,4 +1,4 @@
-# [Download Argon](http://bitbucket.org/stargonauts/argon/downloads/Argon.zip)
+# [Download Argon for Mac OSX](http://bitbucket.org/stargonauts/argon/downloads/Argon.zip)
 
 ---
 
