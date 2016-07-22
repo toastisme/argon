@@ -1,6 +1,8 @@
-# README #
+# [Download Argon](http://bitbucket.org/stargonauts/argon/downloads/Argon.zip)
 
-[Download Argon](http://bitbucket.org/stargonauts/argon/downloads/Argon.zip)
+---
+
+# README #
 
 ### Argon ###
 
