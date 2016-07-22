@@ -1,5 +1,7 @@
 # README #
 
+[Download Argon](http://bitbucket.org/stargonauts/argon/downloads/Argon.zip)
+
 ### Argon ###
 
 Argon is a real-time MD toy allowing the user to play with both the pairwise and external potentials in a simulation of point particles. Beta release is set for 22/07/16.
