@@ -6,7 +6,7 @@
 
 ### Argon ###
 
-Argon is a real-time MD toy allowing the user to play with both the pairwise and external potentials in a simulation of point particles. Beta release is set for 22/07/16.
+Argon is a real-time MD toy allowing the user to play with both the pairwise and external potentials in a simulation of point particles. Beta release was 22/07/16.
 
 The Argon team consists of David McDonagh, Robert Shaw, and Staszek Welsh.
 
