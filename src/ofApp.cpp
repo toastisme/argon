@@ -43,38 +43,39 @@ void ofApp::setup()
     loading = true;
     
     // graphics
-    splashScreen.load("argonsplash.png");
-    circGradient.load("circ_gradient.png");
-    playButton.load("ButtonPlay.png");
-    pauseButton.load("ButtonPause.png");
-    resetButton.load("ButtonReset.png");
-    audioOnButton.load("ButtonMic.png");
-    audioOffButton.load("ButtonNoMic.png");
-    optionsButtonUp.load("OptionsButtonUp.png");
-    optionsButtonDown.load("OptionsButtonDown.png");
-    optionsEnergyButton.load("OptionsEnergyButton.png");
-    optionsMainMenuButton.load("OptionsMainMenuButton.png");
-    optionsPotentialButton.load("OptionsPotentialButton.png");
-    optionsControlsButton.load("OptionsControlsButton.png");
-    optionsAboutButton.load("OptionsAboutButton2.png");
-    tmcsLogo.load("tmcslogo.png");
-    stargonautsLogo.load("stargonautslogo.png");
-    argonLogo.load("argonlogo.png");
+    splashScreen.load("img/argonsplash.png");
+    circGradient.load("img/circ_gradient.png");
+    playButton.load("img/ButtonPlay.png");
+    pauseButton.load("img/ButtonPause.png");
+    resetButton.load("img/ButtonReset.png");
+    audioOnButton.load("img/ButtonMic.png");
+    audioOffButton.load("img/ButtonNoMic.png");
+    optionsButtonUp.load("img/OptionsButtonUp.png");
+    optionsButtonDown.load("img/OptionsButtonDown.png");
+    optionsEnergyButton.load("img/OptionsEnergyButton.png");
+    optionsMainMenuButton.load("img/OptionsMainMenuButton.png");
+    optionsPotentialButton.load("img/OptionsPotentialButton.png");
+    optionsControlsButton.load("img/OptionsControlsButton.png");
+    optionsAboutButton.load("img/OptionsAboutButton2.png");
+    tmcsLogo.load("img/tmcslogo.png");
+    stargonautsLogo.load("img/stargonautslogo.png");
+    argonLogo.load("img/argonlogo.png");
     
     // potential graphics
     
-    ljThumbnail.load("LJThumbnail.png");
-    squareThumbnail.load("SquareThumbnail.png");
-    morseThumbnail.load("MorseThumbnail.png");
-    customThumbnail.load("CustomThumbnail.png");
+    ljThumbnail.load("img/LJThumbnail.png");
+    squareThumbnail.load("img/SquareThumbnail.png");
+    morseThumbnail.load("img/MorseThumbnail.png");
+    customThumbnail.load("img/CustomThumbnail.png");
     
-    loganLeft.load("david-logan-posing-left.png");
-    loganRight.load("david-logan-posing-right.png");
+    loganLeft.load("img/david-logan-posing-left.png");
+    loganRight.load("img/david-logan-posing-right.png");
     
     // fonts
-    uiFont14.load("Montserrat-Bold.ttf", 14);
-    uiFont12.load("Montserrat-Bold.ttf", 12);
-    uiFont10.load("Montserrat-Bold.ttf", 10);
+    uiFont14.load("fonts/Montserrat-Bold.ttf", 14);
+    uiFont12.load("fonts/Montserrat-Bold.ttf", 12);
+    uiFont10.load("fonts/Montserrat-Bold.ttf", 10);
+    aboutFont12.load("fonts/Tahoma.ttf", 12);
     
     // Setup audio stream
     soundStream.setup(this, 0, 2, 44100, 256, 4);
@@ -271,9 +272,9 @@ void ofApp::setup()
     aboutUI.addChild(new gui::SetColour(textcolor));
     aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170));
     aboutUI.addChild(new gui::ImageAtom(stargonautsLogo, 395, 5, 205, 170));
-    aboutUI.addChild(new gui::TextAtom("A molecular dynamics simulation with interactive external and", uiFont12, textcolor, POS_LEFT, 25, 195, 600, 20));
-    aboutUI.addChild(new gui::TextAtom("interatomic potentials.", uiFont12, textcolor, POS_LEFT, 25, 215, 600, 20));
-    aboutUI.addChild(new gui::TextAtom("Copyright (C) 2016 David McDonagh, Robert Shaw, Staszek Welsh", uiFont12, textcolor, POS_LEFT, 25, 255, 600, 20));
+    aboutUI.addChild(new gui::TextAtom("A molecular dynamics simulation with interactive external and", aboutFont12, textcolor, POS_LEFT, 25, 195, 600, 20));
+    aboutUI.addChild(new gui::TextAtom("interatomic potentials.", aboutFont12, textcolor, POS_LEFT, 25, 215, 600, 20));
+    aboutUI.addChild(new gui::TextAtom("Copyright 2016 David McDonagh, Robert Shaw, Staszek Welsh", aboutFont12, textcolor, POS_LEFT, 25, 255, 600, 20));
     aboutUI.addChild(new gui::TextAtom("Version 0.9.0", uiFont14, textcolor, POS_CENTRE, 202, 120, 195, 20));
     //aboutUI.addChild(new gui::ImageAtom(tmcsLogo, 129, 138, 164, 95));
     

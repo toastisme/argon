@@ -72,6 +72,7 @@ private:
     ofTrueTypeFont uiFont14;
     ofTrueTypeFont uiFont12;
     ofTrueTypeFont uiFont10;
+    ofTrueTypeFont aboutFont12;
     
     ofImage playButton;
     ofImage pauseButton;
