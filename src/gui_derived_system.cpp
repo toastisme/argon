@@ -32,8 +32,8 @@ namespace gui {
         SystemAtom
      */
     
-    SystemAtom::SystemAtom(md::MDContainer& _theSystem, ofImage& _loganLeft, ofImage& _loganRight, int x, int y, int width, int height) :
-                            theSystem(_theSystem), loganLeft(_loganLeft), loganRight(_loganRight), inflictTorture(false),
+    SystemAtom::SystemAtom(md::MDContainer& _theSystem, ofImage& _loganLeft, ofImage& _loganRight, ofImage& _boatLeft, ofImage& _boatRight, int x, int y, int width, int height) :
+                            theSystem(_theSystem), loganLeft(_loganLeft), loganRight(_loganRight), boatLeft(_boatLeft), boatRight(_boatRight), inflictTorture(false), setSail(false),
                             UIAtom(x, y, width, height)
     { }
     
@@ -66,14 +66,17 @@ namespace gui {
             radius_y = ofMap(log(1.0 + abs(tempAcc.y)), 0, 10, 10, 25);
             radius = (radius_x + radius_y) / 2;
             
-            if (inflictTorture) {
+            if (inflictTorture || setSail) {
                 ofSetColor(particleColor);
                 coord pos = theSystem.getPos(i);
                 
+                ofImage* leftImage = inflictTorture ? &loganLeft : &boatLeft;
+                ofImage* rightImage = inflictTorture ? &loganRight : &boatRight;
+                
                 if (tempVel.x >= 0)
-                    loganRight.draw(box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
+                    rightImage->draw(box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
                 else
-                    loganLeft.draw( box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
+                    leftImage->draw( box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
             } else {
                 //trail
                 if (theSystem.getNPrevPos() >= 15) {
@@ -126,6 +129,12 @@ namespace gui {
 
     void SystemAtom::toggleTheHorrors() {
         inflictTorture = !inflictTorture;
+        setSail = false;
+    }
+    
+    void SystemAtom::sailTheHighSeas() {
+        setSail = !setSail;
+        inflictTorture = false;
     }
     
     /*

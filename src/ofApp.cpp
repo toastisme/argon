@@ -62,6 +62,8 @@ void ofApp::setup()
     optionsAboutButton.load("img/OptionsAboutButton2.png");
     tmcsLogo.load("img/tmcslogo.png");
     stargonautsLogo.load("img/stargonautslogo.png");
+    boatLeft.load("img/boatleft.png");
+    boatRight.load("img/boatright.png");
     argonLogo.load("img/argonlogo.png");
     
     // potential graphics
@@ -114,7 +116,7 @@ void ofApp::setup()
                                                                                  &optionsButtonDown, &audioOnButton, &audioOffButton, 30.0, 0, 0, screenWidth, screenHeight));
     
     // And the particles themselves
-    systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, 0, 0, screenWidth, screenHeight));
+    systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, boatLeft, boatRight, 0, 0, screenWidth, screenHeight));
     
     // Setup graph UI
     graphUI = gui::UIContainer(screenWidth/6, screenHeight/6, 2*screenWidth/3, 2*screenHeight/3);
@@ -274,7 +276,10 @@ void ofApp::setup()
     aboutUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 610, 300));
     aboutUI.addChild(new gui::SetColour(textcolor));
     aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170));
-    aboutUI.addChild(new gui::ImageAtom(stargonautsLogo, 395, 5, 205, 170));
+    aboutUI.addChild(new gui::ButtonAtom([&] () {
+        gui::SystemAtom* sys = (gui::SystemAtom*) systemUI.getChild(systemAtomIndex);
+        sys->sailTheHighSeas(); },
+                                         stargonautsLogo, 395, 5, 205, 170));
     aboutUI.addChild(new gui::TextAtom("A molecular dynamics simulation with interactive external and", aboutFont12, textcolor, POS_LEFT, 25, 195, 600, 20));
     aboutUI.addChild(new gui::TextAtom("interatomic potentials.", aboutFont12, textcolor, POS_LEFT, 25, 215, 600, 20));
     aboutUI.addChild(new gui::TextAtom("Copyright 2016 David McDonagh, Robert Shaw, Staszek Welsh", aboutFont12, textcolor, POS_LEFT, 25, 255, 600, 20));
@@ -478,6 +483,8 @@ void ofApp::mousePressed(int x, int y, int button){
     if (potentialUI.getVisible() && potentialUI.getRect().inside(x, y)) { // Mouse controls drawing UI
         potentialUI.mousePressed(x, y, button);
         
+    } else if (aboutUI.getVisible() && aboutUI.getRect().inside(x, y)) {
+        aboutUI.mousePressed(x, y, button);
     } else if (menuUI.getVisible() && menuUI.getRect().inside(x, y)) { // Mouse controls menu
         // pass through event to children
         menuUI.mousePressed(x, y, button);

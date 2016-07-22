@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-               BuildableName = "ArgonDebug.app"
+               BuildableName = "Argon.app"
                BlueprintName = "Argon"
                ReferencedContainer = "container:Argon.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-            BuildableName = "ArgonDebug.app"
+            BuildableName = "Argon.app"
             BlueprintName = "Argon"
             ReferencedContainer = "container:Argon.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-            BuildableName = "ArgonDebug.app"
+            BuildableName = "Argon.app"
             BlueprintName = "Argon"
             ReferencedContainer = "container:Argon.xcodeproj">
          </BuildableReference>

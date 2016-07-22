@@ -416,7 +416,10 @@ namespace gui {
         // Super secret variables
         ofImage& loganLeft;
         ofImage& loganRight;
+        ofImage& boatLeft;
+        ofImage& boatRight;
         bool inflictTorture;
+        bool setSail;
         
         virtual void render();
         
@@ -428,9 +431,10 @@ namespace gui {
         
     public:
         
-        SystemAtom(md::MDContainer& theSystem, ofImage& loganLeft, ofImage& loganRight, int x, int y, int width, int height);
+        SystemAtom(md::MDContainer& theSystem, ofImage& loganLeft, ofImage& loganRight, ofImage& boatLeft, ofImage& boatRight, int x, int y, int width, int height);
         
         void toggleTheHorrors();
+        void sailTheHighSeas();
     };
     
     class EnergyGraphAtom : public UIAtom
