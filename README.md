@@ -13,7 +13,7 @@ The Argon team consists of David McDonagh, Robert Shaw, and Staszek Welsh.
 
 ### Building ###
 
-Argon is built on [openFrameworks](http://openframeworks.cc/), and this repository should be cloned into the main directory of an openFrameworks project to correctly set up the dependencies. Currently, Argon only supports OSX.
+Argon is built on [openFrameworks](http://openframeworks.cc/), and this repository should be cloned into the main directory of an openFrameworks project to correctly set up the dependencies. Currently, building Argon from source is only supported on OSX, but a Windows binary (and an OSX binary) can be downloaded above.
 
 #### Build instructions for OSX ####
 
