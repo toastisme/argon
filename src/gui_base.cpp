@@ -50,7 +50,7 @@ namespace gui {
     bool UIBase::getVisible() const { return visible; }
     void UIBase::makeVisible()   { visible = true; }
     void UIBase::makeInvisible() { visible = false; }
-    void UIBase::toggleVisible() { visible = not visible; }
+    void UIBase::toggleVisible() { visible = !visible; }
     
     // Default handling of mouse events is to return false (mouse event not handled)
     bool UIBase::mouseMoved(int x, int y) { return false; }
@@ -141,7 +141,7 @@ namespace gui {
     }
     
     void UIContainer::toggleVisible() {
-        visible = not visible;
+        visible = !visible;
         for (int i = 0; i < children.size(); ++i) { children[i]->toggleVisible(); }
     }
 
