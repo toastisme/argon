@@ -229,9 +229,9 @@ namespace gui {
         
         // Determine the colour of the Gaussian, based on the amplitude
         ofColor color;
-        u_char hue = 200;
-        u_char saturation = gA > 0 ? 255 : 0;
-        u_char brightness = 180;
+        unsigned char hue = 200;
+        unsigned char saturation = gA > 0 ? 255 : 0;
+        unsigned char brightness = 180;
         
         // Brighten if selected
         if (selected) {
