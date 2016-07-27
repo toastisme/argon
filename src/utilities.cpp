@@ -25,6 +25,15 @@
 #include "utilities.hpp"
 
 /*
+    coord
+ */
+
+// convert to an ofPoint, which is actually a typedefed ofVec3d
+ofPoint coord::ofPoint() const {
+    return ofVec3f(x, y);
+}
+
+/*
     rect
  */
 
@@ -100,8 +109,14 @@ bool rect::inside(double x, double y) const {
     }
     return false;
 }
+
 bool rect::inside(coord point) const {
     return inside(point.x, point.y);
+}
+
+// convert to openFrameworks ofRect
+ofRectangle rect::ofRect() const {
+    return ofRectangle(left, top, width(), height());
 }
 
 

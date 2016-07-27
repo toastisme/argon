@@ -41,6 +41,8 @@ enum Position
 struct coord
 {
     double x, y;
+    
+    ofPoint ofPoint() const; // convert to openFrameworks ofPoint
 };
 
 struct rect
@@ -75,6 +77,8 @@ struct rect
     // true if the point x, y is inside (or on the boundary of) the rect
     bool inside(double x, double y) const;
     bool inside(coord point) const;
+    
+    ofRectangle ofRect() const; // convert to openFrameworks ofRectangle
 };
 
 // bilinear clamp, returning a coord clamped inside a rect
