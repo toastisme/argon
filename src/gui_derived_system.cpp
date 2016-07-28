@@ -144,6 +144,9 @@ namespace gui {
          as the minimum/maximum values respectively.
          */
         
+        //ofSetColor(80, 80, 80, 80);
+        //ofDrawRectangle(bounds.ofRect());
+        
         int numPoints = theSystem.getNEnergies();
         
         // max and min of potential and kinetic energies
@@ -184,7 +187,7 @@ namespace gui {
         double yScreen;
         
         ofSetLineWidth(1);
-        ofSetColor(80, 80, 80);
+        ofSetColor(60, 60, 60);
         while (true) {
             yScreen = round(ofMap(yEnergy, energySpace.bottom, energySpace.top, bounds.bottom, bounds.top));
             ofDrawLine(bounds.left, yScreen, bounds.right, yScreen);

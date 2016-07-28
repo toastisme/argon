@@ -120,16 +120,16 @@ void ofApp::setup()
     systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, 0, 0, screenWidth, screenHeight));
     
     // Setup graph UI
-    graphUI = gui::UIContainer(screenWidth/6, screenHeight/6, 2*screenWidth/3, 2*screenHeight/3);
+    graphUI = gui::UIContainer(0, 50, 400, 200);
     
     // Add the graph itself
-    graphUI.addChild(new gui::EnergyGraphAtom(theSystem, 0, 0, 2*screenWidth/3, 2*screenHeight/3));
+    graphUI.addChild(new gui::EnergyGraphAtom(theSystem, 0, 0, 400, 200));
     
     // Add a legend
-    graphUI.addChild(new gui::TextAtom("Kinetic Energy", uiFont14, ofColor(200, 0, 0),
-                                       POS_RIGHT, 500, 320, 100, 30));
-    graphUI.addChild(new gui::TextAtom("Potential Energy", uiFont14, ofColor(255, 255, 255),
-                                       POS_RIGHT, 500, 355, 100, 30));
+    graphUI.addChild(new gui::TextAtom("Kinetic Energy", uiFont10, ofColor(200, 0, 0),
+                                       POS_TOP_LEFT, 5, 205, 100, 20));
+    graphUI.addChild(new gui::TextAtom("Potential Energy", uiFont10, ofColor(255, 255, 255),
+                                       POS_TOP_LEFT, 125, 205, 100, 20));
     
     graphUI.makeInvisible();
     
@@ -240,7 +240,7 @@ void ofApp::setup()
     //Options menu
     
     optionsUI = gui::UIContainer(0, 0, 1024, 60);
-    optionsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 45));
+    optionsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 50));
     optionsUI.addChild(new gui::TextAtom("Controls:", uiFont12, textcolor, POS_TOP, 75, 18, 150, 25));
     optionsUI.addChild(new gui::TextAtom("Change potential:", uiFont12, textcolor, POS_TOP, 277, 18, 150, 25));
     optionsUI.addChild(new gui::TextAtom("Display energy graph:", uiFont12, textcolor, POS_TOP, 530, 18, 150, 25));
