@@ -23,6 +23,7 @@
  */
 
 #include "gui_derived.hpp"
+#include <cmath>
 
 // implements SystemAtom, EnergyGraphAtom, GaussianAtom, GaussianContainer
 
@@ -132,7 +133,7 @@ namespace gui {
         EnergyGraphAtom
      */
     
-    EnergyGraphAtom::EnergyGraphAtom(md::MDContainer& _theSystem, int x, int y, int width, int height) : theSystem(_theSystem), xgap(5.0), UIAtom(x, y, width, height) {}
+    EnergyGraphAtom::EnergyGraphAtom(md::MDContainer& _theSystem, int x, int y, int width, int height) : theSystem(_theSystem), UIAtom(x, y, width, height) {}
     
     void EnergyGraphAtom::render() {
         /*
@@ -143,43 +144,64 @@ namespace gui {
          as the minimum/maximum values respectively.
          */
         
-        float winLeft = ofGetWidth()/6;
-        float winTop = ofGetHeight()/6;
-        float winWidth = 2*ofGetWidth()/3;
-        float winHeight = 2*ofGetHeight()/3;
-        float xOffset = 1.1*winLeft;
-        float yOffset = 7*winHeight/6;
-        float ekinMaxScale = theSystem.getMaxEkin();
-        float ekinMinScale = theSystem.getMinEkin();
-        float epotMaxScale = theSystem.getMaxEpot();
-        float epotMinScale = theSystem.getMinEpot();
+        int numPoints = theSystem.getNEnergies();
         
-        // Draw graph
-        float radius = 3;
-        float ekin, epot;
+        // max and min of potential and kinetic energies
+        double top    = std::max(theSystem.getMaxEkin(), theSystem.getMaxEpot());
+        double bottom = std::min(theSystem.getMinEkin(), theSystem.getMinEpot());
         
-        // Set fill and resolution
-        ofFill();
-        ofSetCircleResolution(10);
+        // ensure that zero is drawn
+        top    = top    > 0 ? top : 0;
+        bottom = bottom < 0 ? bottom : 0;
         
-        // Loop over all data points stored in the previous energy arrays in theSystem
-        // and draw them as small circles.
-        for (int i = 0; i < theSystem.getNEnergies(); i++){
-            ofSetColor(200, 0, 0);
-            ekin = ofMap(theSystem.getPreviousEkin(i), ekinMinScale, ekinMaxScale, 0, 0.9*winHeight);
-            ofDrawCircle(xOffset + xgap*i, yOffset - ekin, radius);
+        // make sure height is not zero
+        if (top - bottom < 1e-5) {
+            top += 1;
+            bottom -= 1;
+        }
+        
+        rect energySpace;
+        energySpace.setLRTB(0, 119, top, bottom); // 119 is max number of energy points - 1
+        
+        coord point;
+        ofPolyline Ekin, Epot;
+        for (int i = 0; i < numPoints; ++i) {
+            point = {(double)i, theSystem.getPreviousEkin(i)};
+            point = BilinearMap(point, energySpace, bounds);
+            Ekin.addVertex(point.x, point.y);
             
             ofSetColor(255, 255, 255);
-            epot = ofMap(fabs(theSystem.getPreviousEpot(i)), epotMinScale, epotMaxScale, 0, 0.9*winHeight);
-            ofDrawCircle(xOffset + xgap*i, yOffset - epot, radius);
+            point = {(double)i, theSystem.getPreviousEpot(i)};
+            point = BilinearMap(point, energySpace, bounds);
+            Epot.addVertex(point.x, point.y);
         }
+       
+        // draw tick lines
+        // the log_2 scaling means that, if too many are drawn, it removes every second line
+        // dividing by 7 means it draws between 4 and 8 lines
+        double tickSpacing = pow(2, ceil(log(top - bottom) / log(2))) / 7.0;
+        double yEnergy = ceil(bottom / tickSpacing) * tickSpacing;
+        double yScreen;
+        
+        ofSetLineWidth(1);
+        ofSetColor(80, 80, 80);
+        while (true) {
+            yScreen = round(ofMap(yEnergy, energySpace.bottom, energySpace.top, bounds.bottom, bounds.top));
+            ofDrawLine(bounds.left, yScreen, bounds.right, yScreen);
+            yEnergy += tickSpacing;
+            if (yEnergy > energySpace.top) { break; }
+        }
+        
+        // plot energies
+        ofSetLineWidth(2);
+        ofSetColor(200, 0, 0);
+        Ekin.draw();
+        ofSetColor(255, 255, 255);
+        Epot.draw();
     }
     
-    // Override resize so that xgap is rescaled
-    void EnergyGraphAtom::resize(float xScale, float yScale) {
-        UIAtom::resize(xScale, yScale);
-        xgap *= xScale;
-    }
+    
+    
     /*
         GaussianAtom
      */

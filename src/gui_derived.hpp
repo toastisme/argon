@@ -410,7 +410,6 @@ namespace gui {
          */
         
     private:
-        
         md::MDContainer& theSystem;
         
         // Super secret variables
@@ -427,7 +426,6 @@ namespace gui {
         void drawParticle(int index, double radius, int nframes = 0);
         
     public:
-        
         SystemAtom(md::MDContainer& theSystem, ofImage& loganLeft, ofImage& loganRight, int x, int y, int width, int height);
         
         void toggleTheHorrors();
@@ -436,22 +434,15 @@ namespace gui {
     class EnergyGraphAtom : public UIAtom
     {
         /*
-         UI Atom for graph of kinetic and potential energies
+            UI Atom for graph of kinetic and potential energies
          */
         
     private:
-        
         md::MDContainer& theSystem;
         virtual void render();
         
-        float xgap;
-        
     public:
-        
         EnergyGraphAtom(md::MDContainer& theSystem, int x, int y, int width, int height);
-        
-        virtual void resize(float xScale, float yScale);
-        
     };
     
     /*
