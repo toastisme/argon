@@ -120,7 +120,7 @@ void ofApp::setup()
     systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, 0, 0, screenWidth, screenHeight));
     
     // Setup graph UI
-    graphUI = gui::UIContainer(0, 50, 400, 200);
+    graphUI = gui::UIContainer(624, 60, 400, 300);
     
     // Add the graph itself
     graphUI.addChild(new gui::EnergyGraphAtom(theSystem, 0, 0, 400, 200));

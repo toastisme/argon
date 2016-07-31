@@ -159,8 +159,7 @@ namespace gui {
         
         // make sure height is not zero
         if (top - bottom < 1e-5) {
-            top += 1;
-            bottom -= 1;
+            top = bottom + 1e-5;
         }
         
         rect energySpace;
