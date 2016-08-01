@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "D2B249B4B831EF22417E0484D5FC295B06712E1F",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "D2B249B4B831EF22417E0484D5FC295B06712E1F" : 0,
+    "DA473A3CC16E71DA4D6DFBBB02C9C13B4E71A5F4" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "282E76F3-21A1-4ECD-973C-7A143FB92809",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "D2B249B4B831EF22417E0484D5FC295B06712E1F" : "Argon\/",
+    "DA473A3CC16E71DA4D6DFBBB02C9C13B4E71A5F4" : "Argon\/bin\/Argon.app\/Contents\/Resources\/wiki\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Argon",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Argon.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/bitbucket.org\/stargonauts\/argon",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D2B249B4B831EF22417E0484D5FC295B06712E1F"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/bitbucket.org\/stargonauts\/argon.git\/wiki",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DA473A3CC16E71DA4D6DFBBB02C9C13B4E71A5F4"
+    }
+  ]
+}

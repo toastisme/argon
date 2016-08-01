@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		621C697B1D422CE1007AE22A /* openFrameworks.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 621C697A1D422CE1007AE22A /* openFrameworks.a */; };
 		623C212B1D021D8E00944B11 /* audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 623C21291D021D8E00944B11 /* audio.cpp */; };
 		623C212D1D07001B00944B11 /* utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 623C212C1D07001B00944B11 /* utilities.cpp */; };
 		624908FF1CF383C500625501 /* mdforces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 624908FD1CF383C500625501 /* mdforces.cpp */; };
@@ -52,6 +53,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		621C69721D422722007AE22A /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bin; sourceTree = "<group>"; };
+		621C697A1D422CE1007AE22A /* openFrameworks.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = openFrameworks.a; path = ../../../libs/openFrameworksCompiled/lib/osx/openFrameworks.a; sourceTree = "<group>"; };
+		621C697C1D422F3B007AE22A /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
+		621C697D1D422F50007AE22A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Argon/Images.xcassets; sourceTree = "<group>"; };
 		623C21291D021D8E00944B11 /* audio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audio.cpp; sourceTree = "<group>"; };
 		623C212A1D021D8E00944B11 /* audio.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = audio.hpp; sourceTree = "<group>"; };
 		623C212C1D07001B00944B11 /* utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utilities.cpp; sourceTree = "<group>"; };
@@ -118,6 +123,7 @@
 				E4EEC9E9138DF44700A80321 /* openFrameworks */,
 				6948EE371B920CB800B5AC1A /* local_addons */,
 				E4B69B5B0A3A1756003C02F2 /* ArgonDebug.app */,
+				621C697C1D422F3B007AE22A /* icon.icns */,
 			);
 			sourceTree = "<group>";
 		};
@@ -339,6 +345,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -349,8 +356,10 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = NONE;
-				ICON = "$(ICON_NAME_DEBUG)";
-				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
+				ICON = icon.icns;
+				ICON_FILE = icon.icns;
+				ICON_FILE_PATH = .;
+				ICON_NAME_DEBUG = icon.icns;
 				INFOPLIST_FILE = "openFrameworks-Info.plist";
 				INSTALL_PATH = /Applications;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -364,6 +373,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -374,7 +384,9 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = NONE;
 				ICON = "$(ICON_NAME_RELEASE)";
-				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
+				ICON_FILE = icon.icns;
+				ICON_FILE_PATH = .;
+				ICON_NAME_DEBUG = icon.icns;
 				INFOPLIST_FILE = "openFrameworks-Info.plist";
 				INSTALL_PATH = /Applications;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";

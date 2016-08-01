@@ -41,6 +41,9 @@ void ofApp::setup()
     
     // Change root directory
     ofSetDataPathRoot("../Resources/data/");
+#if defined(WIN32)
+    ofSetDataPathRoot("data");
+#endif
 
     // Load assets
     loading = true;

@@ -127,7 +127,7 @@ namespace md {
     
     // Set running to a value, or its boolean negation
     void MDContainer::setRunning(bool _running) { running = _running; }
-    void MDContainer::toggleRunning() { running = not running; }
+    void MDContainer::toggleRunning() { running = ! running; }
     
     // Set the number of steps to make each time run is called
     void MDContainer::setStepsPerUpdate(int steps) { stepsPerUpdate = steps; }

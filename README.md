@@ -1,14 +1,19 @@
+# [Download Argon for Mac OSX](http://bitbucket.org/stargonauts/argon/downloads/Argon.zip)
+# [Download Argon for Windows](http://bitbucket.org/stargonauts/winargon/downloads/Argon.zip)
+
+---
+
 # README #
 
 ### Argon ###
 
-Argon is a real-time MD toy allowing the user to play with both the pairwise and external potentials in a simulation of point particles. Beta release is set for 22/07/16.
+Argon is a real-time MD toy allowing the user to play with both the pairwise and external potentials in a simulation of point particles. Beta release was 22/07/16.
 
 The Argon team consists of David McDonagh, Robert Shaw, and Staszek Welsh.
 
 ### Building ###
 
-Argon is built on [openFrameworks](http://openframeworks.cc/), and this repository should be cloned into the main directory of an openFrameworks project to correctly set up the dependencies. Currently, Argon only supports OSX.
+Argon is built on [openFrameworks](http://openframeworks.cc/), and this repository should be cloned into the main directory of an openFrameworks project to correctly set up the dependencies. Currently, building Argon from source is only supported on OSX, but a Windows binary (and an OSX binary) can be downloaded above.
 
 #### Build instructions for OSX ####
 

@@ -17,12 +17,11 @@ build
 xcuserdata/
 
 # binaries
-
 **/*.app/**
 obj/**
+*.zip
 
 # temp files
-
 *.swp
 *~
 

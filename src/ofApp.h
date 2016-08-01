@@ -27,6 +27,9 @@
 #include <sstream>
 #include <string>
 
+// Magic include to fix Microsoft C++ compatibility
+#include <ciso646>
+
 #include "ofMain.h"
 #include "utilities.hpp"
 #include "mdforces.hpp"

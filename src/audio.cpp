@@ -61,7 +61,7 @@ void AudioStream::toggleActive() {
     if (active) { (*stream).stop(); }
     else { (*stream).start(); }
     
-    active = not active;
+    active = ! active;
 }
 
 // getter and setter for maxAmplitude
