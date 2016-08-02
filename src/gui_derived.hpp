@@ -247,13 +247,12 @@ namespace gui {
         virtual void render();
         
         double radius; // Radius of semicircle slider is drawn on
-        ofColor bgcolor; // For masking because openframeworks won't let me draw thicker paths :(
     
         double getSliderPos(); // Override method to get the slider position
         void setFromSliderPos(double x); // And set the value from slider position
         
     public:
-        CircularSliderAtom(FuncGetter getValue, FuncSetter setValue, ofColor bgcolor, double min, double max, double x, double y, double radius);
+        CircularSliderAtom(FuncGetter getValue, FuncSetter setValue, double min, double max, double x, double y, double radius);
         
         static ofColor DEFAULT_COLOR;   // Color of `unslid' part of circle
         static ofColor HIGHLIGHT_COLOR; // Color of `slid' part of circle
@@ -343,26 +342,55 @@ namespace gui {
             UI Atom for a list of selectable options
          */
     private:
-        virtual void render();
-        
-        std::vector<TextAtom> options;
-        std::vector<FuncAction> actions;
-        
         const ofTrueTypeFont *font;
         ofColor textcolor;
+        double buttonWidth;
+     
+    protected:
+        virtual void render();
         
         int selectedOption;
+        std::vector<TextAtom *> options;
+        std::vector<FuncAction> actions;
         
     public:
-        OptionsListAtom(const ofTrueTypeFont &font, const ofColor &textColour, double x, double y, double width, double height);
+        OptionsListAtom(const ofTrueTypeFont &font, const ofColor &textColour, double buttonWidth, double x, double y, double width, double height);
+        ~OptionsListAtom();
         
-        void addOption(const std::string &label, FuncAction onSelect);
+        virtual void addOption(const std::string &label, FuncAction onSelect);
         
-        bool mousePressed(int x, int y, int button);
+        virtual bool mousePressed(int x, int y, int button);
         
         static ofColor DEFAULT_COLOR;
         static ofColor HIGHLIGHT_COLOR;
         static double OPTION_HEIGHT;
+        
+    };
+    
+    class AtomsListAtom : public OptionsListAtom
+    {
+        /*
+         An options list that allows selection between atoms
+         */
+        
+    private:
+        virtual void render();
+        
+        std::vector<UIBase *> atoms;
+        
+        double widgetX, widgetWidth;
+        
+        void deselect();
+        
+    public:
+        
+        AtomsListAtom(const ofTrueTypeFont &font, const ofColor &textcolor, double x, double y, double optionsWidth, double widgetWidth, double height, double padding);
+        ~AtomsListAtom();
+        
+        void addOption(const std::string &label, FuncAction doAction, UIBase *widget);
+        bool mousePressed(int x, int y, int button);
+        bool mouseReleased(int x, int y, int button);
+        bool mouseMoved(int x, int y);
         
     };
     
@@ -536,30 +564,9 @@ namespace gui {
          */
         
     public:
-        CircularSliderContainer(FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &textColor, const ofColor &bgcolor, int precision, double x, double y, double sliderRadius, double valueWidth, double valueHeight, double padding);
+        CircularSliderContainer(FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &textColor, int precision, double x, double y, double sliderRadius, double valueWidth, double valueHeight, double padding);
     };
     
-    class OptionsContainer : public UIContainer
-    {
-        /* 
-            UI Container for selecting a widget from a list of options
-         */
-        
-    private:
-        std::vector<UIBase *> widgets;
-        
-        void selectWidget(int i);
-        
-        double widgetX, widgetWidth;
-        OptionsListAtom *options;
-        
-    public:
-        
-        OptionsContainer(const ofTrueTypeFont &font, const ofColor &textcolor, double x, double y, double optionsWidth, double widgetWidth, double height, double padding);
-        
-        void addOption(const std::string &label, UIBase *widget);
-        
-    };
     
     class SplineContainer : public UIContainer
     {

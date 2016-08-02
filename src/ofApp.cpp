@@ -146,7 +146,7 @@ void ofApp::setup()
     menuUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 145));
     
     // sliders
-    menuUI.addChild(new gui::SliderContainer("Temperature (K)",
+   /* menuUI.addChild(new gui::SliderContainer("Temperature (K)",
                                              [&] () { return theSystem.getTemp() * 120; },   // factor of 120 to convert to kelvin
                                              [&] (double set) { theSystem.setTemp(set / 120.0); },
                                              0, 1000, uiFont12, textcolor, 1,
@@ -169,7 +169,23 @@ void ofApp::setup()
                                              [&] () { return micInput.getMaxAmplitude(); },
                                              [&] (double set) { micInput.setMaxAmplitude(set + 0.005); },
                                              0.005, 0.1, uiFont12, textcolor, 3,
-                                             100, 110, 150, 450, 70, 5, 30));
+                                             100, 110, 150, 450, 70, 5, 30)); */
+    
+    int optionsIndex = menuUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolor, 75, 15, 200, 400, 130, 5));
+    
+    gui::AtomsListAtom* options = (gui::AtomsListAtom *) menuUI.getChild(optionsIndex);
+    options->addOption("Temperature", [&] () { }, new gui::CircularSliderContainer([&] () { return theSystem.getTemp() * 120; },
+                                                                                   [&] (double set) { theSystem.setTemp(set / 120.0); },
+                                                                                   0, 1000, uiFont14, textcolor, 1, 0, -15, 120, 60, 60, 120));
+    
+    options->addOption("Particles", [&] () { }, new gui::CircularSliderContainer([&] () { return theSystem.getNAfterReset(); },
+                                                                                 [&] (double set) { theSystem.setNAfterReset(set + 0.5); theSystem.resetSystem(); },
+                                                                                 2, 200, uiFont14, textcolor, 0, 0, -15, 120, 60, 60, 120));
+    
+    options->addOption("Simulation speed", [&] () { }, new gui::CircularSliderContainer([&] () { return theSystem.getStepsPerUpdate(); },
+                                                                            [&] (double set) { theSystem.setStepsPerUpdate(set + 0.5); },
+                                                                            1, 20, uiFont14, textcolor, 0,
+                                                                            0, -15, 120, 60, 60, 120));
     
     // button text
     menuUI.addChild(new gui::TextAtom("Play / pause:", uiFont10, textcolor,

@@ -211,7 +211,7 @@ namespace gui {
         controlPanel.addChild(new gui::ButtonToggleAtom([&] () { return audioOn; }, [&] (bool set) { audioOn = set; }, *audioOnButton,
                                                         *audioOffButton, 120, 5, 30, 30));
         
-        controlPanel.addChild(new gui::CircularSliderContainer([&] () { return (50 - theSystem.getGaussianAmp(gaussianID))/100.0; }, [&] (double set) { theSystem.updateGaussian(gaussianID, 50 - set*100, 0.8 - 0.5*set, theSystem.getGaussianX0(gaussianID), theSystem.getGaussianY0(gaussianID)); }, 0.0, 1.0, *uiFont10, textcolor, bgcolor, 2, 40, 20, 150, 60, 60, 5));
+        controlPanel.addChild(new gui::CircularSliderContainer([&] () { return (50 - theSystem.getGaussianAmp(gaussianID))/100.0; }, [&] (double set) { theSystem.updateGaussian(gaussianID, 50 - set*100, 0.8 - 0.5*set, theSystem.getGaussianX0(gaussianID), theSystem.getGaussianY0(gaussianID)); }, 0.0, 1.0, *uiFont10, textcolor, 2, 40, 20, 150, 60, 60, 5));
         
         controlPanel.makeInvisible();
         
