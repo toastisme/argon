@@ -258,6 +258,8 @@ namespace gui {
         static ofColor HIGHLIGHT_COLOR; // Color of `slid' part of circle
         static float LINE_WIDTH; // Width of circle line
         
+        void resize(float xScale, float yScale);
+        
     };
     
     class ButtonAtom : public UIAtom
@@ -344,7 +346,7 @@ namespace gui {
     private:
         const ofTrueTypeFont *font;
         ofColor textcolor;
-        double buttonWidth;
+        double buttonWidth, buttonHeight;
      
     protected:
         virtual void render();
@@ -360,6 +362,8 @@ namespace gui {
         virtual void addOption(const std::string &label, FuncAction onSelect);
         
         virtual bool mousePressed(int x, int y, int button);
+        
+        virtual void resize(float xScale, float yScale);
         
         static ofColor DEFAULT_COLOR;
         static ofColor HIGHLIGHT_COLOR;
@@ -388,9 +392,12 @@ namespace gui {
         ~AtomsListAtom();
         
         void addOption(const std::string &label, FuncAction doAction, UIBase *widget);
+        
         bool mousePressed(int x, int y, int button);
         bool mouseReleased(int x, int y, int button);
         bool mouseMoved(int x, int y);
+        
+        void resize(float xScale, float yScale);
         
     };
     
@@ -452,9 +459,6 @@ namespace gui {
         
         md::MDContainer& theSystem;
         ofImage& circGradient;
-        
-        // Control whether attractive/repulsive, and whether it reacts to audio
-        UIContainer controlPanel;
         
         int gaussianID;
         double radius;
@@ -649,6 +653,8 @@ namespace gui {
         bool mouseMoved(int x, int y);
         
         void audioIn(double volume);
+        
+        int getSelectedID() const;
         
     };
     

@@ -171,7 +171,7 @@ void ofApp::setup()
                                              0.005, 0.1, uiFont12, textcolor, 3,
                                              100, 110, 150, 450, 70, 5, 30)); */
     
-    int optionsIndex = menuUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolor, 75, 15, 200, 400, 130, 5));
+    int optionsIndex = menuUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolor, 75, 20, 200, 400, 130, 5));
     
     gui::AtomsListAtom* options = (gui::AtomsListAtom *) menuUI.getChild(optionsIndex);
     options->addOption("Temperature", [&] () { }, new gui::CircularSliderContainer([&] () { return theSystem.getTemp() * 120; },
@@ -186,6 +186,14 @@ void ofApp::setup()
                                                                             [&] (double set) { theSystem.setStepsPerUpdate(set + 0.5); },
                                                                             1, 20, uiFont14, textcolor, 0,
                                                                             0, -15, 120, 60, 60, 120));
+    
+    options->addOption("Gaussian", [&] () { }, new gui::CircularSliderContainer([&] () { double rval = 0.0; gui::GaussianContainer* gaussian = (gui::GaussianContainer *) systemUI.getChild(gaussianContainerIndex);
+        int gaussianID = gaussian->getSelectedID();
+        if (gaussianID > -1) { rval = (50 - theSystem.getGaussianAmp(gaussianID))/100.0;  } return rval; },
+                                                                                [&] (double set) { gui::GaussianContainer* gaussian = (gui::GaussianContainer *) systemUI.getChild(gaussianContainerIndex);
+                                                                                    int gaussianID = gaussian->getSelectedID();
+                                                                                    if (gaussianID > -1) { theSystem.updateGaussian(gaussianID, 50 - set*100, 0.8 - 0.5*set, theSystem.getGaussianX0(gaussianID), theSystem.getGaussianY0(gaussianID)); } },
+                                                                                0.0, 1.0, uiFont10, ofColor(0, 0, 0, 0), 2, 0, -15, 120, 0, 0, 120));
     
     // button text
     menuUI.addChild(new gui::TextAtom("Play / pause:", uiFont10, textcolor,

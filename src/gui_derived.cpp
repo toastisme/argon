@@ -311,6 +311,11 @@ namespace gui {
         
     }
     
+    void CircularSliderAtom::resize(float xScale, float yScale) {
+        radius *= xScale;
+        UIAtom::resize(xScale, yScale);
+    }
+    
     ofColor CircularSliderAtom::DEFAULT_COLOR = ofColor(80, 80, 80);
     ofColor CircularSliderAtom::HIGHLIGHT_COLOR = ofColor(10, 174, 199);
     float CircularSliderAtom::LINE_WIDTH = 12.0;
@@ -376,7 +381,7 @@ namespace gui {
         OptionsListAtom
      */
     
-    OptionsListAtom::OptionsListAtom(const ofTrueTypeFont &_font, const ofColor &textColour, double _buttonWidth, double x, double y, double width, double height) : UIAtom(x, y, width, height), font(&_font), textcolor(textColour), selectedOption(-1), buttonWidth(_buttonWidth) {}
+    OptionsListAtom::OptionsListAtom(const ofTrueTypeFont &_font, const ofColor &textColour, double _buttonWidth, double x, double y, double width, double height) : UIAtom(x, y, width, height), font(&_font), textcolor(textColour), selectedOption(-1), buttonWidth(_buttonWidth), buttonHeight(OPTION_HEIGHT) {}
     
     OptionsListAtom::~OptionsListAtom() {
         for (int i = 0; i < options.size(); i++) {
@@ -390,7 +395,7 @@ namespace gui {
             
             if (i != selectedOption) {
                 ofSetColor(DEFAULT_COLOR);
-                ofDrawRectangle(bounds.left, options[i]->getRect().top, buttonWidth, OPTION_HEIGHT);
+                ofDrawRectangle(bounds.left, options[i]->getRect().top, buttonWidth, buttonHeight);
                 options[i]->draw();
             }
             
@@ -398,7 +403,7 @@ namespace gui {
         
         if (selectedOption > -1) {
             ofSetColor(HIGHLIGHT_COLOR);
-            ofDrawRectangle(bounds.left, options[selectedOption]->getRect().top, buttonWidth, OPTION_HEIGHT);
+            ofDrawRectangle(bounds.left, options[selectedOption]->getRect().top, buttonWidth, buttonHeight);
             options[selectedOption]->draw();
         }
         
@@ -406,7 +411,7 @@ namespace gui {
     
     void OptionsListAtom::addOption(const std::string &label, FuncAction onSelect){
         
-        TextAtom* newOption = new TextAtom(label, *font, textcolor, POS_LEFT, bounds.left, bounds.top + options.size()*OPTION_HEIGHT, buttonWidth, OPTION_HEIGHT);
+        TextAtom* newOption = new TextAtom(label, *font, textcolor, POS_CENTRE, bounds.left, bounds.top + options.size()*buttonHeight, buttonWidth, buttonHeight);
         options.push_back(newOption);
         
         actions.push_back(onSelect);
@@ -433,9 +438,19 @@ namespace gui {
         return false;
     }
     
+    void OptionsListAtom::resize(float xScale, float yScale)
+    {
+        UIAtom::resize(xScale, yScale);
+        buttonWidth *= xScale;
+        buttonHeight *= yScale;
+        for (int i = 0; i < options.size(); i++){
+            options[i]->resize(xScale, yScale);
+        }
+    }
+    
     ofColor OptionsListAtom::DEFAULT_COLOR = ofColor(80, 80, 80);
     ofColor OptionsListAtom::HIGHLIGHT_COLOR = ofColor(10, 174, 199);
-    double OptionsListAtom::OPTION_HEIGHT = 30;
+    double OptionsListAtom::OPTION_HEIGHT = 28;
     
     /*
      AtomsListAtom
@@ -519,6 +534,14 @@ namespace gui {
     {
         for (int i = 0; i < atoms.size(); i++){
             atoms[i]->makeInvisible();
+        }
+    }
+    
+    void AtomsListAtom::resize(float xScale, float yScale)
+    {
+        OptionsListAtom::resize(xScale, yScale);
+        for (int i = 0; i < atoms.size(); i++){
+            atoms[i]->resize(xScale, yScale);
         }
     }
     
