@@ -337,6 +337,35 @@ namespace gui {
         virtual void resize(float xScale, float yScale);
     };
     
+    class OptionsListAtom : public UIAtom
+    {
+        /*
+            UI Atom for a list of selectable options
+         */
+    private:
+        virtual void render();
+        
+        std::vector<TextAtom> options;
+        std::vector<FuncAction> actions;
+        
+        const ofTrueTypeFont *font;
+        ofColor textcolor;
+        
+        int selectedOption;
+        
+    public:
+        OptionsListAtom(const ofTrueTypeFont &font, const ofColor &textColour, double x, double y, double width, double height);
+        
+        void addOption(const std::string &label, FuncAction onSelect);
+        
+        bool mousePressed(int x, int y, int button);
+        
+        static ofColor DEFAULT_COLOR;
+        static ofColor HIGHLIGHT_COLOR;
+        static double OPTION_HEIGHT;
+        
+    };
+    
     class PotentialAtom : public UIAtom
     {
     /*
@@ -508,6 +537,28 @@ namespace gui {
         
     public:
         CircularSliderContainer(FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &textColor, const ofColor &bgcolor, int precision, double x, double y, double sliderRadius, double valueWidth, double valueHeight, double padding);
+    };
+    
+    class OptionsContainer : public UIContainer
+    {
+        /* 
+            UI Container for selecting a widget from a list of options
+         */
+        
+    private:
+        std::vector<UIBase *> widgets;
+        
+        void selectWidget(int i);
+        
+        double widgetX, widgetWidth;
+        OptionsListAtom *options;
+        
+    public:
+        
+        OptionsContainer(const ofTrueTypeFont &font, const ofColor &textcolor, double x, double y, double optionsWidth, double widgetWidth, double height, double padding);
+        
+        void addOption(const std::string &label, UIBase *widget);
+        
     };
     
     class SplineContainer : public UIContainer

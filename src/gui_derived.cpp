@@ -312,7 +312,7 @@ namespace gui {
     }
     
     ofColor CircularSliderAtom::DEFAULT_COLOR = ofColor(80, 80, 80);
-    ofColor CircularSliderAtom::HIGHLIGHT_COLOR = ofColor(255, 0, 0);
+    ofColor CircularSliderAtom::HIGHLIGHT_COLOR = ofColor(10, 174, 199);
     float CircularSliderAtom::LINE_WIDTH = 12.0;
     
     /*
@@ -373,6 +373,66 @@ namespace gui {
     }
     
     /*
+        OptionsListAtom
+     */
+    
+    OptionsListAtom::OptionsListAtom(const ofTrueTypeFont &_font, const ofColor &textColour, double x, double y, double width, double height) : UIAtom(x, y, width, height), font(&_font), textcolor(textColour), selectedOption(-1) {}
+    
+    void OptionsListAtom::render() {
+    
+        for (int i = 0; i < options.size(); i++) {
+            options[i].draw();
+        }
+        
+        ofSetColor(DEFAULT_COLOR);
+        for (int i = 0; i < options.size(); i++) {
+            
+            if (i != selectedOption) {
+                ofDrawRectangle(bounds.left, options[i].getRect().top, bounds.width(), OPTION_HEIGHT);
+            }
+            
+        }
+        
+        if (selectedOption > -1) {
+            ofSetColor(HIGHLIGHT_COLOR);
+            ofDrawRectangle(bounds.left, options[selectedOption].getRect().top, bounds.width(), OPTION_HEIGHT);
+        }
+        
+    }
+    
+    void OptionsListAtom::addOption(const std::string &label, FuncAction onSelect){
+        
+        TextAtom newOption(label, *font, textcolor, POS_CENTRE, bounds.left, bounds.top + options.size()*OPTION_HEIGHT, bounds.width(), OPTION_HEIGHT);
+        options.push_back(newOption);
+        
+        actions.push_back(onSelect);
+        
+    }
+    
+    bool OptionsListAtom::mousePressed(int x, int y, int button)
+    {
+        // On left click, select the correct option
+        if (button == 0) {
+            for (int i = 0; i < options.size(); i++) {
+                
+                if ( options[i].getRect().inside(x, y) ) {
+                    selectedOption = i;
+                    actions[i]();
+                    break;
+                }
+                
+            }
+        }
+        
+        return false;
+    }
+    
+    ofColor OptionsListAtom::DEFAULT_COLOR = ofColor(80, 80, 80);
+    ofColor OptionsListAtom::HIGHLIGHT_COLOR = ofColor(10, 174, 199);
+    double OptionsListAtom::OPTION_HEIGHT = 20;
+    
+    
+    /*
         SliderContainer
      */
     
@@ -411,6 +471,47 @@ namespace gui {
         
         // pass the font, text colour, getter function, precision, and size of value text bounds to ValueAtom. Set align to centre (middle of circle)
         addChild(new ValueAtom(getValue, precision, font, textcolour, POS_CENTRE, x + padding + sliderRadius - valueWidth/2, y + sliderRadius - valueHeight, valueWidth, valueHeight));
+    }
+    
+    /*
+        OptionsContainer
+     */
+    
+    OptionsContainer::OptionsContainer(const ofTrueTypeFont &font, const ofColor &textcolor, double x, double y, double optionsWidth, double _widgetWidth, double height, double padding) : widgetWidth(_widgetWidth)
+    {
+        // Make an options list
+        int index = addIndexedChild(new OptionsListAtom(font, textcolor, x + padding, y, optionsWidth, height));
+        
+        options = (OptionsListAtom *) getChild(index);
+        
+        // Work out x position of the widget bit
+        widgetX = x + 2*padding + optionsWidth;
+        
+    }
+    
+    void OptionsContainer::addOption(const std::string &label, UIBase *widget)
+    {
+        // Add an option to the OptionsListAtom, with action to select the given widget
+        options->addOption(label, [&] () { selectWidget(widgets.size()); });
+        
+        // Place and resize widget correctly
+        coord shift = {widgetX - widget->getRect().left, 0};
+        widget->moveBy(shift);
+        float xScale = widgetWidth / widget->getRect().width();
+        float yScale = options->getRect().height() / widget->getRect().height();
+        widget->resize(xScale, yScale);
+        
+        // Then add the widget
+        widgets.push_back(widget);
+        addChild(widget);
+    }
+    
+    void OptionsContainer::selectWidget(int i) {
+        // Make only the selected widget visible
+        for (int j = 0; j < widgets.size(); j++) {
+            widgets[j]->makeInvisible();
+        }
+        widgets[i]->makeVisible();
     }
 
 }
