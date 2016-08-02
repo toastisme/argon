@@ -252,6 +252,70 @@ namespace gui {
     int SliderAtom::HANDLE_HEIGHT = 20;
     
     /*
+        CircularSliderAtom
+     */
+    
+    CircularSliderAtom::CircularSliderAtom(FuncGetter getValue, FuncSetter setValue, ofColor _bgcolor, double min, double max, double x, double y, double _radius) : SliderAtom(getValue, setValue, min, max, x, y, 2.1*_radius, 1.1*_radius), bgcolor(_bgcolor), radius(_radius)
+    { }
+    
+    // get the value of getValue, and map it to the angle (in degrees) on the semicircle
+    double CircularSliderAtom::getSliderPos() {
+        return ofMap(getValue(), min, max, 0, 180, true);
+    }
+    
+    // set the value using setValue, obtained by mapping the distance round the circle of the
+    // slider to between min and max.
+    void CircularSliderAtom::setFromSliderPos(double x) {
+        // Get distance from centre of circle to x position
+        x -= bounds.left;
+        x = radius - x;
+        x = ofClamp(x, -radius, radius);
+        
+        // Calculate angle of arc in degrees
+        float angle = acos( x / radius ) * 180.0 / 3.14159265;
+        
+        // Map this onto the value range
+        setValue(ofMap(angle, 0, 180, min, max, true));
+    }
+
+    void CircularSliderAtom::render() {
+        // centre point of circle
+        ofPoint centre(bounds.centreX(), bounds.bottom);
+        
+        // Set line width
+        ofSetLineWidth(LINE_WIDTH);
+        
+        float sliderPos = getSliderPos();
+        
+        // draw circle sections
+        ofPolyline highlightPath, defaultPath, maskingPath;
+        
+        if (sliderPos == 0) {
+            defaultPath.arc(centre, radius, radius, 180, 360, true, 50);
+        } else if (sliderPos == 180) { // So that it doesn't glitch at 180 degrees
+            highlightPath.arc(centre, radius, radius, 180, 360, true, 50);
+        } else {
+            defaultPath.arc(centre, radius, radius, 180 + sliderPos, 360, true, 50);
+            highlightPath.arc(centre, radius, radius, 180, 180 + sliderPos, true, 50);
+        }
+    
+        // Turn the polylines into thick lines, 'cos openFrameworks sucks
+        ofMesh defaultMesh = makeThickLine(defaultPath, LINE_WIDTH);
+        ofMesh highlightMesh = makeThickLine(highlightPath, LINE_WIDTH);
+        
+        ofSetColor(DEFAULT_COLOR);
+        defaultMesh.draw();
+        ofSetColor(HIGHLIGHT_COLOR);
+        highlightMesh.draw();
+        
+        
+    }
+    
+    ofColor CircularSliderAtom::DEFAULT_COLOR = ofColor(80, 80, 80);
+    ofColor CircularSliderAtom::HIGHLIGHT_COLOR = ofColor(255, 0, 0);
+    float CircularSliderAtom::LINE_WIDTH = 12.0;
+    
+    /*
         ButtonAtom
      */
     
@@ -332,4 +396,21 @@ namespace gui {
     }
     
     int SliderContainer::PADDING = 5;
+    
+    /*
+        CircularSliderContainer
+     */
+    
+    // big constructor which sets everything up, the behaviour is all in the individual components
+    CircularSliderContainer::CircularSliderContainer(FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &textcolour, const ofColor &bgcolour, int precision, double x, double y, double sliderRadius, double valueWidth, double valueHeight, double padding)
+    {
+        
+        
+        // pass the functions, min, max and radius to CircularSliderAtom.
+        addChild(new CircularSliderAtom(getValue, setValue, bgcolour, min, max, x + padding, y, sliderRadius));
+        
+        // pass the font, text colour, getter function, precision, and size of value text bounds to ValueAtom. Set align to centre (middle of circle)
+        addChild(new ValueAtom(getValue, precision, font, textcolour, POS_CENTRE, x + padding + sliderRadius - valueWidth/2, y + sliderRadius - valueHeight, valueWidth, valueHeight));
+    }
+
 }

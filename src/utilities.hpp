@@ -96,6 +96,6 @@ double box2screen_y(double y, double y0, double screenHeight, double systemHeigh
 ofPoint box2screen(double x, double y, double x0, double y0, double screenWidth, double screenHeight, double systemWidth, double systemHeight);
 ofPoint box2screen(coord point, coord origin, coord screen, coord system);
 
-
+ofMesh makeThickLine(ofPolyline& line, float widthSmooth);
 
 #endif /* utilities_hpp */
