@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "absolute:Users/robertshaw/OpenFrameworks/apps/myApps/Argon/Argon.xcodeproj">
+      location = "self:Users/robertshaw/OpenFrameworks/apps/myApps/Argon/Argon.xcodeproj">
    </FileRef>
 </Workspace>
