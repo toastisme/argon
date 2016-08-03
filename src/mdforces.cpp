@@ -543,7 +543,7 @@ namespace md {
     void MDContainer::savePreviousValues()
     {
         prevPositions.push_front(positions);
-        prevEPot.push_front(fabs(epot));
+        prevEPot.push_front(epot);
         prevEKin.push_front(ekin);
         
         if (prevPositions.size() == 20) prevPositions.pop_back();

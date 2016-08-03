@@ -65,6 +65,8 @@ void ofApp::setup()
     optionsAboutButton.load("img/OptionsAboutButton2.png");
     tmcsLogo.load("img/tmcslogo.png");
     stargonautsLogo.load("img/stargonautslogo.png");
+    boatLeft.load("img/boatleft.png");
+    boatRight.load("img/boatright.png");
     argonLogo.load("img/argonlogo.png");
     
     // potential graphics
@@ -117,7 +119,7 @@ void ofApp::setup()
                                                                                  &optionsButtonDown, &audioOnButton, &audioOffButton, 30.0, 0, 0, screenWidth, screenHeight));
     
     // And the particles themselves
-    systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, 0, 0, screenWidth, screenHeight));
+    systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, boatLeft, boatRight, 0, 0, screenWidth, screenHeight));
     
     // Setup graph UI
     graphUI = gui::UIContainer(624, 60, 400, 300);
@@ -144,7 +146,7 @@ void ofApp::setup()
     menuUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 145));
     
     // sliders
-    menuUI.addChild(new gui::SliderContainer("Temperature (K)",
+   /* menuUI.addChild(new gui::SliderContainer("Temperature (K)",
                                              [&] () { return theSystem.getTemp() * 120; },   // factor of 120 to convert to kelvin
                                              [&] (double set) { theSystem.setTemp(set / 120.0); },
                                              0, 1000, uiFont12, textcolor, 1,
@@ -167,7 +169,31 @@ void ofApp::setup()
                                              [&] () { return micInput.getMaxAmplitude(); },
                                              [&] (double set) { micInput.setMaxAmplitude(set + 0.005); },
                                              0.005, 0.1, uiFont12, textcolor, 3,
-                                             100, 110, 150, 450, 70, 5, 30));
+                                             100, 110, 150, 450, 70, 5, 30)); */
+    
+    int optionsIndex = menuUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolor, 75, 20, 200, 400, 130, 5));
+    
+    gui::AtomsListAtom* options = (gui::AtomsListAtom *) menuUI.getChild(optionsIndex);
+    options->addOption("Temperature", [&] () { }, new gui::CircularSliderContainer([&] () { return theSystem.getTemp() * 120; },
+                                                                                   [&] (double set) { theSystem.setTemp(set / 120.0); },
+                                                                                   0, 1000, uiFont14, textcolor, 1, 0, -15, 120, 60, 60, 120));
+    
+    options->addOption("Particles", [&] () { }, new gui::CircularSliderContainer([&] () { return theSystem.getNAfterReset(); },
+                                                                                 [&] (double set) { theSystem.setNAfterReset(set + 0.5); theSystem.resetSystem(); },
+                                                                                 2, 200, uiFont14, textcolor, 0, 0, -15, 120, 60, 60, 120));
+    
+    options->addOption("Simulation speed", [&] () { }, new gui::CircularSliderContainer([&] () { return theSystem.getStepsPerUpdate(); },
+                                                                            [&] (double set) { theSystem.setStepsPerUpdate(set + 0.5); },
+                                                                            1, 20, uiFont14, textcolor, 0,
+                                                                            0, -15, 120, 60, 60, 120));
+    
+    options->addOption("Gaussian", [&] () { }, new gui::CircularSliderContainer([&] () { double rval = 0.0; gui::GaussianContainer* gaussian = (gui::GaussianContainer *) systemUI.getChild(gaussianContainerIndex);
+        int gaussianID = gaussian->getSelectedID();
+        if (gaussianID > -1) { rval = (50 - theSystem.getGaussianAmp(gaussianID))/100.0;  } return rval; },
+                                                                                [&] (double set) { gui::GaussianContainer* gaussian = (gui::GaussianContainer *) systemUI.getChild(gaussianContainerIndex);
+                                                                                    int gaussianID = gaussian->getSelectedID();
+                                                                                    if (gaussianID > -1) { theSystem.updateGaussian(gaussianID, 50 - set*100, 0.8 - 0.5*set, theSystem.getGaussianX0(gaussianID), theSystem.getGaussianY0(gaussianID)); } },
+                                                                                0.0, 1.0, uiFont10, ofColor(0, 0, 0, 0), 2, 0, -15, 120, 0, 0, 120));
     
     // button text
     menuUI.addChild(new gui::TextAtom("Play / pause:", uiFont10, textcolor,
@@ -277,7 +303,10 @@ void ofApp::setup()
     aboutUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 610, 300));
     aboutUI.addChild(new gui::SetColour(textcolor));
     aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170));
-    aboutUI.addChild(new gui::ImageAtom(stargonautsLogo, 395, 5, 205, 170));
+    aboutUI.addChild(new gui::ButtonAtom([&] () {
+        gui::SystemAtom* sys = (gui::SystemAtom*) systemUI.getChild(systemAtomIndex);
+        sys->sailTheHighSeas(); },
+                                         stargonautsLogo, 395, 5, 205, 170));
     aboutUI.addChild(new gui::TextAtom("A molecular dynamics simulation with interactive external and", aboutFont12, textcolor, POS_LEFT, 25, 195, 600, 20));
     aboutUI.addChild(new gui::TextAtom("interatomic potentials.", aboutFont12, textcolor, POS_LEFT, 25, 215, 600, 20));
     aboutUI.addChild(new gui::TextAtom("Copyright 2016 David McDonagh, Robert Shaw, Staszek Welsh", aboutFont12, textcolor, POS_LEFT, 25, 255, 600, 20));
@@ -481,6 +510,8 @@ void ofApp::mousePressed(int x, int y, int button){
     if (potentialUI.getVisible() && potentialUI.getRect().inside(x, y)) { // Mouse controls drawing UI
         potentialUI.mousePressed(x, y, button);
         
+    } else if (aboutUI.getVisible() && aboutUI.getRect().inside(x, y)) {
+        aboutUI.mousePressed(x, y, button);
     } else if (menuUI.getVisible() && menuUI.getRect().inside(x, y)) { // Mouse controls menu
         // pass through event to children
         menuUI.mousePressed(x, y, button);

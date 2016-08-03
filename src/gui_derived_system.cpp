@@ -33,8 +33,8 @@ namespace gui {
         SystemAtom
      */
     
-    SystemAtom::SystemAtom(md::MDContainer& _theSystem, ofImage& _loganLeft, ofImage& _loganRight, int x, int y, int width, int height) :
-                            theSystem(_theSystem), loganLeft(_loganLeft), loganRight(_loganRight), inflictTorture(false),
+    SystemAtom::SystemAtom(md::MDContainer& _theSystem, ofImage& _loganLeft, ofImage& _loganRight, ofImage& _boatLeft, ofImage& _boatRight, int x, int y, int width, int height) :
+                            theSystem(_theSystem), loganLeft(_loganLeft), loganRight(_loganRight), boatLeft(_boatLeft), boatRight(_boatRight), inflictTorture(false), setSail(false),
                             UIAtom(x, y, width, height)
     { }
     
@@ -67,14 +67,17 @@ namespace gui {
             radius_y = ofMap(log(1.0 + abs(tempAcc.y)), 0, 10, 10, 25);
             radius = (radius_x + radius_y) / 2;
             
-            if (inflictTorture) {
+            if (inflictTorture || setSail) {
                 ofSetColor(particleColor);
                 coord pos = theSystem.getPos(i);
                 
+                ofImage* leftImage = inflictTorture ? &loganLeft : &boatLeft;
+                ofImage* rightImage = inflictTorture ? &loganRight : &boatRight;
+                
                 if (tempVel.x >= 0)
-                    loganRight.draw(box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
+                    rightImage->draw(box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
                 else
-                    loganLeft.draw( box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
+                    leftImage->draw( box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
             } else {
                 //trail
                 if (theSystem.getNPrevPos() >= 15) {
@@ -127,6 +130,12 @@ namespace gui {
 
     void SystemAtom::toggleTheHorrors() {
         inflictTorture = !inflictTorture;
+        setSail = false;
+    }
+    
+    void SystemAtom::sailTheHighSeas() {
+        setSail = !setSail;
+        inflictTorture = false;
     }
     
     /*
@@ -209,28 +218,7 @@ namespace gui {
      */
     GaussianAtom::GaussianAtom(md::MDContainer& _theSystem, ofImage& _circGradient, int _gaussianID, ofTrueTypeFont* uiFont10, ofImage* closeButton, ofImage* audioOnButton, ofImage* audioOffButton, int x, int y, double _radius) : theSystem(_theSystem), circGradient(_circGradient), gaussianID(_gaussianID), selected(false), radius(_radius), mouseFocus(false), audioOn(true),
         UIAtom(x - _radius, y - _radius, 2*_radius, 2*_radius)
-    {
-        // Define colours
-        ofColor bgcolor(175, 210, 222, 130);
-        ofColor textcolor(255, 255, 240);
-        
-        // Build control panel
-        controlPanel = gui::UIContainer(bounds.left - (200 - radius), bounds.top  - (80 + 2*radius), 385, 80);
-        controlPanel.addChild(new gui::RectAtom(bgcolor, 0, 0, 385, 80));
-        controlPanel.addChild(new gui::TextAtom("Audio on/off", *uiFont10, textcolor, POS_LEFT, 10, 5, 100, 25));
-        controlPanel.addChild(new gui::TextAtom("Attractive", *uiFont10, textcolor, POS_LEFT, 10, 45, 70, 25));
-        controlPanel.addChild(new gui::TextAtom("Repulsive", *uiFont10, textcolor, POS_LEFT, 310, 45, 70, 25));
-        
-        controlPanel.addChild(new gui::ButtonAtom([&] () { controlPanel.makeInvisible(); }, *closeButton,
-                                               345, 5, 30, 30));
-        controlPanel.addChild(new gui::ButtonToggleAtom([&] () { return audioOn; }, [&] (bool set) { audioOn = set; }, *audioOnButton,
-                                                        *audioOffButton, 120, 5, 30, 30));
-        
-        controlPanel.addChild(new gui::SliderAtom([&] () { return (50 - theSystem.getGaussianAmp(gaussianID))/100.0; }, [&] (double set) { theSystem.updateGaussian(gaussianID, 50 - set*100, 0.8 - 0.5*set, theSystem.getGaussianX0(gaussianID), theSystem.getGaussianY0(gaussianID)); }, 0.0, 1.0, 90, 45, 210, 25));
-        
-        controlPanel.makeInvisible();
-        
-    }
+    { }
 
     void GaussianAtom::render() {
         /*
@@ -277,9 +265,6 @@ namespace gui {
         // Draw as circGradient
         circGradient.draw(x, y, width, height);
         
-        // Draw the control panel
-        controlPanel.draw();
-        
     }
     
     void GaussianAtom::moveGaussian(double x, double y) {
@@ -293,14 +278,11 @@ namespace gui {
         Gaussian& g = theSystem.getGaussian(gaussianID);
         g.setParams(g.getgAmp(), g.getgAlpha(), scaled_x, scaled_y);
         
-        // Update position of control panel and then Gaussian itself
-        controlPanel.moveBy({x - bounds.centreX(), y - bounds.centreY()});
         bounds.movePos(POS_CENTRE, {x, y});
     }
     
     void GaussianAtom::deselect() {
         selected = false;
-        controlPanel.makeInvisible();
     }
     
     void GaussianAtom::select() {
@@ -313,16 +295,12 @@ namespace gui {
     
     bool GaussianAtom::mousePressed(int x, int y, int button) {
         bool retVal = false;
-        if (controlPanel.getVisible() && controlPanel.getRect().inside(x, y)) {
-            controlPanel.mousePressed(x, y, button);
-            retVal = true;
-        } else if (bounds.inside(x, y)) {
+        if (bounds.inside(x, y)) {
             switch(button) {
                     
                 case 0: // Left click, get focus
                     mouseFocus = true;
                     select();
-                    controlPanel.makeVisible();
                     retVal = true;
                     break;
                     
@@ -344,7 +322,6 @@ namespace gui {
         if ( button == 0 ) {
             mouseFocus = false;
         }
-        controlPanel.mouseReleased(x, y, button);
         return false;
     }
     
@@ -353,9 +330,6 @@ namespace gui {
         bool retVal = false;
         if ( mouseFocus ) {
             moveGaussian(x, y);
-            retVal = true;
-        } else if (controlPanel.getVisible() && controlPanel.getRect().inside(x, y)) {
-            controlPanel.mouseMoved(x, y);
             retVal = true;
         }
         return retVal;
@@ -372,8 +346,6 @@ namespace gui {
     
     // Resize control panel when GaussianAtom resizes
     void GaussianAtom::resize(float xScale, float yScale) {
-        controlPanel.resize(xScale, yScale);
-        
         // Make sure Gaussians stay circular
         float scale = xScale < yScale ? xScale : yScale;
         bounds.setXYWH(bounds.left*xScale, bounds.top*yScale, bounds.width()*scale, bounds.height()*scale);
@@ -540,6 +512,10 @@ namespace gui {
             GaussianAtom* g = (GaussianAtom*) children[id];
             g->select();
         }
+    }
+    
+    int GaussianContainer::getSelectedID() const {
+        return selectedGaussian;
     }
 
     

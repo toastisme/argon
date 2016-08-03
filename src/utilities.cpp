@@ -177,3 +177,38 @@ ofPoint box2screen(double x, double y, double x0, double y0, double screenWidth,
 ofPoint box2screen(coord point, coord origin, coord screen, coord system) {
     return box2screen(point.x, point.y, origin.x, origin.y, screen.x, screen.y, system.x, system.y);
 }
+
+// Make a thick line because openFrameworks is stupid and doesn't have a default method to do this
+ofMesh makeThickLine(ofPolyline& line, float widthSmooth)
+{
+    ofMesh meshy;
+    meshy.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+    
+    float angleSmooth;
+    
+    for (int i = 0;  i < line.getVertices().size(); i++){
+        
+        int me_m_one = i-1;
+        int me_p_one = i+1;
+        if (me_m_one < 0) me_m_one = 0;
+        if (me_p_one ==  line.getVertices().size()) me_p_one =  line.getVertices().size()-1;
+        
+        ofPoint diff = line.getVertices()[me_p_one] - line.getVertices()[me_m_one];
+        float angle = atan2(diff.y, diff.x);
+        
+        if (i == 0) angleSmooth = angle;
+        else {
+            angleSmooth = ofLerpDegrees(angleSmooth, angle, 1.0);
+        }
+        
+        ofPoint offset;
+        offset.x = cos(angleSmooth + PI/2) * widthSmooth;
+        offset.y = sin(angleSmooth + PI/2) * widthSmooth;
+        
+        meshy.addVertex(  line.getVertices()[i] +  offset );
+        meshy.addVertex(  line.getVertices()[i] -  offset );
+        
+    }
+    
+    return meshy;
+}

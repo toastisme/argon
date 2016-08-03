@@ -202,14 +202,14 @@ namespace gui {
     class SliderAtom : public UIAtom
     {
         /*
-            UI Atom for drawing a slider based on member functions from an LJContainer.
+            UI Atom for drawing a slider based on member functions from an MDContainer.
          */
         
     private:
         virtual void render();             // draws slider to screen with width given by bounds and in the
                                            // centre of the rect vertically - the actual height of the slider
                                            // is given by the static variables BODY_HEIGHT and HANDLE_HEIGHT
-        
+    protected:
         FuncGetter getValue;               // getter function (void -> double) for the value represented by the slider
         FuncSetter setValue;               // setter function (double -> void) for the value represented by the slider
         
@@ -217,8 +217,8 @@ namespace gui {
         
         bool mouseFocus;                   // whether the slider is being clicked + dragged
         
-        double getSliderPos();             // get position of slider by calling getValue()
-        void setFromSliderPos(double x);   // set value from position of slider by calling setValue()
+        virtual double getSliderPos();             // get position of slider by calling getValue()
+        virtual void setFromSliderPos(double x);   // set value from position of slider by calling setValue()
         
     public:
         SliderAtom();
@@ -235,6 +235,31 @@ namespace gui {
         static int HANDLE_WIDTH;           // width of slider handle (the rectangle representing the position of the slider) - set to 7
         static int HANDLE_HEIGHT;          // height of slider handle - set to 20
         static ofColor HANDLE_COLOR;       // colour of slider handle - set to grey (80, 80, 80)
+    };
+    
+    class CircularSliderAtom : public SliderAtom
+    {
+        /*
+            UI Atom for a slider, as per SliderAtom, but drawn on a circle rather than a straight line.
+         */
+        
+    private:
+        virtual void render();
+        
+        double radius; // Radius of semicircle slider is drawn on
+    
+        double getSliderPos(); // Override method to get the slider position
+        void setFromSliderPos(double x); // And set the value from slider position
+        
+    public:
+        CircularSliderAtom(FuncGetter getValue, FuncSetter setValue, double min, double max, double x, double y, double radius);
+        
+        static ofColor DEFAULT_COLOR;   // Color of `unslid' part of circle
+        static ofColor HIGHLIGHT_COLOR; // Color of `slid' part of circle
+        static float LINE_WIDTH; // Width of circle line
+        
+        void resize(float xScale, float yScale);
+        
     };
     
     class ButtonAtom : public UIAtom
@@ -313,6 +338,69 @@ namespace gui {
         virtual void resize(float xScale, float yScale);
     };
     
+    class OptionsListAtom : public UIAtom
+    {
+        /*
+            UI Atom for a list of selectable options
+         */
+    private:
+        const ofTrueTypeFont *font;
+        ofColor textcolor;
+        double buttonWidth, buttonHeight;
+     
+    protected:
+        virtual void render();
+        
+        int selectedOption;
+        std::vector<TextAtom *> options;
+        std::vector<FuncAction> actions;
+        
+    public:
+        OptionsListAtom(const ofTrueTypeFont &font, const ofColor &textColour, double buttonWidth, double x, double y, double width, double height);
+        ~OptionsListAtom();
+        
+        virtual void addOption(const std::string &label, FuncAction onSelect);
+        
+        virtual bool mousePressed(int x, int y, int button);
+        
+        virtual void resize(float xScale, float yScale);
+        
+        static ofColor DEFAULT_COLOR;
+        static ofColor HIGHLIGHT_COLOR;
+        static double OPTION_HEIGHT;
+        
+    };
+    
+    class AtomsListAtom : public OptionsListAtom
+    {
+        /*
+         An options list that allows selection between atoms
+         */
+        
+    private:
+        virtual void render();
+        
+        std::vector<UIBase *> atoms;
+        
+        double widgetX, widgetWidth;
+        
+        void deselect();
+        
+    public:
+        
+        AtomsListAtom(const ofTrueTypeFont &font, const ofColor &textcolor, double x, double y, double optionsWidth, double widgetWidth, double height, double padding);
+        ~AtomsListAtom();
+        
+        void addOption(const std::string &label, FuncAction doAction, UIBase *widget);
+        
+        bool mousePressed(int x, int y, int button);
+        bool mouseReleased(int x, int y, int button);
+        bool mouseMoved(int x, int y);
+        
+        void resize(float xScale, float yScale);
+        
+    };
+    
     class PotentialAtom : public UIAtom
     {
     /*
@@ -372,9 +460,6 @@ namespace gui {
         md::MDContainer& theSystem;
         ofImage& circGradient;
         
-        // Control whether attractive/repulsive, and whether it reacts to audio
-        UIContainer controlPanel;
-        
         int gaussianID;
         double radius;
         bool selected;
@@ -415,7 +500,10 @@ namespace gui {
         // Super secret variables
         ofImage& loganLeft;
         ofImage& loganRight;
+        ofImage& boatLeft;
+        ofImage& boatRight;
         bool inflictTorture;
+        bool setSail;
         
         virtual void render();
         
@@ -426,9 +514,10 @@ namespace gui {
         void drawParticle(int index, double radius, int nframes = 0);
         
     public:
-        SystemAtom(md::MDContainer& theSystem, ofImage& loganLeft, ofImage& loganRight, int x, int y, int width, int height);
+        SystemAtom(md::MDContainer& theSystem, ofImage& loganLeft, ofImage& loganRight, ofImage& boatLeft, ofImage& boatRight, int x, int y, int width, int height);
         
         void toggleTheHorrors();
+        void sailTheHighSeas();
     };
     
     class EnergyGraphAtom : public UIAtom
@@ -462,6 +551,17 @@ namespace gui {
 
         static int PADDING;
     };
+    
+    class CircularSliderContainer : public UIContainer
+    {
+        /*
+            UI Container for a value and circular slider combination
+         */
+        
+    public:
+        CircularSliderContainer(FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &textColor, int precision, double x, double y, double sliderRadius, double valueWidth, double valueHeight, double padding);
+    };
+    
     
     class SplineContainer : public UIContainer
     {
@@ -544,6 +644,8 @@ namespace gui {
         bool mouseMoved(int x, int y);
         
         void audioIn(double volume);
+        
+        int getSelectedID() const;
         
     };
     

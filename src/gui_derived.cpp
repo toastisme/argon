@@ -252,6 +252,75 @@ namespace gui {
     int SliderAtom::HANDLE_HEIGHT = 20;
     
     /*
+        CircularSliderAtom
+     */
+    
+    CircularSliderAtom::CircularSliderAtom(FuncGetter getValue, FuncSetter setValue, double min, double max, double x, double y, double _radius) : SliderAtom(getValue, setValue, min, max, x, y, 2.1*_radius, 1.1*_radius), radius(_radius)
+    { }
+    
+    // get the value of getValue, and map it to the angle (in degrees) on the semicircle
+    double CircularSliderAtom::getSliderPos() {
+        return ofMap(getValue(), min, max, 0, 180, true);
+    }
+    
+    // set the value using setValue, obtained by mapping the distance round the circle of the
+    // slider to between min and max.
+    void CircularSliderAtom::setFromSliderPos(double x) {
+        // Get distance from centre of circle to x position
+        x -= bounds.left;
+        x = radius - x;
+        x = ofClamp(x, -radius, radius);
+        
+        // Calculate angle of arc in degrees
+        float angle = acos( x / radius ) * 180.0 / 3.14159265;
+        
+        // Map this onto the value range
+        setValue(ofMap(angle, 0, 180, min, max, true));
+    }
+
+    void CircularSliderAtom::render() {
+        // centre point of circle
+        ofPoint centre(bounds.centreX(), bounds.bottom);
+        
+        // Set line width
+        ofSetLineWidth(LINE_WIDTH);
+        
+        float sliderPos = getSliderPos();
+        
+        // draw circle sections
+        ofPolyline highlightPath, defaultPath, maskingPath;
+        
+        if (sliderPos == 0) {
+            defaultPath.arc(centre, radius, radius, 180, 360, true, 50);
+        } else if (sliderPos == 180) { // So that it doesn't glitch at 180 degrees
+            highlightPath.arc(centre, radius, radius, 180, 360, true, 50);
+        } else {
+            defaultPath.arc(centre, radius, radius, 180 + sliderPos, 360, true, 50);
+            highlightPath.arc(centre, radius, radius, 180, 180 + sliderPos, true, 50);
+        }
+    
+        // Turn the polylines into thick lines, 'cos openFrameworks sucks
+        ofMesh defaultMesh = makeThickLine(defaultPath, LINE_WIDTH);
+        ofMesh highlightMesh = makeThickLine(highlightPath, LINE_WIDTH);
+        
+        ofSetColor(DEFAULT_COLOR);
+        defaultMesh.draw();
+        ofSetColor(HIGHLIGHT_COLOR);
+        highlightMesh.draw();
+        
+        
+    }
+    
+    void CircularSliderAtom::resize(float xScale, float yScale) {
+        radius *= xScale;
+        UIAtom::resize(xScale, yScale);
+    }
+    
+    ofColor CircularSliderAtom::DEFAULT_COLOR = ofColor(80, 80, 80);
+    ofColor CircularSliderAtom::HIGHLIGHT_COLOR = ofColor(10, 174, 199);
+    float CircularSliderAtom::LINE_WIDTH = 12.0;
+    
+    /*
         ButtonAtom
      */
     
@@ -309,6 +378,174 @@ namespace gui {
     }
     
     /*
+        OptionsListAtom
+     */
+    
+    OptionsListAtom::OptionsListAtom(const ofTrueTypeFont &_font, const ofColor &textColour, double _buttonWidth, double x, double y, double width, double height) : UIAtom(x, y, width, height), font(&_font), textcolor(textColour), selectedOption(-1), buttonWidth(_buttonWidth), buttonHeight(OPTION_HEIGHT) {}
+    
+    OptionsListAtom::~OptionsListAtom() {
+        for (int i = 0; i < options.size(); i++) {
+            delete options[i];
+        }
+    }
+    
+    void OptionsListAtom::render() {
+    
+        for (int i = 0; i < options.size(); i++) {
+            
+            if (i != selectedOption) {
+                ofSetColor(DEFAULT_COLOR);
+                ofDrawRectangle(bounds.left, options[i]->getRect().top, buttonWidth, buttonHeight);
+                options[i]->draw();
+            }
+            
+        }
+        
+        if (selectedOption > -1) {
+            ofSetColor(HIGHLIGHT_COLOR);
+            ofDrawRectangle(bounds.left, options[selectedOption]->getRect().top, buttonWidth, buttonHeight);
+            options[selectedOption]->draw();
+        }
+        
+    }
+    
+    void OptionsListAtom::addOption(const std::string &label, FuncAction onSelect){
+        
+        TextAtom* newOption = new TextAtom(label, *font, textcolor, POS_CENTRE, bounds.left, bounds.top + options.size()*buttonHeight, buttonWidth, buttonHeight);
+        options.push_back(newOption);
+        
+        actions.push_back(onSelect);
+        
+        selectedOption = options.size() == 1 ? 0 : selectedOption;
+        
+    }
+    
+    bool OptionsListAtom::mousePressed(int x, int y, int button)
+    {
+        // On left click, select the correct option
+        if (button == 0) {
+            for (int i = 0; i < options.size(); i++) {
+                
+                if ( options[i]->getRect().inside(x, y) ) {
+                    selectedOption = i;
+                    actions[i]();
+                    break;
+                }
+                
+            }
+        }
+        
+        return false;
+    }
+    
+    void OptionsListAtom::resize(float xScale, float yScale)
+    {
+        UIAtom::resize(xScale, yScale);
+        buttonWidth *= xScale;
+        buttonHeight *= yScale;
+        for (int i = 0; i < options.size(); i++){
+            options[i]->resize(xScale, yScale);
+        }
+    }
+    
+    ofColor OptionsListAtom::DEFAULT_COLOR = ofColor(80, 80, 80);
+    ofColor OptionsListAtom::HIGHLIGHT_COLOR = ofColor(10, 174, 199);
+    double OptionsListAtom::OPTION_HEIGHT = 28;
+    
+    /*
+     AtomsListAtom
+     */
+    
+    AtomsListAtom::AtomsListAtom(const ofTrueTypeFont &font, const ofColor &textcolor, double x, double y, double optionsWidth, double _widgetWidth, double height, double padding) : OptionsListAtom(font, textcolor, optionsWidth, x, y, optionsWidth+_widgetWidth+3*padding, height), widgetWidth(_widgetWidth)
+    {
+        // Work out x position of the widget bit
+        widgetX = x + 2*padding + optionsWidth;
+    }
+    
+    AtomsListAtom::~AtomsListAtom()
+    {
+        for (int i = 0; i < atoms.size(); i++){
+            delete atoms[i];
+        }
+    }
+    
+    void AtomsListAtom::render()
+    {
+        OptionsListAtom::render();
+        for (int i = 0; i < atoms.size(); i++){
+            atoms[i]->draw();
+        }
+    }
+    
+    void AtomsListAtom::addOption(const std::string &label, FuncAction doAction, UIBase *atom)
+    {
+        // Add an option to the OptionsListAtom, with action to select the given atom
+        OptionsListAtom::addOption(label, doAction);
+        
+        // Place new atom and add it
+        atom->moveBy({widgetX, bounds.top - atom->getRect().top});
+        atoms.push_back(atom);
+        
+        if (atoms.size() == 1) atom->makeVisible();
+        else atom->makeInvisible();
+    }
+    
+    bool AtomsListAtom::mousePressed(int x, int y, int button)
+    {
+        
+        if (selectedOption > -1) {
+            atoms[selectedOption]->mousePressed(x, y, button);
+        }
+        
+        // On left click, select the correct option
+        if (button == 0) {
+            for (int i = 0; i < options.size(); i++) {
+                
+                if ( options[i]->getRect().inside(x, y) ) {
+                    selectedOption = i;
+                    actions[i]();
+                    deselect();
+                    atoms[i]->makeVisible();
+                    break;
+                }
+                
+            }
+        }
+        
+        return false;
+    }
+    
+    bool AtomsListAtom::mouseReleased(int x, int y, int button)
+    {
+        if (selectedOption > -1) {
+            atoms[selectedOption]->mouseReleased(x, y, button);
+        }
+        return false;
+    }
+    
+    bool AtomsListAtom::mouseMoved(int x, int y)
+    {
+        if (selectedOption > -1) {
+            atoms[selectedOption]->mouseMoved(x, y);
+        }
+    }
+
+    void AtomsListAtom::deselect()
+    {
+        for (int i = 0; i < atoms.size(); i++){
+            atoms[i]->makeInvisible();
+        }
+    }
+    
+    void AtomsListAtom::resize(float xScale, float yScale)
+    {
+        OptionsListAtom::resize(xScale, yScale);
+        for (int i = 0; i < atoms.size(); i++){
+            atoms[i]->resize(xScale, yScale);
+        }
+    }
+    
+    /*
         SliderContainer
      */
     
@@ -332,4 +569,21 @@ namespace gui {
     }
     
     int SliderContainer::PADDING = 5;
+    
+    /*
+        CircularSliderContainer
+     */
+    
+    // big constructor which sets everything up, the behaviour is all in the individual components
+    CircularSliderContainer::CircularSliderContainer(FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &textcolour, int precision, double x, double y, double sliderRadius, double valueWidth, double valueHeight, double padding)
+    {
+        
+        
+        // pass the functions, min, max and radius to CircularSliderAtom.
+        addChild(new CircularSliderAtom(getValue, setValue, min, max, x + padding, y, sliderRadius));
+        
+        // pass the font, text colour, getter function, precision, and size of value text bounds to ValueAtom. Set align to centre (middle of circle)
+        addChild(new ValueAtom(getValue, precision, font, textcolour, POS_CENTRE, x + padding + sliderRadius - valueWidth/2, y + sliderRadius - valueHeight, valueWidth, valueHeight));
+    }
+    
 }

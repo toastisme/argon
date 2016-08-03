@@ -101,6 +101,8 @@ private:
     ofImage optionsAboutButton;
     ofImage splashScreen;
     ofImage stargonautsLogo;
+    ofImage boatLeft;
+    ofImage boatRight;
     ofImage tmcsLogo;
     ofImage argonLogo;
     
