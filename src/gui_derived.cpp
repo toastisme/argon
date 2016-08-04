@@ -193,7 +193,7 @@ namespace gui {
     // slider to between min and max. Note that we make the same slider-handle-
     // within-slider-body correction, and subtract half the slider width from x so
     // that it corresponds to the centre of the slider handle, not the left side
-    void SliderAtom::setFromSliderPos(double x) {
+    void SliderAtom::setFromSliderPos(double x, double y) {
         x -= SliderAtom::HANDLE_WIDTH / 2;
         
         setValue(ofMap(x, bounds.left, bounds.right - SliderAtom::HANDLE_WIDTH, min, max, true));
@@ -224,14 +224,14 @@ namespace gui {
     bool SliderAtom::mousePressed(int x, int y, int button) {
         if (button == 0 && bounds.inside(x, y)) {
             mouseFocus = true;
-            setFromSliderPos(x);
+            setFromSliderPos(x, y);
             return true;
         } else { return false; }
     }
     
     // if the mouse is moved, and we have mouse focus, update the slider's position
     bool SliderAtom::mouseMoved(int x, int y) {
-        if (mouseFocus) { setFromSliderPos(x); return true; }
+        if (mouseFocus) { setFromSliderPos(x, y); return true; }
         else { return false; }
     }
     
@@ -265,14 +265,14 @@ namespace gui {
     
     // set the value using setValue, obtained by mapping the distance round the circle of the
     // slider to between min and max.
-    void CircularSliderAtom::setFromSliderPos(double x) {
-        // Get distance from centre of circle to x position
-        x -= bounds.left;
-        x = radius - x;
-        x = ofClamp(x, -radius, radius);
+    void CircularSliderAtom::setFromSliderPos(double x, double y) {
+        // Get distance from centre of circle to x and y positions
+        x = bounds.left + radius - x;
+        y = bounds.top  + radius - y;
+        y = y > 0 ? y : 0;
         
         // Calculate angle of arc in degrees
-        float angle = acos( x / radius ) * 180.0 / 3.14159265;
+        double angle = atan2(y, x) * 180 / 3.14;
         
         // Map this onto the value range
         setValue(ofMap(angle, 0, 180, min, max, true));

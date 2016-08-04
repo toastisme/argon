@@ -485,7 +485,7 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    if (menuUI.getVisible() && menuUI.getRect().inside(x, y)) {
+    if (menuUI.getVisible()) {
         menuUI.mouseMoved(x, y);
     } else if (potentialUI.getVisible()) {
         potentialUI.mouseMoved(x, y);

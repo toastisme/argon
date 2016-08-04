@@ -218,7 +218,7 @@ namespace gui {
         bool mouseFocus;                   // whether the slider is being clicked + dragged
         
         virtual double getSliderPos();             // get position of slider by calling getValue()
-        virtual void setFromSliderPos(double x);   // set value from position of slider by calling setValue()
+        virtual void setFromSliderPos(double x, double y);   // set value from position of slider by calling setValue()
         
     public:
         SliderAtom();
@@ -249,7 +249,7 @@ namespace gui {
         double radius; // Radius of semicircle slider is drawn on
     
         double getSliderPos(); // Override method to get the slider position
-        void setFromSliderPos(double x); // And set the value from slider position
+        void setFromSliderPos(double x, double y); // And set the value from slider position
         
     public:
         CircularSliderAtom(FuncGetter getValue, FuncSetter setValue, double min, double max, double x, double y, double radius);
