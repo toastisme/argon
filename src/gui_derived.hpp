@@ -449,8 +449,8 @@ namespace gui {
         
     };
     
-    class GaussianAtom : public UIAtom
-    {
+    class GaussianAtom : public UIAtom {
+    
         /*
             UI Atom corresponding to a Gaussian external potential
          */
@@ -601,6 +601,9 @@ namespace gui {
         
         // override resize method
         virtual void resize(float xScale, float yScale);
+        
+        // reset the entire spline
+        void destroyAllPoints();
     };
     
     class GaussianContainer : public UIContainer

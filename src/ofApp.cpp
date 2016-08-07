@@ -261,6 +261,9 @@ void ofApp::setup()
                                              customThumbnail, 25, 375, 100, 100));
     potentialUI.addChild(new gui::TextAtom("Custom", uiFont12, textcolor, POS_TOP, 0, 475, 150, 25));
     
+    potentialUI.addChild(new gui::ButtonAtom([&] () { ((gui::SplineContainer *)potentialUI.getChild(splineContainerIndex))->destroyAllPoints(); },
+                                             resetButton, 0, 0, 30, 30));
+    
     potentialUI.makeInvisible();
     potentialUI.getChild(splineContainerIndex)->makeVisible();
     potentialUI.mouseReleased(0, 0, 0);

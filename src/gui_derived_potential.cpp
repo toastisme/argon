@@ -346,4 +346,12 @@ namespace gui {
         UIContainer::resize(xScale, yScale);
         pointRegion.setXYWH(pointRegion.left*xScale, pointRegion.top*yScale, pointRegion.width()*xScale, pointRegion.height()*yScale);
     }
+    
+    void SplineContainer::destroyAllPoints() {
+        for (int i = 0; i < children.size(); ++i) {
+            delete children[i];
+        }
+        children.clear();
+        updateSpline();
+    }
 }
