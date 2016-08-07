@@ -636,13 +636,16 @@ namespace md {
         v_avg /= N;
         
         //Calculate scaling factor (lambda)
-        if (v_avg > 0) {
+        if (v_avg > 1e-5) {
             double lambda = sqrt(1+((dt*freq)*((T/v_avg)-1)));
             for (int i = 0; i < N; i++){
                 //Scale the velocity of each particle
                 velocities[i].x *= lambda;
                 velocities[i].y *= lambda;
             }
+        } else {
+            // if the particles aren't moving and we want them to, collide everything with an andersen heatbath
+            andersen(1000000);
         }
     }
 }
