@@ -328,7 +328,14 @@ namespace gui {
     // Move the Gaussian if it has focus
     bool GaussianAtom::mouseMoved(int x, int y) {
         bool retVal = false;
+        
         if ( mouseFocus ) {
+            // if trying to move it off-screen, move it to the screen edge
+            x = x < 0 ? 0 : x;
+            x = x > ofGetWidth() ? ofGetWidth() : x;
+            y = y < 0 ? 0 : y;
+            y = y > ofGetHeight() ? ofGetHeight() : y;
+            
             moveGaussian(x, y);
             retVal = true;
         }
