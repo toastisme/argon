@@ -167,12 +167,15 @@ namespace gui {
     }
     
     bool UIContainer::mousePressed(int x, int y, int button) {
-        bool handled = false;
-        for (int i = 0; i < children.size(); ++i) {
-            handled = children[i]->mousePressed(x, y, button);
-            if (handled) { break; }
-        }
-        return handled;
+        if (visible) {
+            bool handled = false;
+            for (int i = 0; i < children.size(); ++i) {
+                handled = children[i]->mousePressed(x, y, button);
+                if (handled) { break; }
+            }
+            // consider the event handled if it's inside the container or if a child handles it
+            return handled || bounds.inside(x, y);
+        } else { return false; }
     }
     
     bool UIContainer::mouseReleased(int x, int y, int button) {

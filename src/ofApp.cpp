@@ -229,7 +229,7 @@ void ofApp::setup()
     
     
     
-    potentialUI = gui::UIContainer(50, 50, 985, 600);
+    potentialUI = gui::UIContainer(50, 50, 924, 500);
     potentialUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 924, 500));
     potentialUI.addChild(new gui::RectAtom(bgcolor, 150, 0, 774, 500));
     
@@ -482,24 +482,14 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-    if (menuUI.getVisible()) {
-        menuUI.mouseMoved(x, y);
-    } else if (potentialUI.getVisible()) {
-        potentialUI.mouseMoved(x, y);
-    } else {
-        systemUI.mouseMoved(x, y);
-    }
+    menuUI.mouseMoved(x, y);
+    potentialUI.mouseMoved(x, y);
+    systemUI.mouseMoved(x, y);
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    if (menuUI.getVisible()) {
-        menuUI.mouseMoved(x, y);
-    } else if (potentialUI.getVisible()) {
-        potentialUI.mouseMoved(x, y);
-    } else {
-        systemUI.mouseMoved(x, y);
-    }
+    mouseMoved(x, y);
 }
 
 //--------------------------------------------------------------
@@ -512,38 +502,23 @@ void ofApp::mouseDragged(int x, int y, int button){
         Scope to change this to only be on left mouse button click, to free up
         other mouse uses?
  */
-void ofApp::mousePressed(int x, int y, int button){
-    
-    
-    if (potentialUI.getVisible() && potentialUI.getRect().inside(x, y)) { // Mouse controls drawing UI
-        potentialUI.mousePressed(x, y, button);
-        
-    } else if (aboutUI.getVisible() && aboutUI.getRect().inside(x, y)) {
-        aboutUI.mousePressed(x, y, button);
-    } else if (menuUI.getVisible() && menuUI.getRect().inside(x, y)) { // Mouse controls menu
-        // pass through event to children
-        menuUI.mousePressed(x, y, button);
-        
-    } else if (optionsUI.getVisible() && optionsUI.getRect().inside(x, y)){
-        optionsUI.mousePressed(x, y, button);
-        
-    } else if (optionsOffUI.getVisible() && optionsOffUI.getRect().inside(x, y)){
-        optionsOffUI.mousePressed(x, y, button);
-        
-    } else {
-        systemUI.mousePressed(x, y, button);
-    }
+void ofApp::mousePressed(int x, int y, int button) {
+    // pass through mouse press to UI elements
+    // stop when the first function returns true and the event is handled
+    // slight abuse of short-circuiting boolean or, but it avoids an ugly ifelse tree
+    potentialUI.mousePressed(x, y, button)  ||
+    aboutUI.mousePressed(x, y, button)      ||
+    menuUI.mousePressed(x, y, button)       ||
+    optionsUI.mousePressed(x, y, button)    ||
+    optionsOffUI.mousePressed(x, y, button) ||
+    systemUI.mousePressed(x, y, button);
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    if (menuUI.getVisible()) {
-        menuUI.mouseReleased(x, y, button);
-    } else if (potentialUI.getVisible()) {
-        potentialUI.mouseReleased(x, y, button);
-    } else {
-        systemUI.mouseReleased(x, y, button);
-    }
+    menuUI.mouseReleased(x, y, button);
+    potentialUI.mouseReleased(x, y, button);
+    systemUI.mouseReleased(x, y, button);
 }
 
 //--------------------------------------------------------------

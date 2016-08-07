@@ -222,7 +222,7 @@ namespace gui {
     
     // if the mouse is left-clicked inside the slider, take mouse focus and update the slider's position
     bool SliderAtom::mousePressed(int x, int y, int button) {
-        if (button == 0 && bounds.inside(x, y)) {
+        if (visible && button == 0 && bounds.inside(x, y)) {
             mouseFocus = true;
             setFromSliderPos(x, y);
             return true;
@@ -337,7 +337,7 @@ namespace gui {
     
     // if the mouse is left-clicked inside the button, do its action
     bool ButtonAtom::mousePressed(int x, int y, int button) {
-        if (button == 0 && bounds.inside(x, y)) { doAction(); return true; }
+        if (visible && button == 0 && bounds.inside(x, y)) { doAction(); return true; }
         else { return false; }
     }
     
@@ -367,7 +367,7 @@ namespace gui {
     
     // if the mouse is left-clicked inside the button, invert the value of the boolean
     bool ButtonToggleAtom::mousePressed(int x, int y, int button) {
-        if (button == 0 && bounds.inside(x, y)) { setBool(not getBool()); return true; }
+        if (visible && button == 0 && bounds.inside(x, y)) { setBool(not getBool()); return true; }
         else { return false; }
     }
     
@@ -422,20 +422,22 @@ namespace gui {
     
     bool OptionsListAtom::mousePressed(int x, int y, int button)
     {
+        bool ret = false;
         // On left click, select the correct option
-        if (button == 0) {
+        if (visible && button == 0) {
             for (int i = 0; i < options.size(); i++) {
                 
                 if ( options[i]->getRect().inside(x, y) ) {
                     selectedOption = i;
                     actions[i]();
+                    ret = true;
                     break;
                 }
                 
             }
         }
         
-        return false;
+        return ret;
     }
     
     void OptionsListAtom::resize(float xScale, float yScale)
@@ -492,9 +494,10 @@ namespace gui {
     
     bool AtomsListAtom::mousePressed(int x, int y, int button)
     {
+        bool ret;
         
         if (selectedOption > -1) {
-            atoms[selectedOption]->mousePressed(x, y, button);
+            ret = atoms[selectedOption]->mousePressed(x, y, button);
         }
         
         // On left click, select the correct option
@@ -506,13 +509,14 @@ namespace gui {
                     actions[i]();
                     deselect();
                     atoms[i]->makeVisible();
+                    ret = true;
                     break;
                 }
                 
             }
         }
         
-        return false;
+        return ret;
     }
     
     bool AtomsListAtom::mouseReleased(int x, int y, int button)
