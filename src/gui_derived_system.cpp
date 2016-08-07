@@ -517,7 +517,17 @@ namespace gui {
     int GaussianContainer::getSelectedID() const {
         return selectedGaussian;
     }
-
     
+    void GaussianContainer::destroyAllGaussians() {
+        // free all the memory and clear the vector
+        for (int i = 0; i < children.size(); ++i) {
+            delete children[i];
+        }
+        for (int i = 0; i < system.getNGaussians(); ++i) {
+            system.removeGaussian(i);
+        }
+        children.clear();
+        selectedGaussian = -1;
+    }
 
 }

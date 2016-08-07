@@ -202,6 +202,8 @@ void ofApp::setup()
                                       POS_RIGHT, 860, 40, 100, 30));
     menuUI.addChild(new gui::TextAtom("Mic on/off:", uiFont10, textcolor,
                                       POS_RIGHT, 860, 75, 100, 30));
+    menuUI.addChild(new gui::TextAtom("Remove all gaussians:", uiFont10, textcolor,
+                                      POS_RIGHT, 860, 110, 100, 30));
     
     // buttons
     menuUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
@@ -213,6 +215,9 @@ void ofApp::setup()
     menuUI.addChild(new gui::ButtonToggleAtom([&] () { return micInput.getActive(); }, [&] (bool set) { micInput.setActive(set); },
                                               audioOnButton, audioOffButton,
                                               970, 75, 30, 30));
+    menuUI.addChild(new gui::ButtonAtom([&] () { ((gui::GaussianContainer *)systemUI.getChild(gaussianContainerIndex))->destroyAllGaussians(); },
+        resetButton, 970, 110, 30, 30));
+        
     
     // framerate counter
     menuUI.addChild(new gui::ValueAtom([&] () { return ofGetFrameRate(); },

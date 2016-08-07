@@ -647,6 +647,8 @@ namespace gui {
         
         int getSelectedID() const;
         
+        // remove all Gaussians
+        void destroyAllGaussians();
     };
     
 }
