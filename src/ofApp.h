@@ -117,7 +117,8 @@ private:
     ofImage loganLeft, loganRight;
     
     // UI Containers
-    gui::UIContainer menuUI;
+    gui::UIContainer controlsUI;
+    gui::UIContainer gaussianUI;
     gui::UIContainer potentialUI;
     gui::UIContainer systemUI;
     gui::UIContainer graphUI;

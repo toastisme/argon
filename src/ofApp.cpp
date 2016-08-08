@@ -140,40 +140,22 @@ void ofApp::setup()
      */
     
     // setup base container
-    menuUI = gui::UIContainer(0, 455, 1024, 145);
+    controlsUI = gui::UIContainer(250, 0, 774, 160);
     
     // menu background
-    menuUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 145));
+    controlsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 774, 160));
     
     // sliders
-   /* menuUI.addChild(new gui::SliderContainer("Temperature (K)",
-                                             [&] () { return theSystem.getTemp() * 120; },   // factor of 120 to convert to kelvin
-                                             [&] (double set) { theSystem.setTemp(set / 120.0); },
-                                             0, 1000, uiFont12, textcolor, 1,
-                                             100, 5, 150, 450, 70, 5, 30));
-    
-    menuUI.addChild(new gui::SliderContainer("Particles",
-                                             [&] () { return theSystem.getNAfterReset(); },
-                                                    // N is an int: add 0.5 to the argument to set N to round(set) instead of floor(set)
-                                             [&] (double set) { theSystem.setNAfterReset(set + 0.5); },
-                                             2, 200, uiFont12, textcolor, 0,
-                                             100, 40, 150, 450, 70, 5, 30));
-    
-    menuUI.addChild(new gui::SliderContainer("Simulation speed",
-                                             [&] () { return theSystem.getStepsPerUpdate(); },
-                                             [&] (double set) { theSystem.setStepsPerUpdate(set + 0.5); },
-                                             1, 20, uiFont12, textcolor, 0,
-                                             100, 75, 150, 450, 70, 5, 30));
-    
-    menuUI.addChild(new gui::SliderContainer("Audio input level",
+   /*
+    controlsUI.addChild(new gui::SliderContainer("Audio input level",
                                              [&] () { return micInput.getMaxAmplitude(); },
                                              [&] (double set) { micInput.setMaxAmplitude(set + 0.005); },
                                              0.005, 0.1, uiFont12, textcolor, 3,
                                              100, 110, 150, 450, 70, 5, 30)); */
     
-    int optionsIndex = menuUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolor, 75, 20, 200, 400, 130, 5));
+    int optionsIndex = controlsUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolor, 524, 30, 200, 400, 130, 30));
     
-    gui::AtomsListAtom* options = (gui::AtomsListAtom *) menuUI.getChild(optionsIndex);
+    gui::AtomsListAtom* options = (gui::AtomsListAtom *) controlsUI.getChild(optionsIndex);
     options->addOption("Temperature", [&] () { }, new gui::CircularSliderContainer([&] () { return theSystem.getTemp() * 120; },
                                                                                    [&] (double set) { theSystem.setTemp(set / 120.0); },
                                                                                    0, 1000, uiFont14, textcolor, 1, 0, -15, 120, 60, 60, 120));
@@ -195,36 +177,13 @@ void ofApp::setup()
                                                                                     if (gaussianID > -1) { theSystem.updateGaussian(gaussianID, 50 - set*100, 0.8 - 0.5*set, theSystem.getGaussianX0(gaussianID), theSystem.getGaussianY0(gaussianID)); } },
                                                                                 0.0, 1.0, uiFont10, ofColor(0, 0, 0, 0), 2, 0, -15, 120, 0, 0, 120));
     
-    // button text
-    menuUI.addChild(new gui::TextAtom("Play / pause:", uiFont10, textcolor,
-                                      POS_RIGHT, 860, 5, 100, 30));
-    menuUI.addChild(new gui::TextAtom("Reset system:", uiFont10, textcolor,
-                                      POS_RIGHT, 860, 40, 100, 30));
-    menuUI.addChild(new gui::TextAtom("Mic on/off:", uiFont10, textcolor,
-                                      POS_RIGHT, 860, 75, 100, 30));
-    menuUI.addChild(new gui::TextAtom("Remove all gaussians:", uiFont10, textcolor,
-                                      POS_RIGHT, 860, 110, 100, 30));
-    
-    // buttons
-    menuUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
-    menuUI.addChild(new gui::ButtonToggleAtom([&] () { return theSystem.getRunning(); }, [&] (bool set) { theSystem.setRunning(set); },
-                                              playButton, pauseButton,
-                                              970, 5, 30, 30));
-    menuUI.addChild(new gui::ButtonAtom([&] () { theSystem.resetSystem(); }, resetButton,
-                                              970, 40, 30, 30));
-    menuUI.addChild(new gui::ButtonToggleAtom([&] () { return micInput.getActive(); }, [&] (bool set) { micInput.setActive(set); },
-                                              audioOnButton, audioOffButton,
-                                              970, 75, 30, 30));
-    menuUI.addChild(new gui::ButtonAtom([&] () { ((gui::GaussianContainer *)systemUI.getChild(gaussianContainerIndex))->destroyAllGaussians(); },
-        resetButton, 970, 110, 30, 30));
-        
     
     // framerate counter
-    menuUI.addChild(new gui::ValueAtom([&] () { return ofGetFrameRate(); },
+    controlsUI.addChild(new gui::ValueAtom([&] () { return ofGetFrameRate(); },
                                        1, uiFont14, textcolor,
-                                       POS_BOTTOM_RIGHT, 819, -105, 200, 100));
-    menuUI.makeInvisible();
-    menuUI.mouseReleased(0, 0, 0);
+                                       POS_BOTTOM_RIGHT, 560, 160, 200, 30));
+    controlsUI.makeInvisible();
+    controlsUI.mouseReleased(0, 0, 0);
     
     
     
@@ -269,45 +228,65 @@ void ofApp::setup()
     potentialUI.mouseReleased(0, 0, 0);
     
     // start menu as invisible
-    menuUI.makeInvisible();
+    controlsUI.makeInvisible();
     
     //Options menu
     
-    optionsUI = gui::UIContainer(0, 0, 1024, 60);
-    optionsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 1024, 50));
-    optionsUI.addChild(new gui::TextAtom("Controls:", uiFont12, textcolor, POS_TOP, 75, 18, 150, 25));
-    optionsUI.addChild(new gui::TextAtom("Change potential:", uiFont12, textcolor, POS_TOP, 277, 18, 150, 25));
-    optionsUI.addChild(new gui::TextAtom("Display energy graph:", uiFont12, textcolor, POS_TOP, 530, 18, 150, 25));
-    optionsUI.addChild(new gui::TextAtom("About:", uiFont12, textcolor, POS_TOP, 735, 18, 150, 25));
+    optionsUI = gui::UIContainer(0, 0, 250, 390);
+    optionsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 250, 380));
     
-    optionsUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeInvisible(); menuUI.makeInvisible();potentialUI.makeInvisible();graphUI.makeInvisible(); aboutUI.makeInvisible();
+    // button text
+    optionsUI.addChild(new gui::TextAtom("Controls", uiFont12, textcolor, POS_LEFT, 20, 55, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Potentials", uiFont12, textcolor, POS_LEFT, 20, 95, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Graphs", uiFont12, textcolor, POS_LEFT, 20, 135, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("About", uiFont12, textcolor, POS_LEFT, 20, 175, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Play / pause", uiFont12, textcolor, POS_LEFT, 20, 215, 100, 30));
+    optionsUI.addChild(new gui::TextAtom("Reset system", uiFont12, textcolor, POS_LEFT, 20, 255, 100, 30));
+    optionsUI.addChild(new gui::TextAtom("Mic on/off", uiFont12, textcolor, POS_LEFT, 20, 295, 100, 30));
+    optionsUI.addChild(new gui::TextAtom("Reset gaussians", uiFont12, textcolor, POS_LEFT, 20, 335, 100, 30));
+    
+    // buttons
+    optionsUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
+    optionsUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeInvisible(); controlsUI.makeInvisible();potentialUI.makeInvisible();graphUI.makeInvisible(); aboutUI.makeInvisible();
         optionsOffUI.makeVisible();}, optionsMainMenuButton,
-                                        990, 10, 30, 30));
+                                           10, 10, 30, 30));
     
     optionsUI.addChild(new gui::ButtonAtom([&] () {potentialUI.makeInvisible(); aboutUI.makeInvisible();
-        menuUI.toggleVisible(); }, optionsControlsButton, 195, 10, 30, 30));
+        controlsUI.toggleVisible(); }, optionsControlsButton, 200, 50, 30, 30));
     
-    optionsUI.addChild(new gui::ButtonAtom([&] () { menuUI.makeInvisible(); aboutUI.makeInvisible();
-        potentialUI.toggleVisible(); }, optionsPotentialButton, 433, 10, 30, 30));
-
+    optionsUI.addChild(new gui::ButtonAtom([&] () { controlsUI.makeInvisible(); aboutUI.makeInvisible();
+        potentialUI.toggleVisible(); }, optionsPotentialButton, 200, 90, 30, 30));
+    
     optionsUI.addChild(new gui::ButtonAtom([&] () { graphUI.toggleVisible(); }, optionsEnergyButton,
-                                           707, 10, 30, 30));
-    optionsUI.addChild(new gui::ButtonAtom([&] () {menuUI.makeInvisible(); potentialUI.makeInvisible(); graphUI.makeInvisible();
+                                           200, 130, 30, 30));
+    optionsUI.addChild(new gui::ButtonAtom([&] () {controlsUI.makeInvisible(); potentialUI.makeInvisible(); graphUI.makeInvisible();
         aboutUI.toggleVisible(); }, optionsAboutButton,
-                                           842, 10, 30, 30));
+                                           200, 170, 30, 30));
+    optionsUI.addChild(new gui::ButtonToggleAtom([&] () { return theSystem.getRunning(); }, [&] (bool set) { theSystem.setRunning(set); },
+                                                  playButton, pauseButton,
+                                                  200, 210, 30, 30));
+    optionsUI.addChild(new gui::ButtonAtom([&] () { theSystem.resetSystem(); }, resetButton,
+                                            200, 250, 30, 30));
+    optionsUI.addChild(new gui::ButtonToggleAtom([&] () { return micInput.getActive(); }, [&] (bool set) { micInput.setActive(set); },
+                                                  audioOnButton, audioOffButton,
+                                                  200, 290, 30, 30));
+    optionsUI.addChild(new gui::ButtonAtom([&] () { ((gui::GaussianContainer *)systemUI.getChild(gaussianContainerIndex))->destroyAllGaussians(); },
+                                            resetButton, 200, 330, 30, 30));
+
+    
     optionsUI.makeInvisible();
     optionsUI.mouseReleased(0, 0, 0);
     
-    optionsOffUI = gui::UIContainer(985, 0, 40, 40);
+    optionsOffUI = gui::UIContainer(0, 0, 40, 40);
     optionsOffUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
-    optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); menuUI.toggleVisible(); optionsOffUI.makeInvisible(); }, optionsMainMenuButton,
-                                           5, 10, 30, 30));
+    optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); controlsUI.toggleVisible(); optionsOffUI.makeInvisible(); }, optionsMainMenuButton,
+                                           10, 10, 30, 30));
     
     optionsOffUI.makeVisible();
     
     // About UI
     
-    aboutUI = gui::UIContainer(207, 150, 610, 300);
+    aboutUI = gui::UIContainer(257, 150, 610, 300);
     aboutUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 610, 300));
     aboutUI.addChild(new gui::SetColour(textcolor));
     aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170));
@@ -366,7 +345,7 @@ void ofApp::update(){
         float xScale =  ofGetWidth() / ( (float) screenWidth  );
         float yScale = ofGetHeight() / ( (float) screenHeight );
         
-        menuUI.resize(xScale, yScale);
+        controlsUI.resize(xScale, yScale);
         potentialUI.resize(xScale, yScale);
         optionsUI.resize(xScale, yScale);
         optionsOffUI.resize(xScale, yScale);
@@ -393,7 +372,7 @@ void ofApp::draw(){
     // draw the UI
     graphUI.draw();
     systemUI.draw();
-    menuUI.draw();
+    controlsUI.draw();
     potentialUI.draw();
     optionsUI.draw();
     optionsOffUI.draw();
@@ -451,7 +430,7 @@ void ofApp::keyPressed(int key){
     
     else if (key == 'h' || key == 'H'){ // Show/hide UI
         if (not potentialUI.getVisible()) {
-            menuUI.toggleVisible();
+            controlsUI.toggleVisible();
         }
     }
     
@@ -464,7 +443,7 @@ void ofApp::keyPressed(int key){
     }
     
     else if (key == 'd' || key == 'D') { // Drawing interface
-        if (not menuUI.getVisible()) {
+        if (not controlsUI.getVisible()) {
             potentialUI.toggleVisible();
         }
     }
@@ -482,7 +461,7 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-    menuUI.mouseMoved(x, y);
+    controlsUI.mouseMoved(x, y);
     potentialUI.mouseMoved(x, y);
     systemUI.mouseMoved(x, y);
 }
@@ -508,7 +487,7 @@ void ofApp::mousePressed(int x, int y, int button) {
     // slight abuse of short-circuiting boolean or, but it avoids an ugly ifelse tree
     potentialUI.mousePressed(x, y, button)  ||
     aboutUI.mousePressed(x, y, button)      ||
-    menuUI.mousePressed(x, y, button)       ||
+    controlsUI.mousePressed(x, y, button)       ||
     optionsUI.mousePressed(x, y, button)    ||
     optionsOffUI.mousePressed(x, y, button) ||
     systemUI.mousePressed(x, y, button);
@@ -516,7 +495,7 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    menuUI.mouseReleased(x, y, button);
+    controlsUI.mouseReleased(x, y, button);
     potentialUI.mouseReleased(x, y, button);
     systemUI.mouseReleased(x, y, button);
 }

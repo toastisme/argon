@@ -461,7 +461,7 @@ namespace gui {
     AtomsListAtom::AtomsListAtom(const ofTrueTypeFont &font, const ofColor &textcolor, double x, double y, double optionsWidth, double _widgetWidth, double height, double padding) : OptionsListAtom(font, textcolor, optionsWidth, x, y, optionsWidth+_widgetWidth+3*padding, height), widgetWidth(_widgetWidth)
     {
         // Work out x position of the widget bit
-        widgetX = x + 2*padding + optionsWidth;
+        widgetX = x - 2*padding - optionsWidth;
     }
     
     AtomsListAtom::~AtomsListAtom()
