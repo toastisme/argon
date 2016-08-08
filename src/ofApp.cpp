@@ -240,10 +240,10 @@ void ofApp::setup()
     optionsUI.addChild(new gui::TextAtom("Potentials", uiFont12, textcolor, POS_LEFT, 20, 95, 100, 25));
     optionsUI.addChild(new gui::TextAtom("Graphs", uiFont12, textcolor, POS_LEFT, 20, 135, 100, 25));
     optionsUI.addChild(new gui::TextAtom("About", uiFont12, textcolor, POS_LEFT, 20, 175, 100, 25));
-    optionsUI.addChild(new gui::TextAtom("Play / pause", uiFont12, textcolor, POS_LEFT, 20, 215, 100, 30));
-    optionsUI.addChild(new gui::TextAtom("Reset system", uiFont12, textcolor, POS_LEFT, 20, 255, 100, 30));
-    optionsUI.addChild(new gui::TextAtom("Mic on/off", uiFont12, textcolor, POS_LEFT, 20, 295, 100, 30));
-    optionsUI.addChild(new gui::TextAtom("Reset gaussians", uiFont12, textcolor, POS_LEFT, 20, 335, 100, 30));
+    optionsUI.addChild(new gui::TextAtom("Play / pause", uiFont12, textcolor, POS_LEFT, 20, 215, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Reset system", uiFont12, textcolor, POS_LEFT, 20, 255, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Mic on/off", uiFont12, textcolor, POS_LEFT, 20, 295, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Reset gaussians", uiFont12, textcolor, POS_LEFT, 20, 335, 100, 25));
     
     // buttons
     optionsUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
@@ -279,7 +279,7 @@ void ofApp::setup()
     
     optionsOffUI = gui::UIContainer(0, 0, 40, 40);
     optionsOffUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
-    optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); controlsUI.toggleVisible(); optionsOffUI.makeInvisible(); }, optionsMainMenuButton,
+    optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); optionsOffUI.makeInvisible(); }, optionsMainMenuButton,
                                            10, 10, 30, 30));
     
     optionsOffUI.makeVisible();
