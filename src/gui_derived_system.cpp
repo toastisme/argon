@@ -530,9 +530,12 @@ namespace gui {
         for (int i = 0; i < children.size(); ++i) {
             delete children[i];
         }
-        for (int i = 0; i < system.getNGaussians(); ++i) {
+        
+        // Has to be done in reverse order
+        for (int i = system.getNGaussians()-1; i > -1; --i) {
             system.removeGaussian(i);
         }
+       
         children.clear();
         selectedGaussian = -1;
     }
