@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>282E76F3-21A1-4ECD-973C-7A143FB92809</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Argon</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>D2B249B4B831EF22417E0484D5FC295B06712E1F</key>
+		<string>http://bitbucket.org/stargonauts/argon</string>
+		<key>DA473A3CC16E71DA4D6DFBBB02C9C13B4E71A5F4</key>
+		<string>https://bitbucket.org/stargonauts/argon.git/wiki</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Argon.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>D2B249B4B831EF22417E0484D5FC295B06712E1F</key>
+		<string>../..</string>
+		<key>DA473A3CC16E71DA4D6DFBBB02C9C13B4E71A5F4</key>
+		<string>../..bin/Argon.app/Contents/Resources/wiki/</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>http://bitbucket.org/stargonauts/argon</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>D2B249B4B831EF22417E0484D5FC295B06712E1F</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D2B249B4B831EF22417E0484D5FC295B06712E1F</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Argon</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>DA473A3CC16E71DA4D6DFBBB02C9C13B4E71A5F4</string>
+			<key>IDESourceControlWCCName</key>
+			<string>wiki</string>
+		</dict>
+	</array>
+</dict>
+</plist>

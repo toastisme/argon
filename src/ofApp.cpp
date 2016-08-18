@@ -51,6 +51,7 @@ void ofApp::setup()
     // graphics
     splashScreen.load("img/argonsplash.png");
     circGradient.load("img/circ_gradient.png");
+    tutorialButton.load("img/ButtonTutorial.png");
     playButton.load("img/ButtonPlay.png");
     pauseButton.load("img/ButtonPause.png");
     resetButton.load("img/ButtonReset.png");
@@ -63,6 +64,7 @@ void ofApp::setup()
     optionsPotentialButton.load("img/OptionsPotentialButton.png");
     optionsControlsButton.load("img/OptionsControlsButton.png");
     optionsAboutButton.load("img/OptionsAboutButton2.png");
+    closeButton.load("img/CloseButton.png");
     tmcsLogo.load("img/tmcslogo.png");
     stargonautsLogo.load("img/stargonautslogo.png");
     boatLeft.load("img/boatleft.png");
@@ -233,17 +235,18 @@ void ofApp::setup()
     //Options menu
     
     optionsUI = gui::UIContainer(0, 0, 250, 390);
-    optionsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 250, 380));
+    optionsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 250, 410));
     
     // button text
     optionsUI.addChild(new gui::TextAtom("Controls", uiFont12, textcolor, POS_LEFT, 20, 55, 100, 25));
     optionsUI.addChild(new gui::TextAtom("Potentials", uiFont12, textcolor, POS_LEFT, 20, 95, 100, 25));
     optionsUI.addChild(new gui::TextAtom("Graphs", uiFont12, textcolor, POS_LEFT, 20, 135, 100, 25));
     optionsUI.addChild(new gui::TextAtom("About", uiFont12, textcolor, POS_LEFT, 20, 175, 100, 25));
-    optionsUI.addChild(new gui::TextAtom("Play / pause", uiFont12, textcolor, POS_LEFT, 20, 215, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Play / pause", uiFont12, textcolor, POS_LEFT, 20, 375, 100, 25));
     optionsUI.addChild(new gui::TextAtom("Reset system", uiFont12, textcolor, POS_LEFT, 20, 255, 100, 25));
     optionsUI.addChild(new gui::TextAtom("Mic on/off", uiFont12, textcolor, POS_LEFT, 20, 295, 100, 25));
     optionsUI.addChild(new gui::TextAtom("Reset gaussians", uiFont12, textcolor, POS_LEFT, 20, 335, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Tutorial", uiFont12, textcolor, POS_LEFT, 20, 215, 100, 25));
     
     // buttons
     optionsUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
@@ -264,7 +267,7 @@ void ofApp::setup()
                                            200, 170, 30, 30));
     optionsUI.addChild(new gui::ButtonToggleAtom([&] () { return theSystem.getRunning(); }, [&] (bool set) { theSystem.setRunning(set); },
                                                   playButton, pauseButton,
-                                                  200, 210, 30, 30));
+                                                  200, 370, 30, 30));
     optionsUI.addChild(new gui::ButtonAtom([&] () { theSystem.resetSystem(); }, resetButton,
                                             200, 250, 30, 30));
     optionsUI.addChild(new gui::ButtonToggleAtom([&] () { return micInput.getActive(); }, [&] (bool set) { micInput.setActive(set); },
@@ -273,6 +276,9 @@ void ofApp::setup()
     optionsUI.addChild(new gui::ButtonAtom([&] () { ((gui::GaussianContainer *)systemUI.getChild(gaussianContainerIndex))->destroyAllGaussians(); },
                                             resetButton, 200, 330, 30, 30));
 
+    optionsUI.addChild(new gui::ButtonAtom([&] () {controlsUI.makeInvisible(); potentialUI.makeInvisible(); graphUI.makeInvisible(); aboutUI.makeInvisible();
+        tutorialUI.toggleVisible(); }, tutorialButton,
+                                           200, 210, 30, 30));
     
     optionsUI.makeInvisible();
     optionsUI.mouseReleased(0, 0, 0);
@@ -302,6 +308,19 @@ void ofApp::setup()
     
     aboutUI.makeInvisible();
     aboutUI.mouseReleased(0, 0, 0);
+    
+    // Tutorial UI
+    
+    tutorialUI = gui::UIContainer(0,0,1024,600);
+    tutorialUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 150), 0, 0, 1024, 600));
+    tutorialUI.addChild(new gui::RectAtom(ofColor(0, 0, 0, 80), 250, 0, 510, 160));
+    tutorialUI.addChild(new gui::TextAtom("This tutorial takes you through the basics of Argon.", aboutFont12, textcolor, POS_LEFT, 260, 0, 205, 120));
+    tutorialUI.addChild(new gui::TextAtom("You can leave at any point by left-clicking the x in this text box.", aboutFont12, textcolor, POS_LEFT, 260, 25, 205, 135));
+    tutorialUI.addChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); }, closeButton,10, 10, 30, 30));
+
+    
+    tutorialUI.makeInvisible();
+    tutorialUI.mouseReleased(0, 0, 0);
     
     
 }
@@ -377,6 +396,7 @@ void ofApp::draw(){
     optionsUI.draw();
     optionsOffUI.draw();
     aboutUI.draw();
+    tutorialUI.draw();
     if (loading) {
         ofColor splashColour = ofColor(255, 255, 255);
         splashColour.a = ofMap(ofGetElapsedTimef(), 3,5, 255, 0, true);
