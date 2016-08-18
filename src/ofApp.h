@@ -107,6 +107,7 @@ private:
     ofImage tmcsLogo;
     ofImage argonLogo;
     ofImage closeButton;
+    ofImage nextButton;
     
     // Booleans
     bool loading;

@@ -65,6 +65,7 @@ void ofApp::setup()
     optionsControlsButton.load("img/OptionsControlsButton.png");
     optionsAboutButton.load("img/OptionsAboutButton2.png");
     closeButton.load("img/CloseButton.png");
+    nextButton.load("img/NextButton.png");
     tmcsLogo.load("img/tmcslogo.png");
     stargonautsLogo.load("img/stargonautslogo.png");
     boatLeft.load("img/boatleft.png");
@@ -316,7 +317,8 @@ void ofApp::setup()
     tutorialUI.addChild(new gui::RectAtom(ofColor(0, 0, 0, 80), 250, 0, 510, 160));
     tutorialUI.addChild(new gui::TextAtom("This tutorial takes you through the basics of Argon.", aboutFont12, textcolor, POS_LEFT, 260, 0, 205, 120));
     tutorialUI.addChild(new gui::TextAtom("You can leave at any point by left-clicking the x in this text box.", aboutFont12, textcolor, POS_LEFT, 260, 25, 205, 135));
-    tutorialUI.addChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); }, closeButton,10, 10, 30, 30));
+    tutorialUI.addChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); }, closeButton,725, 5, 30, 30));
+    tutorialUI.addChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); }, nextButton,725, 125, 30, 30));
 
     
     tutorialUI.makeInvisible();
@@ -505,6 +507,7 @@ void ofApp::mousePressed(int x, int y, int button) {
     // pass through mouse press to UI elements
     // stop when the first function returns true and the event is handled
     // slight abuse of short-circuiting boolean or, but it avoids an ugly ifelse tree
+    tutorialUI.mousePressed(x, y, button) ||
     potentialUI.mousePressed(x, y, button)  ||
     aboutUI.mousePressed(x, y, button)      ||
     controlsUI.mousePressed(x, y, button)       ||
