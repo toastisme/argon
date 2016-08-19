@@ -654,6 +654,18 @@ namespace gui {
         void destroyAllGaussians();
     };
     
+    class TutorialAtom : public UIAtom{
+        virtual void render();
+        // Draws text boxes throughout the tutorial
+        void drawTextBox(int x, int y, int width, int height);
+        // Highlights area of interest throughout the tutorial
+        void highlightArea(int x, int y, int width, int height);
+        
+    public:
+        TutorialAtom(int x, int y, int width, int height);
+    };
+    
+    
 }
 
 #endif /* gui_derived_hpp */

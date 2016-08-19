@@ -258,7 +258,7 @@ void ofApp::setup()
     optionsUI.addChild(new gui::ButtonAtom([&] () {potentialUI.makeInvisible(); aboutUI.makeInvisible();
         controlsUI.toggleVisible(); }, optionsControlsButton, 200, 50, 30, 30));
     
-    optionsUI.addChild(new gui::ButtonAtom([&] () { controlsUI.makeInvisible(); aboutUI.makeInvisible();
+    optionsUI.addChild(new gui::ButtonAtom([&] () { controlsUI.makeInvisible(); aboutUI.makeInvisible(); optionsUI.makeInvisible(); optionsOffUI.makeVisible();
         potentialUI.toggleVisible(); }, optionsPotentialButton, 200, 90, 30, 30));
     
     optionsUI.addChild(new gui::ButtonAtom([&] () { graphUI.toggleVisible(); }, optionsEnergyButton,
@@ -286,7 +286,7 @@ void ofApp::setup()
     
     optionsOffUI = gui::UIContainer(0, 0, 40, 40);
     optionsOffUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
-    optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); optionsOffUI.makeInvisible(); }, optionsMainMenuButton,
+    optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); optionsOffUI.makeInvisible(); potentialUI.makeInvisible(); }, optionsMainMenuButton,
                                            10, 10, 30, 30));
     
     optionsOffUI.makeVisible();
@@ -312,14 +312,16 @@ void ofApp::setup()
     
     // Tutorial UI
     
-    tutorialUI = gui::UIContainer(0,0,1024,600);
-    tutorialUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 150), 0, 0, 1024, 600));
+    tutorialUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
+    tutorialUI.addChild(new gui::TutorialAtom(0, 0, screenWidth, screenHeight));
+    /*
+    tutorialUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 150), 0, 0, screenWidth, screenHeight));
     tutorialUI.addChild(new gui::RectAtom(ofColor(0, 0, 0, 80), 250, 0, 510, 160));
     tutorialUI.addChild(new gui::TextAtom("This tutorial takes you through the basics of Argon.", aboutFont12, textcolor, POS_LEFT, 260, 0, 205, 120));
     tutorialUI.addChild(new gui::TextAtom("You can leave at any point by left-clicking the x in this text box.", aboutFont12, textcolor, POS_LEFT, 260, 25, 205, 135));
     tutorialUI.addChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); }, closeButton,725, 5, 30, 30));
     tutorialUI.addChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); }, nextButton,725, 125, 30, 30));
-
+     */
     
     tutorialUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
@@ -373,6 +375,7 @@ void ofApp::update(){
         graphUI.resize(xScale, yScale);
         systemUI.resize(xScale, yScale);
         aboutUI.resize(xScale, yScale);
+        tutorialUI.resize(xScale, yScale);
         
         screenWidth = ofGetWidth();
         screenHeight = ofGetHeight();
