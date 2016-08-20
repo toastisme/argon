@@ -576,6 +576,57 @@ namespace md {
             savePreviousValues();
         }
     }
+
+
+    /*
+        ROUTINE rdf:
+            Calculates a histogram of particle separations, binning based on a given number of
+            bins and a bin width. Distribution runs from 0 to bins * (bin_width).
+     */
+    std::vector <double> MDContainer::rdf(double min, double max, int bins) const {
+        std::vector <double> dists;
+        int N = getN();
+        int N_dists = (N * (N-1)) / 2 * getNPrevPos();
+        dists.reserve(N_dists);
+        coord posi, posj;
+        double dx, dy;
+        
+        for (int t = 0; t < getNPrevPos(); ++t) {
+            for (int i = 0; i < N; ++i) {
+                for (int j = i+1; j < N; ++j) {
+                    posi = getPos(i, t);
+                    posj = getPos(j, t);
+                    dx = posi.x - posj.x;
+                    dy = posi.y - posj.y;
+                    dists.push_back(sqrt(dx * dx + dy * dy));
+                }
+            }
+        }
+        
+        std::sort(dists.begin(), dists.end());
+        
+        std::vector <double> rdf(bins, 0);
+        
+        double bin_width = (max - min) / bins;
+        int curr_bin = 0;
+        
+        for (int i = 0; i < N_dists; ++i) {
+            if (dists[i] < min) { continue; }
+            if (dists[i] > max) { break; }
+            double bin_max = min + bin_width * (curr_bin + 1);
+            
+            while (dists[i] > bin_max) {
+                ++curr_bin;
+                bin_max = min + bin_width * (curr_bin + 1);
+            }
+            
+            double weight = 2 * pi * bin_width * bin_width * curr_bin;
+            rdf[curr_bin] += 1.0 / weight;
+        }
+        
+        return rdf;
+    }
+
     
     
     //----------------------------------------THERMOSTATS----------------------------------------
@@ -597,7 +648,7 @@ namespace md {
             3/2 NkT = 1/2 mv^2
      */
     
-    coord MDContainer::randomVel()
+    coord MDContainer::randomVel() const
     {
         // Set up random number generator, rd, to sample from:
         // normal distribution, nDist, mean 0, std. dev. sqrt(T)

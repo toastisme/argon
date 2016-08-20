@@ -179,8 +179,14 @@ namespace md{
         // run for stepsPerUpdate time steps on nthreads threads; default to 1 thread
         void run(int nthreads = 1);
 
+        // calculate the radial distribution function
+        vector <double> rdf(double min, double max, int bins) const;
+
+        // calculate the speed distribution (Maxwell-Boltzmann)
+        vector <double> maxwell(int bins, double bin_width) const;
+
         // Thermostats
-        coord randomVel();
+        coord randomVel() const;
         void andersen(double freq);
         void berendsen(double freq);
     };
