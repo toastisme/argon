@@ -586,23 +586,21 @@ namespace md {
     std::vector <double> MDContainer::rdf(double min, double max, int bins) const {
         std::vector <double> dists;
         int N = getN();
-        int N_dists = (N * (N-1)) / 2 * getNPrevPos();
+        int N_dists = (N * (N-1)) / 2;
         dists.reserve(N_dists);
         coord posi, posj;
         double dx, dy;
         
-        for (int t = 0; t < getNPrevPos(); ++t) {
-            for (int i = 0; i < N; ++i) {
-                for (int j = i+1; j < N; ++j) {
-                    posi = getPos(i, t);
-                    posj = getPos(j, t);
-                    dx = posi.x - posj.x;
-                    dy = posi.y - posj.y;
-                    dists.push_back(sqrt(dx * dx + dy * dy));
-                }
+        for (int i = 0; i < N; ++i) {
+            for (int j = i+1; j < N; ++j) {
+                posi = getPos(i);
+                posj = getPos(j);
+                dx = posi.x - posj.x;
+                dy = posi.y - posj.y;
+                dists.push_back(sqrt(dx * dx + dy * dy));
             }
         }
-        
+
         std::sort(dists.begin(), dists.end());
         
         std::vector <double> rdf(bins, 0);
@@ -620,8 +618,16 @@ namespace md {
                 bin_max = min + bin_width * (curr_bin + 1);
             }
             
-            double weight = 2 * pi * bin_width * bin_width * curr_bin;
-            rdf[curr_bin] += 1.0 / weight;
+            //double weight = pi * bin_width * bin_width * (2 * curr_bin + 1);
+            //rdf[curr_bin] += 1.0 / weight;
+            // NOTE: the RDF looks better when not properly weighted by distance:
+            rdf[curr_bin] += 1.0;
+        }
+        
+        double sum = 0.0;
+        for (int i = 0; i < bins; ++i) { sum += rdf[i]; }
+        if (sum > 0) {
+            for (int i = 0; i < bins; ++i) { rdf[i] /= sum; }
         }
         
         return rdf;

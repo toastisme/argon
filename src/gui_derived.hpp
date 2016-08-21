@@ -414,9 +414,12 @@ namespace gui {
         virtual void render();
         
     protected:
-        md::MDContainer& theSystem;   // reference to the MD system
-        rect potBounds;               // region of the potential curve to plot
-        double numPoints;             // resolution of plot
+        md::MDContainer& theSystem;                 // reference to the MD system
+        rect potBounds;                             // region of the potential curve to plot
+        double numPoints;                           // resolution of plot
+        int numBins;                                // number of RDF bins
+        int numPrevRDF;                             // number of RDFs to average over
+        std::deque <std::vector <double>> prevRDF;  // vector of previous RDFs
         
     };
     

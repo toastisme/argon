@@ -35,6 +35,8 @@ namespace gui {
     PotentialAtom::PotentialAtom(md::MDContainer &system, int _numPoints, double min_x, double max_x, double min_y, double max_y, int x, int y, int width, int height): theSystem(system), numPoints(_numPoints), UIAtom(x, y, width, height)
     {
         potBounds = {min_x, max_x, max_y, min_y};
+        numBins = 200;
+        numPrevRDF = numBins / 10;
     }
     
     void PotentialAtom::render() {
@@ -87,16 +89,54 @@ namespace gui {
         glScissor(bounds.left, bounds.top, bounds.width(), bounds.height());
         glEnable(GL_SCISSOR_TEST);
         line.draw();
-        glDisable(GL_SCISSOR_TEST);
         
-        // Plot the particles along the curve
-        ofSetCircleResolution(10);
-        ofSetColor(186, 255, 163, 220);
-        for (int i = 0; i < particlePoints.size(); i++){
-            pos = particlePoints[i];
-            if (bounds.inside(pos)) { ofDrawCircle(pos.x, pos.y, 6); }
+        //// Plot the particles along the curve
+        //ofSetCircleResolution(10);
+        //ofSetColor(186, 255, 163, 220);
+        //for (int i = 0; i < particlePoints.size(); i++){
+        //    pos = particlePoints[i];
+        //    if (bounds.inside(pos)) { ofDrawCircle(pos.x, pos.y, 6); }
+        //}
+        
+        // Plot the RDF
+        rect RDFspace;
+        RDFspace.setLRTB(0, numBins, 5.0 / numBins, 0);
+        prevRDF.push_back(theSystem.rdf(potBounds.left, potBounds.right, numBins));
+        while (prevRDF.size() > numPrevRDF) {
+            prevRDF.pop_front();
         }
         
+        ofSetColor(186, 255, 163, 80);
+        
+        ofMesh violin;
+        violin.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+        
+        rect violinSpaceUpper, violinSpaceLower;
+        violinSpaceUpper.setLRTB(bounds.left, bounds.right, bounds.top,    bounds.centreY());
+        violinSpaceLower.setLRTB(bounds.left, bounds.right, bounds.bottom, bounds.centreY());
+        
+        for (int i = 0; i < numBins; ++i) {
+            double sum = 0.0;
+            for (int j = 0; j < prevRDF.size(); ++j) {
+                sum += prevRDF[j][i];
+            }
+            coord point = {(double)i, sum / prevRDF.size()};
+            coord pointUpper = BilinearMap(point, RDFspace, violinSpaceUpper);
+            coord pointLower = BilinearMap(point, RDFspace, violinSpaceLower);
+            
+            //ofDrawCircle(pointUpper.x, pointUpper.y, 2);
+            //ofDrawCircle(pointLower.x, pointLower.y, 2);
+            
+            violin.addVertex(ofPoint(pointUpper.x, pointUpper.y, 0));
+            violin.addVertex(ofPoint(pointLower.x, pointLower.y, 0));
+            //violin.addIndex(2 * i);
+            //violin.addIndex(2 * i + 1);
+        }
+        //violin.addIndex(2 * numBins);
+        //violin.addIndex(2 * numBins + 1);
+        violin.draw();
+        
+        glDisable(GL_SCISSOR_TEST);
     }
     
     /*
