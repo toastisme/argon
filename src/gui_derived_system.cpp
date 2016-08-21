@@ -203,30 +203,12 @@ namespace gui {
             if (yEnergy > energySpace.top) { break; }
         }
         
-        // plot maxwell-boltzmann distribution
-        int maxwell_bins = 20;
-        std::vector <double> maxwell = theSystem.maxwell(0, 10, maxwell_bins);
-        
-        double max_maxwell = maxwell[std::distance(maxwell.begin(), std::max_element(maxwell.begin(), maxwell.end()))];
-        rect maxwellSpace;
-        maxwellSpace.setLRTB(0, maxwell_bins, max_maxwell, 0);
-        
-        ofPolyline maxwellLine;
-        for (int i = 0; i < maxwell_bins; ++i) {
-            point = {(double)i, maxwell[i]};
-            point = BilinearMap(point, maxwellSpace, bounds);
-            maxwellLine.addVertex(point.x, point.y);
-        }
-        
-        
         // plot energies
         ofSetLineWidth(2);
         ofSetColor(200, 0, 0);
         Ekin.draw();
         ofSetColor(255, 255, 255);
         Epot.draw();
-        ofSetColor(255, 255, 0);
-        maxwellLine.draw();
     }
     
     
