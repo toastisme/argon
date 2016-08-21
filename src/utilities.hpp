@@ -102,4 +102,6 @@ ofPoint box2screen(coord point, coord origin, coord screen, coord system);
 
 ofMesh makeThickLine(ofPolyline& line, float widthSmooth);
 
+std::vector <double> histogram(std::vector <double> &data, double min, double max, int bins);
+
 #endif /* utilities_hpp */

@@ -183,7 +183,7 @@ namespace md{
         vector <double> rdf(double min, double max, int bins) const;
 
         // calculate the speed distribution (Maxwell-Boltzmann)
-        vector <double> maxwell(int bins, double bin_width) const;
+        vector <double> maxwell(double min, double max, int bins) const;
 
         // Thermostats
         coord randomVel() const;

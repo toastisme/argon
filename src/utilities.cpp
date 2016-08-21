@@ -212,3 +212,37 @@ ofMesh makeThickLine(ofPolyline& line, float widthSmooth)
     
     return meshy;
 }
+
+// Takes in an input vector and returns a binned histogram of the numbers
+// NOTE: this will sort the vector passed in
+// make a copy of data and pass that if you don't want the order of its elements changed
+std::vector <double> histogram(std::vector <double> &data, double min, double max, int bins) {
+    int N = data.size();
+    std::sort(data.begin(), data.end());
+    
+    std::vector <double> hist(bins, 0);
+    
+    double bin_width = (max - min) / bins;
+    int curr_bin = 0;
+    
+    for (int i = 0; i < N; ++i) {
+        if (data[i] < min) { continue; }
+        if (data[i] > max) { break; }
+        double bin_max = min + bin_width * (curr_bin + 1);
+        
+        while (data[i] > bin_max) {
+            ++curr_bin;
+            bin_max = min + bin_width * (curr_bin + 1);
+        }
+        
+        hist[curr_bin] += 1.0;
+    }
+    
+    double sum = 0.0;
+    for (int i = 0; i < bins; ++i) { sum += hist[i]; }
+    if (sum > 0) {
+        for (int i = 0; i < bins; ++i) { hist[i] /= sum; }
+    }
+    
+    return hist;
+}

@@ -581,7 +581,7 @@ namespace md {
     /*
         ROUTINE rdf:
             Calculates a histogram of particle separations, binning based on a given number of
-            bins and a bin width. Distribution runs from 0 to bins * (bin_width).
+            bins, and a minimum and maximum separation to include.
      */
     std::vector <double> MDContainer::rdf(double min, double max, int bins) const {
         std::vector <double> dists;
@@ -601,36 +601,28 @@ namespace md {
             }
         }
 
-        std::sort(dists.begin(), dists.end());
+        // NOTE: this does not properly weight the RDF by the distance
+        // but the RDF plot looks better this way anyway
+        return histogram(dists, min, max, bins);
+    }
+
+    
+    /*
+        ROUTINE maxwell:
+            Calculates a histogram of particle speeds, binning based on a given number of
+            bins, and a minimum and maximum speed to include.
+     */
+    std::vector <double> MDContainer::maxwell(double min, double max, int bins) const {
+        std::vector <double> speeds;
+        int N = getN();
+        speeds.reserve(N);
         
-        std::vector <double> rdf(bins, 0);
-        
-        double bin_width = (max - min) / bins;
-        int curr_bin = 0;
-        
-        for (int i = 0; i < N_dists; ++i) {
-            if (dists[i] < min) { continue; }
-            if (dists[i] > max) { break; }
-            double bin_max = min + bin_width * (curr_bin + 1);
-            
-            while (dists[i] > bin_max) {
-                ++curr_bin;
-                bin_max = min + bin_width * (curr_bin + 1);
-            }
-            
-            //double weight = pi * bin_width * bin_width * (2 * curr_bin + 1);
-            //rdf[curr_bin] += 1.0 / weight;
-            // NOTE: the RDF looks better when not properly weighted by distance:
-            rdf[curr_bin] += 1.0;
+        for (int i = 0; i < N; ++i) {
+            coord vel = getVel(i);
+            speeds.push_back(sqrt(vel.x * vel.x + vel.y * vel.y));
         }
-        
-        double sum = 0.0;
-        for (int i = 0; i < bins; ++i) { sum += rdf[i]; }
-        if (sum > 0) {
-            for (int i = 0; i < bins; ++i) { rdf[i] /= sum; }
-        }
-        
-        return rdf;
+
+        return histogram(speeds, min, max, bins);
     }
 
     
