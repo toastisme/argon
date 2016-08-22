@@ -24,39 +24,31 @@
 
 #include "gui_derived.hpp"
 
-// implements TutorialAtom
+// implements TextBoxContainer
 
 
 
 namespace gui {
     
-    TutorialAtom::TutorialAtom(int x, int y, int width, int height) : UIAtom(x, y, width, height){}
-    
-    void TutorialAtom::render(){
-        int section = 1;
-        int slide = 1;
-        ofColor textcolor = ofColor(255, 255, 240);
+    // Default constructor for the text box container
+    TextBoxContainer::TextBoxContainer(int x, int y, int width, int height, int tutorialCounter, ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton) : aboutFont12(font), nextButton(nextButton), closeButton(closeButton), UIContainer(x, y, width, height){
         
-        //myFont = new ofTrueTypeFont();
-        //myFont->loadFont("fonts/Montserrat-Bold.ttf", 12);
-        
-        ofSetColor(80, 80, 80, 150);
-        ofDrawRectangle(0, 0, 1024 , 600);
-        
-        /*
-        TextAtom("This tutorial takes you through the basics of Argon.",
-                 "fonts/Tahoma.ttf", textcolor, POS_LEFT, 260, 0, 205, 120);
-     
- 
-         tutorialUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 150), 0, 0, screenWidth, screenHeight));
-         tutorialUI.addChild(new gui::RectAtom(ofColor(0, 0, 0, 80), 250, 0, 510, 160));
-         tutorialUI.addChild(new gui::TextAtom("This tutorial takes you through the basics of Argon.", aboutFont12, textcolor, POS_LEFT, 260, 0, 205, 120));
-         tutorialUI.addChild(new gui::TextAtom("You can leave at any point by left-clicking the x in this text box.", aboutFont12, textcolor, POS_LEFT, 260, 25, 205, 135));
-         tutorialUI.addChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); }, closeButton,725, 5, 30, 30));
-         tutorialUI.addChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); }, nextButton,725, 125, 30, 30));
-         */
-        
+        addIndexedChild(new ButtonAtom([&] () {tutorialCounter++;}, nextButton, width - 50, height - 50, 30, 30));
+        addIndexedChild(new ButtonAtom([&] () {tutorialCounter = 1;}, closeButton, width - 50, 50, 30, 30));
+        addIndexedChild(new RectAtom(ofColor(0, 0, width, height), 250, 0, 774, 160));
+
         
     }
-    
+    /*
+
+     
+    void TextBoxContainer::MoveTextBox(tutorialCounter){
+         if (tutorialCounter == 1){
+            moveby/resize
+         }
+     
+     
+     }
+*/
+
 }

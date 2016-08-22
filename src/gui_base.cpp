@@ -85,6 +85,10 @@ namespace gui {
         UIBase::resize(xScale, yScale);
     }
     
+    void UIAtom::moveBy(coord offset){
+        bounds.moveBy(offset);
+    }
+    
     /*
         Container
      */

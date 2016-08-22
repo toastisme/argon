@@ -24,6 +24,7 @@
 
 #include "ofApp.h"
 
+
 //--------------------------------------------------------------
 // SETUP
 //--------------------------------------------------------------
@@ -33,11 +34,13 @@
         Constructor for the app. Sets up the system at the beginning, loads all the assets
         needed for the app (images and fonts), and initialises the audio input stream.
  */
+int tutortialCounter  = 1;
 void ofApp::setup() 
 {
     // openFrameworks initialisation
     ofSetFrameRate(60);
     ofBackground(0, 0, 0);
+    
     
     // Change root directory
     ofSetDataPathRoot("../Resources/data/");
@@ -278,7 +281,7 @@ void ofApp::setup()
                                             resetButton, 200, 330, 30, 30));
 
     optionsUI.addChild(new gui::ButtonAtom([&] () {controlsUI.makeInvisible(); potentialUI.makeInvisible(); graphUI.makeInvisible(); aboutUI.makeInvisible();
-        tutorialUI.toggleVisible(); }, tutorialButton,
+        tutorialUI.toggleVisible(); tutorialHighlightUI.toggleVisible(); }, tutorialButton,
                                            200, 210, 30, 30));
     
     optionsUI.makeInvisible();
@@ -311,22 +314,27 @@ void ofApp::setup()
     aboutUI.mouseReleased(0, 0, 0);
     
     // Tutorial UI
-    
+
     tutorialUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
-    tutorialUI.addChild(new gui::TutorialAtom(0, 0, screenWidth, screenHeight));
+
     /*
-    tutorialUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 150), 0, 0, screenWidth, screenHeight));
-    tutorialUI.addChild(new gui::RectAtom(ofColor(0, 0, 0, 80), 250, 0, 510, 160));
-    tutorialUI.addChild(new gui::TextAtom("This tutorial takes you through the basics of Argon.", aboutFont12, textcolor, POS_LEFT, 260, 0, 205, 120));
-    tutorialUI.addChild(new gui::TextAtom("You can leave at any point by left-clicking the x in this text box.", aboutFont12, textcolor, POS_LEFT, 260, 25, 205, 135));
-    tutorialUI.addChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); }, closeButton,725, 5, 30, 30));
-    tutorialUI.addChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); }, nextButton,725, 125, 30, 30));
+    tutorialUI.addIndexedChild(new gui::RectAtom(ofColor(80, 80, 80, 150), 0, 0, screenWidth, screenHeight));
+    tutorialUI.addIndexedChild(new gui::RectAtom(ofColor(0, 0, 0, 80), 250, 0, 774, 160));
+    tutorialUI.addIndexedChild(new gui::TextAtom("This tutorial takes you through the basics of Argon.", aboutFont12, textcolor, POS_LEFT, 260, 0, 205, 120));
+    tutorialUI.addIndexedChild(new gui::TextAtom("You can leave at any point by left-clicking the x in this text box.", aboutFont12, textcolor, POS_LEFT, 260, 25, 205, 135));
+    tutorialUI.addIndexedChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); tutortialCounter = 1; optionsOffUI.makeVisible(); }, closeButton, 989, 5, 30, 30));
+    tutorialUI.addIndexedChild(new gui::ButtonAtom([&] () { tutortialCounter++; }, nextButton, 989, 125, 30, 30));
      */
-    
     tutorialUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
     
     
+    // TutorialHighlight UI
+    
+    tutorialHighlightUI = gui::UIContainer(200, 50, 30, 30);
+    tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255, 255, 255, 80), 0, 0, 30, 30));
+    tutorialHighlightUI.makeInvisible();
+    tutorialUI.mouseReleased(0, 0, 0);
 }
 
 //--------------------------------------------------------------
@@ -402,6 +410,7 @@ void ofApp::draw(){
     optionsOffUI.draw();
     aboutUI.draw();
     tutorialUI.draw();
+    //tutorialHighlightUI.draw();
     if (loading) {
         ofColor splashColour = ofColor(255, 255, 255);
         splashColour.a = ofMap(ofGetElapsedTimef(), 3,5, 255, 0, true);
@@ -486,6 +495,7 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
+    tutorialUI.mouseMoved(x, y);
     controlsUI.mouseMoved(x, y);
     potentialUI.mouseMoved(x, y);
     systemUI.mouseMoved(x, y);
@@ -510,6 +520,7 @@ void ofApp::mousePressed(int x, int y, int button) {
     // pass through mouse press to UI elements
     // stop when the first function returns true and the event is handled
     // slight abuse of short-circuiting boolean or, but it avoids an ugly ifelse tree
+    tutorialHighlightUI.mousePressed(x, y, button) ||
     tutorialUI.mousePressed(x, y, button) ||
     potentialUI.mousePressed(x, y, button)  ||
     aboutUI.mousePressed(x, y, button)      ||
