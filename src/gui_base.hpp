@@ -112,6 +112,7 @@ namespace gui {
         virtual void draw();
         
         virtual void resize(float xScale, float yScale);
+        virtual void moveBy(coord offset);
     };
     
     class UIContainer : public UIBase

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		621C697B1D422CE1007AE22A /* openFrameworks.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 621C697A1D422CE1007AE22A /* openFrameworks.a */; };
+		3F8461561D65FC1500D4C796 /* gui_derived_tutorial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F8461551D65FC1500D4C796 /* gui_derived_tutorial.cpp */; };
 		623C212B1D021D8E00944B11 /* audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 623C21291D021D8E00944B11 /* audio.cpp */; };
 		623C212D1D07001B00944B11 /* utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 623C212C1D07001B00944B11 /* utilities.cpp */; };
 		624908FF1CF383C500625501 /* mdforces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 624908FD1CF383C500625501 /* mdforces.cpp */; };
@@ -53,10 +53,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		621C69721D422722007AE22A /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bin; sourceTree = "<group>"; };
-		621C697A1D422CE1007AE22A /* openFrameworks.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = openFrameworks.a; path = ../../../libs/openFrameworksCompiled/lib/osx/openFrameworks.a; sourceTree = "<group>"; };
+		3F8461551D65FC1500D4C796 /* gui_derived_tutorial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gui_derived_tutorial.cpp; sourceTree = "<group>"; };
 		621C697C1D422F3B007AE22A /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
-		621C697D1D422F50007AE22A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Argon/Images.xcassets; sourceTree = "<group>"; };
 		623C21291D021D8E00944B11 /* audio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audio.cpp; sourceTree = "<group>"; };
 		623C212A1D021D8E00944B11 /* audio.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = audio.hpp; sourceTree = "<group>"; };
 		623C212C1D07001B00944B11 /* utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utilities.cpp; sourceTree = "<group>"; };
@@ -151,6 +149,7 @@
 				62E300C31CF0D73000AEAC39 /* gui_derived.cpp */,
 				62F48D771D2FF36B00408736 /* gui_derived_potential.cpp */,
 				62F48D7C1D33DB0400408736 /* gui_derived_system.cpp */,
+				3F8461551D65FC1500D4C796 /* gui_derived_tutorial.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -268,6 +267,7 @@
 				624908FF1CF383C500625501 /* mdforces.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
+				3F8461561D65FC1500D4C796 /* gui_derived_tutorial.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

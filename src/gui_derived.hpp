@@ -655,6 +655,20 @@ namespace gui {
         // remove all Gaussians
         void destroyAllGaussians();
     };
+
+    class TextBoxContainer : public UIContainer
+    {
+    public:
+        TextBoxContainer(int x, int y, int width, int height, int tutorialCounter, ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton);
+        int tutorialCounter2 = 4;
+    
+    protected:
+        ofTrueTypeFont& aboutFont12;
+        ofImage& nextButton;
+        ofImage& closeButton;
+        
+    };
+    
     
 }
 

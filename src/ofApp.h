@@ -80,6 +80,7 @@ private:
     ofImage playButton;
     ofImage pauseButton;
     ofImage resetButton;
+    ofImage tutorialButton;
     ofImage audioOnButton;
     ofImage audioOffButton;
     ofImage menuButton;
@@ -105,6 +106,8 @@ private:
     ofImage boatRight;
     ofImage tmcsLogo;
     ofImage argonLogo;
+    ofImage closeButton;
+    ofImage nextButton;
     
     // Booleans
     bool loading;
@@ -125,6 +128,10 @@ private:
     gui::UIContainer optionsUI;
     gui::UIContainer optionsOffUI;
     gui::UIContainer aboutUI;
+    gui::UIContainer tutorialUI;
+    gui::UIContainer tutorialHighlightUI;
+    gui::TextBoxContainer TextBox;
+
     
     int splineContainerIndex; // Index of spline container in potentialUI
     int gaussianContainerIndex; // Index of gaussian container in systemUI
