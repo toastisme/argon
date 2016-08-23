@@ -112,10 +112,8 @@ namespace gui {
             // Text box text
             addChild(new TextAtom("To interact with the system, left click on the controls button.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 50, 600, 20));
             addChild(new TextAtom("3/3", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 65, textBoxy + textBoxHeight - 30, 600, 20));
-            coord test;
-            test.x = 50;
-            test.y = 50;
-            tutorialHighlightUI.moveBy(test);
+            tutorialHighlightUI.moveTo(200,50);
+            
         }
         
         
