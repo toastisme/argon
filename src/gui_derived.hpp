@@ -662,7 +662,7 @@ namespace gui {
         int textBoxx;
         int textBoxy;
         int textBoxWidth;
-        int textboxHeight;
+        int textBoxHeight;
     
     protected:
         ofTrueTypeFont& aboutFont12;
@@ -670,6 +670,9 @@ namespace gui {
         ofImage& closeButton;
         UIContainer& tutorialUI;
         
+    private:
+        void moveComponents(int counter);
+
     };
     
     
