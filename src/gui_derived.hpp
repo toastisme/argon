@@ -652,7 +652,8 @@ namespace gui {
         // remove all Gaussians
         void destroyAllGaussians();
     };
-
+    
+    // Main container to manage all tutorial events
     class TutorialContainer : public UIContainer
     {
     public:
@@ -664,6 +665,7 @@ namespace gui {
         int textBoxWidth;
         int textBoxHeight;
         virtual int getTutorialCounter();
+        void incrementCounter();
     
     protected:
         ofTrueTypeFont& aboutFont12;
@@ -676,6 +678,16 @@ namespace gui {
     private:
         void updateComponents(int counter);
 
+    };
+    
+    class TutorialHighlightAtom : public UIAtom
+    {
+    public:TutorialHighlightAtom(int x, int y, int width, int height, UIContainer *TutorialContainer);
+        virtual bool mousePressed(int x, int y, int button);
+        
+        
+    protected:
+        const UIContainer *TutorialContainer;
     };
     
     

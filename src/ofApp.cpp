@@ -327,8 +327,15 @@ void ofApp::setup()
 
     tutorialHighlightUI = gui::UIContainer(50, 50, 30, 30);
     tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255, 255, 255, 80), 0, 0, 30, 30));
+    tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, TutorialContainer));
     tutorialHighlightUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
+    
+    /*
+     potentialUI.addChild(new gui::ButtonAtom([&] () { ((gui::SplineContainer *)potentialUI.getChild(splineContainerIndex))->destroyAllPoints(); },
+     resetButton, 0, 0, 30, 30));
+
+     */
 }
 
 //--------------------------------------------------------------

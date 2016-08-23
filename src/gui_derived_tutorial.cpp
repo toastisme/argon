@@ -120,6 +120,16 @@ namespace gui {
     }
     
     int TutorialContainer::getTutorialCounter(){return tutorialCounter;}
+    void TutorialContainer::incrementCounter(){tutorialCounter++;}
+    
+    
+    TutorialHighlightAtom::TutorialHighlightAtom(int x, int y, int width, int height, UIContainer* TutorialContainer) : TutorialContainer(TutorialContainer), UIAtom(x, y, width, height){
+    }
+    
+    bool TutorialHighlightAtom::mousePressed(int x, int y, int button){
+        TutorialContainer->incrementcounter();
+    }
+    
     
     
     
