@@ -34,7 +34,6 @@
         Constructor for the app. Sets up the system at the beginning, loads all the assets
         needed for the app (images and fonts), and initialises the audio input stream.
  */
-int tutortialCounter  = 1;
 void ofApp::setup() 
 {
     // openFrameworks initialisation
@@ -314,17 +313,9 @@ void ofApp::setup()
     aboutUI.mouseReleased(0, 0, 0);
     
     // Tutorial UI
-
+    // Placeholder container for the TextBoxContainer
     tutorialUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
-
-    /*
-    tutorialUI.addIndexedChild(new gui::RectAtom(ofColor(80, 80, 80, 150), 0, 0, screenWidth, screenHeight));
-    tutorialUI.addIndexedChild(new gui::RectAtom(ofColor(0, 0, 0, 80), 250, 0, 774, 160));
-    tutorialUI.addIndexedChild(new gui::TextAtom("This tutorial takes you through the basics of Argon.", aboutFont12, textcolor, POS_LEFT, 260, 0, 205, 120));
-    tutorialUI.addIndexedChild(new gui::TextAtom("You can leave at any point by left-clicking the x in this text box.", aboutFont12, textcolor, POS_LEFT, 260, 25, 205, 135));
-    tutorialUI.addIndexedChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); tutortialCounter = 1; optionsOffUI.makeVisible(); }, closeButton, 989, 5, 30, 30));
-    tutorialUI.addIndexedChild(new gui::ButtonAtom([&] () { tutortialCounter++; }, nextButton, 989, 125, 30, 30));
-     */
+    tutorialUI.addChild(new gui::TextBoxContainer(250, 0, 774, 160, 0, aboutFont12, nextButton, closeButton, tutorialUI));
     tutorialUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
     
@@ -370,6 +361,7 @@ void ofApp::update(){
         
     }
     
+
     // If the screen size has changed, resize the UI
     if ( screenWidth != ofGetWidth() || screenHeight != ofGetHeight() ) {
         
@@ -532,6 +524,7 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
+    tutorialUI.mouseReleased(x, y, button);
     controlsUI.mouseReleased(x, y, button);
     potentialUI.mouseReleased(x, y, button);
     systemUI.mouseReleased(x, y, button);

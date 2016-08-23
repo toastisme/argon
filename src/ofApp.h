@@ -130,7 +130,6 @@ private:
     gui::UIContainer aboutUI;
     gui::UIContainer tutorialUI;
     gui::UIContainer tutorialHighlightUI;
-    gui::TextBoxContainer TextBox;
 
     
     int splineContainerIndex; // Index of spline container in potentialUI

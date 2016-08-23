@@ -27,7 +27,6 @@
 
 #include <ios>
 #include <functional>
-#include "ofApp.h"
 #include "ofMain.h"
 #include "gui_base.hpp"
 #include "mdforces.hpp"
@@ -657,13 +656,13 @@ namespace gui {
     class TextBoxContainer : public UIContainer
     {
     public:
-        TextBoxContainer(int x, int y, int width, int height, int tutorialCounter, ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton);
-        int tutorialCounter2 = 4;
+        TextBoxContainer(int x, int y, int width, int height, int tutorialCounter, ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton, UIContainer &tutorialUI);
     
     protected:
         ofTrueTypeFont& aboutFont12;
         ofImage& nextButton;
         ofImage& closeButton;
+        UIContainer& tutorialUI;
         
     };
     

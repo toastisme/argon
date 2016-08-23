@@ -31,24 +31,14 @@
 namespace gui {
     
     // Default constructor for the text box container
-    TextBoxContainer::TextBoxContainer(int x, int y, int width, int height, int tutorialCounter, ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton) : aboutFont12(font), nextButton(nextButton), closeButton(closeButton), UIContainer(x, y, width, height){
+    
+    TextBoxContainer::TextBoxContainer(int x, int y, int width, int height, int tutorialCounter, ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton, UIContainer &tutorialUI) : aboutFont12(font), nextButton(nextButton), closeButton(closeButton), tutorialUI(tutorialUI), UIContainer(x, y, width, height){
         
-        addIndexedChild(new ButtonAtom([&] () {tutorialCounter++;}, nextButton, width - 50, height - 50, 30, 30));
-        addIndexedChild(new ButtonAtom([&] () {tutorialCounter = 1;}, closeButton, width - 50, 50, 30, 30));
-        addIndexedChild(new RectAtom(ofColor(0, 0, width, height), 250, 0, 774, 160));
+        addIndexedChild(new ButtonAtom([&] () {tutorialCounter++;}, nextButton, width - 35, height - 35, 30, 30));
+        addIndexedChild(new ButtonAtom([&] () {tutorialCounter = 1; makeInvisible(); tutorialUI.makeInvisible();}, closeButton, width - 35, 5, 30, 30));
+        addIndexedChild(new RectAtom(ofColor(0, 0, 0, 80), 0, 0, width, height));
 
-        
     }
-    /*
 
-     
-    void TextBoxContainer::MoveTextBox(tutorialCounter){
-         if (tutorialCounter == 1){
-            moveby/resize
-         }
-     
-     
-     }
-*/
 
 }
