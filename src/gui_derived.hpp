@@ -656,22 +656,25 @@ namespace gui {
     class TutorialContainer : public UIContainer
     {
     public:
-        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton, UIContainer &tutorialUI);
+        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &tutorialUI, UIContainer &tutorialHighlighUI);
         
         int tutorialCounter;
         int textBoxx;
         int textBoxy;
         int textBoxWidth;
         int textBoxHeight;
+        virtual int getTutorialCounter();
     
     protected:
         ofTrueTypeFont& aboutFont12;
         ofImage& nextButton;
+        ofImage& previousButton;
         ofImage& closeButton;
         UIContainer& tutorialUI;
+        UIContainer& tutorialHighlightUI;
         
     private:
-        void moveComponents(int counter);
+        void updateComponents(int counter);
 
     };
     

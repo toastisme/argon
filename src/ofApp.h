@@ -108,6 +108,7 @@ private:
     ofImage argonLogo;
     ofImage closeButton;
     ofImage nextButton;
+    ofImage previousButton;
     
     // Booleans
     bool loading;

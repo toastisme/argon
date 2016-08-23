@@ -68,6 +68,7 @@ void ofApp::setup()
     optionsAboutButton.load("img/OptionsAboutButton2.png");
     closeButton.load("img/CloseButton.png");
     nextButton.load("img/NextButton.png");
+    previousButton.load("img/PreviousButton.png");
     tmcsLogo.load("img/tmcslogo.png");
     stargonautsLogo.load("img/stargonautslogo.png");
     boatLeft.load("img/boatleft.png");
@@ -315,9 +316,11 @@ void ofApp::setup()
     // Tutorial UI
     // Placeholder container for the TextBoxContainer
     tutorialUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
-    tutorialUI.addChild(new gui::TutorialContainer(0, 0, screenWidth, screenHeight,aboutFont12, nextButton, closeButton, tutorialUI));
+    tutorialUI.addIndexedChild(new gui::TutorialContainer(0, 0, screenWidth, screenHeight,aboutFont12, nextButton, previousButton, closeButton, tutorialUI, tutorialHighlightUI));
+    
     tutorialUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
+    
     
     
     // TutorialHighlight UI
