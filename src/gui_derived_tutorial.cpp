@@ -24,21 +24,41 @@
 
 #include "gui_derived.hpp"
 
-// implements TextBoxContainer
+// implements TutorialContainer
 
 
 
 namespace gui {
     
-    // Default constructor for the text box container
-    
-    TextBoxContainer::TextBoxContainer(int x, int y, int width, int height, int tutorialCounter, ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton, UIContainer &tutorialUI) : aboutFont12(font), nextButton(nextButton), closeButton(closeButton), tutorialUI(tutorialUI), UIContainer(x, y, width, height){
+    TutorialContainer::TutorialContainer(int x, int y, int width, int height, int textBoxx, int textBoxy, int textBoxWidth, int textBoxHeight, ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton, UIContainer &tutorialUI) : aboutFont12(font), nextButton(nextButton), closeButton(closeButton), tutorialUI(tutorialUI), UIContainer(x, y, width, height){
         
-        addIndexedChild(new ButtonAtom([&] () {tutorialCounter++;}, nextButton, width - 35, height - 35, 30, 30));
-        addIndexedChild(new ButtonAtom([&] () {tutorialCounter = 1; makeInvisible(); tutorialUI.makeInvisible();}, closeButton, width - 35, 5, 30, 30));
-        addIndexedChild(new RectAtom(ofColor(0, 0, 0, 80), 0, 0, width, height));
+        bool highlighted = false;
+        int tutorialCounter = 0;
+        
+        ofColor textBoxColor = ofColor(0, 0, 0, 100);
+        ofColor textColor = ofColor(255, 255, 240);
+        ofColor notHighlightedColor = ofColor(150, 150, 150, 80);
+        ofColor highlightedColor = ofColor(255,0,0);
+        
+        // Text box next button
+        addIndexedChild(new ButtonAtom([&] () {tutorialCounter++;}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+        // Text box close button
+        addIndexedChild(new ButtonAtom([&] () {tutorialCounter = 1; makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+        // Faded area
+        addIndexedChild(new RectAtom(notHighlightedColor, x, y, width, height));
+        // Text box
+        addIndexedChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
+        // Text box text
+        // Highlight button
+        // Highlight area
+        addIndexedChild(new RectAtom(highlightedColor, 500, 500, 50, 50));
+        //addIndexedChild(new ButtonAtom([&] () {tutorialCounter++;}, nextButton, width - 35, height - 35, 30, 30));
+        
 
     }
+    
+    bool TutorialContainer::CheckHighlight(){return highlighted;}
+    void TutorialContainer::SetHighlight(bool highlight){highlighted = highlight;}
 
 
 }

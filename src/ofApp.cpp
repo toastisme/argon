@@ -315,7 +315,7 @@ void ofApp::setup()
     // Tutorial UI
     // Placeholder container for the TextBoxContainer
     tutorialUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
-    tutorialUI.addChild(new gui::TextBoxContainer(250, 0, 774, 160, 0, aboutFont12, nextButton, closeButton, tutorialUI));
+    tutorialUI.addChild(new gui::TutorialContainer(0, 0, screenWidth, screenHeight, 250, 0, 774, 200, aboutFont12, nextButton, closeButton, tutorialUI));
     tutorialUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
     
@@ -361,7 +361,6 @@ void ofApp::update(){
         
     }
     
-
     // If the screen size has changed, resize the UI
     if ( screenWidth != ofGetWidth() || screenHeight != ofGetHeight() ) {
         
@@ -402,7 +401,7 @@ void ofApp::draw(){
     optionsOffUI.draw();
     aboutUI.draw();
     tutorialUI.draw();
-    //tutorialHighlightUI.draw();
+    tutorialHighlightUI.draw();
     if (loading) {
         ofColor splashColour = ofColor(255, 255, 255);
         splashColour.a = ofMap(ofGetElapsedTimef(), 3,5, 255, 0, true);
@@ -512,7 +511,19 @@ void ofApp::mousePressed(int x, int y, int button) {
     // pass through mouse press to UI elements
     // stop when the first function returns true and the event is handled
     // slight abuse of short-circuiting boolean or, but it avoids an ugly ifelse tree
-    tutorialHighlightUI.mousePressed(x, y, button) ||
+    
+    
+    if (tutorialUI.getVisible()){
+        if (tutorialHighlightUI.mousePressed(x, y, button)){
+            potentialUI.mousePressed(x, y, button)  ||
+            aboutUI.mousePressed(x, y, button)      ||
+            controlsUI.mousePressed(x, y, button)       ||
+            optionsUI.mousePressed(x, y, button)    ||
+            optionsOffUI.mousePressed(x, y, button) ||
+            systemUI.mousePressed(x, y, button);
+        }
+    }
+    
     tutorialUI.mousePressed(x, y, button) ||
     potentialUI.mousePressed(x, y, button)  ||
     aboutUI.mousePressed(x, y, button)      ||
