@@ -327,7 +327,7 @@ void ofApp::setup()
 
     tutorialHighlightUI = gui::UIContainer(50, 50, 30, 30);
     tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255, 255, 255, 80), 0, 0, 30, 30));
-    tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, TutorialContainer));
+    tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, tutorialUI.getChild(0)));
     tutorialHighlightUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
     
