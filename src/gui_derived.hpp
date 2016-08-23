@@ -656,10 +656,13 @@ namespace gui {
     class TutorialContainer : public UIContainer
     {
     public:
-        TutorialContainer(int x, int y, int width, int height, int textBoxx, int textBoxy, int textBoxWidth, int textBoxHeight, ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton, UIContainer &tutorialUI);
-        bool highlighted;
-        bool CheckHighlight();
-        void SetHighlight(bool highlight);
+        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton, UIContainer &tutorialUI);
+        
+        int tutorialCounter;
+        int textBoxx;
+        int textBoxy;
+        int textBoxWidth;
+        int textboxHeight;
     
     protected:
         ofTrueTypeFont& aboutFont12;

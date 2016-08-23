@@ -30,15 +30,17 @@
 
 namespace gui {
     
-    TutorialContainer::TutorialContainer(int x, int y, int width, int height, int textBoxx, int textBoxy, int textBoxWidth, int textBoxHeight, ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton, UIContainer &tutorialUI) : aboutFont12(font), nextButton(nextButton), closeButton(closeButton), tutorialUI(tutorialUI), UIContainer(x, y, width, height){
+    TutorialContainer::TutorialContainer(int x, int y, int width, int height, ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton, UIContainer &tutorialUI) : aboutFont12(font), nextButton(nextButton), closeButton(closeButton), tutorialUI(tutorialUI), UIContainer(x, y, width, height){
         
-        bool highlighted = false;
         int tutorialCounter = 0;
+        int textBoxx = 250;
+        int textBoxy = 0;
+        int textBoxWidth = 774;
+        int textBoxHeight = 100;
         
         ofColor textBoxColor = ofColor(0, 0, 0, 100);
         ofColor textColor = ofColor(255, 255, 240);
         ofColor notHighlightedColor = ofColor(150, 150, 150, 80);
-        ofColor highlightedColor = ofColor(255,0,0);
         
         // Text box next button
         addIndexedChild(new ButtonAtom([&] () {tutorialCounter++;}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
@@ -49,16 +51,11 @@ namespace gui {
         // Text box
         addIndexedChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
         // Text box text
-        // Highlight button
-        // Highlight area
-        addIndexedChild(new RectAtom(highlightedColor, 500, 500, 50, 50));
-        //addIndexedChild(new ButtonAtom([&] () {tutorialCounter++;}, nextButton, width - 35, height - 35, 30, 30));
+        addIndexedChild(new TextAtom("This tutorial takes you through the basics of Argon.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 10, 600, 20));
+        addIndexedChild(new TextAtom("You can leave the tutorial at any point by left-clicking the x in this text box.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 40, 600, 20));
+
         
 
     }
     
-    bool TutorialContainer::CheckHighlight(){return highlighted;}
-    void TutorialContainer::SetHighlight(bool highlight){highlighted = highlight;}
-
-
 }

@@ -315,7 +315,7 @@ void ofApp::setup()
     // Tutorial UI
     // Placeholder container for the TextBoxContainer
     tutorialUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
-    tutorialUI.addChild(new gui::TutorialContainer(0, 0, screenWidth, screenHeight, 250, 0, 774, 200, aboutFont12, nextButton, closeButton, tutorialUI));
+    tutorialUI.addChild(new gui::TutorialContainer(0, 0, screenWidth, screenHeight,aboutFont12, nextButton, closeButton, tutorialUI));
     tutorialUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
     
@@ -512,7 +512,7 @@ void ofApp::mousePressed(int x, int y, int button) {
     // stop when the first function returns true and the event is handled
     // slight abuse of short-circuiting boolean or, but it avoids an ugly ifelse tree
     
-    
+    // when the tutorial is running, only allow mouse events in the highlighted area
     if (tutorialUI.getVisible()){
         if (tutorialHighlightUI.mousePressed(x, y, button)){
             potentialUI.mousePressed(x, y, button)  ||
