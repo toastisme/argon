@@ -30,7 +30,7 @@
 
 namespace gui {
     
-    TutorialContainer::TutorialContainer(int x, int y, int width, int height, ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &tutorialUI, UIContainer &tutorialHighlightUI) : aboutFont12(font), nextButton(nextButton), previousButton(previousButton), closeButton(closeButton), tutorialUI(tutorialUI), tutorialHighlightUI(tutorialHighlightUI), UIContainer(x, y, width, height){
+    TutorialContainer::TutorialContainer(int x, int y, int width, int height, ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &tutorialHighlightUI) : aboutFont12(font), nextButton(nextButton), previousButton(previousButton), closeButton(closeButton), tutorialHighlightUI(tutorialHighlightUI), UIContainer(x, y, width, height){
         
         tutorialCounter = 0;
         textBoxx = 250;
@@ -43,7 +43,7 @@ namespace gui {
         ofColor notHighlightedColor = ofColor(150, 150, 150, 80);
         
         // Text box close button
-        addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+        addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
         // Text box next button
         addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
         // Faded area
@@ -70,7 +70,7 @@ namespace gui {
         
         if (counter == 0){
             // Text box close button
-            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             // Faded area
@@ -87,7 +87,7 @@ namespace gui {
         
         else if (counter == 1){
             // Text box close button
-            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
@@ -103,7 +103,7 @@ namespace gui {
         
         else if (counter == 2){
             // Text box close button
-            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             // Faded area
             addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
@@ -123,11 +123,11 @@ namespace gui {
     void TutorialContainer::incrementCounter(){tutorialCounter++;}
     
     
-    TutorialHighlightAtom::TutorialHighlightAtom(int x, int y, int width, int height, UIContainer* TutorialContainer) : TutorialContainer(TutorialContainer), UIAtom(x, y, width, height){
+    TutorialHighlightAtom::TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer* tutorialUI) : UIAtom(x, y, width, height){
     }
     
     bool TutorialHighlightAtom::mousePressed(int x, int y, int button){
-        TutorialContainer->incrementcounter();
+        tutorialUI->incrementCounter();
     }
     
     

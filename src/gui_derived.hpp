@@ -657,14 +657,14 @@ namespace gui {
     class TutorialContainer : public UIContainer
     {
     public:
-        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &tutorialUI, UIContainer &tutorialHighlighUI);
+        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &tutorialHighlighUI);
         
         int tutorialCounter;
         int textBoxx;
         int textBoxy;
         int textBoxWidth;
         int textBoxHeight;
-        virtual int getTutorialCounter();
+        int getTutorialCounter();
         void incrementCounter();
     
     protected:
@@ -672,7 +672,6 @@ namespace gui {
         ofImage& nextButton;
         ofImage& previousButton;
         ofImage& closeButton;
-        UIContainer& tutorialUI;
         UIContainer& tutorialHighlightUI;
         
     private:
@@ -682,12 +681,12 @@ namespace gui {
     
     class TutorialHighlightAtom : public UIAtom
     {
-    public:TutorialHighlightAtom(int x, int y, int width, int height, UIContainer *TutorialContainer);
-        virtual bool mousePressed(int x, int y, int button);
+    public:TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer *tutorialUI);
+        bool mousePressed(int x, int y, int button);
         
         
     protected:
-        const UIContainer *TutorialContainer;
+        TutorialContainer *tutorialUI;
     };
     
     
