@@ -249,9 +249,9 @@ void ofApp::setup()
     optionsUI.addChild(new gui::TextAtom("Graphs", uiFont12, textcolor, POS_LEFT, 20, 135, 100, 25));
     optionsUI.addChild(new gui::TextAtom("About", uiFont12, textcolor, POS_LEFT, 20, 175, 100, 25));
     optionsUI.addChild(new gui::TextAtom("Play / pause", uiFont12, textcolor, POS_LEFT, 20, 375, 100, 25));
-    optionsUI.addChild(new gui::TextAtom("Reset system", uiFont12, textcolor, POS_LEFT, 20, 255, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Reset system", uiFont12, textcolor, POS_LEFT, 20, 335, 100, 25));
     optionsUI.addChild(new gui::TextAtom("Mic on/off", uiFont12, textcolor, POS_LEFT, 20, 295, 100, 25));
-    optionsUI.addChild(new gui::TextAtom("Reset gaussians", uiFont12, textcolor, POS_LEFT, 20, 335, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Reset gaussians", uiFont12, textcolor, POS_LEFT, 20, 255, 100, 25));
     optionsUI.addChild(new gui::TextAtom("Tutorial", uiFont12, textcolor, POS_LEFT, 20, 215, 100, 25));
     
     // buttons
@@ -275,12 +275,12 @@ void ofApp::setup()
                                                   playButton, pauseButton,
                                                   200, 370, 30, 30));
     optionsUI.addChild(new gui::ButtonAtom([&] () { theSystem.resetSystem(); }, resetButton,
-                                            200, 250, 30, 30));
+                                            200, 330, 30, 30));
     optionsUI.addChild(new gui::ButtonToggleAtom([&] () { return micInput.getActive(); }, [&] (bool set) { micInput.setActive(set); },
                                                   audioOnButton, audioOffButton,
                                                   200, 290, 30, 30));
     optionsUI.addChild(new gui::ButtonAtom([&] () { ((gui::GaussianContainer *)systemUI.getChild(gaussianContainerIndex))->destroyAllGaussians(); },
-                                            resetButton, 200, 330, 30, 30));
+                                            resetButton, 200, 250, 30, 30));
 
     optionsUI.addChild(new gui::ButtonAtom([&] () {controlsUI.makeInvisible(); potentialUI.makeInvisible(); graphUI.makeInvisible(); aboutUI.makeInvisible();
         tutorialUI.toggleVisible(); tutorialHighlightUI.toggleVisible(); }, tutorialButton,
@@ -322,6 +322,7 @@ void ofApp::setup()
     
     // TutorialHighlight UI
     tutorialHighlightUI = gui::UIContainer(-50, 50, 30, 30);
+    //tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255,255,255, 80), 0, 0, 30, 30));
     tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, dynamic_cast<gui::TutorialContainer*>(tutorialUI.getChild(0)), tutorialHighlightUI));
     tutorialHighlightUI.makeInvisible();
     
@@ -518,7 +519,6 @@ void ofApp::mousePressed(int x, int y, int button) {
     if (tutorialUI.getVisible()){
         if (tutorialHighlightUI.mousePressed(x, y, button)){
             potentialUI.mousePressed(x, y, button)  ||
-            aboutUI.mousePressed(x, y, button)      ||
             controlsUI.mousePressed(x, y, button)       ||
             optionsUI.mousePressed(x, y, button)    ||
             optionsOffUI.mousePressed(x, y, button) ||
