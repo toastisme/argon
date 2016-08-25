@@ -380,7 +380,7 @@ namespace gui {
     /*
         OptionsListAtom
      */
-    
+
     OptionsListAtom::OptionsListAtom(const ofTrueTypeFont &_font, const ofColor &textColour, double _buttonWidth, double x, double y, double width, double height) : UIAtom(x, y, width, height), font(&_font), textcolor(textColour), selectedOption(-1), buttonWidth(_buttonWidth), buttonHeight(OPTION_HEIGHT) {}
     
     OptionsListAtom::~OptionsListAtom() {

@@ -130,8 +130,7 @@ private:
     gui::UIContainer optionsOffUI;
     gui::UIContainer aboutUI;
     gui::UIContainer tutorialHighlightUI;
-
-    gui::TutorialContainer tutorialUI;
+    gui::UIContainer tutorialUI;
     
     int splineContainerIndex; // Index of spline container in potentialUI
     int gaussianContainerIndex; // Index of gaussian container in systemUI
