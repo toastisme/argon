@@ -128,7 +128,7 @@ void ofApp::setup()
     systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, boatLeft, boatRight, 0, 0, screenWidth, screenHeight));
     
     // Setup graph UI
-    graphUI = gui::UIContainer(624, 60, 400, 300);
+    graphUI = gui::UIContainer(624, 160, 400, 300);
     
     // Add the graph itself
     graphUI.addChild(new gui::EnergyGraphAtom(theSystem, 0, 0, 400, 200));
@@ -266,7 +266,7 @@ void ofApp::setup()
     optionsUI.addChild(new gui::ButtonAtom([&] () { controlsUI.makeInvisible(); aboutUI.makeInvisible(); optionsUI.makeInvisible(); optionsOffUI.makeVisible();
         potentialUI.toggleVisible(); }, optionsPotentialButton, 200, 90, 30, 30));
     
-    optionsUI.addChild(new gui::ButtonAtom([&] () { graphUI.toggleVisible(); }, optionsEnergyButton,
+    optionsUI.addChild(new gui::ButtonAtom([&] () { graphUI.toggleVisible();}, optionsEnergyButton,
                                            200, 130, 30, 30));
     optionsUI.addChild(new gui::ButtonAtom([&] () {controlsUI.makeInvisible(); potentialUI.makeInvisible(); graphUI.makeInvisible();
         aboutUI.toggleVisible(); }, optionsAboutButton,
@@ -322,7 +322,7 @@ void ofApp::setup()
     
     // TutorialHighlight UI
     tutorialHighlightUI = gui::UIContainer(-50, 50, 30, 30);
-    //tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255,255,255, 80), 0, 0, 30, 30));
+    tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255,255,255, 80), 0, 0, 30, 30));
     tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, dynamic_cast<gui::TutorialContainer*>(tutorialUI.getChild(0)), tutorialHighlightUI));
     tutorialHighlightUI.makeInvisible();
     

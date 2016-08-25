@@ -469,7 +469,7 @@ namespace gui {
             
             // Faded area
             addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 125));
-            addChild(new RectAtom(notHighlightedColor, 0, 125, 250, 285));
+            addChild(new RectAtom(notHighlightedColor, 0, 165, 250, 240));
 
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
@@ -481,10 +481,144 @@ namespace gui {
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
-            
+
             tutorialHighlightUI.moveTo(200, 130);
             tutorialHighlightUI.setSize(30, 30);
             
+        }
+        
+        else if(counter == 20){
+            
+            // Faded area
+            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 125));
+            addChild(new RectAtom(notHighlightedColor, 0, 165, 250, 240));
+            
+            // Text box
+            addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
+            // Text box text
+            addChild(new TextAtom("The kinetic energy graph plots the velocity of all particles in the system over time.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("1/6", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            // Text box close button
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Previous button
+            addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
+            // Text box next button
+            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            
+            //tutorialHighlightUI.moveTo(250, 0);
+            //tutorialHighlightUI.setSize(774, 450);
+            
+        }
+        
+        else if(counter == 21){
+            
+            // Faded area
+            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 125));
+            addChild(new RectAtom(notHighlightedColor, 0, 165, 250, 240));
+            
+            // Text box
+            addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
+            // Text box text
+            addChild(new TextAtom("The potential energy graph sums the interactions of all particles with each other", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("and with the gaussians over time.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
+            addChild(new TextAtom("2/6", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            // Text box close button
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Previous button
+            addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
+            // Text box next button
+            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            tutorialHighlightUI.moveTo(250, 0);
+            tutorialHighlightUI.setSize(774, 450);
+            
+        }
+        
+        else if(counter == 22){
+            
+            // Faded area
+            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 125));
+            addChild(new RectAtom(notHighlightedColor, 0, 165, 250, 240));
+            
+            // Text box
+            addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
+            // Text box text
+            addChild(new TextAtom("Although kinetic energy is being converted into potential energy, the two graphs", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("are not exact inverses of each other, as the system is being heated.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
+            addChild(new TextAtom("3/6", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            // Text box close button
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Previous button
+            addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
+            // Text box next button
+            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            tutorialHighlightUI.moveTo(250, 0);
+            tutorialHighlightUI.setSize(774, 450);
+            
+        }
+        
+        else if(counter == 23){
+            
+            // Faded area
+            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 125));
+            addChild(new RectAtom(notHighlightedColor, 0, 165, 250, 240));
+            
+            // Text box
+            addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
+            // Text box text
+            addChild(new TextAtom("The Maxwell-Boltzmann plot shows the number of particles with different velocities.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("4/6", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            // Text box close button
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Previous button
+            addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
+            // Text box next button
+            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            tutorialHighlightUI.moveTo(250, 0);
+            tutorialHighlightUI.setSize(774, 450);
+            
+        }
+        
+        else if(counter == 24){
+            
+            // Faded area
+            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 125));
+            addChild(new RectAtom(notHighlightedColor, 0, 165, 250, 240));
+            
+            // Text box
+            addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
+            // Text box text
+            addChild(new TextAtom("For a given temperature, the system will always reach the same distribution of velocities", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("if the number of particles is large enough.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
+            addChild(new TextAtom("5/6", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            // Text box close button
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Previous button
+            addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
+            // Text box next button
+            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            tutorialHighlightUI.moveTo(250, 0);
+            tutorialHighlightUI.setSize(774, 450);
+            
+        }
+        
+        else if(counter == 25){
+            
+            // Faded area
+            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 90));
+            addChild(new RectAtom(notHighlightedColor, 0, 140, 250, 240));
+            
+            // Text box
+            addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
+            // Text box text
+            addChild(new TextAtom("How the particles interact with each other depends on the potential used.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("You can modify this by left-clicking the Potential button.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
+            addChild(new TextAtom("6/6", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            // Text box close button
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Previous button
+            addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
+            tutorialHighlightUI.moveTo(200, 90);
+            tutorialHighlightUI.setSize(30, 30);
         }
         
         
@@ -507,7 +641,7 @@ namespace gui {
     }
     
     bool TutorialHighlightAtom::mousePressed(int x, int y, int button){
-        if ((tutorialContainer->getTutorialCounter() == 4 || tutorialContainer->getTutorialCounter() == 11) && bounds.inside(x,y)){
+        if ((tutorialContainer->getTutorialCounter() == 4 || tutorialContainer->getTutorialCounter() == 11 || tutorialContainer->getTutorialCounter()==19) && bounds.inside(x,y)){
             tutorialContainer->incrementCounter();
             tutorialContainer->updateComponents(tutorialContainer->getTutorialCounter());
             
