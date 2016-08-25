@@ -684,13 +684,14 @@ namespace gui {
     class TutorialHighlightAtom : public UIAtom
     {
     public:
-        TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer *tutorialContainer);
+        TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer *tutorialContainer, UIContainer &tutorialHighlightUI);
         bool mousePressed(int x, int y, int button);
     private:
         virtual void render();
 
     protected:
         TutorialContainer* tutorialContainer;
+        UIContainer& tutorialHighlightUI;
     };
     
     
