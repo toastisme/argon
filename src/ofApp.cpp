@@ -314,15 +314,16 @@ void ofApp::setup()
     aboutUI.mouseReleased(0, 0, 0);
     
     // Tutorial UI
-    tutorialUI = gui::TutorialContainer(0, 0, screenWidth, screenHeight,aboutFont12, nextButton, previousButton, closeButton, tutorialHighlightUI);
+    tutorialUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
+    tutorialUI.addIndexedChild(new gui::TutorialContainer(0, 0, screenWidth, screenHeight,aboutFont12, nextButton, previousButton, closeButton, tutorialHighlightUI));
     tutorialUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
     
     // TutorialHighlight UI
-   
+    
     tutorialHighlightUI = gui::UIContainer(50, 50, 30, 30);
     tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255, 255, 255, 80), 0, 0, 30, 30));
-    tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, tutorialUI*));
+    tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, dynamic_cast<gui::TutorialContainer*>(tutorialUI.getChild(0))));
     tutorialHighlightUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
     

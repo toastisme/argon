@@ -115,6 +115,8 @@ namespace gui {
             tutorialHighlightUI.moveTo(200,50);
             
         }
+        else if(counter == 3){
+            std::cout<<"Tutorial counter is now 3."<<std::endl;}
         
         
     }
@@ -122,12 +124,15 @@ namespace gui {
     int TutorialContainer::getTutorialCounter(){return tutorialCounter;}
     void TutorialContainer::incrementCounter(){tutorialCounter++;}
     
-    
-    TutorialHighlightAtom::TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer* tutorialUI) : UIAtom(x, y, width, height){
+    TutorialHighlightAtom::TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer *tutorialContainer) : UIAtom(x, y, width, height){
     }
     
+    void TutorialHighlightAtom::render(){
+        
+    }
     bool TutorialHighlightAtom::mousePressed(int x, int y, int button){
-        tutorialUI->incrementCounter();
+        tutorialContainer->incrementCounter();
+        std::cout<<tutorialContainer->getTutorialCounter()<<std::endl;
     }
     
     
