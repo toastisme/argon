@@ -660,7 +660,7 @@ namespace gui {
     class TutorialContainer : public UIContainer
     {
     public:
-        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &tutorialHighlighUI);
+        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &tutorialUI, UIContainer &tutorialHighlighUI);
         
         int tutorialCounter;
         int textBoxx;
@@ -669,17 +669,16 @@ namespace gui {
         int textBoxHeight;
         int getTutorialCounter();
         void incrementCounter();
+        void updateComponents(int counter);
     
     protected:
         ofTrueTypeFont& aboutFont12;
         ofImage& nextButton;
         ofImage& previousButton;
         ofImage& closeButton;
+        UIContainer& tutorialUI;
         UIContainer& tutorialHighlightUI;
         
-    private:
-        void updateComponents(int counter);
-
     };
     
     class TutorialHighlightAtom : public UIAtom

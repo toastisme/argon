@@ -315,7 +315,7 @@ void ofApp::setup()
     
     // Tutorial UI
     tutorialUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
-    tutorialUI.addIndexedChild(new gui::TutorialContainer(0, 0, screenWidth, screenHeight,aboutFont12, nextButton, previousButton, closeButton, tutorialHighlightUI));
+    tutorialUI.addIndexedChild(new gui::TutorialContainer(0, 0, screenWidth, screenHeight,aboutFont12, nextButton, previousButton, closeButton, tutorialUI, tutorialHighlightUI));
     tutorialUI.makeInvisible();
     
     // TutorialHighlight UI
