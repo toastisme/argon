@@ -124,7 +124,7 @@ namespace gui {
     int TutorialContainer::getTutorialCounter(){return tutorialCounter;}
     void TutorialContainer::incrementCounter(){tutorialCounter++;}
     
-    TutorialHighlightAtom::TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer *tutorialContainer) : UIAtom(x, y, width, height){
+    TutorialHighlightAtom::TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer* _tutorialContainer) : UIAtom(x, y, width, height), tutorialContainer(_tutorialContainer){
     }
     
     void TutorialHighlightAtom::render(){
