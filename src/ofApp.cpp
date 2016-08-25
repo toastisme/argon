@@ -264,7 +264,7 @@ void ofApp::setup()
         controlsUI.toggleVisible(); }, optionsControlsButton, 200, 50, 30, 30));
     
     optionsUI.addChild(new gui::ButtonAtom([&] () { controlsUI.makeInvisible(); aboutUI.makeInvisible(); optionsUI.makeInvisible(); optionsOffUI.makeVisible();
-        potentialUI.toggleVisible(); }, optionsPotentialButton, 200, 90, 30, 30));
+        graphUI.makeInvisible(); potentialUI.toggleVisible(); }, optionsPotentialButton, 200, 90, 30, 30));
     
     optionsUI.addChild(new gui::ButtonAtom([&] () { graphUI.toggleVisible();}, optionsEnergyButton,
                                            200, 130, 30, 30));
