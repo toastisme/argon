@@ -69,11 +69,17 @@ namespace gui {
         // move UI element by offset
         virtual void moveBy(coord offset);
         
+        // move UI element to specific position
+        virtual void moveTo(float xNew, float yNew);
+        
         // draw element; called from ofApp.draw()
         virtual void draw() = 0;
         
         // resize element; called from update when screen size changes
         virtual void resize(float xScale, float yScale);
+        
+        // Set a specific size of an element
+        virtual void setSize(float widthNew, float heightNew);
         
         // pure virtual methods to handle visibility
         bool getVisible() const;
@@ -112,7 +118,9 @@ namespace gui {
         virtual void draw();
         
         virtual void resize(float xScale, float yScale);
+        virtual void setSize(float widthNew, float heightNew);
         virtual void moveBy(coord offset);
+        virtual void moveTo(float xNew, float yNew);
     };
     
     class UIContainer : public UIBase
@@ -156,6 +164,8 @@ namespace gui {
         
         // move the container, which also moves all children by the same amount
         virtual void moveBy(coord offset);
+        // Move the container and all children to a specific position
+        virtual void moveTo(float xNew, float yNew);
         
         // change visibility flag and pass call through to children
         virtual void makeVisible();
@@ -167,6 +177,9 @@ namespace gui {
         
         // resize is passed to all children
         virtual void resize(float xScale, float yScale);
+        
+        // setSize passed to all children
+        virtual void setSize(float widthNew, float heightNew);
         
         // only pass mouse event to the first child to handle it
         virtual bool mouseMoved(int x, int y);

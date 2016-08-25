@@ -46,6 +46,9 @@ namespace gui {
     // move by offset
     void UIBase::moveBy(coord offset) { bounds.moveBy(offset); }
     
+    // move to specific position
+    void UIBase::moveTo(float xNew, float yNew){bounds.setXYWH(xNew, yNew, bounds.width(), bounds.height());}
+    
     // getter and setters for visibility flag
     bool UIBase::getVisible() const { return visible; }
     void UIBase::makeVisible()   { visible = true; }
@@ -63,6 +66,10 @@ namespace gui {
     // Default resizing of element
     void UIBase::resize(float xScale, float yScale) {
         bounds.setXYWH(bounds.left*xScale, bounds.top*yScale, bounds.width()*xScale, bounds.height()*yScale);
+    }
+    
+    void UIBase::setSize(float widthNew, float heightNew){
+        bounds.setXYWH(bounds.left, bounds.top, widthNew, heightNew);
     }
     
     /*
@@ -85,8 +92,16 @@ namespace gui {
         UIBase::resize(xScale, yScale);
     }
     
+    void UIAtom::setSize(float widthNew, float heightNew){
+        bounds.setXYWH(bounds.left, bounds.top, widthNew, heightNew);
+    }
+    
     void UIAtom::moveBy(coord offset){
         bounds.moveBy(offset);
+    }
+    
+    void UIAtom::moveTo(float xNew, float yNew){
+        bounds.setXYWH(xNew, yNew, bounds.width(), bounds.height());
     }
     
     /*
@@ -133,6 +148,11 @@ namespace gui {
         for (int i = 0; i < children.size(); ++i) { children[i]->moveBy(offset); }
     }
     
+    void UIContainer::moveTo(float xNew, float yNew) {
+        bounds.setXYWH(xNew, yNew, bounds.width(), bounds.height());
+        for (int i = 0; i < children.size(); i++){children[i]->moveTo(xNew, yNew);}
+    }
+    
     // set visibility flag and also pass call through to children
     void UIContainer::makeVisible() {
         visible = true;
@@ -158,6 +178,11 @@ namespace gui {
     void UIContainer::resize(float xScale, float yScale) {
         UIBase::resize(xScale, yScale);
         for (int i = 0; i < children.size(); ++i) { children[i]->resize(xScale, yScale); }
+    }
+    
+    void UIContainer::setSize(float widthNew, float heightNew){
+        UIBase::setSize(widthNew, heightNew);
+        for (int i = 0; i < children.size(); i++){children[i]->setSize(widthNew, heightNew);}
     }
     
     // mouse events by default only pass through the event to the first child to handle them

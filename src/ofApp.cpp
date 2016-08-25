@@ -34,7 +34,6 @@
         Constructor for the app. Sets up the system at the beginning, loads all the assets
         needed for the app (images and fonts), and initialises the audio input stream.
  */
-int tutortialCounter  = 1;
 void ofApp::setup() 
 {
     // openFrameworks initialisation
@@ -69,6 +68,7 @@ void ofApp::setup()
     optionsAboutButton.load("img/OptionsAboutButton2.png");
     closeButton.load("img/CloseButton.png");
     nextButton.load("img/NextButton.png");
+    previousButton.load("img/PreviousButton.png");
     tmcsLogo.load("img/tmcslogo.png");
     stargonautsLogo.load("img/stargonautslogo.png");
     boatLeft.load("img/boatleft.png");
@@ -314,27 +314,19 @@ void ofApp::setup()
     aboutUI.mouseReleased(0, 0, 0);
     
     // Tutorial UI
-
-    tutorialUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
-
-    /*
-    tutorialUI.addIndexedChild(new gui::RectAtom(ofColor(80, 80, 80, 150), 0, 0, screenWidth, screenHeight));
-    tutorialUI.addIndexedChild(new gui::RectAtom(ofColor(0, 0, 0, 80), 250, 0, 774, 160));
-    tutorialUI.addIndexedChild(new gui::TextAtom("This tutorial takes you through the basics of Argon.", aboutFont12, textcolor, POS_LEFT, 260, 0, 205, 120));
-    tutorialUI.addIndexedChild(new gui::TextAtom("You can leave at any point by left-clicking the x in this text box.", aboutFont12, textcolor, POS_LEFT, 260, 25, 205, 135));
-    tutorialUI.addIndexedChild(new gui::ButtonAtom([&] () { tutorialUI.makeInvisible(); tutortialCounter = 1; optionsOffUI.makeVisible(); }, closeButton, 989, 5, 30, 30));
-    tutorialUI.addIndexedChild(new gui::ButtonAtom([&] () { tutortialCounter++; }, nextButton, 989, 125, 30, 30));
-     */
+    tutorialUI = gui::TutorialContainer(0, 0, screenWidth, screenHeight,aboutFont12, nextButton, previousButton, closeButton, tutorialHighlightUI);
     tutorialUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
     
-    
     // TutorialHighlight UI
-    
-    tutorialHighlightUI = gui::UIContainer(200, 50, 30, 30);
+   
+    tutorialHighlightUI = gui::UIContainer(50, 50, 30, 30);
     tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255, 255, 255, 80), 0, 0, 30, 30));
+    tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, tutorialUI*));
     tutorialHighlightUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
+    
+
 }
 
 //--------------------------------------------------------------
@@ -410,7 +402,7 @@ void ofApp::draw(){
     optionsOffUI.draw();
     aboutUI.draw();
     tutorialUI.draw();
-    //tutorialHighlightUI.draw();
+    tutorialHighlightUI.draw();
     if (loading) {
         ofColor splashColour = ofColor(255, 255, 255);
         splashColour.a = ofMap(ofGetElapsedTimef(), 3,5, 255, 0, true);
@@ -520,7 +512,19 @@ void ofApp::mousePressed(int x, int y, int button) {
     // pass through mouse press to UI elements
     // stop when the first function returns true and the event is handled
     // slight abuse of short-circuiting boolean or, but it avoids an ugly ifelse tree
-    tutorialHighlightUI.mousePressed(x, y, button) ||
+    
+    // when the tutorial is running, only allow mouse events in the highlighted area
+    if (tutorialUI.getVisible()){
+        if (tutorialHighlightUI.mousePressed(x, y, button)){
+            potentialUI.mousePressed(x, y, button)  ||
+            aboutUI.mousePressed(x, y, button)      ||
+            controlsUI.mousePressed(x, y, button)       ||
+            optionsUI.mousePressed(x, y, button)    ||
+            optionsOffUI.mousePressed(x, y, button) ||
+            systemUI.mousePressed(x, y, button);
+        }
+    }
+    
     tutorialUI.mousePressed(x, y, button) ||
     potentialUI.mousePressed(x, y, button)  ||
     aboutUI.mousePressed(x, y, button)      ||
@@ -532,6 +536,7 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
+    tutorialUI.mouseReleased(x, y, button);
     controlsUI.mouseReleased(x, y, button);
     potentialUI.mouseReleased(x, y, button);
     systemUI.mouseReleased(x, y, button);

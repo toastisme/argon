@@ -655,18 +655,41 @@ namespace gui {
         // remove all Gaussians
         void destroyAllGaussians();
     };
-
-    class TextBoxContainer : public UIContainer
+    
+    // Main container to manage all tutorial events
+    class TutorialContainer : public UIContainer
     {
     public:
-        TextBoxContainer(int x, int y, int width, int height, int tutorialCounter, ofTrueTypeFont &font, ofImage &nextButton, ofImage &closeButton);
-        int tutorialCounter2 = 4;
+        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &tutorialHighlighUI);
+        
+        int tutorialCounter;
+        int textBoxx;
+        int textBoxy;
+        int textBoxWidth;
+        int textBoxHeight;
+        int getTutorialCounter();
+        void incrementCounter();
     
     protected:
         ofTrueTypeFont& aboutFont12;
         ofImage& nextButton;
+        ofImage& previousButton;
         ofImage& closeButton;
+        UIContainer& tutorialHighlightUI;
         
+    private:
+        void updateComponents(int counter);
+
+    };
+    
+    class TutorialHighlightAtom : public UIAtom
+    {
+    public:TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer *tutorialUI);
+        bool mousePressed(int x, int y, int button);
+        
+        
+    protected:
+        TutorialContainer *tutorialUI;
     };
     
     
