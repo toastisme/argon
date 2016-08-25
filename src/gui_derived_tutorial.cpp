@@ -26,53 +26,46 @@
 
 // implements TutorialContainer
 
-
+/*
+ TutorialContainer carries out all methods for displaying text boxes.
+ Mouse events are controlled by storing an instance of the TutorialContainer in the UI container tutorialUI in ofApp.
+ A third UIContainer, tutorialHighlightUI, is used to allow the user to interact with specific parts of the interface.
+ TutorialContainer methods are passed to tutorialHighlightUI via a UIAtom, tutorialHighlightAtom, which contains a pointer to the TutorialContainer instance.
+*/
 
 namespace gui {
     
     TutorialContainer::TutorialContainer(int x, int y, int width, int height, ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &tutorialUI, UIContainer &tutorialHighlightUI) : aboutFont12(font), nextButton(nextButton), previousButton(previousButton), closeButton(closeButton), tutorialUI(tutorialUI), tutorialHighlightUI(tutorialHighlightUI), UIContainer(x, y, width, height){
         
-        tutorialCounter = 0;
-        textBoxx = 250;
-        textBoxy = 0;
-        textBoxWidth = 774;
-        textBoxHeight = 150;
-        
-        ofColor textBoxColor = ofColor(0, 255, 0, 100);
-        ofColor textColor = ofColor(255, 255, 240);
-        ofColor notHighlightedColor = ofColor(150, 150, 150, 80);
-        
-        // Text box close button
-        addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
-        // Text box next button
-        addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
-        // Faded area
-        addChild(new RectAtom(notHighlightedColor, x, y, width, height));
-        // Text box
-        addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
-        // Text box text
-        addChild(new TextAtom("This tutorial takes you through the basics of Argon.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 50, 600, 20));
-        addChild(new TextAtom("You can leave the tutorial at any point by left-clicking the x in this text box.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 80, 600, 20));
-        addChild(new TextAtom("1/3", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 65, textBoxy + textBoxHeight - 30, 600, 20));
+        updateComponents(tutorialCounter);
     }
     
     void TutorialContainer::updateComponents(int counter){
         
-        ofColor textBoxColor = ofColor(0, 255, 0, 100);
+        // All children in the TutorialContainer are deleted and redrawn in the positions for a given tutorialCounter value
+        
+        ofColor textBoxColor = ofColor(0, 0, 0, 100);
         ofColor textColor = ofColor(255, 255, 240);
         ofColor notHighlightedColor = ofColor(150, 150, 150, 80);
         
         int size = children.size() - 1;
-        for (int i = size; i > 0; i--){
+        for (int i = size; i >= 0; i--){
             delete children[i];
             children.erase(children.begin() + i);}
         
+        /*
+         Introduction and description of particles
+         */
         
         if (counter == 0){
-            // Text box close button
-            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
-            // Text box next button
-            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            
+            tutorialCounter = 0;
+            textBoxx = 250;
+            textBoxy = 0;
+            textBoxWidth = 774;
+            textBoxHeight = 150;
+            
+
             // Faded area
             addChild(new RectAtom(notHighlightedColor, 0, 0, 1024, 600));
             // Text box
@@ -80,68 +73,153 @@ namespace gui {
             // Text box text
             addChild(new TextAtom("This tutorial takes you through the basics of Argon.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 50, 600, 20));
             addChild(new TextAtom("You can leave the tutorial at any point by left-clicking the x in this text box.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 80, 600, 20));
-            addChild(new TextAtom("1/3", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 65, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("1/4", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            // Text box close button
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Text box next button
+            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
         }
         
         
         else if (counter == 1){
-            // Text box close button
-            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
-            // Text box next button
-            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
-            addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             // Faded area
             addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
-            addChild(new TextAtom("Colours of the particles indicate their speed and changes in shape show forces acting on them.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 50, 600, 20));
-            addChild(new TextAtom("When particles collide, the colour change shows the transfer of momentum in real time.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 80, 600, 20));
-            addChild(new TextAtom("2/3", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 65, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("The Colours of the particles indicate their velocity, and changes in shape", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 50, 600, 20));
+            
+            addChild(new TextAtom("show the forces acting on them.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 80, 600, 20));
+            
+            
+            addChild(new TextAtom("2/4", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            // Text box close button
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Text box next button
+            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            // Text box previous button
+            addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
         }
         
         else if (counter == 2){
+            // Faded area
+            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            // Text box
+            addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
+            // Text box text
+            addChild(new TextAtom("When particles collide, the colour change shows the transfer of momentum in real time.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("3/4", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Text box next button
+            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            // Text box previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
+
+        }
+        
+        else if (counter == 3){
             // Faded area
             addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("To interact with the system, left click on the controls button.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 50, 600, 20));
-            addChild(new TextAtom("3/3", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 65, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("4/4", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
             tutorialHighlightUI.moveTo(200,50);
-            
-        }
-        else if(counter == 3){
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
+            
+        }
+        
+        /*
+         Controls
+         */
+        
+        else if(counter == 4){
+            
+            textBoxy += 160;
+        
             // Faded area
             addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
             // Text box
-            addChild(new RectAtom(textBoxColor, textBoxx, textBoxy + 50, textBoxWidth, textBoxHeight));
+            addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
-            addChild(new TextAtom("Properties of the system are selected by left-clicking, and are controlled by the slider..", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 50, 600, 20));
-            addChild(new TextAtom("3/3", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 65, textBoxy + textBoxHeight - 30, 600, 20));
-            tutorialHighlightUI.moveTo(200,50);}
+            addChild(new TextAtom("Properties of the system are selected by left-clicking, and are controlled by the slider.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("1/7", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            // Text box close button
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Text box next button
+            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            
+            //tutorialHighlightUI.moveTo(250,0);
+            //tutorialHighlightUI.setSize(774, 160);
+        }
+        
+        else if(counter == 5){
+            
+            // Faded area
+            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            // Text box
+            addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
+            // Text box text
+            addChild(new TextAtom("Changing the temperature alters the kinetic energy of the particles,", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("with higher temperatures corresponding to higher velocities.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 80, 600, 20));
+            addChild(new TextAtom("2/7", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            // Text box close button
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Text box next button
+            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            // Previous button
+            addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
+            
+            tutorialHighlightUI.moveTo(250,0);
+            tutorialHighlightUI.setSize(774, 160);
+        }
+        
+        else if(counter == 6){
+            
+            // Faded area
+            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            // Text box
+            addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
+            // Text box text
+            addChild(new TextAtom("At low temperatures, the particles will crystallise.", aboutFont12, textColor, POS_LEFT, textBoxx + 10, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("3/7", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            // Text box close button
+            addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Text box next button
+            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            // Previous button
+            addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
+            
+        }
+        
+        
+        
+        
+   
         
         
     }
     
+    // Keeps track of where the user is in the tutorial
     int TutorialContainer::getTutorialCounter(){return tutorialCounter;}
+    // Causes the next part of the tutorial to run
     void TutorialContainer::incrementCounter(){tutorialCounter++;}
     
+    // Used to pass mouse events from tutorialHighlightUI to the TutorialContainer
     TutorialHighlightAtom::TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer* _tutorialContainer) : UIAtom(x, y, width, height), tutorialContainer(_tutorialContainer){
     }
     
     void TutorialHighlightAtom::render(){
-        
     }
+    
     bool TutorialHighlightAtom::mousePressed(int x, int y, int button){
-        if (tutorialContainer->getTutorialCounter() == 2 && bounds.inside(x,y)){
+        if (tutorialContainer->getTutorialCounter() == 3 && bounds.inside(x,y)){
             tutorialContainer->incrementCounter();
             tutorialContainer->updateComponents(tutorialContainer->getTutorialCounter());
         }
