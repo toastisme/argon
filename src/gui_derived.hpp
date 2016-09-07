@@ -660,7 +660,7 @@ namespace gui {
     class TutorialContainer : public UIContainer
     {
     public:
-        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &tutorialUI, UIContainer &tutorialHighlighUI);
+        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &_tutorialUI, UIContainer &_tutorialHighlighUI, UIContainer &_tutorialBlockUI, md::MDContainer &system, UIContainer &_graphUI);
         
         int tutorialCounter;
         int textBoxx;
@@ -678,20 +678,29 @@ namespace gui {
         ofImage& closeButton;
         UIContainer& tutorialUI;
         UIContainer& tutorialHighlightUI;
+        UIContainer& tutorialBlockUI;
+        UIContainer& graphUI;
+        md::MDContainer& theSystem;
+        
         
     };
     
     class TutorialHighlightAtom : public UIAtom
     {
     public:
-        TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer *tutorialContainer, UIContainer &tutorialHighlightUI);
+        TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer *tutorialContainer, UIContainer &tutorialHighlightUI, UIContainer &_aboutUI, UIContainer &_graphUI, UIContainer &_potentialUI, UIContainer &_controlsUI);
         bool mousePressed(int x, int y, int button);
+        bool mouseMoved(int x, int y, int button);
     private:
         virtual void render();
 
     protected:
         TutorialContainer* tutorialContainer;
         UIContainer& tutorialHighlightUI;
+        UIContainer& aboutUI;
+        UIContainer& graphUI;
+        UIContainer& potentialUI;
+        UIContainer& controlsUI;
     };
     
     

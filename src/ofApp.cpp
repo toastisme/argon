@@ -317,18 +317,22 @@ void ofApp::setup()
     
     // Tutorial UI
     tutorialUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
-    tutorialUI.addIndexedChild(new gui::TutorialContainer(0, 0, screenWidth, screenHeight, uiFont12, nextButton, previousButton, closeButton, tutorialUI, tutorialHighlightUI));
+    tutorialUI.addIndexedChild(new gui::TutorialContainer(0, 0, screenWidth, screenHeight, uiFont12, nextButton, previousButton, closeButton, tutorialUI, tutorialHighlightUI, tutorialBlockUI, theSystem, graphUI));
     tutorialUI.makeInvisible();
+    tutorialUI.mouseReleased(0, 0, 0);
+    
+    
     
     // TutorialHighlight UI
     tutorialHighlightUI = gui::UIContainer(-50, 50, 30, 30);
     tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255,255,255, 80), 0, 0, 30, 30));
-    tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, dynamic_cast<gui::TutorialContainer*>(tutorialUI.getChild(0)), tutorialHighlightUI));
+    tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, dynamic_cast<gui::TutorialContainer*>(tutorialUI.getChild(0)), tutorialHighlightUI, aboutUI, graphUI, potentialUI, controlsUI));
     tutorialHighlightUI.makeInvisible();
+    tutorialHighlightUI.mouseReleased(0, 0, 0);
     
-    tutorialUI.mouseReleased(0, 0, 0);
+    tutorialBlockUI = gui::UIContainer(-50, 50, 30, 30);
+    tutorialBlockUI.addChild(new gui::RectAtom(ofColor(255,0,255, 80), 0, 0, 30, 30));
     
-
 }
 
 //--------------------------------------------------------------
@@ -378,6 +382,8 @@ void ofApp::update(){
         systemUI.resize(xScale, yScale);
         aboutUI.resize(xScale, yScale);
         tutorialUI.resize(xScale, yScale);
+        tutorialHighlightUI.resize(xScale, yScale);
+        tutorialBlockUI.resize(xScale, yScale);
         
         screenWidth = ofGetWidth();
         screenHeight = ofGetHeight();
@@ -405,6 +411,8 @@ void ofApp::draw(){
     aboutUI.draw();
     tutorialUI.draw();
     tutorialHighlightUI.draw();
+    tutorialBlockUI.draw();
+    
     if (loading) {
         ofColor splashColour = ofColor(255, 255, 255);
         splashColour.a = ofMap(ofGetElapsedTimef(), 3,5, 255, 0, true);
@@ -518,6 +526,7 @@ void ofApp::mousePressed(int x, int y, int button) {
     // when the tutorial is running, only allow mouse events in the highlighted area
     if (tutorialUI.getVisible()){
         if (tutorialHighlightUI.mousePressed(x, y, button)){
+            tutorialBlockUI.mousePressed(x, y, button) ||
             potentialUI.mousePressed(x, y, button)  ||
             controlsUI.mousePressed(x, y, button)       ||
             optionsUI.mousePressed(x, y, button)    ||

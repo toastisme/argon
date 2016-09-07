@@ -130,6 +130,7 @@ private:
     gui::UIContainer optionsOffUI;
     gui::UIContainer aboutUI;
     gui::UIContainer tutorialHighlightUI;
+    gui::UIContainer tutorialBlockUI; // This second container just adds a bit for flexibility in blocking mouse pressed events
     gui::UIContainer tutorialUI;
     
     int splineContainerIndex; // Index of spline container in potentialUI
