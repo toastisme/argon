@@ -37,6 +37,11 @@ namespace gui {
     
     TutorialContainer::TutorialContainer(int x, int y, int width, int height, ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &tutorialUI, UIContainer &tutorialHighlightUI) : aboutFont12(font), nextButton(nextButton), previousButton(previousButton), closeButton(closeButton), tutorialUI(tutorialUI), tutorialHighlightUI(tutorialHighlightUI), UIContainer(x, y, width, height){
         
+        textBoxx = 250;
+        textBoxy = 0;
+        textBoxWidth = 774;
+        textBoxHeight = 150;
+        tutorialCounter = 0;
         updateComponents(tutorialCounter);
     }
     
@@ -64,7 +69,8 @@ namespace gui {
             textBoxWidth = 774;
             textBoxHeight = 150;
             
-
+            
+            
             // Faded area
             addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 600));
             addChild(new RectAtom(notHighlightedColor, 250, 150, 774, 450));
@@ -78,6 +84,9 @@ namespace gui {
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            
+            tutorialHighlightUI.moveTo(-50, 50);
+            tutorialHighlightUI.setSize(30, 30);
             
         }
         
@@ -100,7 +109,7 @@ namespace gui {
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             // Text box previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
-            
+            tutorialHighlightUI.makeVisible();
             tutorialHighlightUI.moveTo(-50, 50);
             tutorialHighlightUI.setSize(30, 30);
         }
@@ -135,15 +144,15 @@ namespace gui {
             addChild(new TextAtom("and the Reset button restarts the simulation with particles placed on a grid.", aboutFont12, textColor, POS_CENTRE, textBoxx + 80, textBoxy + 80, 600, 20));
             addChild(new TextAtom("4/5", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
             
-            tutorialHighlightUI.moveTo(200,330);
-            tutorialHighlightUI.setSize(30, 70);
-            
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
+            tutorialHighlightUI.moveTo(200,330);
+            tutorialHighlightUI.setSize(30, 70);
+            
             
         }
         
@@ -159,14 +168,12 @@ namespace gui {
             addChild(new TextAtom("To interact with the system, left click on the controls button.", aboutFont12, textColor, POS_CENTRE, textBoxx + 80, textBoxy + 50, 600, 20));
             addChild(new TextAtom("5/5", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
             
-            tutorialHighlightUI.moveTo(200,50);
-            tutorialHighlightUI.setSize(30, 30);
-            
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
-            
+            tutorialHighlightUI.moveTo(200,50);
+            tutorialHighlightUI.setSize(30, 30);
         }
         
         /*
@@ -233,6 +240,9 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
+            tutorialHighlightUI.moveTo(250,0);
+            tutorialHighlightUI.setSize(774, 160);
+            
         }
         
         else if(counter == 8){
@@ -252,6 +262,9 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
+            tutorialHighlightUI.moveTo(250,0);
+            tutorialHighlightUI.setSize(774, 160);
+            
         }
         
         else if(counter == 9){
@@ -270,6 +283,9 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
+            tutorialHighlightUI.moveTo(250,0);
+            tutorialHighlightUI.setSize(774, 160);
+            
         }
         
         else if(counter == 10){
@@ -287,6 +303,9 @@ namespace gui {
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
+            
+            tutorialHighlightUI.moveTo(250,0);
+            tutorialHighlightUI.setSize(774, 160);
             
         }
         

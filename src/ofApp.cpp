@@ -322,7 +322,7 @@ void ofApp::setup()
     
     // TutorialHighlight UI
     tutorialHighlightUI = gui::UIContainer(-50, 50, 30, 30);
-    //tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255,255,255, 80), 0, 0, 30, 30));
+    tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255,255,255, 80), 0, 0, 30, 30));
     tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, dynamic_cast<gui::TutorialContainer*>(tutorialUI.getChild(0)), tutorialHighlightUI));
     tutorialHighlightUI.makeInvisible();
     
