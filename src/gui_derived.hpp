@@ -691,7 +691,7 @@ namespace gui {
     class TutorialHighlightAtom : public UIAtom
     {
     public:
-        TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer *tutorialContainer, UIContainer &tutorialHighlightUI, UIContainer &_aboutUI, UIContainer &_graphUI, UIContainer &_potentialUI, UIContainer &_controlsUI);
+        TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer *tutorialContainer, UIContainer &tutorialHighlightUI);
 
         bool mousePressed(int x, int y, int button);
 
@@ -701,10 +701,7 @@ namespace gui {
     protected:
         TutorialContainer* tutorialContainer;
         UIContainer& tutorialHighlightUI;
-        UIContainer& aboutUI;
-        UIContainer& graphUI;
-        UIContainer& potentialUI;
-        UIContainer& controlsUI;
+
     };
     
     

@@ -117,6 +117,12 @@ namespace gui {
             tutorialBlockUI.makeVisible();
             tutorialHighlightUI.moveTo(-50, 50);
             tutorialHighlightUI.setSize(30, 30);
+            theSystem.setNAfterReset(60);
+            theSystem.setTemp(0.4);
+            theSystem.setStepsPerUpdate(5);
+            ((gui::GaussianContainer *)systemUI.getChild(gaussianContainerIndex))->destroyAllGaussians();
+            theSystem.resetSystem();
+            theSystem.setRunning(true);
 
         }
         
@@ -959,7 +965,7 @@ namespace gui {
     void TutorialContainer::incrementCounter(){tutorialCounter++;}
     
     // Used to pass mouse events from tutorialHighlightUI to the TutorialContainer
-    TutorialHighlightAtom::TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer* _tutorialContainer, UIContainer& tutorialHighlightUI, UIContainer &_aboutUI, UIContainer &_graphUI, UIContainer &_potentialUI, UIContainer &_controlsUI) : UIAtom(x, y, width, height), tutorialContainer(_tutorialContainer), tutorialHighlightUI(tutorialHighlightUI), aboutUI(_aboutUI), graphUI(_graphUI), potentialUI(_potentialUI), controlsUI(_controlsUI){
+    TutorialHighlightAtom::TutorialHighlightAtom(int x, int y, int width, int height, TutorialContainer* _tutorialContainer, UIContainer& tutorialHighlightUI) : UIAtom(x, y, width, height), tutorialContainer(_tutorialContainer), tutorialHighlightUI(tutorialHighlightUI){
     }
     
     void TutorialHighlightAtom::render(){
