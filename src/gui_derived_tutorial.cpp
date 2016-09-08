@@ -35,7 +35,7 @@
 
 namespace gui {
     
-    TutorialContainer::TutorialContainer(int x, int y, int width, int height, ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &_tutorialUI, UIContainer &_tutorialHighlightUI, UIContainer &_tutorialBlockUI, md::MDContainer &system, UIContainer &_graphUI) : aboutFont12(font), nextButton(nextButton), previousButton(previousButton), closeButton(closeButton), tutorialUI(_tutorialUI), tutorialHighlightUI(_tutorialHighlightUI), tutorialBlockUI(_tutorialBlockUI), theSystem(system), graphUI(_graphUI), UIContainer(x, y, width, height){
+    TutorialContainer::TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &_tutorialUI, UIContainer &_tutorialHighlightUI, UIContainer &_tutorialBlockUI, md::MDContainer &system, UIContainer &_graphUI, UIContainer &_controlsUI, UIContainer &_potentialUI): aboutFont12(font), nextButton(nextButton), previousButton(previousButton), closeButton(closeButton), tutorialUI(_tutorialUI), tutorialHighlightUI(_tutorialHighlightUI), tutorialBlockUI(_tutorialBlockUI), theSystem(system), graphUI(_graphUI), controlsUI(_controlsUI), potentialUI(_potentialUI), UIContainer(x, y, width, height){
         
         textBoxx = 250;
         textBoxy = 0;
@@ -134,7 +134,7 @@ namespace gui {
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             // Text box previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
-            
+            theSystem.setRunning(true);
             tutorialHighlightUI.moveTo(-50, 50);
             tutorialHighlightUI.setSize(30, 30);
 
@@ -188,6 +188,7 @@ namespace gui {
          Controls
          */
         
+        
         else if(counter == 5){
             
             textBoxy = 150;
@@ -204,11 +205,14 @@ namespace gui {
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
-            //tutorialHighlightUI.moveTo(250,0);
-            //tutorialHighlightUI.setSize(774, 160);
+            tutorialHighlightUI.moveTo(250,0);
+            tutorialHighlightUI.setSize(774, 160);
+            controlsUI.makeVisible();
+            
             
 
         }
+        
         
         else if(counter == 6){
             // Faded area
@@ -342,8 +346,8 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
+            tutorialHighlightUI.moveTo(250, 150);
+            tutorialHighlightUI.setSize(774, 300);
             tutorialBlockUI.moveTo(0, 0);
             tutorialBlockUI.setSize(250, 410);
             
@@ -950,11 +954,7 @@ namespace gui {
 
     }
     
-    bool TutorialHighlightAtom::mouseMoved(int x, int y, int button){
-        if (!controlsUI.getVisible() && tutorialContainer->getTutorialCounter() > 14 && tutorialContainer->getTutorialCounter() < 19){
-            controlsUI.makeVisible();
-            }
-    }
+
     
     
     
