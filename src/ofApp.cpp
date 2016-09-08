@@ -317,7 +317,7 @@ void ofApp::setup()
     
     // Tutorial UI
     tutorialUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
-    tutorialUI.addIndexedChild(new gui::TutorialContainer(0, 0, screenWidth, screenHeight, uiFont12, nextButton, previousButton, closeButton, tutorialUI, tutorialHighlightUI, tutorialBlockUI, theSystem, graphUI, controlsUI, potentialUI));
+    tutorialUI.addIndexedChild(new gui::TutorialContainer(0, 0, screenWidth, screenHeight, uiFont12, nextButton, previousButton, closeButton, tutorialUI, tutorialHighlightUI, tutorialBlockUI, theSystem, graphUI, controlsUI, potentialUI, systemUI, gaussianContainerIndex));
     tutorialUI.makeInvisible();
     tutorialUI.mouseReleased(0, 0, 0);
     
@@ -325,13 +325,13 @@ void ofApp::setup()
     
     // TutorialHighlight UI
     tutorialHighlightUI = gui::UIContainer(-50, 50, 30, 30);
-    tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255,255,255, 80), 0, 0, 30, 30));
+    //tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255,255,255, 80), 0, 0, 30, 30));
     tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, dynamic_cast<gui::TutorialContainer*>(tutorialUI.getChild(0)), tutorialHighlightUI, aboutUI, graphUI, potentialUI, controlsUI));
     tutorialHighlightUI.makeInvisible();
     tutorialHighlightUI.mouseReleased(0, 0, 0);
     
     tutorialBlockUI = gui::UIContainer(-50, 50, 30, 30);
-    tutorialBlockUI.addChild(new gui::RectAtom(ofColor(255,0,255, 80), 0, 0, 30, 30));
+    //tutorialBlockUI.addChild(new gui::RectAtom(ofColor(255,0,255, 80), 0, 0, 30, 30));
     
 }
 

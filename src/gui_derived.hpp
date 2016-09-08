@@ -660,7 +660,7 @@ namespace gui {
     class TutorialContainer : public UIContainer
     {
     public:
-        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &_tutorialUI, UIContainer &_tutorialHighlightUI, UIContainer &_tutorialBlockUI, md::MDContainer &system, UIContainer &_graphUI, UIContainer &_controlsUI, UIContainer &_potentialUI);
+        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &_tutorialUI, UIContainer &_tutorialHighlightUI, UIContainer &_tutorialBlockUI, md::MDContainer &system, UIContainer &_graphUI, UIContainer &_controlsUI, UIContainer &_potentialUI, UIContainer &_systemUI, int &_gaussianContainerIndex);
         
         int tutorialCounter;
         int textBoxx;
@@ -683,6 +683,8 @@ namespace gui {
         md::MDContainer& theSystem;
         UIContainer& controlsUI;
         UIContainer& potentialUI;
+        UIContainer&  systemUI;
+        int& gaussianContainerIndex;
         
     };
     
