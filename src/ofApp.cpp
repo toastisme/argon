@@ -146,10 +146,10 @@ void ofApp::setup()
      */
     
     // setup base container
-    controlsUI = gui::UIContainer(250, 0, 774, 160);
+    controlsUI = gui::UIContainer(250, 0, 774, 250);
     
     // menu background
-    controlsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 774, 160));
+    controlsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 774, 250));
     
     // sliders
    /*
@@ -159,7 +159,7 @@ void ofApp::setup()
                                              0.005, 0.1, uiFont12, textcolor, 3,
                                              100, 110, 150, 450, 70, 5, 30)); */
     
-    int optionsIndex = controlsUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolor, 524, 30, 200, 400, 130, 30));
+    int optionsIndex = controlsUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolor, 524, 30, 200, 420, 220,  30));
     
     gui::AtomsListAtom* options = (gui::AtomsListAtom *) controlsUI.getChild(optionsIndex);
     options->addOption("Temperature", [&] () { }, new gui::CircularSliderContainer([&] () { return theSystem.getTemp() * 120; },
@@ -183,6 +183,8 @@ void ofApp::setup()
                                                                                     if (gaussianID > -1) { theSystem.updateGaussian(gaussianID, 50 - set*100, 0.8 - 0.5*set, theSystem.getGaussianX0(gaussianID), theSystem.getGaussianY0(gaussianID)); } },
                                                                                 0.0, 1.0, uiFont10, ofColor(0, 0, 0, 0), 2, 0, -15, 120, 0, 0, 120));
 
+    options->addOption("Energy graphs", [&] () { }, new gui::EnergyGraphAtom(theSystem, 0, -15, 400, 200));
+    options->addOption("Maxwell", [&] () { }, new gui::EnergyGraphAtom(theSystem, 0, -15, 400, 200));
     
     // framerate counter
     /*
