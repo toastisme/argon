@@ -182,7 +182,7 @@ void ofApp::setup()
                                                                                     int gaussianID = gaussian->getSelectedID();
                                                                                     if (gaussianID > -1) { theSystem.updateGaussian(gaussianID, 50 - set*100, 0.8 - 0.5*set, theSystem.getGaussianX0(gaussianID), theSystem.getGaussianY0(gaussianID)); } },
                                                                                 0.0, 1.0, uiFont10, ofColor(0, 0, 0, 0), 2, 0, -15, 120, 0, 0, 120));
-    
+
     
     // framerate counter
     /*
@@ -526,6 +526,7 @@ void ofApp::mousePressed(int x, int y, int button) {
     // when the tutorial is running, only allow mouse events in the highlighted area
     if (tutorialUI.getVisible()){
         if (tutorialHighlightUI.mousePressed(x, y, button)){
+            printf("here\n");
             tutorialBlockUI.mousePressed(x, y, button) ||
             potentialUI.mousePressed(x, y, button)  ||
             controlsUI.mousePressed(x, y, button)       ||

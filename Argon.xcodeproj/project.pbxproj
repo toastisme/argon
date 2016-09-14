@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3F8461561D65FC1500D4C796 /* gui_derived_tutorial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F8461551D65FC1500D4C796 /* gui_derived_tutorial.cpp */; };
+		622BA4E91D8964A2008EF1C6 /* openFrameworks.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FF161571D4224FB0031019B /* openFrameworks.a */; };
 		623C212B1D021D8E00944B11 /* audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 623C21291D021D8E00944B11 /* audio.cpp */; };
 		623C212D1D07001B00944B11 /* utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 623C212C1D07001B00944B11 /* utilities.cpp */; };
 		624908FF1CF383C500625501 /* mdforces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 624908FD1CF383C500625501 /* mdforces.cpp */; };
@@ -18,7 +19,6 @@
 		62E300C61CF0D73000AEAC39 /* gui_derived.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62E300C31CF0D73000AEAC39 /* gui_derived.cpp */; };
 		62F48D781D2FF36B00408736 /* gui_derived_potential.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62F48D771D2FF36B00408736 /* gui_derived_potential.cpp */; };
 		62F48D7D1D33DB0400408736 /* gui_derived_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62F48D7C1D33DB0400408736 /* gui_derived_system.cpp */; };
-		9FF161581D4224FB0031019B /* openFrameworks.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FF161571D4224FB0031019B /* openFrameworks.a */; };
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
 /* End PBXBuildFile section */
@@ -55,6 +55,7 @@
 /* Begin PBXFileReference section */
 		3F8461551D65FC1500D4C796 /* gui_derived_tutorial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gui_derived_tutorial.cpp; sourceTree = "<group>"; };
 		621C697C1D422F3B007AE22A /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
+		622BA4E71D895957008EF1C6 /* openFrameworksDebug.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = openFrameworksDebug.a; path = ../../../libs/openFrameworksCompiled/lib/osx/openFrameworksDebug.a; sourceTree = "<group>"; };
 		623C21291D021D8E00944B11 /* audio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audio.cpp; sourceTree = "<group>"; };
 		623C212A1D021D8E00944B11 /* audio.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = audio.hpp; sourceTree = "<group>"; };
 		623C212C1D07001B00944B11 /* utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utilities.cpp; sourceTree = "<group>"; };
@@ -89,7 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9FF161581D4224FB0031019B /* openFrameworks.a in Frameworks */,
+				622BA4E91D8964A2008EF1C6 /* openFrameworks.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +115,7 @@
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
+				622BA4E71D895957008EF1C6 /* openFrameworksDebug.a */,
 				9FF161571D4224FB0031019B /* openFrameworks.a */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,

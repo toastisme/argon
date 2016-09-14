@@ -213,7 +213,7 @@ namespace gui {
             
             tutorialHighlightUI.moveTo(250,0);
             tutorialHighlightUI.setSize(774, 160);
-            controlsUI.makeVisible();
+            //controlsUI.makeVisible();
             
             
 
@@ -972,12 +972,13 @@ namespace gui {
     }
     
     bool TutorialHighlightAtom::mousePressed(int x, int y, int button){
+        bool inside = getRect().inside(x, y);
         if ((tutorialContainer->getTutorialCounter() == 4 || tutorialContainer->getTutorialCounter() == 11 ||
              tutorialContainer->getTutorialCounter()==19 || tutorialContainer->getTutorialCounter()==25) && bounds.inside(x,y)){
             tutorialContainer->incrementCounter();
             tutorialContainer->updateComponents(tutorialContainer->getTutorialCounter());
         }
-
+        return inside;
     }
     
 
