@@ -38,21 +38,33 @@ enum Position
     POS_BOTTOM_LEFT, POS_BOTTOM, POS_BOTTOM_RIGHT
 };
 
-struct coord
+union coord
 {
-    double x, y;
+    struct {
+        double x, y;
+    };
+    struct {
+        double u, v;
+    };
+    struct {
+        double left, top;
+    };
+    double elem[2];
     
     ofPoint ofPoint() const; // convert to openFrameworks ofPoint
 };
 
-struct rect
+union rect
 {
     /*
         Struct defining a rectangle. Data is stored as the position of each side of the
         rectangle, and various methods are given to get the width, height, centre, etc.
      */
     
-    double left, right, top, bottom;
+    struct {
+        double left, right, top, bottom;
+    };
+    double elem[4];
     
     double width()   const;
     double height()  const;
