@@ -267,12 +267,12 @@ namespace gui {
     // slider to between min and max.
     void CircularSliderAtom::setFromSliderPos(double x, double y) {
         // Get distance from centre of circle to x and y positions
-        x = bounds.left + radius - x;
-        y = bounds.top  + radius - y;
+        x = bounds.centreX() - x;
+        y = bounds.bottom - y;
         y = y > 0 ? y : 0;
         
         // Calculate angle of arc in degrees
-        double angle = atan2(y, x) * 180 / 3.14;
+        double angle = atan2(y, x) * 180 / PI;
         
         // Map this onto the value range
         setValue(ofMap(angle, 0, 180, min, max, true));
