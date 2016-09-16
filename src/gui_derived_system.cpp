@@ -146,15 +146,11 @@ namespace gui {
     
     void EnergyGraphAtom::render() {
         /*
-         Draws the kinetic/potential energy graphs as small red/blue circles
-         in the background.
+         Draws the kinetic/potential energy graphs.
          
          This rescales the values for the graphs using minEKin/Pot and maxEKin/Pot
          as the minimum/maximum values respectively.
          */
-        
-        //ofSetColor(80, 80, 80, 80);
-        //ofDrawRectangle(bounds.ofRect());
         
         int numPoints = theSystem.getNEnergies();
         
@@ -211,6 +207,64 @@ namespace gui {
         Epot.draw();
     }
     
+    /*
+        MaxwellGraphAtom
+     */
+    
+    MaxwellGraphAtom::MaxwellGraphAtom(md::MDContainer& _theSystem, int x, int y, int width, int height) : theSystem(_theSystem), UIAtom(x, y, width, height), numBins(100), numPrevMB(40), prevMB() {}
+    
+    void MaxwellGraphAtom::render() {
+        /*
+         Draws the Maxwell-Boltzmann distribution.
+         */
+        
+        //ofSetColor(80, 80, 80, 80);
+        //ofDrawRectangle(bounds.ofRect());
+        
+        double maxHeight = 0.1;
+        double maxSpeed = 10;
+        
+        rect maxwellSpace;
+        maxwellSpace.setLRTB(0, numBins, maxHeight, 0);
+        
+        prevMB.push_back(theSystem.maxwell(0, maxSpeed, numBins));
+        while (prevMB.size() > numPrevMB) {
+            prevMB.pop_front();
+        }
+        
+        coord point;
+        ofPolyline MBcurve;
+        MBcurve.addVertex(bounds.left, bounds.bottom);
+        
+        for (int i = 0; i < numBins; ++i) {
+            double sum = 0.0;
+            for (int j = 0; j < prevMB.size(); ++j) {
+                sum += prevMB[j][i];
+            }
+            
+            point = {(double)i + 0.5, sum / prevMB.size()};
+            point = BilinearMap(point, maxwellSpace, bounds);
+            MBcurve.addVertex(point.x, point.y);
+        }
+        
+        glScissor(bounds.left, 599 - bounds.bottom, bounds.width(), bounds.height() + 2);
+        glEnable(GL_SCISSOR_TEST);
+        
+        // draw tick lines
+        ofSetLineWidth(1);
+        ofSetColor(60, 60, 60);
+        for (int i = 0; i < 5; ++i) {
+            int height = bounds.top + bounds.height() * i / 4;
+            ofDrawLine(bounds.left, height, bounds.right, height);
+        }
+        
+        // plot energies
+        ofSetLineWidth(2);
+        ofSetColor(255, 255, 255);
+        MBcurve.draw();
+        
+        glDisable(GL_SCISSOR_TEST);
+    }
     
     
     /*

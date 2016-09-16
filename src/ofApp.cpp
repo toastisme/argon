@@ -194,7 +194,7 @@ void ofApp::setup()
                                                      POS_TOP_LEFT, 125, 166, 100, 20));
 
     options->addOption("Energy graphs", [&] () { }, (gui::UIBase*)energyGraphContainer);
-    options->addOption("Maxwell-Boltzmann", [&] () { }, new gui::EnergyGraphAtom(theSystem, -45, 0, 514, 169));
+    options->addOption("Maxwell-Boltzmann", [&] () { }, new gui::MaxwellGraphAtom(theSystem, -45, 0, 514, 169));
     
     // framerate counter
     /*

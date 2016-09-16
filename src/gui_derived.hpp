@@ -403,7 +403,7 @@ namespace gui {
     class PotentialAtom : public UIAtom
     {
     /*
-        UI atom to plot a function
+        UI atom to plot a potential and superimpose a violin graph of the RDF
      */
     
     public:
@@ -534,6 +534,24 @@ namespace gui {
         
     public:
         EnergyGraphAtom(md::MDContainer& theSystem, int x, int y, int width, int height);
+    };
+    
+    class MaxwellGraphAtom : public UIAtom
+    {
+        /*
+            UI Atom for graph of the Maxwell-Boltzmann distribution
+         */
+        
+    private:
+        md::MDContainer& theSystem;
+        int numBins;                               // number of M-B bins
+        int numPrevMB;                             // number of timesteps to average over
+        std::deque <std::vector <double>> prevMB;  // vector of previous M-B distributions
+        
+        virtual void render();
+        
+    public:
+        MaxwellGraphAtom(md::MDContainer& theSystem, int x, int y, int width, int height);
     };
     
     /*
