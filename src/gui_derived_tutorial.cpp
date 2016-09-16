@@ -53,6 +53,31 @@ namespace gui {
         ofColor textColor = ofColor(255, 255, 240);
         ofColor notHighlightedColor = ofColor(50, 50, 50, 210);
         
+        // Highlight UI Container positions
+        ofRectangle offScreen(-50, 50, 30, 30);
+        ofRectangle playReset(200, 290, 30, 70);
+        ofRectangle controlsButton(200, 50, 30, 30);
+        ofRectangle controlsUI(250, 0, 774, 200);
+        ofRectangle systemsUIWithoutControls(0, 210, 1024, 240);
+        ofRectangle systemsUI(0, 0, 1024, 450);
+        ofRectangle potentialButton(200, 90, 30, 30);
+        ofRectangle potentialUI(50, 50, 924, 450);
+        
+        // Block UI container positions
+        ofRectangle optionsUI(0, 0, 250, 370);
+        ofRectangle optionsUIBelowAbout(0, 0, 250, 245);
+        
+        // notHighlight positions
+        ofRectangle leftSide(0,0, 250, 600);
+        ofRectangle rightSide(250, 150, 774, 450);
+        ofRectangle optionsUIAboveReset(0, 0, 250, 285);
+        ofRectangle optionsUIAboveControls(0, 0, 250, 45);
+        ofRectangle optionsUIBelowControls(0, 85, 250, 285);
+        ofRectangle optionsUIAbovePotential(0, 0, 250, 85);
+        ofRectangle optionsUIBelowPotential(0, 127, 250, 283);
+        ofRectangle potentialUIbuttons(50, 175, 150, 375);
+        
+        
         int size = children.size() - 1;
         for (int i = size; i >= 0; i--){
             delete children[i];
@@ -72,8 +97,8 @@ namespace gui {
             
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 600));
-            addChild(new RectAtom(notHighlightedColor, 250, 150, 774, 450));
+            addChild(new RectAtom(notHighlightedColor, leftSide.x, leftSide.y, leftSide.width, leftSide.height));
+            addChild(new RectAtom(notHighlightedColor, rightSide.x, rightSide.y, rightSide.width, rightSide.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
@@ -87,17 +112,17 @@ namespace gui {
             
             // The two containers used to control mouse events are initially set to offscreen
             // The tutorialHighlight must be set for each slide, as the user can move back and forth through the section
-            tutorialHighlightUI.moveTo(-50, 50);
-            tutorialHighlightUI.setSize(30, 30);
-            tutorialBlockUI.moveTo(-50, 50);
-            tutorialBlockUI.setSize(30,30);
+            tutorialHighlightUI.moveTo(offScreen.x, offScreen.y);
+            tutorialHighlightUI.setSize(offScreen.width, offScreen.height);
+            tutorialBlockUI.moveTo(offScreen.x, offScreen.y);
+            tutorialBlockUI.setSize(offScreen.height, offScreen.width);
             
         }
         
         
         else if (counter == 1){
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            addChild(new RectAtom(notHighlightedColor, optionsUI.x, optionsUI.y, optionsUI.width, optionsUI.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
@@ -115,8 +140,11 @@ namespace gui {
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             tutorialHighlightUI.makeVisible();
             tutorialBlockUI.makeVisible();
-            tutorialHighlightUI.moveTo(-50, 50);
-            tutorialHighlightUI.setSize(30, 30);
+            
+            tutorialHighlightUI.moveTo(offScreen.x, offScreen.y);
+            tutorialHighlightUI.setSize(offScreen.width, offScreen.height);
+            
+            // Set the system to sensible parameters for the start of the tutorial
             theSystem.setNAfterReset(60);
             theSystem.setTemp(0.4);
             theSystem.setStepsPerUpdate(5);
@@ -128,7 +156,7 @@ namespace gui {
         
         else if (counter == 2){
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            addChild(new RectAtom(notHighlightedColor, optionsUI.x, optionsUI.y, optionsUI.width, optionsUI.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
@@ -141,14 +169,15 @@ namespace gui {
             // Text box previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             theSystem.setRunning(true);
-            tutorialHighlightUI.moveTo(-50, 50);
-            tutorialHighlightUI.setSize(30, 30);
+            
+            tutorialHighlightUI.moveTo(offScreen.x, offScreen.y);
+            tutorialHighlightUI.setSize(offScreen.width, offScreen.height);
 
-        } //330
+        }
         
         else if (counter == 3){
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 325));
+            addChild(new RectAtom(notHighlightedColor, optionsUIAboveReset.x, optionsUIAboveReset.y, optionsUIAboveReset.width, optionsUIAboveReset.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
@@ -162,8 +191,9 @@ namespace gui {
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
-            tutorialHighlightUI.moveTo(200,330);
-            tutorialHighlightUI.setSize(30, 70);
+            
+            tutorialHighlightUI.moveTo(playReset.x, playReset.y);
+            tutorialHighlightUI.setSize(playReset.width, playReset.height);
             
             
             
@@ -173,8 +203,8 @@ namespace gui {
         
         else if (counter == 4){
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 45));
-            addChild(new RectAtom(notHighlightedColor, 0, 85, 250, 325));
+            addChild(new RectAtom(notHighlightedColor, optionsUIAboveControls.x, optionsUIAboveControls.y, optionsUIAboveControls.width, optionsUIAboveControls.height));
+            addChild(new RectAtom(notHighlightedColor, optionsUIBelowControls.x, optionsUIBelowControls.y, optionsUIBelowControls.width, optionsUIBelowControls.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
@@ -185,8 +215,9 @@ namespace gui {
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
-            tutorialHighlightUI.moveTo(200,50);
-            tutorialHighlightUI.setSize(30, 30);
+            
+            tutorialHighlightUI.moveTo(controlsButton.x, controlsButton.y);
+            tutorialHighlightUI.setSize(controlsButton.width, controlsButton.height);
             theSystem.setRunning(true); // Ensures the particles are moving for the rest of the tutorial
         }
         
@@ -197,10 +228,10 @@ namespace gui {
         
         else if(counter == 5){
             
-            textBoxy = 150;
+            textBoxy = 200;
 
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            addChild(new RectAtom(notHighlightedColor, optionsUI.x, optionsUI.y, optionsUI.width, optionsUI.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
@@ -211,9 +242,8 @@ namespace gui {
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(250,0);
-            tutorialHighlightUI.setSize(774, 160);
-            //controlsUI.makeVisible();
+            tutorialHighlightUI.moveTo(controlsUI.x, controlsUI.y);
+            tutorialHighlightUI.setSize(controlsUI.width, controlsUI.height);
             
             
 
@@ -222,7 +252,7 @@ namespace gui {
         
         else if(counter == 6){
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            addChild(new RectAtom(notHighlightedColor, optionsUI.x, optionsUI.y, optionsUI.width, optionsUI.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
@@ -237,15 +267,15 @@ namespace gui {
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
 
-            tutorialHighlightUI.moveTo(250,0);
-            tutorialHighlightUI.setSize(774, 160);
+            tutorialHighlightUI.moveTo(controlsUI.x, controlsUI.y);
+            tutorialHighlightUI.setSize(controlsUI.width, controlsUI.height);
 
         }
         
         else if(counter == 7){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            addChild(new RectAtom(notHighlightedColor, optionsUI.x, optionsUI.y, optionsUI.width, optionsUI.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
@@ -258,15 +288,15 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(250,0);
-            tutorialHighlightUI.setSize(774, 160);
+            tutorialHighlightUI.moveTo(controlsUI.x, controlsUI.y);
+            tutorialHighlightUI.setSize(controlsUI.width, controlsUI.height);
             
         }
         
         else if(counter == 8){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            addChild(new RectAtom(notHighlightedColor, optionsUI.x, optionsUI.y, optionsUI.width, optionsUI.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
@@ -280,15 +310,15 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(250,0);
-            tutorialHighlightUI.setSize(774, 160);
+            tutorialHighlightUI.moveTo(controlsUI.x, controlsUI.y);
+            tutorialHighlightUI.setSize(controlsUI.width, controlsUI.height);
             
         }
         
         else if(counter == 9){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            addChild(new RectAtom(notHighlightedColor, optionsUI.x, optionsUI.y, optionsUI.width, optionsUI.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
@@ -301,20 +331,20 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(250,0);
-            tutorialHighlightUI.setSize(774, 160);
+            tutorialHighlightUI.moveTo(controlsUI.x, controlsUI.y);
+            tutorialHighlightUI.setSize(controlsUI.width, controlsUI.height);
             
         }
         
         else if(counter == 10){
             
             textBoxx = 250;
-            textBoxy = 150;
+            textBoxy = 200;
             textBoxWidth = 774;
             textBoxHeight = 150;
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            addChild(new RectAtom(notHighlightedColor, optionsUI.x, optionsUI.y, optionsUI.width, optionsUI.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
@@ -327,8 +357,8 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(250,0);
-            tutorialHighlightUI.setSize(774, 160);
+            tutorialHighlightUI.moveTo(controlsUI.x, controlsUI.y);
+            tutorialHighlightUI.setSize(controlsUI.width, controlsUI.height);
             
         }
         
@@ -340,7 +370,7 @@ namespace gui {
             textBoxHeight = 150;
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            addChild(new RectAtom(notHighlightedColor, optionsUI.x, optionsUI.y, optionsUI.width, optionsUI.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
@@ -352,10 +382,10 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(250, 150);
-            tutorialHighlightUI.setSize(774, 300);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 410);
+            tutorialHighlightUI.moveTo(systemsUIWithoutControls.x, systemsUIWithoutControls.y);
+            tutorialHighlightUI.setSize(systemsUIWithoutControls.width, systemsUIWithoutControls.height);
+            tutorialBlockUI.moveTo(optionsUI.x, optionsUI.y);
+            tutorialBlockUI.setSize(optionsUI.width, optionsUI.height);
             
         }
         
@@ -367,33 +397,33 @@ namespace gui {
             textBoxHeight = 150;
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            addChild(new RectAtom(notHighlightedColor, optionsUI.x, optionsUI.y, optionsUI.width, optionsUI.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("These interact with particles by attracting or repelling them.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
-            addChild(new TextAtom("1/8", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("1/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 75, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
        
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 410);
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUI.x, optionsUI.y);
+            tutorialBlockUI.setSize(optionsUI.width, optionsUI.height);
             
         }
         
         else if(counter == 13){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            addChild(new RectAtom(notHighlightedColor, optionsUI.x, optionsUI.y, optionsUI.width, optionsUI.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("The size of the gaussian is controlled by the sound through your microphone.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
-            addChild(new TextAtom("2/8", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("2/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 75, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Text box next button
@@ -401,23 +431,23 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 410);
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUI.x, optionsUI.y);
+            tutorialBlockUI.setSize(optionsUI.width, optionsUI.height);
             
         }
         
         else if(counter == 14){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 410));
+            addChild(new RectAtom(notHighlightedColor, optionsUI.x, optionsUI.y, optionsUI.width, optionsUI.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("The louder the sound, the more the gaussian will repel particles.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
             addChild(new TextAtom("When no sound is registered, the gaussian will attract particles.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
-            addChild(new TextAtom("3/8", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("3/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 75, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Text box next button
@@ -425,10 +455,10 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 410);
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUI.x, optionsUI.y);
+            tutorialBlockUI.setSize(optionsUI.width, optionsUI.height);
             theSystem.setRunning(true);
             
 
@@ -438,12 +468,12 @@ namespace gui {
         else if(counter == 15){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 245));
+            addChild(new RectAtom(notHighlightedColor, optionsUIBelowAbout.x, optionsUIBelowAbout.y, optionsUIBelowAbout.width, optionsUIBelowAbout.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("The Mic On/Off button controls if sound is heard through your microphone.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
-            addChild(new TextAtom("4/8", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("4/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 75, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Text box next button
@@ -451,23 +481,23 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 245);
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUIBelowAbout.x, optionsUIBelowAbout.y);
+            tutorialBlockUI.setSize(optionsUIBelowAbout.width, optionsUIBelowAbout.height);
             
         }
         
         else if(counter == 16){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 245));
+            addChild(new RectAtom(notHighlightedColor, optionsUIBelowAbout.x, optionsUIBelowAbout.y, optionsUIBelowAbout.width, optionsUIBelowAbout.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("When this is selected, you can instead control the strength", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
             addChild(new TextAtom("of the gaussians with the slider.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
-            addChild(new TextAtom("5/8", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("5/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 75, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Text box next button
@@ -475,23 +505,23 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 245);
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUIBelowAbout.x, optionsUIBelowAbout.y);
+            tutorialBlockUI.setSize(optionsUIBelowAbout.width, optionsUIBelowAbout.height);
             
         }
         
         else if(counter == 17){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 245));
+            addChild(new RectAtom(notHighlightedColor, optionsUIBelowAbout.x, optionsUIBelowAbout.y, optionsUIBelowAbout.width, optionsUIBelowAbout.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("Gaussians are selected by left-clicking on them, and moved by", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
             addChild(new TextAtom("holding down the left mouse button and dragging.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
-            addChild(new TextAtom("6/8", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("6/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 75, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Text box next button
@@ -499,23 +529,23 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 245);
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUIBelowAbout.x, optionsUIBelowAbout.y);
+            tutorialBlockUI.setSize(optionsUIBelowAbout.width, optionsUIBelowAbout.height);
             
         }
         
         else if(counter == 18){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 245));
+            addChild(new RectAtom(notHighlightedColor, optionsUIBelowAbout.x, optionsUIBelowAbout.y, optionsUIBelowAbout.width, optionsUIBelowAbout.height));
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("Right-click on a gaussian to remove it, or use the Reset gaussians", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
             addChild(new TextAtom("button to remove all gaussians on the screen.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
-            addChild(new TextAtom("7/8", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("7/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 75, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Text box next button
@@ -523,72 +553,72 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 245);
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUIBelowAbout.x, optionsUIBelowAbout.y);
+            tutorialBlockUI.setSize(optionsUIBelowAbout.width, optionsUIBelowAbout.height);
             
         }
         
         else if(counter == 19){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 125));
-            addChild(new RectAtom(notHighlightedColor, 0, 165, 250, 240));
+            addChild(new RectAtom(notHighlightedColor, optionsUIBelowAbout.x, optionsUIBelowAbout.y, optionsUIBelowAbout.width, optionsUIBelowAbout.height));
 
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
-            addChild(new TextAtom("To see how these gaussians are changing the system, you can plot", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
-            addChild(new TextAtom("the properties of the particles by selecting the Graphs button.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
-            addChild(new TextAtom("8/8", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("The remaining Controls buttons plot properties of the system in real time.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("8/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 75, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
+            // Text box next button
+            addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
 
-            tutorialHighlightUI.moveTo(200, 130);
-            tutorialHighlightUI.setSize(30, 30);
-            tutorialBlockUI.moveTo(-50, 50);
-            tutorialBlockUI.setSize(30,30);
-            theSystem.setRunning(true);
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUIBelowAbout.x, optionsUIBelowAbout.y);
+            tutorialBlockUI.setSize(optionsUIBelowAbout.width, optionsUIBelowAbout.height);
             
         }
         
         else if(counter == 20){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 245));
+            addChild(new RectAtom(notHighlightedColor, optionsUIBelowAbout.x, optionsUIBelowAbout.y, optionsUIBelowAbout.width, optionsUIBelowAbout.height));
             
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
-            addChild(new TextAtom("The kinetic energy graph plots the velocity of all particles in the system over time.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
-            addChild(new TextAtom("1/6", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("The energy graphs plot the kinetic and potential energy of the  system over time.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("9/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 75, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
-
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            // Previous button
+            addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 245);
-            graphUI.makeVisible();
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUIBelowAbout.x, optionsUIBelowAbout.y);
+            tutorialBlockUI.setSize(optionsUIBelowAbout.width, optionsUIBelowAbout.height);
+
         }
         
         else if(counter == 21){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 245));
+            addChild(new RectAtom(notHighlightedColor, optionsUIBelowAbout.x, optionsUIBelowAbout.y, optionsUIBelowAbout.width, optionsUIBelowAbout.height));
             
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
-            addChild(new TextAtom("The potential energy graph sums the interactions of all particles with each other", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
-            addChild(new TextAtom("and with the gaussians over time.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
-            addChild(new TextAtom("2/6", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("The kinetic energy is the sum of all particle velocities, while the potential energy graph sums the", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
+            addChild(new TextAtom("interactions of all particles with each other, and with the gaussians.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
+            addChild(new TextAtom("10/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 85, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Previous button
@@ -597,24 +627,24 @@ namespace gui {
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
 
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 245);
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUIBelowAbout.x, optionsUIBelowAbout.y);
+            tutorialBlockUI.setSize(optionsUIBelowAbout.width, optionsUIBelowAbout.height);
             
         }
         
         else if(counter == 22){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 245));
+            addChild(new RectAtom(notHighlightedColor, optionsUIBelowAbout.x, optionsUIBelowAbout.y, optionsUIBelowAbout.width, optionsUIBelowAbout.height));
             
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("Although kinetic energy is being converted into potential energy, the two graphs", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
             addChild(new TextAtom("are not exact inverses of each other, as the system is being heated.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
-            addChild(new TextAtom("3/6", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("11/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 85, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Previous button
@@ -622,23 +652,23 @@ namespace gui {
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 245);
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUIBelowAbout.x, optionsUIBelowAbout.y);
+            tutorialBlockUI.setSize(optionsUIBelowAbout.width, optionsUIBelowAbout.height);
             
         }
         
         else if(counter == 23){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 245));
+            addChild(new RectAtom(notHighlightedColor, optionsUIBelowAbout.x, optionsUIBelowAbout.y, optionsUIBelowAbout.width, optionsUIBelowAbout.height));
             
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("The Maxwell-Boltzmann plot shows the number of particles with different velocities.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
-            addChild(new TextAtom("4/6", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("12/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 85, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Previous button
@@ -646,24 +676,24 @@ namespace gui {
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 245);
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUIBelowAbout.x, optionsUIBelowAbout.y);
+            tutorialBlockUI.setSize(optionsUIBelowAbout.width, optionsUIBelowAbout.height);
             
         }
         
         else if(counter == 24){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 245));
+            addChild(new RectAtom(notHighlightedColor, optionsUIBelowAbout.x, optionsUIBelowAbout.y, optionsUIBelowAbout.width, optionsUIBelowAbout.height));
             
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("For a given temperature, the system will always reach the same distribution of velocities,", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
             addChild(new TextAtom("if the number of particles is large enough.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
-            addChild(new TextAtom("5/6", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("13/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 85, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Previous button
@@ -671,61 +701,63 @@ namespace gui {
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(0, 0);
-            tutorialHighlightUI.setSize(1024, 450);
-            tutorialBlockUI.moveTo(0, 0);
-            tutorialBlockUI.setSize(250, 245);
+            tutorialHighlightUI.moveTo(systemsUI.x, systemsUI.y);
+            tutorialHighlightUI.setSize(systemsUI.width, systemsUI.height);
+            tutorialBlockUI.moveTo(optionsUIBelowAbout.x, optionsUIBelowAbout.y);
+            tutorialBlockUI.setSize(optionsUIBelowAbout.width, optionsUIBelowAbout.height);
             
         }
         
         else if(counter == 25){
             
             // Faded area
-            addChild(new RectAtom(notHighlightedColor, 0, 0, 250, 85));
-            addChild(new RectAtom(notHighlightedColor, 0, 127, 250, 283));
+            addChild(new RectAtom(notHighlightedColor, optionsUIAbovePotential.x, optionsUIAbovePotential.y, optionsUIAbovePotential.width, optionsUIAbovePotential.height));
+            addChild(new RectAtom(notHighlightedColor, optionsUIBelowPotential.x, optionsUIBelowPotential.y, optionsUIBelowPotential.width, optionsUIBelowPotential.height));
             
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("How the particles interact with each other depends on the potential used.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 50, 600, 20));
             addChild(new TextAtom("You can modify this by left-clicking the Potentials button.", aboutFont12, textColor, POS_CENTRE, textBoxx + 220, textBoxy + 80, 600, 20));
-            addChild(new TextAtom("6/6", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 70, textBoxy + textBoxHeight - 30, 600, 20));
+            addChild(new TextAtom("14/14", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 85, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             
             
-            tutorialHighlightUI.moveTo(200, 90);
-            tutorialHighlightUI.setSize(30, 30);
-            tutorialBlockUI.moveTo(-50, 50);
-            tutorialBlockUI.setSize(30,30);
+            tutorialHighlightUI.moveTo(potentialButton.x, potentialButton.y);
+            tutorialHighlightUI.setSize(potentialButton.width, potentialButton.height);
+            tutorialBlockUI.moveTo(offScreen.x, offScreen.y);
+            tutorialBlockUI.setSize(offScreen.height, offScreen.width);
         }
         
         else if(counter == 26){
             
             textBoxx = 200;
-            textBoxy = 480;
+            textBoxy = 500;
             textBoxWidth = 774;
             textBoxHeight = 100;
             
-            addChild(new RectAtom(notHighlightedColor, 50, 175, 150, 400));
+            addChild(new RectAtom(notHighlightedColor, potentialUIbuttons.x, potentialUIbuttons.y, potentialUIbuttons.width, potentialUIbuttons.height));
             
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
             addChild(new TextAtom("Particles attract and repel each other based on the potential selected.", aboutFont12, textColor, POS_CENTRE, textBoxx + 80, textBoxy + 10, 600, 20));
-            addChild(new TextAtom("(The control parameters have now been modified to show this more clearly.)", aboutFont12, textColor, POS_CENTRE, textBoxx + 80, textBoxy + 40, 600, 20));
+            addChild(new TextAtom("(The Controls parameters have now been modified to show this more clearly.)", aboutFont12, textColor, POS_CENTRE, textBoxx + 80, textBoxy + 40, 600, 20));
             addChild(new TextAtom("1/10", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 75, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
+            // Change system parameters to values to better explain the potentials section
             theSystem.setNAfterReset(20);
             theSystem.setTemp(0.04);
             theSystem.setStepsPerUpdate(20);
             ((gui::GaussianContainer *)systemUI.getChild(gaussianContainerIndex))->destroyAllGaussians();
+            theSystem.setPotential(LENNARD_JONES);
             theSystem.resetSystem();
             theSystem.setRunning(true);
 
@@ -734,16 +766,17 @@ namespace gui {
         else if(counter == 27){
             
             textBoxx = 200;
-            textBoxy = 480;
+            textBoxy = 500;
             textBoxWidth = 774;
             textBoxHeight = 100;
             
-            addChild(new RectAtom(notHighlightedColor, 50, 175, 150, 400));
+            addChild(new RectAtom(notHighlightedColor, potentialUIbuttons.x, potentialUIbuttons.y, potentialUIbuttons.width, potentialUIbuttons.height));
             
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
-            addChild(new TextAtom("The x-axis corresponds to the distance between particles, and the y-axis is energy.", aboutFont12, textColor, POS_CENTRE, textBoxx + 80, textBoxy + 10, 600, 20));
+            addChild(new TextAtom("The x-axis corresponds to the distance between particles,", aboutFont12, textColor, POS_CENTRE, textBoxx + 80, textBoxy + 10, 600, 20));
+            addChild(new TextAtom("and the y-axis is energy.", aboutFont12, textColor, POS_CENTRE, textBoxx + 80, textBoxy + 40, 600, 20));
             addChild(new TextAtom("2/10", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 75, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));
@@ -757,11 +790,11 @@ namespace gui {
         else if(counter == 28){
             
             textBoxx = 200;
-            textBoxy = 480;
+            textBoxy = 500;
             textBoxWidth = 774;
             textBoxHeight = 100;
             
-            addChild(new RectAtom(notHighlightedColor, 50, 175, 150, 400));
+            addChild(new RectAtom(notHighlightedColor, potentialUIbuttons.x, potentialUIbuttons.y, potentialUIbuttons.width, potentialUIbuttons.height));
             
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
@@ -781,11 +814,11 @@ namespace gui {
         else if(counter == 29){
             
             textBoxx = 200;
-            textBoxy = 480;
+            textBoxy = 500;
             textBoxWidth = 774;
             textBoxHeight = 100;
             
-            addChild(new RectAtom(notHighlightedColor, 50, 175, 150, 400));
+            addChild(new RectAtom(notHighlightedColor, potentialUIbuttons.x, potentialUIbuttons.y, potentialUIbuttons.width, potentialUIbuttons.height));
             
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
@@ -798,6 +831,8 @@ namespace gui {
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
+            tutorialHighlightUI.moveTo(offScreen.x, offScreen.y);
+            tutorialHighlightUI.setSize(offScreen.width, offScreen.height);
             
         }
         
@@ -809,7 +844,7 @@ namespace gui {
         else if(counter == 30){
             
             textBoxx = 200;
-            textBoxy = 480;
+            textBoxy = 500;
             textBoxWidth = 774;
             textBoxHeight = 100;
             
@@ -826,15 +861,15 @@ namespace gui {
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(50, 50);
-            tutorialHighlightUI.setSize(924, 500);
+            tutorialHighlightUI.moveTo(potentialUI.x, potentialUI.y);
+            tutorialHighlightUI.setSize(potentialUI.width, potentialUI.height);
             
         }
         
         else if(counter == 31){
             
             textBoxx = 200;
-            textBoxy = 480;
+            textBoxy = 500;
             textBoxWidth = 774;
             textBoxHeight = 100;
             
@@ -850,15 +885,15 @@ namespace gui {
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(50, 50);
-            tutorialHighlightUI.setSize(924, 500);
+            tutorialHighlightUI.moveTo(potentialUI.x, potentialUI.y);
+            tutorialHighlightUI.setSize(potentialUI.width, potentialUI.height);
             
         }
         
         else if(counter == 32){
             
             textBoxx = 200;
-            textBoxy = 480;
+            textBoxy = 500;
             textBoxWidth = 774;
             textBoxHeight = 100;
             
@@ -875,8 +910,8 @@ namespace gui {
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(50, 50);
-            tutorialHighlightUI.setSize(924, 500);
+            tutorialHighlightUI.moveTo(potentialUI.x, potentialUI.y);
+            tutorialHighlightUI.setSize(potentialUI.width, potentialUI.height);
 
             
         }
@@ -884,7 +919,7 @@ namespace gui {
         else if(counter == 33){
             
             textBoxx = 200;
-            textBoxy = 480;
+            textBoxy = 500;
             textBoxWidth = 774;
             textBoxHeight = 100;
             
@@ -901,15 +936,15 @@ namespace gui {
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(50, 50);
-            tutorialHighlightUI.setSize(924, 500);
+            tutorialHighlightUI.moveTo(potentialUI.x, potentialUI.y);
+            tutorialHighlightUI.setSize(potentialUI.width, potentialUI.height);
             
         }
         
         else if(counter == 34){
             
             textBoxx = 200;
-            textBoxy = 480;
+            textBoxy = 500;
             textBoxWidth = 774;
             textBoxHeight = 100;
             
@@ -926,15 +961,15 @@ namespace gui {
             // Text box next button
             addChild(new ButtonAtom([&] () {tutorialCounter++; updateComponents(tutorialCounter);}, nextButton, textBoxx + textBoxWidth - 35, textBoxy + textBoxHeight - 35, 30, 30));
             
-            tutorialHighlightUI.moveTo(50, 50);
-            tutorialHighlightUI.setSize(924, 500);
+            tutorialHighlightUI.moveTo(potentialUI.x, potentialUI.y);
+            tutorialHighlightUI.setSize(potentialUI.width, potentialUI.height);
             
         }
         
         else if(counter == 35){
             
             textBoxx = 200;
-            textBoxy = 480;
+            textBoxy = 500;
             textBoxWidth = 774;
             textBoxHeight = 100;
             
@@ -949,8 +984,8 @@ namespace gui {
             // Previous button
             addChild(new ButtonAtom([&] () {tutorialCounter--; updateComponents(tutorialCounter);}, previousButton, textBoxx + 5, textBoxy + textBoxHeight - 35, 30, 30));
 
-            tutorialHighlightUI.moveTo(50, 50);
-            tutorialHighlightUI.setSize(924, 500);
+            tutorialHighlightUI.moveTo(potentialUI.x, potentialUI.y);
+            tutorialHighlightUI.setSize(potentialUI.width, potentialUI.height);
             
         }
 
@@ -973,8 +1008,7 @@ namespace gui {
     
     bool TutorialHighlightAtom::mousePressed(int x, int y, int button){
         bool inside = getRect().inside(x, y);
-        if ((tutorialContainer->getTutorialCounter() == 4 || tutorialContainer->getTutorialCounter() == 11 ||
-             tutorialContainer->getTutorialCounter()==19 || tutorialContainer->getTutorialCounter()==25) && bounds.inside(x,y)){
+        if ((tutorialContainer->getTutorialCounter() == 4 || tutorialContainer->getTutorialCounter() == 11 || tutorialContainer->getTutorialCounter()==25) && bounds.inside(x,y)){
             tutorialContainer->incrementCounter();
             tutorialContainer->updateComponents(tutorialContainer->getTutorialCounter());
         }

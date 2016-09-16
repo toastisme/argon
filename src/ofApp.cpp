@@ -378,6 +378,7 @@ void ofApp::setup()
     
     tutorialBlockUI = gui::UIContainer(-50, 50, 30, 30);
     //tutorialBlockUI.addChild(new gui::RectAtom(ofColor(255,0,255, 80), 0, 0, 30, 30));
+    tutorialBlockUI.mouseReleased(0, 0, 0);
     
 }
 
@@ -573,7 +574,7 @@ void ofApp::mousePressed(int x, int y, int button) {
     if (button == 3) { printf("%d %d\n", x, y); }
     
     if (tutorialUI.getVisible()){
-        if (tutorialHighlightUI.mousePressed(x, y, button)){
+        if (!tutorialBlockUI.mousePressed(x,y, button) && tutorialHighlightUI.mousePressed(x, y, button)){
             tutorialBlockUI.mousePressed(x, y, button) ||
             potentialUI.mousePressed(x, y, button)  ||
             controlsUI.mousePressed(x, y, button)       ||
