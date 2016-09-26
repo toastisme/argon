@@ -128,22 +128,6 @@ void ofApp::setup()
     systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, boatLeft, boatRight, 0, 0, screenWidth, screenHeight));
     
     /*
-    // Setup graph UI
-    graphUI = gui::UIContainer(624, 160, 400, 300);
-    
-    // Add the graph itself
-    graphUI.addChild(new gui::EnergyGraphAtom(theSystem, 0, 0, 400, 200));
-    
-    // Add a legend
-    graphUI.addChild(new gui::TextAtom("Kinetic Energy", uiFont10, ofColor(200, 0, 0),
-                                       POS_TOP_LEFT, 5, 205, 100, 20));
-    graphUI.addChild(new gui::TextAtom("Potential Energy", uiFont10, ofColor(255, 255, 255),
-                                       POS_TOP_LEFT, 125, 205, 100, 20));
-    
-    graphUI.makeInvisible();
-     */
-    
-    /*
          Setup menu UI
      */
     
@@ -154,14 +138,6 @@ void ofApp::setup()
     controlsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 774, 209));
     
     // sliders
-   /*
-    controlsUI.addChild(new gui::SliderContainer("Audio input level",
-                                             [&] () { return micInput.getMaxAmplitude(); },
-                                             [&] (double set) { micInput.setMaxAmplitude(set + 0.005); },
-                                             0.005, 0.1, uiFont12, textcolor, 3,
-                                             100, 110, 150, 450, 70, 5, 30)); */
-    
-    // 169
     int optionsIndex = controlsUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolor, 554, 20, 200, 514, 169, 20));
     
     gui::AtomsListAtom* options = (gui::AtomsListAtom *) controlsUI.getChild(optionsIndex);
@@ -196,57 +172,12 @@ void ofApp::setup()
     options->addOption("Energy graphs", [&] () { }, (gui::UIBase*)energyGraphContainer);
     options->addOption("Maxwell-Boltzmann", [&] () { }, new gui::MaxwellGraphAtom(theSystem, -45, 0, 514, 169));
     
-    // framerate counter
-    /*
-    controlsUI.addChild(new gui::ValueAtom([&] () { return ofGetFrameRate(); },
-                                       1, uiFont14, textcolor,
-                                       POS_BOTTOM_RIGHT, 560, 160, 200, 30));
-     */
     controlsUI.makeInvisible();
     controlsUI.mouseReleased(0, 0, 0);
     
     
     potentialUI = gui::UIContainer(50, 50, 924, 500);
     potentialUI.addChild(new gui::PotentialContainer(theSystem, uiFont12, ljThumbnail, squareThumbnail, morseThumbnail, customThumbnail, resetButton));
-    
-    /*
-    potentialUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 924, 500));
-    potentialUI.addChild(new gui::RectAtom(bgcolor, 150, 0, 774, 500));
-    
-    // Setup potential atoms
-    potentialUI.addChild(new gui::PotentialAtom(theSystem, 300, 0.95, 3.0, -2, 2,
-                                                150, 0, 774, 500));
-    splineContainerIndex = potentialUI.addIndexedChild(new gui::SplineContainer(theSystem, 0.95, 3.0, -2, 2, 15,
-                                                                                150, 0, 774, 500));
-    
-    potentialUI.addChild(new gui::SetColour(textcolor));
-    
-    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(LENNARD_JONES);
-                                                      potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
-                                             ljThumbnail, 25, 0, 100, 100));
-    potentialUI.addChild(new gui::TextAtom("Lennard-Jones", uiFont12, textcolor, POS_TOP, 0, 100, 150, 25));
-    
-    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(SQUARE_WELL);
-                                                      potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
-                                             squareThumbnail, 25, 125, 100, 100));
-    potentialUI.addChild(new gui::TextAtom("Square Well", uiFont12, textcolor, POS_TOP, 0, 225, 150, 25));
-    
-    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(MORSE);
-                                                      potentialUI.getChild(splineContainerIndex)->makeInvisible(); },
-                                             morseThumbnail, 25, 250, 100, 100));
-    potentialUI.addChild(new gui::TextAtom("Morse", uiFont12, textcolor, POS_TOP, 0, 350, 150, 25));
-    
-    potentialUI.addChild(new gui::ButtonAtom([&] () { theSystem.setPotential(CUSTOM);
-                                                      potentialUI.getChild(splineContainerIndex)->makeVisible(); },
-                                             customThumbnail, 25, 375, 100, 100));
-    potentialUI.addChild(new gui::TextAtom("Custom", uiFont12, textcolor, POS_TOP, 0, 475, 150, 25));
-    
-    potentialUI.addChild(new gui::ButtonAtom([&] () { ((gui::SplineContainer *)potentialUI.getChild(splineContainerIndex))->destroyAllPoints(); },
-                                             resetButton, 0, 0, 30, 30));
-    
-    potentialUI.makeInvisible();
-    potentialUI.getChild(splineContainerIndex)->makeVisible();
-    */
     
     potentialUI.mouseReleased(0, 0, 0);
     
