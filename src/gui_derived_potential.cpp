@@ -24,9 +24,101 @@
 
 #include "gui_derived.hpp"
 
-// implements PotentialAtom, SplineContainer and SplineControlPoint
+// implements PotentialContainer, PotentialAtom, SplineContainer and SplineControlPoint
 
 namespace gui {
+    
+    /*
+        PotentialContainer
+     */
+    
+    // all locations stored as magic numbers for now
+    // perhaps eventually store these as static variables in PotentialContainer? or work them out from the window dimensions?
+    PotentialContainer::PotentialContainer(md::MDContainer &system, ofTrueTypeFont &uiFont12, ofImage &ljThumbnail, ofImage &squareThumbnail, ofImage &morseThumbnail, ofImage &customThumbnail, ofImage &resetButton) : UIContainer(0, 0, 924, 500), theSystem(system) {
+        
+        ofColor bgcolor = ofColor(80, 80, 80, 80);
+        ofColor textcolor = ofColor(255, 255, 240);
+        
+        addChild(new RectAtom(bgcolor, 0, 0, 924, 500));
+        addChild(new RectAtom(bgcolor, 150, 0, 774, 500));
+        highlightAtomIndex = addIndexedChild(new RectAtom(bgcolor, 0, 0, 150, 125));
+        
+        // Setup potential atoms
+        addChild(new PotentialAtom(theSystem, 300, 0.95, 3.0, -2, 2, 150, 0, 774, 500));
+        splineContainerIndex = addIndexedChild(
+            new SplineContainer(theSystem, 0.95, 3.0, -2, 2, 15, 150, 0, 774, 500)
+        );
+        
+        addChild(new gui::SetColour(ofColor(255, 255, 240)));
+        
+        // add the first four buttons and text
+        addChild(new ButtonAtom([&] () { setPotential(LENNARD_JONES); }, ljThumbnail, 25, 0, 100, 100));
+        addChild(new TextAtom("Lennard-Jones", uiFont12, textcolor, POS_TOP, 0, 100, 150, 25));
+        
+        addChild(new ButtonAtom([&] () { setPotential(SQUARE_WELL); }, squareThumbnail, 25, 125, 100, 100));
+        addChild(new TextAtom("Square Well", uiFont12, textcolor, POS_TOP, 0, 225, 150, 25));
+        
+        addChild(new ButtonAtom([&] () { setPotential(MORSE); }, morseThumbnail, 25, 250, 100, 100));
+        addChild(new TextAtom("Morse", uiFont12, textcolor, POS_TOP, 0, 350, 150, 25));
+        
+        customPotentialIndex = addIndexedChild(new ButtonAtom([&] () { setPotential(CUSTOM); }, customThumbnail, 25, 375, 100, 100));
+        addChild(new TextAtom("Custom", uiFont12, textcolor, POS_TOP, 0, 475, 150, 25));
+        
+        // reset potentials button + text
+        UIContainer* resetContainer = new UIContainer(0, 375, 100, 100);
+        resetContainer->addChild(new ButtonAtom([&] () { ((gui::SplineContainer *)getChild(splineContainerIndex))->destroyAllPoints(); },
+                                                 resetButton, 45, 5, 60, 60));
+        resetContainer->addChild(new TextAtom("Reset spline", uiFont12, textcolor, POS_TOP, 0, 65, 150, 65));
+        resetContainer->makeInvisible();
+        resetPotentialIndex = addIndexedChild(resetContainer);
+        
+        makeInvisible();
+        getChild(splineContainerIndex)->makeVisible();
+    }
+    
+    void PotentialContainer::setVisible(bool vis) {
+        visible = vis;
+        for (int i = 0; i < children.size(); ++i) { children[i]->setVisible(vis); }
+        
+        if (vis && theSystem.getPotential().getType() == CUSTOM) {
+            getChild(customPotentialIndex)->makeInvisible();
+        } else {
+            getChild(resetPotentialIndex)->makeInvisible();
+        }
+    }
+    
+    
+    void PotentialContainer::setPotential(Potential potential) {
+        theSystem.setPotential(potential);
+        
+        switch (potential) {
+        default:
+        case LENNARD_JONES:
+            getChild(highlightAtomIndex)->moveTo(bounds.left, bounds.top);
+            getChild(splineContainerIndex)->makeInvisible();
+            getChild(customPotentialIndex)->makeVisible();
+            getChild(resetPotentialIndex)->makeInvisible();
+            break;
+        case SQUARE_WELL:
+            getChild(highlightAtomIndex)->moveTo(bounds.left, bounds.top + 125);
+            getChild(splineContainerIndex)->makeInvisible();
+            getChild(customPotentialIndex)->makeVisible();
+            getChild(resetPotentialIndex)->makeInvisible();
+            break;
+        case MORSE:
+            getChild(highlightAtomIndex)->moveTo(bounds.left, bounds.top + 250);
+            getChild(splineContainerIndex)->makeInvisible();
+            getChild(customPotentialIndex)->makeVisible();
+            getChild(resetPotentialIndex)->makeInvisible();
+            break;
+        case CUSTOM:
+            getChild(highlightAtomIndex)->moveTo(bounds.left, bounds.top + 375);
+            getChild(splineContainerIndex)->makeVisible();
+            getChild(customPotentialIndex)->makeInvisible();
+            getChild(resetPotentialIndex)->makeVisible();
+            break;
+        }
+    }
     
     /*
         PotentialAtom

@@ -207,6 +207,9 @@ void ofApp::setup()
     
     
     potentialUI = gui::UIContainer(50, 50, 924, 500);
+    potentialUI.addChild(new gui::PotentialContainer(theSystem, uiFont12, ljThumbnail, squareThumbnail, morseThumbnail, customThumbnail, resetButton));
+    
+    /*
     potentialUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 924, 500));
     potentialUI.addChild(new gui::RectAtom(bgcolor, 150, 0, 774, 500));
     
@@ -243,6 +246,8 @@ void ofApp::setup()
     
     potentialUI.makeInvisible();
     potentialUI.getChild(splineContainerIndex)->makeVisible();
+    */
+    
     potentialUI.mouseReleased(0, 0, 0);
     
     // start menu as invisible

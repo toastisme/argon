@@ -50,10 +50,11 @@ namespace gui {
     void UIBase::moveTo(float xNew, float yNew){bounds.setXYWH(xNew, yNew, bounds.width(), bounds.height());}
     
     // getter and setters for visibility flag
-    bool UIBase::getVisible() const { return visible; }
-    void UIBase::makeVisible()   { visible = true; }
-    void UIBase::makeInvisible() { visible = false; }
-    void UIBase::toggleVisible() { visible = !visible; }
+    bool UIBase::getVisible() const   { return visible; }
+    void UIBase::setVisible(bool vis) { visible = vis; }
+    void UIBase::makeVisible()        { setVisible(true); }
+    void UIBase::makeInvisible()      { setVisible(false); }
+    void UIBase::toggleVisible()      { setVisible(!visible); }
     
     // Default handling of mouse events is to return false (mouse event not handled)
     bool UIBase::mouseMoved(int x, int y) { return false; }
@@ -154,20 +155,14 @@ namespace gui {
     }
     
     // set visibility flag and also pass call through to children
-    void UIContainer::makeVisible() {
-        visible = true;
-        for (int i = 0; i < children.size(); ++i) { children[i]->makeVisible(); }
+    void UIContainer::setVisible(bool vis) {
+        visible = vis;
+        for (int i = 0; i < children.size(); ++i) { children[i]->setVisible(vis); }
     }
     
-    void UIContainer::makeInvisible() {
-        visible = false;
-        for (int i = 0; i < children.size(); ++i) { children[i]->makeInvisible(); }
-    }
-    
-    void UIContainer::toggleVisible() {
-        visible = !visible;
-        for (int i = 0; i < children.size(); ++i) { children[i]->toggleVisible(); }
-    }
+    void UIContainer::makeVisible()   { setVisible(true); }
+    void UIContainer::makeInvisible() { setVisible(false); }
+    void UIContainer::toggleVisible() { setVisible(!visible); }
 
     // draw just passes the call through to its children
     void UIContainer::draw() {

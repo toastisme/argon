@@ -400,6 +400,28 @@ namespace gui {
         
     };
     
+    class PotentialContainer : public UIContainer
+    {
+    /*
+        UI container holding all of the potential UI elements.
+     */
+        
+    private:
+        md::MDContainer& theSystem; // reference to the MD system
+        int splineContainerIndex;   // index of a child SplineContainer to hold the spline points
+        int highlightAtomIndex;     // index of a child RectAtom to highlight the currently selected potential
+        int customPotentialIndex;   // index of a child UI container containing the default 'select the custom potential' button & text
+        int resetPotentialIndex;    // index of a child UI container containing the reset custom spline points button
+        
+    public:
+        PotentialContainer(md::MDContainer &system, ofTrueTypeFont &uiFont12, ofImage &ljThumbnail, ofImage &squareThumbnail, ofImage &morseThumbnail, ofImage &customThumbnail, ofImage &resetButton);
+        
+        // sets the potential, calling system.setPotential and setting things visible/invisible as needed
+        void setPotential(Potential potential);
+        
+        virtual void setVisible(bool visible);
+    };
+    
     class PotentialAtom : public UIAtom
     {
     /*

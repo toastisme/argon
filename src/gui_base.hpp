@@ -81,8 +81,9 @@ namespace gui {
         // Set a specific size of an element
         virtual void setSize(float widthNew, float heightNew);
         
-        // pure virtual methods to handle visibility
+        // virtual methods to handle visibility
         bool getVisible() const;
+        virtual void setVisible(bool visible);
         virtual void makeVisible();
         virtual void makeInvisible();
         virtual void toggleVisible();
@@ -168,6 +169,7 @@ namespace gui {
         virtual void moveTo(float xNew, float yNew);
         
         // change visibility flag and pass call through to children
+        virtual void setVisible(bool visible);
         virtual void makeVisible();
         virtual void makeInvisible();
         virtual void toggleVisible();
