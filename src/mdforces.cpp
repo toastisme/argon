@@ -273,7 +273,7 @@ namespace md {
     void MDContainer::addGaussian(double gex0, double gey0){
         // Set amplitude/alpha to default values
         double GAMP =  50.0;
-        double GALPHA = 0.3;
+        double GALPHA = 0.8;
         
         // Create new gaussian
         Gaussian newGaussian(GAMP, GALPHA, gex0, gey0);
