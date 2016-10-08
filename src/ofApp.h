@@ -66,6 +66,9 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     void audioIn(ofSoundBuffer &buffer);
+    
+    // Info text control
+    void SetInfoText();
 
 private:
    
@@ -138,6 +141,7 @@ private:
     int gaussianContainerIndex; // Index of gaussian container in systemUI
     int systemAtomIndex; // Index of the system atom in systemUI
     int infoTextIndex; // Index of the text atom in infoUI
+    int optionsIndex; // Index of the atoms list atom in controlsUI
     
     // Store current screen dimensions so that resizing can occur in update if they change
     int screenWidth, screenHeight;

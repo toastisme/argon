@@ -394,6 +394,8 @@ namespace gui {
         
         void addOption(const std::string &label, FuncAction doAction, UIBase *widget);
         
+        int getSelectedOption();
+        
         bool mousePressed(int x, int y, int button);
         bool mouseReleased(int x, int y, int button);
         bool mouseMoved(int x, int y);

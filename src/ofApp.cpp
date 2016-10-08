@@ -130,11 +130,11 @@ void ofApp::setup()
     
     // Info UI
     
-    infoUI = gui::UIContainer(256, 210, 750, 380);
-    infoUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 750, 300));
+    infoUI = gui::UIContainer(256, 310, 750, 380);
+    infoUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 750, 380));
     infoUI.addChild(new gui::SetColour(textcolor));
-    infoUI.addChild(new gui::ButtonAtom([&] () { infoUI.makeInvisible(); }, closeButton, 10, 10, 30, 30));
-    infoTextIndex = infoUI.addIndexedChild(new gui::TextAtom("Some text goes here", aboutFont12, textcolor, POS_TOP_LEFT, 25, 50, 720, 320));
+    infoUI.addChild(new gui::ButtonAtom([&] () { infoUI.makeInvisible(); }, closeButton, 710, 10, 30, 30));
+    infoTextIndex = infoUI.addIndexedChild(new gui::TextAtom("Some text goes here", aboutFont12, textcolor, POS_TOP_LEFT, 25, 25, 720, 320));
     infoUI.makeInvisible();
     infoUI.mouseReleased(0, 0, 0);
     
@@ -149,29 +149,41 @@ void ofApp::setup()
     controlsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 774, 209));
     
     // sliders
-    int optionsIndex = controlsUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolor, 554, 20, 200, 514, 169, 20));
+    optionsIndex = controlsUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolor, 554, 20, 200, 514, 169, 20));
     
     gui::AtomsListAtom* options = (gui::AtomsListAtom *) controlsUI.getChild(optionsIndex);
-    options->addOption("Temperature", [&] () { }, new gui::CircularSliderContainer([&] () { return theSystem.getTemp() * 120; },
+    options->addOption("Temperature", [&] () {
+        gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
+        t->setText(CONTROLS_INFO_TEMP);
+    }, new gui::CircularSliderContainer([&] () { return theSystem.getTemp() * 120; },
                                                                                    [&] (double set) { theSystem.setTemp(set / 120.0); },
                                                                                    0, 1000, uiFont14, textcolor, 1, -75, 0, 150, 60, 60, 120));
     
-    options->addOption("Particles", [&] () { }, new gui::CircularSliderContainer([&] () { return theSystem.getNAfterReset(); },
+    options->addOption("Particles", [&] () {
+        gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
+        t->setText(CONTROLS_INFO_PART);
+    }, new gui::CircularSliderContainer([&] () { return theSystem.getNAfterReset(); },
                                                                                  [&] (double set) { theSystem.setNAfterReset(set + 0.5); theSystem.resetSystem(); },
                                                                                  2, 200, uiFont14, textcolor, 0, -75, 0, 150, 60, 60, 120));
     
-    options->addOption("Simulation speed", [&] () { }, new gui::CircularSliderContainer([&] () { return theSystem.getStepsPerUpdate(); },
+    options->addOption("Simulation speed", [&] () {
+        gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
+        t->setText(CONTROLS_INFO_SIM);
+    }, new gui::CircularSliderContainer([&] () { return theSystem.getStepsPerUpdate(); },
                                                                             [&] (double set) { theSystem.setStepsPerUpdate(set + 0.5); },
                                                                             1, 20, uiFont14, textcolor, 0,
                                                                             -75, 0, 150, 60, 60, 120));
     
-    options->addOption("Gaussian", [&] () { }, new gui::CircularSliderContainer([&] () { double rval = 0.0; gui::GaussianContainer* gaussian = (gui::GaussianContainer *) systemUI.getChild(gaussianContainerIndex);
+    options->addOption("Gaussian", [&] () {
+        gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
+        t->setText(CONTROLS_INFO_GAUSS);
+    }, new gui::CircularSliderContainer([&] () { double rval = 0.0; gui::GaussianContainer* gaussian = (gui::GaussianContainer *) systemUI.getChild(gaussianContainerIndex);
         int gaussianID = gaussian->getSelectedID();
         if (gaussianID > -1) { rval = (50 - theSystem.getGaussianAmp(gaussianID))/100.0;  } return rval; },
                                                                                 [&] (double set) { gui::GaussianContainer* gaussian = (gui::GaussianContainer *) systemUI.getChild(gaussianContainerIndex);
                                                                                     int gaussianID = gaussian->getSelectedID();
                                                                                     if (gaussianID > -1) { theSystem.updateGaussian(gaussianID, 50 - set*100, 0.8 - 0.5*set, theSystem.getGaussianX0(gaussianID), theSystem.getGaussianY0(gaussianID)); } },
-                                                                                0.0, 1.0, uiFont10, ofColor(0, 0, 0, 0), 2, -75, 0, 150, 0, 0, 120));
+                                                                                0.0, 1.0, uiFont10, textcolor, 0, -75, 0, 150, 60, 60, 120));
     
     gui::UIContainer* energyGraphContainer = new gui::UIContainer(-45, 0, 514, 169);
     energyGraphContainer->addChild(new gui::EnergyGraphAtom(theSystem, 0, 0, 514, 161));
@@ -180,13 +192,19 @@ void ofApp::setup()
     energyGraphContainer->addChild(new gui::TextAtom("Potential Energy", uiFont10, ofColor(255, 255, 255),
                                                      POS_TOP_LEFT, 125, 166, 100, 20));
 
-    options->addOption("Energy graphs", [&] () { }, (gui::UIBase*)energyGraphContainer);
-    options->addOption("Maxwell-Boltzmann", [&] () { }, new gui::MaxwellGraphAtom(theSystem, -45, 0, 514, 169));
+    options->addOption("Energy graphs", [&] () {
+        gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
+        t->setText(CONTROLS_INFO_GRAPHS);
+    }, (gui::UIBase*)energyGraphContainer);
+    options->addOption("Maxwell-Boltzmann", [&] () {
+        gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
+        t->setText(CONTROLS_INFO_MAXWELL);
+    }, new gui::MaxwellGraphAtom(theSystem, -45, 0, 514, 169));
     
     controlsUI.addChild(new gui::ButtonAtom([&] () {
         gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
-        t->setText(CONTROLS_INFO);
-        infoUI.makeVisible(); }, optionsAboutButton, 20, 10, 30, 30));
+        SetInfoText();
+        infoUI.toggleVisible(); }, optionsAboutButton, 10, 10, 30, 30));
     
     controlsUI.makeInvisible();
     controlsUI.mouseReleased(0, 0, 0);
@@ -297,10 +315,9 @@ void ofApp::setup()
     optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); optionsOffUI.makeInvisible(); potentialUI.makeInvisible(); }, optionsMainMenuButton,
                                            10, 10, 30, 30));
     optionsOffUI.addChild(new gui::ButtonAtom([&] () {
-        gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
-        if (potentialUI.getVisible()) t->setText(POTENTIALS_INFO);
-        else t->setText(SYSTEM_INFO);
-        infoUI.makeVisible(); }, optionsAboutButton, 50, 10, 30, 30));
+        SetInfoText();
+        infoUI.toggleVisible();
+    }, optionsAboutButton, 50, 10, 30, 30));
     
     optionsOffUI.makeVisible();
     
@@ -574,6 +591,8 @@ void ofApp::mousePressed(int x, int y, int button) {
     optionsUI.mousePressed(x, y, button)    ||
     optionsOffUI.mousePressed(x, y, button) ||
     systemUI.mousePressed(x, y, button);
+    
+    if (potentialUI.getVisible()) SetInfoText();
 }
 
 //--------------------------------------------------------------
@@ -607,4 +626,79 @@ void ofApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
+}
+
+// Worker function to set info text
+void ofApp::SetInfoText() {
+    gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
+    std::string control_string = "";
+    if (potentialUI.getVisible()) {
+        switch( theSystem.getPotential().getType() ) {
+            case LENNARD_JONES: {
+                control_string = POTENTIALS_INFO_LENNARD;
+                break;
+            }
+            
+            case MORSE: {
+                control_string = POTENTIALS_INFO_MORSE;
+                break;
+            }
+            
+            case SQUARE_WELL: {
+                control_string = POTENTIALS_INFO_SQUARE;
+                break;
+            }
+            
+            case CUSTOM: {
+                control_string = POTENTIALS_INFO_CUSTOM;
+                break;
+            }
+                
+            default:
+                control_string = "";
+        }
+        control_string += POTENTIALS_INFO_GENERAL;
+        
+    } else if (controlsUI.getVisible()) {
+        
+        gui::AtomsListAtom* o = (gui::AtomsListAtom *) controlsUI.getChild(optionsIndex);
+        switch(o->getSelectedOption()) {
+            case 0: { // Temperature
+                control_string = CONTROLS_INFO_TEMP;
+                break;
+            }
+                
+            case 1: { // No. of particles
+                control_string = CONTROLS_INFO_PART;
+                break;
+            }
+                
+            case 2: { // Simulation speed
+                control_string = CONTROLS_INFO_SIM;
+                break;
+            }
+                
+            case 3: { // Gaussian
+                control_string = CONTROLS_INFO_GAUSS;
+                break;
+            }
+                
+            case 4: { // Energy graphs
+                control_string = CONTROLS_INFO_GRAPHS;
+                break;
+            }
+                
+            case 5: { // Maxwell-Boltzmann
+                control_string = CONTROLS_INFO_MAXWELL;
+                break;
+            }
+                
+            default:
+                control_string = "There should be some info about the controls here...";
+        }
+
+    }
+    else control_string = SYSTEM_INFO;
+    
+    t->setText(control_string);
 }

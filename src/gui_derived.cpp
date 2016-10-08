@@ -494,6 +494,11 @@ namespace gui {
         else atom->makeInvisible();
     }
     
+    int AtomsListAtom::getSelectedOption()
+    {
+        return selectedOption;
+    }
+    
     bool AtomsListAtom::mousePressed(int x, int y, int button)
     {
         bool ret;
