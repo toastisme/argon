@@ -132,10 +132,12 @@ private:
     gui::UIContainer tutorialHighlightUI;
     gui::UIContainer tutorialBlockUI; // This second container just adds a bit for flexibility in blocking mouse pressed events
     gui::UIContainer tutorialUI;
+    gui::UIContainer infoUI;
     
     int splineContainerIndex; // Index of spline container in potentialUI
     int gaussianContainerIndex; // Index of gaussian container in systemUI
     int systemAtomIndex; // Index of the system atom in systemUI
+    int infoTextIndex; // Index of the text atom in infoUI
     
     // Store current screen dimensions so that resizing can occur in update if they change
     int screenWidth, screenHeight;

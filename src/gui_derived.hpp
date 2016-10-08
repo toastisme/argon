@@ -178,6 +178,8 @@ namespace gui {
     public:
         TextAtom();
         TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position align, double x, double y, double width, double height);
+        
+        void setText(const std::string &string);
     };
     
     class ValueAtom : public UIAtom, TextComponent

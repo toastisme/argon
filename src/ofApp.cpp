@@ -23,6 +23,7 @@
  */
 
 #include "ofApp.h"
+#include "info_text.h"
 
 
 //--------------------------------------------------------------
@@ -127,6 +128,16 @@ void ofApp::setup()
     // And the particles themselves
     systemAtomIndex = systemUI.addIndexedChild(new gui::SystemAtom(theSystem, loganLeft, loganRight, boatLeft, boatRight, 0, 0, screenWidth, screenHeight));
     
+    // Info UI
+    
+    infoUI = gui::UIContainer(256, 210, 750, 380);
+    infoUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 750, 300));
+    infoUI.addChild(new gui::SetColour(textcolor));
+    infoUI.addChild(new gui::ButtonAtom([&] () { infoUI.makeInvisible(); }, closeButton, 10, 10, 30, 30));
+    infoTextIndex = infoUI.addIndexedChild(new gui::TextAtom("Some text goes here", aboutFont12, textcolor, POS_TOP_LEFT, 25, 50, 720, 320));
+    infoUI.makeInvisible();
+    infoUI.mouseReleased(0, 0, 0);
+    
     /*
          Setup menu UI
      */
@@ -172,6 +183,11 @@ void ofApp::setup()
     options->addOption("Energy graphs", [&] () { }, (gui::UIBase*)energyGraphContainer);
     options->addOption("Maxwell-Boltzmann", [&] () { }, new gui::MaxwellGraphAtom(theSystem, -45, 0, 514, 169));
     
+    controlsUI.addChild(new gui::ButtonAtom([&] () {
+        gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
+        t->setText(CONTROLS_INFO);
+        infoUI.makeVisible(); }, optionsAboutButton, 20, 10, 30, 30));
+    
     controlsUI.makeInvisible();
     controlsUI.mouseReleased(0, 0, 0);
     
@@ -182,7 +198,7 @@ void ofApp::setup()
     potentialUI.mouseReleased(0, 0, 0);
     
     // start menu as invisible
-    controlsUI.makeInvisible();
+    potentialUI.makeInvisible();
     
     //Options menu
     
@@ -199,6 +215,7 @@ void ofApp::setup()
             potentialUI.makeInvisible();
             graphUI.makeInvisible();
             aboutUI.makeInvisible();
+            infoUI.makeInvisible();
             optionsOffUI.makeVisible();
         }, optionsMainMenuButton, 10, 10, 30, 30));
     
@@ -207,6 +224,7 @@ void ofApp::setup()
         new gui::ButtonAtom([&] () {
             potentialUI.makeInvisible();
             aboutUI.makeInvisible();
+            infoUI.makeInvisible();
             controlsUI.toggleVisible();
         }, optionsControlsButton, 200, 50, 30, 30));
     
@@ -215,6 +233,7 @@ void ofApp::setup()
         new gui::ButtonAtom([&] () {
             controlsUI.makeInvisible();
             aboutUI.makeInvisible();
+            infoUI.makeInvisible();
             optionsUI.makeInvisible();
             optionsOffUI.makeVisible();
             graphUI.makeInvisible();
@@ -228,6 +247,7 @@ void ofApp::setup()
                 potentialUI.makeInvisible();
                 graphUI.makeInvisible();
                 aboutUI.toggleVisible();
+                infoUI.makeInvisible();
             }, optionsAboutButton, 200, 130, 30, 30));
 
     optionsUI.addChild(new gui::TextAtom("Tutorial", uiFont12, textcolor, POS_LEFT, 20, 175, 100, 25));
@@ -237,6 +257,7 @@ void ofApp::setup()
             potentialUI.makeInvisible();
             graphUI.makeInvisible();
             aboutUI.makeInvisible();
+            infoUI.makeInvisible();
             tutorialUI.toggleVisible();
             tutorialHighlightUI.toggleVisible();
         }, tutorialButton, 200, 170, 30, 30));
@@ -275,6 +296,11 @@ void ofApp::setup()
     optionsOffUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
     optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); optionsOffUI.makeInvisible(); potentialUI.makeInvisible(); }, optionsMainMenuButton,
                                            10, 10, 30, 30));
+    optionsOffUI.addChild(new gui::ButtonAtom([&] () {
+        gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
+        if (potentialUI.getVisible()) t->setText(POTENTIALS_INFO);
+        else t->setText(SYSTEM_INFO);
+        infoUI.makeVisible(); }, optionsAboutButton, 50, 10, 30, 30));
     
     optionsOffUI.makeVisible();
     
@@ -364,6 +390,7 @@ void ofApp::update(){
         graphUI.resize(xScale, yScale);
         systemUI.resize(xScale, yScale);
         aboutUI.resize(xScale, yScale);
+        infoUI.resize(xScale, yScale);
         tutorialUI.resize(xScale, yScale);
         tutorialHighlightUI.resize(xScale, yScale);
         tutorialBlockUI.resize(xScale, yScale);
@@ -392,6 +419,7 @@ void ofApp::draw(){
     optionsUI.draw();
     optionsOffUI.draw();
     aboutUI.draw();
+    infoUI.draw();
     tutorialUI.draw();
     tutorialHighlightUI.draw();
     tutorialBlockUI.draw();
@@ -520,7 +548,26 @@ void ofApp::mousePressed(int x, int y, int button) {
         }
     }
     
+    /* USEFUL FOR DEBUGGING WHEN THINGS ARE EATING MOUSE EVENTS
+    if (tutorialUI.mousePressed(x, y, button))
+        std::cout << "tutorialUI";
+    else if (potentialUI.mousePressed(x, y, button))
+        std::cout << "potentialUI";
+    else if (aboutUI.mousePressed(x, y, button))
+        std::cout << "aboutUI";
+    else if (infoUI.mousePressed(x, y, button))
+        std::cout << "infoUI";
+    else if (controlsUI.mousePressed(x, y, button))
+        std::cout << "controlsUI";
+    else if (optionsUI.mousePressed(x, y, button))
+        std::cout << "optionsUI";
+    else if (optionsOffUI.mousePressed(x, y, button))
+        std::cout << "optionsOffUI";
+    else if (systemUI.mousePressed(x, y, button))
+        std::cout << "systemUI"; */
+    
     tutorialUI.mousePressed(x, y, button) ||
+    infoUI.mousePressed(x, y, button) ||
     potentialUI.mousePressed(x, y, button)  ||
     aboutUI.mousePressed(x, y, button)      ||
     controlsUI.mousePressed(x, y, button)       ||

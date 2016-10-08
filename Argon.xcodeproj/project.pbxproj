@@ -75,6 +75,7 @@
 		62F48D771D2FF36B00408736 /* gui_derived_potential.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gui_derived_potential.cpp; sourceTree = "<group>"; };
 		62F48D7C1D33DB0400408736 /* gui_derived_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gui_derived_system.cpp; sourceTree = "<group>"; };
 		9FF161571D4224FB0031019B /* openFrameworks.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = openFrameworks.a; path = ../../../libs/openFrameworksCompiled/lib/osx/openFrameworks.a; sourceTree = "<group>"; };
+		9FF9C71F1DA966820022C94A /* info_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = info_text.h; sourceTree = "<group>"; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E4B69B5B0A3A1756003C02F2 /* ArgonDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArgonDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
@@ -148,6 +149,7 @@
 				62E300C21CF0D73000AEAC39 /* gui_base.hpp */,
 				62E300C11CF0D73000AEAC39 /* gui_base.cpp */,
 				62E300C41CF0D73000AEAC39 /* gui_derived.hpp */,
+				9FF9C71F1DA966820022C94A /* info_text.h */,
 				62E300C31CF0D73000AEAC39 /* gui_derived.cpp */,
 				62F48D771D2FF36B00408736 /* gui_derived_potential.cpp */,
 				62F48D7C1D33DB0400408736 /* gui_derived_system.cpp */,

@@ -129,6 +129,8 @@ namespace gui {
     // render the string aligned within bounds
     void TextAtom::render() { renderString(bounds, align); }
     
+    // Set the text of the text atom
+    void TextAtom::setText(const std::string &string) { setString(string); }
     /*
         ValueAtom
      */
