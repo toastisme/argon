@@ -234,6 +234,7 @@ namespace gui {
         coord point;
         ofPolyline MBcurve;
         MBcurve.addVertex(bounds.left, bounds.bottom);
+        double currMaxHeight = 0.0;
         
         for (int i = 0; i < numBins; ++i) {
             double sum = 0.0;
@@ -246,8 +247,10 @@ namespace gui {
             point = BilinearMap(point, maxwellSpace, bounds);
             MBcurve.addVertex(point.x, point.y);
             
-            maxHeight = sum > maxHeight ? sum : maxHeight;
+            currMaxHeight = sum > currMaxHeight ? sum : currMaxHeight;
         }
+        
+        maxHeight = currMaxHeight > 0.1 ? currMaxHeight : 0.1;
         
         glScissor(bounds.left, 599 - bounds.bottom, bounds.width(), bounds.height() + 2);
         glEnable(GL_SCISSOR_TEST);
