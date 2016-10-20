@@ -334,7 +334,7 @@ void ofApp::setup()
     aboutUI.addChild(new gui::TextAtom("A molecular dynamics simulation with interactive external and", aboutFont12, textcolor, POS_LEFT, 25, 195, 600, 20));
     aboutUI.addChild(new gui::TextAtom("interatomic potentials. www.argonmd.co.uk", aboutFont12, textcolor, POS_LEFT, 25, 215, 600, 20));
     aboutUI.addChild(new gui::TextAtom("Copyright 2016 David McDonagh, Robert Shaw, Staszek Welsh", aboutFont12, textcolor, POS_LEFT, 25, 255, 600, 20));
-    aboutUI.addChild(new gui::TextAtom("Version 1.0.0", uiFont14, textcolor, POS_CENTRE, 202, 120, 195, 20));
+    aboutUI.addChild(new gui::TextAtom("Version 1.0.1", uiFont14, textcolor, POS_CENTRE, 202, 120, 195, 20));
     //aboutUI.addChild(new gui::ImageAtom(tmcsLogo, 129, 138, 164, 95));
     
     aboutUI.makeInvisible();
