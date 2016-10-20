@@ -205,7 +205,7 @@ void ofApp::setup()
     controlsUI.addChild(new gui::ButtonAtom([&] () {
         gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
         SetInfoText();
-        infoUI.toggleVisible(); }, optionsAboutButton, 10, 10, 30, 30));
+        if (!tutorialUI.getVisible()) infoUI.toggleVisible(); }, optionsAboutButton, 10, 10, 30, 30));
     
     controlsUI.makeInvisible();
     controlsUI.mouseReleased(0, 0, 0);
@@ -317,7 +317,7 @@ void ofApp::setup()
                                            10, 10, 30, 30));
     optionsOffUI.addChild(new gui::ButtonAtom([&] () {
         SetInfoText();
-        infoUI.toggleVisible();
+        if (!tutorialUI.getVisible()) infoUI.toggleVisible();
     }, optionsAboutButton, 50, 10, 30, 30));
     
     optionsOffUI.makeVisible();
