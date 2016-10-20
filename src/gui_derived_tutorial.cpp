@@ -951,8 +951,7 @@ namespace gui {
             // Text box
             addChild(new RectAtom(textBoxColor, textBoxx, textBoxy, textBoxWidth, textBoxHeight));
             // Text box text
-            addChild(new TextAtom("All control points can also be removed by clicking the reset button in", aboutFont12, textColor, POS_CENTRE, textBoxx + 80, textBoxy + 10, 600, 20));
-            addChild(new TextAtom("the top left corner of the Potentials window.", aboutFont12, textColor, POS_CENTRE, textBoxx + 80, textBoxy + 40, 600, 20));
+            addChild(new TextAtom("All control points can also be removed by clicking the Reset Points button.", aboutFont12, textColor, POS_CENTRE, textBoxx + 80, textBoxy + 10, 600, 20));
             addChild(new TextAtom("9/10", aboutFont12, textColor, POS_LEFT, textBoxx + textBoxWidth - 75, textBoxy + textBoxHeight - 30, 600, 20));
             // Text box close button
             addChild(new ButtonAtom([&] () {tutorialCounter = 0; updateComponents(tutorialCounter); makeInvisible(); tutorialUI.makeInvisible(); tutorialBlockUI.makeInvisible();}, closeButton, textBoxx+textBoxWidth - 35, textBoxy + 5, 30, 30));

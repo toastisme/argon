@@ -75,6 +75,7 @@ void ofApp::setup()
     boatLeft.load("img/boatleft.png");
     boatRight.load("img/boatright.png");
     argonLogo.load("img/argonlogo.png");
+    resetSplinePointsButton.load("img/ResetSplinePointsButton.png");
     
     // potential graphics
     
@@ -211,7 +212,7 @@ void ofApp::setup()
     
     
     potentialUI = gui::UIContainer(50, 50, 924, 500);
-    potentialUI.addChild(new gui::PotentialContainer(theSystem, uiFont12, ljThumbnail, squareThumbnail, morseThumbnail, customThumbnail, resetButton));
+    potentialUI.addChild(new gui::PotentialContainer(theSystem, uiFont12, ljThumbnail, squareThumbnail, morseThumbnail, customThumbnail, resetSplinePointsButton));
     
     potentialUI.mouseReleased(0, 0, 0);
     

@@ -50,7 +50,7 @@ const std::string POTENTIALS_INFO_GENERAL = "\n\nThe selected potential decides 
 
 const std::string POTENTIALS_INFO_LENNARD = "The Lennard-Jones potential is composed of a short-range repulsive term\nand a long-range attractive term.\n\nThis is commonly used as an approximation of interactions between non-bonded atoms,\nespecially in weakly interacting systems such as noble gases.";
 
-const std::string POTENTIALS_INFO_SQUARE = "The square well potential is one of the simplest models for atomic interactions that still produces some physical properties,\nparticularly in liquids.\n\nAtoms at distances greater than the length of the well do not interact,\nwhereas those within it experience a constant attraction.";
+const std::string POTENTIALS_INFO_SQUARE = "The square well potential is one of the simplest models for atomic interactions that still \nproduces some physical properties, particularly in liquids.\n\nAtoms at distances greater than the length of the well do not interact,\nwhereas those within it experience a constant attraction.";
 
 
 const std::string POTENTIALS_INFO_MORSE = "Like the Lennard-Jones potential, the Morse potential is composed of short-range repulsive\nand long-range attractive terms.\n\nHowever, the steeper attractive component more accurately reflects the potential of a chemical\nbond, and so is generally preferred for modelling molecules.";

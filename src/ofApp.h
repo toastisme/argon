@@ -112,6 +112,7 @@ private:
     ofImage closeButton;
     ofImage nextButton;
     ofImage previousButton;
+    ofImage resetSplinePointsButton;
     
     // Booleans
     bool loading;

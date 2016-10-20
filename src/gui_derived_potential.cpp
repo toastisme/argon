@@ -34,7 +34,7 @@ namespace gui {
     
     // all locations stored as magic numbers for now
     // perhaps eventually store these as static variables in PotentialContainer? or work them out from the window dimensions?
-    PotentialContainer::PotentialContainer(md::MDContainer &system, ofTrueTypeFont &uiFont12, ofImage &ljThumbnail, ofImage &squareThumbnail, ofImage &morseThumbnail, ofImage &customThumbnail, ofImage &resetButton) : UIContainer(0, 0, 924, 500), theSystem(system) {
+    PotentialContainer::PotentialContainer(md::MDContainer &system, ofTrueTypeFont &uiFont12, ofImage &ljThumbnail, ofImage &squareThumbnail, ofImage &morseThumbnail, ofImage &customThumbnail, ofImage &resetSplinePointsButton) : UIContainer(0, 0, 924, 500), theSystem(system) {
         
         ofColor bgcolor = ofColor(80, 80, 80, 80);
         ofColor textcolor = ofColor(255, 255, 240);
@@ -67,8 +67,8 @@ namespace gui {
         // reset potentials button + text
         UIContainer* resetContainer = new UIContainer(0, 375, 100, 100);
         resetContainer->addChild(new ButtonAtom([&] () { ((gui::SplineContainer *)getChild(splineContainerIndex))->destroyAllPoints(); },
-                                                 resetButton, 45, 5, 60, 60));
-        resetContainer->addChild(new TextAtom("Reset spline", uiFont12, textcolor, POS_TOP, 0, 65, 150, 65));
+                                                 resetSplinePointsButton, 45, 5, 60, 60));
+        resetContainer->addChild(new TextAtom("Reset Points", uiFont12, textcolor, POS_TOP, 0, 65, 150, 65));
         resetContainer->makeInvisible();
         resetPotentialIndex = addIndexedChild(resetContainer);
         
