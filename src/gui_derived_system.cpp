@@ -211,7 +211,7 @@ namespace gui {
         MaxwellGraphAtom
      */
     
-    MaxwellGraphAtom::MaxwellGraphAtom(md::MDContainer& _theSystem, int x, int y, int width, int height) : theSystem(_theSystem), UIAtom(x, y, width, height), numBins(100), numPrevMB(40), prevMB() {}
+    MaxwellGraphAtom::MaxwellGraphAtom(md::MDContainer& _theSystem, int x, int y, int width, int height) : theSystem(_theSystem), UIAtom(x, y, width, height), numBins(100), numPrevMB(40), maxHeight(0.1), prevMB() {}
     
     void MaxwellGraphAtom::render() {
         /*
@@ -221,7 +221,6 @@ namespace gui {
         //ofSetColor(80, 80, 80, 80);
         //ofDrawRectangle(bounds.ofRect());
         
-        double maxHeight = 0.1;
         double maxSpeed = 10;
         
         rect maxwellSpace;
@@ -241,10 +240,13 @@ namespace gui {
             for (int j = 0; j < prevMB.size(); ++j) {
                 sum += prevMB[j][i];
             }
+            sum /= prevMB.size();
             
-            point = {(double)i + 0.5, sum / prevMB.size()};
+            point = {(double)i + 0.5, sum};
             point = BilinearMap(point, maxwellSpace, bounds);
             MBcurve.addVertex(point.x, point.y);
+            
+            maxHeight = sum > maxHeight ? sum : maxHeight;
         }
         
         glScissor(bounds.left, 599 - bounds.bottom, bounds.width(), bounds.height() + 2);

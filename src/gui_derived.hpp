@@ -572,6 +572,7 @@ namespace gui {
         md::MDContainer& theSystem;
         int numBins;                               // number of M-B bins
         int numPrevMB;                             // number of timesteps to average over
+        double maxHeight;                          // the current peak maximum
         std::deque <std::vector <double>> prevMB;  // vector of previous M-B distributions
         
         virtual void render();
