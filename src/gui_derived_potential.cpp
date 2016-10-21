@@ -100,19 +100,19 @@ namespace gui {
             getChild(resetPotentialIndex)->makeInvisible();
             break;
         case SQUARE_WELL:
-            getChild(highlightAtomIndex)->moveTo(bounds.left, bounds.top + 125);
+            getChild(highlightAtomIndex)->moveTo(bounds.left, bounds.top + bounds.height() / 4);
             getChild(splineContainerIndex)->makeInvisible();
             getChild(customPotentialIndex)->makeVisible();
             getChild(resetPotentialIndex)->makeInvisible();
             break;
         case MORSE:
-            getChild(highlightAtomIndex)->moveTo(bounds.left, bounds.top + 250);
+            getChild(highlightAtomIndex)->moveTo(bounds.left, bounds.top + bounds.height() / 2);
             getChild(splineContainerIndex)->makeInvisible();
             getChild(customPotentialIndex)->makeVisible();
             getChild(resetPotentialIndex)->makeInvisible();
             break;
         case CUSTOM:
-            getChild(highlightAtomIndex)->moveTo(bounds.left, bounds.top + 375);
+            getChild(highlightAtomIndex)->moveTo(bounds.left, bounds.top + 3 * bounds.height() / 4);
             getChild(splineContainerIndex)->makeVisible();
             getChild(customPotentialIndex)->makeInvisible();
             getChild(resetPotentialIndex)->makeVisible();

@@ -252,7 +252,7 @@ namespace gui {
         
         maxHeight = currMaxHeight > 0.1 ? currMaxHeight : 0.1;
         
-        glScissor(bounds.left, 599 - bounds.bottom, bounds.width(), bounds.height() + 2);
+        glScissor(bounds.left, ofGetHeight() - 1 - bounds.bottom, bounds.width(), bounds.height() + 2);
         glEnable(GL_SCISSOR_TEST);
         
         // draw tick lines
