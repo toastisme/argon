@@ -40,6 +40,8 @@
 #include "potentials.hpp"
 #include "audio.hpp"
 
+#include "platform_OF.hpp"
+
 
 #define N_THREADS 1 // Number of threads to be used in the forces calculations
 
@@ -103,7 +105,8 @@ private:
     ofImage optionsPotentialButton;
     ofImage optionsControlsButton;
     ofImage optionsAboutButton;
-    ofImage splashScreen;
+    //ofImage splashScreen;
+    ofWrappedImage splashScreen;
     ofImage stargonautsLogo;
     ofImage boatLeft;
     ofImage boatRight;

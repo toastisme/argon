@@ -52,7 +52,8 @@ void ofApp::setup()
     loading = true;
     
     // graphics
-    splashScreen.load("img/argonsplash.png");
+    //splashScreen.load("img/argonsplash.png");
+    splashScreen.loadPNG("img/argonsplash.png");
     circGradient.load("img/circ_gradient.png");
     tutorialButton.load("img/ButtonTutorial.png");
     playButton.load("img/ButtonPlay.png");
