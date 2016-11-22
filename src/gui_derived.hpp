@@ -175,6 +175,16 @@ namespace gui {
         // Override resize method so that button does not distort
         virtual void resize(float xScale, float yScale);
     };
+    
+    class ImageAtom2 : public UIAtom {
+    private:
+        virtual void render();
+        const BaseImage *image;
+    public:
+        ImageAtom2();
+        ImageAtom2(const BaseImage &image, double x, double y, double width, double height);
+        virtual void resize(float xScale, float yScale);
+    };
 
     
     class TextAtom : public UIAtom, TextComponent

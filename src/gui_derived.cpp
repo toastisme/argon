@@ -176,6 +176,17 @@ namespace gui {
         float scale = xScale < yScale ? xScale : yScale;
         bounds.setXYWH(bounds.left*xScale, bounds.top*yScale, bounds.width()*scale, bounds.height()*scale);
     }
+    
+    ImageAtom2::ImageAtom2() : UIAtom(), image(NULL) {}
+    ImageAtom2::ImageAtom2(const BaseImage &_image, double x, double y, double width, double height)
+    : UIAtom(x, y, width, height), image(&_image) {}
+    void ImageAtom2::render() {
+        if (image) { image->draw(bounds); }
+    }
+    void ImageAtom2::resize(float xScale, float yScale) {
+        float scale = xScale < yScale ? xScale : yScale;
+        bounds.setXYWH(bounds.left*xScale, bounds.top*yScale, bounds.width()*scale, bounds.height()*scale);
+    }
 
     
     /*

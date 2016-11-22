@@ -111,7 +111,8 @@ private:
     ofImage boatLeft;
     ofImage boatRight;
     ofImage tmcsLogo;
-    ofImage argonLogo;
+    //ofImage argonLogo;
+    ofWrappedImage argonLogo;
     ofImage closeButton;
     ofImage nextButton;
     ofImage previousButton;

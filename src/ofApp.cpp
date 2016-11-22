@@ -75,7 +75,7 @@ void ofApp::setup()
     stargonautsLogo.load("img/stargonautslogo.png");
     boatLeft.load("img/boatleft.png");
     boatRight.load("img/boatright.png");
-    argonLogo.load("img/argonlogo.png");
+    argonLogo.loadPNG("img/argonlogo.png");
     resetSplinePointsButton.load("img/ResetSplinePointsButton.png");
     
     // potential graphics
@@ -329,7 +329,7 @@ void ofApp::setup()
     //aboutUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 610, 300));
     aboutUI.addChild(new gui::RectAtom2({80, 80, 80, 180}, 0, 0, 610, 300));
     aboutUI.addChild(new gui::SetColour(textcolor));
-    aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170));
+    aboutUI.addChild(new gui::ImageAtom2(argonLogo, 0, 5, 390, 170));
     aboutUI.addChild(new gui::ButtonAtom([&] () {
         gui::SystemAtom* sys = (gui::SystemAtom*) systemUI.getChild(systemAtomIndex);
         sys->sailTheHighSeas(); },

@@ -30,7 +30,7 @@
 //ofColor ofConvertColour(colour3 colour);
 //ofColor ofConvertColour(colour4 colour);
 
-class ofWrappedImage : BaseImage {
+class ofWrappedImage : public BaseImage {
 private:
     ofImage image;
     
