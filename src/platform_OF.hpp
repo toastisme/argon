@@ -25,21 +25,10 @@
 #include "platform.hpp"
 #include "ofMain.h"
 
-inline ofPoint ofConvertCoord(coord pos) {
-    return ofVec3f(pos.x, pos.y);
-}
-
-inline ofRectangle ofConvertRect(rect r) {
-    return ofRectangle(r.x, r.y, r.width(), r.height());
-}
-
-inline ofColor ofConvertColour(colour3 colour) {
-    return ofColor(colour.r, colour.g, colour.b);
-}
-
-inline ofColor ofConvertColour(colour4 colour) {
-    return ofColor(colour.r, colour.g, colour.b, colour.a);
-}
+//ofPoint ofConvertCoord(coord pos);
+//ofRectangle ofConvertRect(rect r);
+//ofColor ofConvertColour(colour3 colour);
+//ofColor ofConvertColour(colour4 colour);
 
 class ofWrappedImage : BaseImage {
 private:
@@ -53,24 +42,3 @@ public:
     
     void draw(double x, double y, double width, double height) const;
 };
-
-inline void ofWrappedImage::loadPNG(const string &filename) { image.load(filename); }
-inline double ofWrappedImage::getWidth()  const { return image.getWidth();  }
-inline double ofWrappedImage::getHeight() const { return image.getHeight(); }
-inline void ofWrappedImage::draw(double x, double y, double width, double height) const {
-    image.draw(x, y, width, height);
-}
-
-
-inline void drawLine(double x0, double y0, double x1, double y1, double width, colour4 colour) {
-    ofSetColor(ofConvertColour(colour));
-    ofSetLineWidth(width);
-    ofDrawLine(x0, y0, x1, y1);
-}
-
-inline void drawRect(double x0, double y0, double x1, double y1, colour4 colour) {
-    ofSetColor(ofConvertColour(colour));
-    ofDrawRectangle(x0, y0, x1, y1);
-}
-
-inline void setFramerate(int rate) { ofSetFrameRate(rate); }

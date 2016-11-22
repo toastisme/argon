@@ -145,6 +145,18 @@ namespace gui {
         RectAtom(const ofColor &colour, double x, double y, double width, double height);
     };
     
+    
+    // example of platform layer - with the idea that this will replace RectAtom eventually
+    class RectAtom2 : public UIAtom {
+    private:
+        virtual void render();
+        colour4 colour;
+    public:
+        RectAtom2();
+        RectAtom2(colour4 colour, double x, double y, double width, double height);
+    };
+    
+    
     class ImageAtom : public UIAtom
     {
         /*

@@ -326,7 +326,8 @@ void ofApp::setup()
     // About UI
     
     aboutUI = gui::UIContainer(257, 150, 610, 300);
-    aboutUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 610, 300));
+    //aboutUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 610, 300));
+    aboutUI.addChild(new gui::RectAtom2({80, 80, 80, 180}, 0, 0, 610, 300));
     aboutUI.addChild(new gui::SetColour(textcolor));
     aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170));
     aboutUI.addChild(new gui::ButtonAtom([&] () {
