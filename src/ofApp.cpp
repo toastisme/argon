@@ -38,7 +38,7 @@
 void ofApp::setup() 
 {
     // openFrameworks initialisation
-    ofSetFrameRate(60);
+    setFramerate(60);
     ofBackground(0, 0, 0);
     
     
