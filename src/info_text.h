@@ -31,7 +31,7 @@
 
 // Note that the formatting of this text is very important!
 
-const std::string SYSTEM_INFO = "The coloured blobs zooming round the screen are particles.\n\nTheir colour tells you their speed - how quickly they are moving. Blue particles have less energy\nand are moving more slowly, whilst pink ones have more energy and are going faster.\n\nEnergy is passed between the particles when they exert forces on each other. This can be seen\nby how the blobs deform. The walls of the box also impart a sudden force, called an impulse,\nwhen the particles hit them.\n\nClicking on the box will create a Gaussian. This is an external potential - an outside force -\nacting on the particles. It can be repulsive or attractive. Try making noise and see it change.";
+const std::string SYSTEM_INFO_TEXT = "The coloured blobs zooming round the screen are particles.\n\nTheir colour tells you their speed - how quickly they are moving. Blue particles have less energy\nand are moving more slowly, whilst pink ones have more energy and are going faster.\n\nEnergy is passed between the particles when they exert forces on each other. This can be seen\nby how the blobs deform. The walls of the box also impart a sudden force, called an impulse,\nwhen the particles hit them.\n\nClicking on the box will create a Gaussian. This is an external potential - an outside force -\nacting on the particles. It can be repulsive or attractive. Try making noise and see it change.";
 
 
 const std::string CONTROLS_INFO_TEMP = "Temperature:\n\nThis controls how hot or cold particles are.\n\nIt takes some time for the particles to heat up or cool down when changed.";

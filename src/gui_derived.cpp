@@ -384,7 +384,7 @@ namespace gui {
     
     // if the mouse is left-clicked inside the button, invert the value of the boolean
     bool ButtonToggleAtom::mousePressed(int x, int y, int button) {
-        if (visible && button == 0 && bounds.inside(x, y)) { setBool(not getBool()); return true; }
+        if (visible && button == 0 && bounds.inside(x, y)) { setBool(!getBool()); return true; }
         else { return false; }
     }
     

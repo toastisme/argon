@@ -703,7 +703,7 @@ void ofApp::SetInfoText() {
         }
 
     }
-    else control_string = SYSTEM_INFO;
+    else control_string = SYSTEM_INFO_TEXT;
     
     t->setText(control_string);
 }
