@@ -24,6 +24,24 @@
 
 #include "audio.hpp"
 
+// If on Windows, disable all audio
+#ifdef WIN32
+
+// these are either the same methods as below or stubs to return zero volume and not setup a stream
+AudioStream::AudioStream() : volume(0), active(true), maxAmplitude(0.04) {}
+void AudioStream::setStream(ofSoundStream *_stream) {}
+void AudioStream::audioIn(ofSoundBuffer &buffer) {}
+double AudioStream::getRawVolume() const { return 0; }
+double AudioStream::getVolume() const { return 0; }
+bool AudioStream::getActive() const { return active; }
+void AudioStream::setActive(bool _active) { active = _active; }
+void AudioStream::toggleActive() { active = !active; }
+double AudioStream::getMaxAmplitude() const { return maxAmplitude; }
+void AudioStream::setMaxAmplitude(double set) { maxAmplitude = set; }
+
+// else setup the audio as normal
+#else
+
 // Default constructor
 AudioStream::AudioStream() : volume(0), active(true), maxAmplitude(0.04) {
 
@@ -67,3 +85,5 @@ void AudioStream::toggleActive() {
 // getter and setter for maxAmplitude
 double AudioStream::getMaxAmplitude() const { return maxAmplitude; }
 void AudioStream::setMaxAmplitude(double set) { maxAmplitude = set; }
+
+#endif

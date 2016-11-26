@@ -94,9 +94,11 @@ void ofApp::setup()
     uiFont10.load("fonts/Montserrat-Bold.ttf", 10);
     aboutFont12.load("fonts/Tahoma.ttf", 12);
     
+#ifndef WIN32
     // Setup audio stream
     soundStream.setup(this, 0, 2, 44100, 256, 4);
     micInput.setStream(&soundStream);
+#endif
     
     // Initialise theSystem with 50 particles at 60K
     theSystem.setTemp(0.5);
