@@ -28,6 +28,11 @@
 #include "ofMain.h"
 #include "platform.hpp"
 
+double clamp(double value, double min, double max);
+double lerp(double t, double min, double max, bool clamp = false);
+double invlerp(double value, double min, double max, bool clamp = false);
+double map(double value, double in_min, double in_max, double out_min, double out_max, bool clamp = false);
+
 // bilinear clamp, returning a coord clamped inside a rect
 // essentially just a normal linear clamp on both x and y
 coord BilinearClamp(coord point, rect out);
@@ -42,6 +47,7 @@ coord BilinearMap(coord point, coord in, rect  out, bool clamp = false);
 coord BilinearMap(coord point, coord in, coord out, bool clamp = false);
 
 // Convert box coordinates to screen coordinates
+// THESE NEED TO BE CHANGED TO BILINEAR MAPS
 double box2screen_x(double x, double x0, double screenWidth, double systemWidth);
 double box2screen_y(double y, double y0, double screenHeight, double systemHeight);
 ofPoint box2screen(double x, double y, double x0, double y0, double screenWidth, double screenHeight, double systemWidth, double systemHeight);

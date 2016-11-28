@@ -24,6 +24,28 @@
 
 #include "utilities.hpp"
 
+double clamp(double value, double min, double max) {
+    value = value < min ? min : value;
+    value = value > max ? max : value;
+    return value;
+}
+
+double lerp(double t, double min, double max, bool _clamp) {
+    double value = (1 - t) * min + t * max;
+    if (_clamp) { value = clamp(value, min, max); }
+    return value;
+}
+
+double invlerp(double value, double min, double max, bool _clamp) {
+    double t = (value - min) / (max - min);
+    if (_clamp) { t = clamp(t, 0, 1); }
+    return t;
+}
+
+double map(double value, double in_min, double in_max, double out_min, double out_max, bool _clamp) {
+    double t = invlerp(value, in_min, in_max, _clamp);
+    return lerp(t, out_min, out_max);
+}
 
 
 // clamp point inside rect
