@@ -126,7 +126,7 @@ namespace gui {
     
     PotentialAtom::PotentialAtom(md::MDContainer &system, int _numPoints, double min_x, double max_x, double min_y, double max_y, int x, int y, int width, int height): theSystem(system), numPoints(_numPoints), UIAtom(x, y, width, height)
     {
-        potBounds = {min_x, max_x, max_y, min_y};
+        potBounds.setLRTB(min_x, max_x, max_y, min_y);
         numBins = 200;
         numPrevRDF = numBins / 10;
     }
@@ -249,7 +249,7 @@ namespace gui {
     }
     
     void SplineControlPoint::movePoint(double x, double y) {
-        coord target = {x, y};
+        coord target = coord(x, y);
         target = BilinearClamp(target, pointBounds);
         bounds.movePos(POS_CENTRE, target);
     }

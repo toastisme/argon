@@ -51,13 +51,13 @@ coord BilinearMap(coord point, rect in, rect out, bool clamp) {
 
 // overloads assume that x and y of rects are zero
 coord BilinearMap(coord point, rect in, coord out, bool clamp) {
-    return BilinearMap(point, in, {0, out.x, 0, out.y}, clamp);
+    return BilinearMap(point, in, rect(0, 0, out.x, out.y), clamp);
 }
 coord BilinearMap(coord point, coord in, rect out, bool clamp) {
-    return BilinearMap(point, {0, in.x, 0, in.y}, out, clamp);
+    return BilinearMap(point, rect(0, 0, in.x, in.y), out, clamp);
 }
 coord BilinearMap(coord point, coord in, coord out, bool clamp) {
-    return BilinearMap(point, {0, in.x, 0, in.y}, {0, out.x, 0, out.y}, clamp);
+    return BilinearMap(point, rect(0, 0, in.x, in.y), rect(0, 0, out.x, out.y), clamp);
 }
 
 /*

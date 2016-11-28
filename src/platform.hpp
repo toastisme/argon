@@ -27,10 +27,6 @@
 
 #include <string>
 
-/*
-    Basic structs of two, three and four doubles. Used for coordinates, rectangles, and colours.
- */
-
 enum Position
 {
     /*
@@ -43,13 +39,13 @@ enum Position
 };
 
 /*
- vec2 contains 2 doubles, which can be referred to in the following ways:
-    vec2.x, vec2.y
-    vec2.u, vec2.v
-    vec2.left, vec2.top
-    vec2.elem[0], vec2.elem[1]
+ coord contains 2 doubles, which can be referred to in the following ways:
+    coord.x, coord.y
+    coord.u, coord.v
+    coord.left, coord.top
+    coord.elem[0], coord.elem[1]
  */
-union vec2
+union coord
 {
     struct {
         double x, y;
@@ -61,66 +57,50 @@ union vec2
         double left, top;
     };
     double elem[2];
+    
+    coord();
+    coord(double x, double y);
+    
+    void setXY(double x, double y);
 };
-typedef vec2 coord;
+
 
 /*
- vec3 contains 3 doubles, which can be referred to in the following ways:
-    vec3.x, vec3.y, vec3.z   - xyz components
-    vec3.u, vec3.v, vec3.w   - uvw components
-    vec3.r, vec3.b, vec3.g   - red, blue, green colour components
-    vec3.h, vec3.s, vec3.b   - hue, saturation, brightness colour components
-    vec3.elem[0], vec3.elem[1], vec3.elem[2]   - array of size 3
+ colour contains 4 unsigned chars, which are the red, green, blue and alpha components
+ of the colour and can be referred to in the following ways:
+    colour.r, colour.g, colour.b, colour.a
+    colour.red, colour.green, colour.blue, colour.alpha
+    colour.rgb[0], colour.rgb[1], colour.rgb[2], colour.a
+    colour.rgba[0], colour.rgba[1], colour.rgba[2], colour.rgba[3]
  */
-union vec3
-{
-    struct {
-        double x, y, z;
-    };
-    struct {
-        double u, v, w;
-    };
-    struct {
-        union {
-            struct {
-                double r, g;
-            };
-            struct {
-                double h, s;
-            };
-        };
-        double b;
-    };
-    double elem[3];
-};
-typedef vec3 colour3;
 
-union vec4
+union colour
 {
     struct {
-        double w, x, y, z;
+        unsigned char r, g, b, a;
     };
     struct {
         union {
-            colour3 rgb;
-            colour3 hsb;
             struct {
-                union {
-                    struct {
-                        double r, g;
-                    };
-                    struct {
-                        double h, s;
-                    };
-                };
-                double b;
+                unsigned char red, green, blue;
             };
+            unsigned char rgb[3];
         };
-        double a;
+        unsigned char alpha;
     };
-    double elem[4];
+    unsigned char rgba[4];
+    
+    colour();
+    colour(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
+    colour(unsigned char red, unsigned char green, unsigned char blue);
+    
+    void setRGB(unsigned char red, unsigned char green, unsigned char blue);
+    void setRGB(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
+    
+    // YET TO BE IMPLEMENTED
+    void setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness);
+    void setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness, unsigned char alpha);
 };
-typedef vec4 colour4;
 
 union rect
 {
@@ -129,25 +109,31 @@ union rect
         rectangle, and various methods are given to get the width, height, centre, etc.
      */
     
-    /*
-     TODO: reorder this more sensibly as left, top, right, bottom instead of left, right, top, bottom
-     This means fixing initialisation via C-style initialiser lists (e.g. rect R = {0, 0, 100, 100};) in
-     the rest of the codebase and replacing it with a proper constructor or static factory method
-     */
-    
     struct {
         union {
-            double left;
-            double x;
+            coord min;
+            struct {
+                union {
+                    double left;
+                    double x;
+                };
+                union {
+                    double top;
+                    double y;
+                };
+            };
         };
-        double right;
         union {
-            double top;
-            double y;
+            coord max;
+            struct {
+                double right, bottom;
+            };
         };
-        double bottom;
     };
     double elem[4];
+    
+    rect();
+    rect(double left, double top, double right, double bottom);
     
     double width()   const;
     double height()  const;
@@ -203,14 +189,13 @@ public:
  */
 
 // only need to implement the first of these in the platform-specific file
-void drawLine(double x0, double y0, double x1, double y1, double width, colour4 colour);
-void drawLine(double x0, double y0, double x1, double y1, double width, colour3 colour);
-void drawLine(coord start, coord end, double width, colour4 colour);
+void drawLine(double x0, double y0, double x1, double y1, double width, colour colour);
+void drawLine(coord start, coord end, double width, colour colour);
 // ...and more overloads for convenience
 
 // again, only need to implement the first of these in platform_OF.hpp
-void drawRect(double x0, double y0, double x1, double y1, colour4 colour);
-void drawRect(rect r, colour4 colour);
+void drawRect(double x0, double y0, double x1, double y1, colour colour);
+void drawRect(rect r, colour colour);
 // ...and more overloads for convenience
 
 /*

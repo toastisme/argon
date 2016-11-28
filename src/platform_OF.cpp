@@ -32,11 +32,7 @@ ofRectangle ofConvertRect(rect r) {
     return ofRectangle(r.x, r.y, r.width(), r.height());
 }
 
-ofColor ofConvertColour(colour3 colour) {
-    return ofColor(colour.r, colour.g, colour.b);
-}
-
-ofColor ofConvertColour(colour4 colour) {
+ofColor ofConvertColour(colour colour) {
     return ofColor(colour.r, colour.g, colour.b, colour.a);
 }
 
@@ -47,13 +43,13 @@ void ofWrappedImage::draw(double x, double y, double width, double height) const
     image.draw(x, y, width, height);
 }
 
-void drawLine(double x0, double y0, double x1, double y1, double width, colour4 colour) {
+void drawLine(double x0, double y0, double x1, double y1, double width, colour colour) {
     ofSetColor(ofConvertColour(colour));
     ofSetLineWidth(width);
     ofDrawLine(x0, y0, x1, y1);
 }
 
-void drawRect(double x0, double y0, double x1, double y1, colour4 colour) {
+void drawRect(double x0, double y0, double x1, double y1, colour colour) {
     ofSetColor(ofConvertColour(colour));
     ofDrawRectangle(x0, y0, x1 - x0, y1 - y0);
 }

@@ -25,8 +25,30 @@
 #include "platform.hpp"
 
 /*
+    coord
+ */
+
+coord::coord() : x(0), y(0) {}
+coord::coord(double _x, double _y) : x(_x), y(_y) {}
+
+void coord::setXY(double _x, double _y) { x = _x; y = _y; }
+
+/*
+    colour
+ */
+
+colour::colour() : r(0), g(0), b(0), a(255) {}
+colour::colour(unsigned char _r, unsigned char _g, unsigned char _b) : r(_r), g(_g), b(_b), a(255) {}
+colour::colour(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) : r(_r), g(_g), b(_b), a(_a) {}
+
+void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b) { r = _r; g = _g; b = _b; }
+void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) { r = _r; g = _g; b = _b; a = _a; }
+/*
     rect
  */
+
+rect::rect() : left(0), top(0), right(0), bottom(0) {}
+rect::rect(double l, double t, double r, double b) : left(l), top(t), right(r), bottom(b) {}
 
 double rect::width()   const { return right - left; }
 double rect::height()  const { return bottom - top; }
@@ -126,14 +148,7 @@ void BaseImage::draw(rect pos) const { draw(pos.left, pos.top, pos.width(), pos.
     drawLine
  */
 
-void drawLine(double x0, double y0, double x1, double y1, double width, colour3 _colour) {
-    colour4 colour;
-    colour.rgb = _colour;
-    colour.a = 255;
-    drawLine(x0, y0, x1, y1, width, colour);
-}
-
-void drawLine(coord start, coord end, double width, colour4 colour) {
+void drawLine(coord start, coord end, double width, colour colour) {
     drawLine(start.x, start.y, end.x, end.y, width, colour);
 }
 
@@ -141,7 +156,7 @@ void drawLine(coord start, coord end, double width, colour4 colour) {
     drawRect
  */
 
-void drawRect(rect r, colour4 colour) {
+void drawRect(rect r, colour colour) {
     drawRect(r.left, r.top, r.right, r.bottom, colour);
 }
 

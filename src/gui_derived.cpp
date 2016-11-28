@@ -116,7 +116,7 @@ namespace gui {
     }
     
     RectAtom2::RectAtom2() : UIAtom(), colour() {}
-    RectAtom2::RectAtom2(colour4 _colour, double x, double y, double width, double height) : gui::UIAtom(x, y, width, height), colour(_colour) {}
+    RectAtom2::RectAtom2(union colour _colour, double x, double y, double width, double height) : gui::UIAtom(x, y, width, height), colour(_colour) {}
     void RectAtom2::render() { drawRect(bounds, colour); }
     
     /*

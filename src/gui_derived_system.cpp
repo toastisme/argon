@@ -337,7 +337,7 @@ namespace gui {
         Gaussian& g = theSystem.getGaussian(gaussianID);
         g.setParams(g.getgAmp(), g.getgAlpha(), scaled_x, scaled_y);
         
-        bounds.movePos(POS_CENTRE, {x, y});
+        bounds.movePos(POS_CENTRE, coord(x, y));
     }
     
     void GaussianAtom::deselect() {

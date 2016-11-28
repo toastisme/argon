@@ -150,10 +150,10 @@ namespace gui {
     class RectAtom2 : public UIAtom {
     private:
         virtual void render();
-        colour4 colour;
+        colour colour;
     public:
         RectAtom2();
-        RectAtom2(colour4 colour, double x, double y, double width, double height);
+        RectAtom2(union colour colour, double x, double y, double width, double height);
     };
     
     
