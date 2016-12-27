@@ -76,9 +76,7 @@ void ofApp::audioIn(ofSoundBuffer &buffer){
     argon::AudioIn(buffer.getRMSAmplitude());
 }
 
-
 //--------------------------------------------------------------
-
 void ofApp::keyPressed(int key){
     argon::KeyPress(key);
 }

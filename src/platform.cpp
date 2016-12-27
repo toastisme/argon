@@ -87,9 +87,7 @@ coord rect::getPos(Position position) const {
 }
 
 // move the rect so that a Position within the rect is now at pos
-void rect::movePos(Position position, coord pos) {
-    double x = pos.x;
-    double y = pos.y;
+void rect::movePos(Position position, double x, double y) {
     double W = width();
     double H = height();
     
@@ -107,14 +105,16 @@ void rect::movePos(Position position, coord pos) {
         default:               { } break;
     }
 }
+void rect::movePos(Position position, coord pos) { movePos(position, pos.x, pos.y); }
 
 // move rect by an offset
-void rect::moveBy(coord offset) {
-    left   += offset.x;
-    right  += offset.x;
-    top    += offset.y;
-    bottom += offset.y;
+void rect::moveBy(double x, double y) {
+    left   += x;
+    right  += x;
+    top    += y;
+    bottom += y;
 }
+void rect::moveBy(coord offset) { moveBy(offset.x, offset.y); }
 
 // return true if the given coordinates lie inside or on the boundary of the rectangle
 bool rect::inside(double x, double y) const {
@@ -133,14 +133,28 @@ bool rect::inside(coord point) const {
     ArgonImage
  */
 
-coord ArgonImage::getSize() const {
-    return {getWidth(), getHeight()};
-}
+coord ArgonImage::getSize() const { return coord(getWidth(), getHeight()); }
 
 void ArgonImage::draw(double x, double y, coord size) const { draw(x, y, size.x, size.y); }
 void ArgonImage::draw(coord pos, double width, double height) const { draw(pos.x, pos.y, width, height); }
 void ArgonImage::draw(coord pos, coord size) const { draw(pos.x, pos.y, size.x, size.y); }
 void ArgonImage::draw(rect pos) const { draw(pos.left, pos.top, pos.width(), pos.height()); }
+
+/*
+    ArgonFont
+ */
+
+double ArgonFont::getLineHeight() const { return getAscenderHeight() - getDescenderHeight(); }
+coord ArgonFont::getTextSize(const std::string &text) const { return coord(getTextWidth(text), getLineHeight()); }
+rect ArgonFont::getTextBounds(const std::string &text) const { return rect(coord(0, 0), getTextSize(text)); }
+
+void ArgonFont::drawText(coord pos, const std::string &text) const { drawText(pos.x, pos.y, text); }
+void ArgonFont::drawText(coord pos, Position anchor, const std::string &text) const { drawText(pos.x, pos.y, anchor, text); }
+void ArgonFont::drawText(double x, double y, Position anchor, const std::string &text) const {
+    rect bounds = getTextBounds(text);
+    bounds.movePos(anchor, x, y);
+    drawText(bounds.left, bounds.top - getAscenderHeight(), text);
+}
 
 /*
     Audio

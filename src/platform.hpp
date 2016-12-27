@@ -150,10 +150,12 @@ union rect
     coord getPos(Position position) const;
     
     // move the rect (preserving width and height) such that a specified position in the rectangle,
-    // given by the enum position, is now at the point pos
+    // given by the enum position, is now at the given coordinates
+    void movePos(Position position, double x, double y);
     void movePos(Position position, coord pos);
     
     // move the rect (preserving width and height) by an offset
+    void moveBy(double x, double y);
     void moveBy(coord offset);
     
     // true if the point x, y is inside (or on the boundary of) the rect
@@ -174,8 +176,7 @@ private:
     void *base;
     
 public:
-    // The platform-specific layer must implement the constructor,
-    // destructor, and following four methods
+    // The platform-specific layer must implement the constructor, destructor, and following four methods:
     ArgonImage();
     ~ArgonImage();
     
@@ -184,7 +185,7 @@ public:
     double getHeight() const;                                           // return image height
     void draw(double x, double y, double width, double height) const;   // draw image to screen
    
-    // the rest is implemented in platform.cpp as calls to the above four functions
+    // the rest are implemented in platform.cpp as calls to the above four functions:
     coord getSize() const;
     void draw(double x, double y, coord size) const;
     void draw(coord size, double width, double height) const;
@@ -193,7 +194,31 @@ public:
 };
 
 class ArgonFont {
+private:
+    // pointer to backend class if needed
+    void *base;
     
+public:
+    // The platform-specifc layer should implement:
+    ArgonFont();
+    ~ArgonFont();
+    
+    void loadTTF(const std::string &filename, int fontsize);            // load a TTF file with given fontsize
+    double getAscenderHeight() const;                                   // distance from bottom of "o" to top of "d" in "dog"    (positive value)
+    double getDescenderHeight() const;                                  // distance from bottom of "o" to bottom of "g" in "dog" (negative value)
+    double getTextWidth(const std::string &text) const;                 // width of given text string
+    void drawText(double x, double y, const std::string &text) const;   // draw text string to screen, with left end of baseline at (x, y)
+    
+    // the rest are implemented in platform.cpp:
+    double getLineHeight() const;                                       // distance from bottom of "g" to top of "d" in "dog"    (positive value)
+    coord getTextSize(const std::string &text) const;                   // width and height of a given text string
+    rect getTextBounds(const std::string &text) const;                  // bounding box of a given text string, with origin (0, 0)
+    void drawText(coord pos, const std::string &text) const;            // draw text string to screen, with left end of baseline at pos
+    
+    // draw text string to screen, with a specified anchor point at a position
+    // e.g. drawText(100, 100, TOP_RIGHT, "Hello World!") draws the string such that its top right corner is at (100, 100)
+    void drawText(double x, double y, Position anchor, const std::string &text) const;
+    void drawText(coord pos, Position anchor, const std::string &text) const;
 };
 
 /*

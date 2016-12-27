@@ -41,7 +41,7 @@ ofColor ofConvertColour(colour colour) {
     ArgonImage
  */
 
-ArgonImage::ArgonImage() { base = new ofImage(); }
+ArgonImage::ArgonImage()  { base = new ofImage(); }
 ArgonImage::~ArgonImage() { delete (ofImage *)base; }
 
 void ArgonImage::loadPNG(const string &filename) { ((ofImage *)base)->load(filename); }
@@ -54,6 +54,18 @@ void ArgonImage::draw(double x, double y, double width, double height) const {
 /*
     ArgonFont
  */
+
+ArgonFont::ArgonFont()  { base = new ofTrueTypeFont(); }
+ArgonFont::~ArgonFont() { delete (ofTrueTypeFont *)base; }
+
+void ArgonFont::loadTTF(const string &filename, int size) { ((ofTrueTypeFont *)base)->load(filename, size); }
+double ArgonFont::getAscenderHeight()  const { ((ofTrueTypeFont *)base)->getAscenderHeight();  }
+double ArgonFont::getDescenderHeight() const { ((ofTrueTypeFont *)base)->getDescenderHeight(); }
+double ArgonFont::getTextWidth(const std::string &text) const { ((ofTrueTypeFont *)base)->stringWidth(text); }
+void ArgonFont::drawText(double x, double y, const std::string &text) const {
+    ((ofTrueTypeFont *)base)->drawString(text, x, y);
+}
+
 
 /*
     Drawing functions
