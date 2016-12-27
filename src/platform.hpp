@@ -250,8 +250,13 @@ void drawRect(rect r, colour colour);
     Other functions
  */
 
-int  windowWidth();
-int windowHeight();
-coord windowSize(); // in platform.cpp
+// Implemented in platform-specific layer
+int windowWidth();      // width of window
+int windowHeight();     // height of window
+double timeElapsed();   // time since program began in seconds
+
+// Implemented in platform.cpp
+coord windowSize();     // width and height of window
+rect  windowBounds();   // rect from (0, 0) to (window width, window height)
 
 #endif /* platform_hpp */

@@ -212,5 +212,6 @@ void drawRect(rect r, colour colour) {
     Other functions
  */
 
-coord windowSize() { return coord(windowWidth(), windowHeight()); }
+coord windowSize()   { return coord(windowWidth(), windowHeight()); }
+rect  windowBounds() { return rect(coord(0, 0), windowSize()); }
 
