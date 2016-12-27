@@ -134,6 +134,7 @@ union rect
     
     rect();
     rect(double left, double top, double right, double bottom);
+    rect(coord min, coord max);
     
     double width()   const;
     double height()  const;
@@ -224,6 +225,8 @@ void drawRect(rect r, colour colour);
     Other functions
  */
 
-void setFramerate(int rate);
+int  windowWidth();
+int windowHeight();
+coord windowSize(); // in platform.cpp
 
 #endif /* platform_hpp */

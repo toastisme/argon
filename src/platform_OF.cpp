@@ -70,4 +70,5 @@ void drawRect(double x0, double y0, double x1, double y1, colour colour) {
     ofDrawRectangle(x0, y0, x1 - x0, y1 - y0);
 }
 
-void setFramerate(int rate) { ofSetFrameRate(rate); }
+int windowWidth()  { return ofGetWidth();  }
+int windowHeight() { return ofGetHeight(); }

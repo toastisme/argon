@@ -548,10 +548,10 @@ namespace gui {
         md::MDContainer& theSystem;
         
         // Super secret variables
-        ofImage& loganLeft;
-        ofImage& loganRight;
-        ofImage& boatLeft;
-        ofImage& boatRight;
+        ArgonImage& loganLeft;
+        ArgonImage& loganRight;
+        ArgonImage& boatLeft;
+        ArgonImage& boatRight;
         bool inflictTorture;
         bool setSail;
         
@@ -564,7 +564,7 @@ namespace gui {
         void drawParticle(int index, double radius, int nframes = 0);
         
     public:
-        SystemAtom(md::MDContainer& theSystem, ofImage& loganLeft, ofImage& loganRight, ofImage& boatLeft, ofImage& boatRight, int x, int y, int width, int height);
+        SystemAtom(md::MDContainer& theSystem, ArgonImage& loganLeft, ArgonImage& loganRight, ArgonImage& boatLeft, ArgonImage& boatRight, int x, int y, int width, int height);
         
         void toggleTheHorrors();
         void sailTheHighSeas();

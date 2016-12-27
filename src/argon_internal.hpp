@@ -57,9 +57,6 @@ namespace argon {
     // Store current screen dimensions so that resizing can occur in update if they change
     int screenWidth, screenHeight;
     
-    // ~Trivial~ variables
-    ofImage loganLeft, loganRight;
-    
     /*
         UI CONTAINERS
      */
@@ -88,6 +85,16 @@ namespace argon {
     ofTrueTypeFont aboutFont12;
     
     // these all need to become ArgonImages
+    ArgonImage splashScreen;
+    ArgonImage boatLeft;
+    ArgonImage boatRight;
+    ArgonImage loganLeft;
+    ArgonImage loganRight;
+    ArgonImage argonLogo;
+    ofImage stargonautsLogo;
+    ofImage tmcsLogo;
+    ofImage circGradient;
+    
     ofImage playButton;
     ofImage pauseButton;
     ofImage resetButton;
@@ -95,15 +102,11 @@ namespace argon {
     ofImage audioOnButton;
     ofImage audioOffButton;
     ofImage menuButton;
-    ofImage circGradient;
-    ofImage ljThumbnail;
-    ofImage squareThumbnail;
-    ofImage morseThumbnail;
-    ofImage customThumbnail;
-    ofImage addPointsButton;
-    ofImage removePointsButton;
-    ofImage movePointsButton;
-    ofImage changeSlopeButton;
+    //ofImage addPointsButton;
+    //ofImage removePointsButton;
+    //ofImage movePointsButton;
+    //ofImage changeSlopeButton;
+    
     ofImage optionsButtonUp;
     ofImage optionsButtonDown;
     ofImage optionsEnergyButton;
@@ -111,15 +114,15 @@ namespace argon {
     ofImage optionsPotentialButton;
     ofImage optionsControlsButton;
     ofImage optionsAboutButton;
-    ArgonImage splashScreen;
-    ofImage stargonautsLogo;
-    ofImage boatLeft;
-    ofImage boatRight;
-    ofImage tmcsLogo;
-    ArgonImage argonLogo;
+    
     ofImage closeButton;
     ofImage nextButton;
     ofImage previousButton;
+    
+    ofImage ljThumbnail;
+    ofImage squareThumbnail;
+    ofImage morseThumbnail;
+    ofImage customThumbnail;
     ofImage resetSplinePointsButton;
 }
 

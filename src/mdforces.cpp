@@ -603,7 +603,7 @@ namespace md {
 
         // NOTE: this does not properly weight the RDF by the distance
         // but the RDF plot looks better this way anyway
-        return histogram(dists, min, max, bins);
+        return util::histogram(dists, min, max, bins);
     }
 
     
@@ -622,7 +622,7 @@ namespace md {
             speeds.push_back(sqrt(vel.x * vel.x + vel.y * vel.y));
         }
 
-        return histogram(speeds, min, max, bins);
+        return util::histogram(speeds, min, max, bins);
     }
 
     

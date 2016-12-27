@@ -155,7 +155,7 @@ namespace gui {
             pos.y = pot.potential(pos.x);
             
             // map to dimensions of UI element
-            pos = BilinearMap(pos, potBounds, bounds);
+            pos = util::bimap(pos, potBounds, bounds);
             particlePoints.push_back(pos);
         }
         
@@ -165,7 +165,7 @@ namespace gui {
             pos.y = pot.potential(pos.x);
             
             // map to dimensions of UI element
-            pos = BilinearMap(pos, potBounds, bounds);
+            pos = util::bimap(pos, potBounds, bounds);
             potPoints.push_back(pos);
         }
         
@@ -213,8 +213,8 @@ namespace gui {
                 sum += prevRDF[j][i];
             }
             coord point = {(double)i, sum / prevRDF.size()};
-            coord pointUpper = BilinearMap(point, RDFspace, violinSpaceUpper);
-            coord pointLower = BilinearMap(point, RDFspace, violinSpaceLower);
+            coord pointUpper = util::bimap(point, RDFspace, violinSpaceUpper);
+            coord pointLower = util::bimap(point, RDFspace, violinSpaceLower);
             
             //ofDrawCircle(pointUpper.x, pointUpper.y, 2);
             //ofDrawCircle(pointLower.x, pointLower.y, 2);
@@ -250,7 +250,7 @@ namespace gui {
     
     void SplineControlPoint::movePoint(double x, double y) {
         coord target = coord(x, y);
-        target = BilinearClamp(target, pointBounds);
+        target = util::biclamp(target, pointBounds);
         bounds.movePos(POS_CENTRE, target);
     }
     
@@ -334,7 +334,7 @@ namespace gui {
             pos.y = children[i]->getRect().getPos(POS_CENTRE).y;
             m     = ((SplineControlPoint*)children[i])->m;
             
-            pos = BilinearMap(pos, bounds, splineRegion);
+            pos = util::bimap(pos, bounds, splineRegion);
             points.push_back({pos.x, pos.y, m});
         }
         

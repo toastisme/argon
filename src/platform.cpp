@@ -49,6 +49,7 @@ void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b, unsign
 
 rect::rect() : left(0), top(0), right(0), bottom(0) {}
 rect::rect(double l, double t, double r, double b) : left(l), top(t), right(r), bottom(b) {}
+rect::rect(coord min, coord max) : left(min.x), top(min.y), right(max.x), bottom(max.y) {}
 
 double rect::width()   const { return right - left; }
 double rect::height()  const { return bottom - top; }
@@ -192,4 +193,10 @@ void drawLine(coord start, coord end, double width, colour colour) {
 void drawRect(rect r, colour colour) {
     drawRect(r.left, r.top, r.right, r.bottom, colour);
 }
+
+/*
+    Other functions
+ */
+
+coord windowSize() { return coord(windowWidth(), windowHeight()); }
 

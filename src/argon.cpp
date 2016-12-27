@@ -34,8 +34,6 @@ ROUTINE Initialise:
     needed for the app (images and fonts), and initialises the audio input stream.
 */
 void argon::Initialise() {
-    setFramerate(60);
-    
     // Load assets
     loading = true;
     
@@ -61,8 +59,8 @@ void argon::Initialise() {
     previousButton.load("img/PreviousButton.png");
     tmcsLogo.load("img/tmcslogo.png");
     stargonautsLogo.load("img/stargonautslogo.png");
-    boatLeft.load("img/boatleft.png");
-    boatRight.load("img/boatright.png");
+    boatLeft.loadPNG("img/boatleft.png");
+    boatRight.loadPNG("img/boatright.png");
     argonLogo.loadPNG("img/argonlogo.png");
     resetSplinePointsButton.load("img/ResetSplinePointsButton.png");
     
@@ -73,8 +71,8 @@ void argon::Initialise() {
     morseThumbnail.load("img/MorseThumbnail.png");
     customThumbnail.load("img/CustomThumbnail.png");
     
-    loganLeft.load("img/david-logan-posing-left.png");
-    loganRight.load("img/david-logan-posing-right.png");
+    loganLeft.loadPNG("img/david-logan-posing-left.png");
+    loganRight.loadPNG("img/david-logan-posing-right.png");
     
     // fonts
     uiFont14.load("fonts/Montserrat-Bold.ttf", 14);

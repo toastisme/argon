@@ -33,7 +33,7 @@ namespace gui {
         SystemAtom
      */
     
-    SystemAtom::SystemAtom(md::MDContainer& _theSystem, ofImage& _loganLeft, ofImage& _loganRight, ofImage& _boatLeft, ofImage& _boatRight, int x, int y, int width, int height) :
+    SystemAtom::SystemAtom(md::MDContainer& _theSystem, ArgonImage& _loganLeft, ArgonImage& _loganRight, ArgonImage& _boatLeft, ArgonImage& _boatRight, int x, int y, int width, int height) :
                             theSystem(_theSystem), loganLeft(_loganLeft), loganRight(_loganRight), boatLeft(_boatLeft), boatRight(_boatRight), inflictTorture(false), setSail(false),
                             UIAtom(x, y, width, height)
     { }
@@ -51,6 +51,9 @@ namespace gui {
         
         double loganShiftx = loganLeft.getWidth() / 2;
         double loganShifty = loganLeft.getHeight() / 2;
+                
+        ArgonImage* leftImage = inflictTorture ? &loganLeft : &boatLeft;
+        ArgonImage* rightImage = inflictTorture ? &loganRight : &boatRight;
         
         double v_avg = theSystem.getVAvg(); // Get average velocity for scaling purposes
         ofSetCircleResolution(20);
@@ -69,15 +72,15 @@ namespace gui {
             
             if (inflictTorture || setSail) {
                 ofSetColor(particleColor);
-                coord pos = theSystem.getPos(i);
-                
-                ofImage* leftImage = inflictTorture ? &loganLeft : &boatLeft;
-                ofImage* rightImage = inflictTorture ? &loganRight : &boatRight;
-                
+                coord screenpos = util::bimap(theSystem.getPos(i), theSystem.getBox(), windowSize());
+                rect drawpos;
+                drawpos.setXYWH(screenpos.x - loganShiftx, screenpos.y - loganShifty, radius_x * 4, radius_y * 4);
                 if (tempVel.x >= 0)
-                    rightImage->draw(box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
+                    //rightImage->draw(box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
+                    rightImage->draw(drawpos);
                 else
-                    leftImage->draw( box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
+                    //leftImage->draw( box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
+                    leftImage->draw(drawpos);
             } else {
                 //trail
                 if (theSystem.getNPrevPos() >= 15) {
@@ -119,13 +122,15 @@ namespace gui {
     }
     
     void SystemAtom::drawParticle(int index, double radius_x, double radius_y, int nframes) {
-        coord pos = theSystem.getPos(index, nframes);
-        ofDrawEllipse(box2screen(pos.x, pos.y, 0.0, 0.0, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 2, radius_y * 2);
+        coord screenpos = util::bimap(theSystem.getPos(index, nframes), theSystem.getBox(), windowSize());
+        ofDrawEllipse(screenpos.x, screenpos.y, radius_x * 2, radius_y * 2);
+        //ofDrawEllipse(box2screen(pos.x, pos.y, 0.0, 0.0, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 2, radius_y * 2);
     }
     
     void SystemAtom::drawParticle(int index, double radius, int nframes) {
-        coord pos = theSystem.getPos(index, nframes);
-        ofDrawCircle(box2screen(pos.x, pos.y, 0.0, 0.0, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius);
+        coord screenpos = util::bimap(theSystem.getPos(index, nframes), theSystem.getBox(), windowSize());
+        ofDrawCircle(screenpos.x, screenpos.y, radius);
+        //ofDrawCircle(box2screen(pos.x, pos.y, 0.0, 0.0, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius);
     }
 
     void SystemAtom::toggleTheHorrors() {
@@ -174,12 +179,12 @@ namespace gui {
         ofPolyline Ekin, Epot;
         for (int i = 0; i < numPoints; ++i) {
             point = {(double)i, theSystem.getPreviousEkin(i)};
-            point = BilinearMap(point, energySpace, bounds);
+            point = util::bimap(point, energySpace, bounds);
             Ekin.addVertex(point.x, point.y);
             
             ofSetColor(255, 255, 255);
             point = {(double)i, theSystem.getPreviousEpot(i)};
-            point = BilinearMap(point, energySpace, bounds);
+            point = util::bimap(point, energySpace, bounds);
             Epot.addVertex(point.x, point.y);
         }
        
@@ -244,7 +249,7 @@ namespace gui {
             sum /= prevMB.size();
             
             point = {(double)i + 0.5, sum};
-            point = BilinearMap(point, maxwellSpace, bounds);
+            point = util::bimap(point, maxwellSpace, bounds);
             MBcurve.addVertex(point.x, point.y);
             
             currMaxHeight = sum > currMaxHeight ? sum : currMaxHeight;
