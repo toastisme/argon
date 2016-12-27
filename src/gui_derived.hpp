@@ -179,10 +179,10 @@ namespace gui {
     class ImageAtom2 : public UIAtom {
     private:
         virtual void render();
-        const BaseImage *image;
+        const ArgonImage *image;
     public:
         ImageAtom2();
-        ImageAtom2(const BaseImage &image, double x, double y, double width, double height);
+        ImageAtom2(const ArgonImage &image, double x, double y, double width, double height);
         virtual void resize(float xScale, float yScale);
     };
 

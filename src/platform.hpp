@@ -163,26 +163,48 @@ union rect
 
 
 /*
-    Wrapper classes for images, fonts and audio
+    Classes for images and fonts
  */
 
-class BaseImage {
-public:
-    BaseImage();
+class ArgonImage {
+private:
+    // a generic pointer to the base image class for whatever backend we use
+    // cast this to whatever type we need it to be, then call its methods
+    void *base;
     
-    // Images must wrap the following functionality
-    virtual void loadPNG(const std::string &filename) = 0;
-    virtual double getWidth() const = 0;
-    virtual double getHeight() const = 0;
-    virtual void draw(double x, double y, double width, double height) const = 0;
+public:
+    // The platform-specific layer must implement the constructor,
+    // destructor, and following four methods
+    ArgonImage();
+    ~ArgonImage();
+    
+    void loadPNG(const std::string &filename);                          // load a PNG file
+    double getWidth() const;                                            // return image width
+    double getHeight() const;                                           // return image height
+    void draw(double x, double y, double width, double height) const;   // draw image to screen
    
-    // the rest is defined as calls to the above four functions
+    // the rest is implemented in platform.cpp as calls to the above four functions
     coord getSize() const;
     void draw(double x, double y, coord size) const;
     void draw(coord size, double width, double height) const;
     void draw(coord pos, coord size) const;
     void draw(rect pos) const;
 };
+
+class ArgonFont {
+    
+};
+
+/*
+    Mic input functions
+ */
+
+void setMicVolume(double input);
+double getMicVolume();
+
+void setMicActive(bool active);
+bool getMicActive();
+void toggleMicActive();
 
 /*
     Drawing functions

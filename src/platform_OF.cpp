@@ -22,7 +22,8 @@
  SOFTWARE.
  */
 
-#include "platform_OF.hpp"
+#include "platform.hpp"
+#include "ofMain.h"
 
 ofPoint ofConvertCoord(coord pos) {
     return ofVec3f(pos.x, pos.y);
@@ -36,12 +37,27 @@ ofColor ofConvertColour(colour colour) {
     return ofColor(colour.r, colour.g, colour.b, colour.a);
 }
 
-void ofWrappedImage::loadPNG(const string &filename) { image.load(filename); }
-double ofWrappedImage::getWidth()  const { return image.getWidth();  }
-double ofWrappedImage::getHeight() const { return image.getHeight(); }
-void ofWrappedImage::draw(double x, double y, double width, double height) const {
-    image.draw(x, y, width, height);
+/*
+    ArgonImage
+ */
+
+ArgonImage::ArgonImage() { base = new ofImage(); }
+ArgonImage::~ArgonImage() { delete (ofImage *)base; }
+
+void ArgonImage::loadPNG(const string &filename) { ((ofImage *)base)->load(filename); }
+double ArgonImage::getWidth()  const { return ((ofImage *)base)->getWidth();  }
+double ArgonImage::getHeight() const { return ((ofImage *)base)->getHeight(); }
+void ArgonImage::draw(double x, double y, double width, double height) const {
+    ((ofImage *)base)->draw(x, y, width, height);
 }
+
+/*
+    ArgonFont
+ */
+
+/*
+    Drawing functions
+ */
 
 void drawLine(double x0, double y0, double x1, double y1, double width, colour colour) {
     ofSetColor(ofConvertColour(colour));

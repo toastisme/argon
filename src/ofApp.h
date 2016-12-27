@@ -24,26 +24,7 @@
 
 #pragma once
 
-#include <sstream>
-#include <string>
-
-// Magic include to fix Microsoft C++ compatibility
-#include <ciso646>
-
 #include "ofMain.h"
-#include "utilities.hpp"
-#include "mdforces.hpp"
-#include "gaussian.hpp"
-#include "gui_base.hpp"
-#include "gui_derived.hpp"
-#include "cubicspline.hpp"
-#include "potentials.hpp"
-#include "audio.hpp"
-
-#include "platform_OF.hpp"
-
-
-#define N_THREADS 1 // Number of threads to be used in the forces calculations
 
 class ofApp : public ofBaseApp
 {
@@ -68,87 +49,4 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     void audioIn(ofSoundBuffer &buffer);
-    
-    // Info text control
-    void SetInfoText();
-
-private:
-   
-    md::MDContainer theSystem; // The MD simulation system
-    
-    // Font and images needed for UI
-    ofTrueTypeFont uiFont14;
-    ofTrueTypeFont uiFont12;
-    ofTrueTypeFont uiFont10;
-    ofTrueTypeFont aboutFont12;
-    
-    ofImage playButton;
-    ofImage pauseButton;
-    ofImage resetButton;
-    ofImage tutorialButton;
-    ofImage audioOnButton;
-    ofImage audioOffButton;
-    ofImage menuButton;
-    ofImage circGradient;
-    ofImage ljThumbnail;
-    ofImage squareThumbnail;
-    ofImage morseThumbnail;
-    ofImage customThumbnail;
-    ofImage addPointsButton;
-    ofImage removePointsButton;
-    ofImage movePointsButton;
-    ofImage changeSlopeButton;
-    ofImage optionsButtonUp;
-    ofImage optionsButtonDown;
-    ofImage optionsEnergyButton;
-    ofImage optionsMainMenuButton;
-    ofImage optionsPotentialButton;
-    ofImage optionsControlsButton;
-    ofImage optionsAboutButton;
-    //ofImage splashScreen;
-    ofWrappedImage splashScreen;
-    ofImage stargonautsLogo;
-    ofImage boatLeft;
-    ofImage boatRight;
-    ofImage tmcsLogo;
-    //ofImage argonLogo;
-    ofWrappedImage argonLogo;
-    ofImage closeButton;
-    ofImage nextButton;
-    ofImage previousButton;
-    ofImage resetSplinePointsButton;
-    
-    // Booleans
-    bool loading;
-    
-    // Audio data
-    AudioStream micInput;
-    ofSoundStream soundStream;
-    
-    // ~Trivial~ variables
-    ofImage loganLeft, loganRight;
-    
-    // UI Containers
-    gui::UIContainer controlsUI;
-    gui::UIContainer gaussianUI;
-    gui::UIContainer potentialUI;
-    gui::UIContainer systemUI;
-    gui::UIContainer graphUI;
-    gui::UIContainer optionsUI;
-    gui::UIContainer optionsOffUI;
-    gui::UIContainer aboutUI;
-    gui::UIContainer tutorialHighlightUI;
-    gui::UIContainer tutorialBlockUI; // This second container just adds a bit for flexibility in blocking mouse pressed events
-    gui::UIContainer tutorialUI;
-    gui::UIContainer infoUI;
-    
-    int splineContainerIndex; // Index of spline container in potentialUI
-    int gaussianContainerIndex; // Index of gaussian container in systemUI
-    int systemAtomIndex; // Index of the system atom in systemUI
-    int infoTextIndex; // Index of the text atom in infoUI
-    int optionsIndex; // Index of the atoms list atom in controlsUI
-    
-    // Store current screen dimensions so that resizing can occur in update if they change
-    int screenWidth, screenHeight;
-
 };

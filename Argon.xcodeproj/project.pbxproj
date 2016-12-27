@@ -9,13 +9,12 @@
 /* Begin PBXBuildFile section */
 		3F8461561D65FC1500D4C796 /* gui_derived_tutorial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F8461551D65FC1500D4C796 /* gui_derived_tutorial.cpp */; };
 		622BA4E91D8964A2008EF1C6 /* openFrameworks.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FF161571D4224FB0031019B /* openFrameworks.a */; };
-		623C212B1D021D8E00944B11 /* audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 623C21291D021D8E00944B11 /* audio.cpp */; };
 		623C212D1D07001B00944B11 /* utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 623C212C1D07001B00944B11 /* utilities.cpp */; };
 		624908FF1CF383C500625501 /* mdforces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 624908FD1CF383C500625501 /* mdforces.cpp */; };
 		624909041CF70FC100625501 /* potentials.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 624909011CF70FC100625501 /* potentials.cpp */; };
 		625D6F631DE461840039211F /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 625D6F611DE461840039211F /* platform.cpp */; };
-		625D6F651DE497EC0039211F /* platform_OF.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 625D6F641DE497EC0039211F /* platform_OF.hpp */; };
 		625D6F671DE4AFD10039211F /* platform_OF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 625D6F661DE4AFD10039211F /* platform_OF.cpp */; };
+		62AAB9471E1180FC0049A3E7 /* argon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62AAB9451E1180FC0049A3E7 /* argon.cpp */; };
 		62B2D4081CDC8CB8002E8E21 /* gaussian.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62B2D4061CDC8CB8002E8E21 /* gaussian.cpp */; };
 		62E300AF1CE3196D00AEAC39 /* cubicspline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62E300AD1CE3196D00AEAC39 /* cubicspline.cpp */; };
 		62E300C51CF0D73000AEAC39 /* gui_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62E300C11CF0D73000AEAC39 /* gui_base.cpp */; };
@@ -59,8 +58,6 @@
 		3F8461551D65FC1500D4C796 /* gui_derived_tutorial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gui_derived_tutorial.cpp; sourceTree = "<group>"; };
 		621C697C1D422F3B007AE22A /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		622BA4E71D895957008EF1C6 /* openFrameworksDebug.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = openFrameworksDebug.a; path = ../../../libs/openFrameworksCompiled/lib/osx/openFrameworksDebug.a; sourceTree = "<group>"; };
-		623C21291D021D8E00944B11 /* audio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audio.cpp; sourceTree = "<group>"; };
-		623C212A1D021D8E00944B11 /* audio.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = audio.hpp; sourceTree = "<group>"; };
 		623C212C1D07001B00944B11 /* utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utilities.cpp; sourceTree = "<group>"; };
 		624908FD1CF383C500625501 /* mdforces.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mdforces.cpp; sourceTree = "<group>"; };
 		624908FE1CF383C500625501 /* mdforces.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = mdforces.hpp; sourceTree = "<group>"; };
@@ -69,8 +66,10 @@
 		624909031CF70FC100625501 /* utilities.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = utilities.hpp; sourceTree = "<group>"; };
 		625D6F611DE461840039211F /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
 		625D6F621DE461840039211F /* platform.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = platform.hpp; sourceTree = "<group>"; };
-		625D6F641DE497EC0039211F /* platform_OF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = platform_OF.hpp; sourceTree = "<group>"; };
 		625D6F661DE4AFD10039211F /* platform_OF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform_OF.cpp; sourceTree = "<group>"; };
+		62AAB9451E1180FC0049A3E7 /* argon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = argon.cpp; sourceTree = "<group>"; };
+		62AAB9461E1180FC0049A3E7 /* argon.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = argon.hpp; sourceTree = "<group>"; };
+		62AAB94C1E11B6320049A3E7 /* argon_internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = argon_internal.hpp; sourceTree = "<group>"; };
 		62B2D4061CDC8CB8002E8E21 /* gaussian.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gaussian.cpp; sourceTree = "<group>"; };
 		62B2D4071CDC8CB8002E8E21 /* gaussian.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = gaussian.hpp; sourceTree = "<group>"; };
 		62E300AD1CE3196D00AEAC39 /* cubicspline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cubicspline.cpp; sourceTree = "<group>"; };
@@ -141,9 +140,11 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
+				62AAB9461E1180FC0049A3E7 /* argon.hpp */,
+				62AAB94C1E11B6320049A3E7 /* argon_internal.hpp */,
+				62AAB9451E1180FC0049A3E7 /* argon.cpp */,
 				625D6F621DE461840039211F /* platform.hpp */,
 				625D6F611DE461840039211F /* platform.cpp */,
-				625D6F641DE497EC0039211F /* platform_OF.hpp */,
 				625D6F661DE4AFD10039211F /* platform_OF.cpp */,
 				624909031CF70FC100625501 /* utilities.hpp */,
 				623C212C1D07001B00944B11 /* utilities.cpp */,
@@ -155,8 +156,6 @@
 				624909011CF70FC100625501 /* potentials.cpp */,
 				62B2D4071CDC8CB8002E8E21 /* gaussian.hpp */,
 				62B2D4061CDC8CB8002E8E21 /* gaussian.cpp */,
-				623C212A1D021D8E00944B11 /* audio.hpp */,
-				623C21291D021D8E00944B11 /* audio.cpp */,
 				62E300C21CF0D73000AEAC39 /* gui_base.hpp */,
 				62E300C11CF0D73000AEAC39 /* gui_base.cpp */,
 				62E300C41CF0D73000AEAC39 /* gui_derived.hpp */,
@@ -278,12 +277,11 @@
 				62E300C51CF0D73000AEAC39 /* gui_base.cpp in Sources */,
 				625D6F631DE461840039211F /* platform.cpp in Sources */,
 				62F48D7D1D33DB0400408736 /* gui_derived_system.cpp in Sources */,
-				623C212B1D021D8E00944B11 /* audio.cpp in Sources */,
 				625D6F671DE4AFD10039211F /* platform_OF.cpp in Sources */,
-				625D6F651DE497EC0039211F /* platform_OF.hpp in Sources */,
 				62E300AF1CE3196D00AEAC39 /* cubicspline.cpp in Sources */,
 				624908FF1CF383C500625501 /* mdforces.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				62AAB9471E1180FC0049A3E7 /* argon.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				3F8461561D65FC1500D4C796 /* gui_derived_tutorial.cpp in Sources */,
 			);

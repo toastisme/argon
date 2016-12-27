@@ -22,23 +22,37 @@
  SOFTWARE.
  */
 
-#include "platform.hpp"
-#include "ofMain.h"
+#ifndef argon_hpp
+#define argon_hpp
 
-//ofPoint ofConvertCoord(coord pos);
-//ofRectangle ofConvertRect(rect r);
-//ofColor ofConvertColour(colour3 colour);
-//ofColor ofConvertColour(colour4 colour);
+namespace argon {
+    // to be called once when Argon begins running
+    void Initialise();
 
-class ofWrappedImage : public BaseImage {
-private:
-    ofImage image;
+    // to be called once per frame
+    // steps forward the MD simulation and updates the program state
+    // then draw everything to screen
+    void Run();
+
+    // event for keyboard presses
+    // key is a lowercase letter from 'a' to 'z'
+    void KeyPress(unsigned char key);
+    void KeyRelease(unsigned char key);
+
+    // event for a mouse press
+    // button numbers:
+    // 1: left click, 2: right click, 3: middle click
+    // 1: one-finger press, 2: two-finger press, 3: double tap
+    void MousePress(int x, int y, int button);
+    void MouseRelease(int x, int y, int button);
+    void MouseMove(int x, int y);
+
+    // event for the microphone receiving input
+    void AudioIn(double volume);
     
-public:
-    void loadPNG(const string &filename);
-    
-    double getWidth() const;
-    double getHeight() const;
-    
-    void draw(double x, double y, double width, double height) const;
-};
+    // set the info text
+    void SetInfoText();
+}
+
+
+#endif /* argon_hpp */

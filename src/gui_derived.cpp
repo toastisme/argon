@@ -178,7 +178,7 @@ namespace gui {
     }
     
     ImageAtom2::ImageAtom2() : UIAtom(), image(NULL) {}
-    ImageAtom2::ImageAtom2(const BaseImage &_image, double x, double y, double width, double height)
+    ImageAtom2::ImageAtom2(const ArgonImage &_image, double x, double y, double width, double height)
     : UIAtom(x, y, width, height), image(&_image) {}
     void ImageAtom2::render() {
         if (image) { image->draw(bounds); }

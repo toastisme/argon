@@ -129,20 +129,38 @@ bool rect::inside(coord point) const {
 
 
 /*
-    BaseImage
+    ArgonImage
  */
 
-BaseImage::BaseImage() {}
-
-coord BaseImage::getSize() const {
+coord ArgonImage::getSize() const {
     return {getWidth(), getHeight()};
 }
 
-void BaseImage::draw(double x, double y, coord size) const { draw(x, y, size.x, size.y); }
-void BaseImage::draw(coord pos, double width, double height) const { draw(pos.x, pos.y, width, height); }
-void BaseImage::draw(coord pos, coord size) const { draw(pos.x, pos.y, size.x, size.y); }
-void BaseImage::draw(rect pos) const { draw(pos.left, pos.top, pos.width(), pos.height()); }
+void ArgonImage::draw(double x, double y, coord size) const { draw(x, y, size.x, size.y); }
+void ArgonImage::draw(coord pos, double width, double height) const { draw(pos.x, pos.y, width, height); }
+void ArgonImage::draw(coord pos, coord size) const { draw(pos.x, pos.y, size.x, size.y); }
+void ArgonImage::draw(rect pos) const { draw(pos.left, pos.top, pos.width(), pos.height()); }
 
+/*
+    Audio
+ */
+
+bool micActive = true;
+double micVolume = 0;
+
+void setMicVolume(double input) {
+    // first increase input amplitude by factor of 20
+    // then smooth by mixing current with new scaled input
+    // clamp value between 0 and 1
+    micVolume = 0.07 * 20 * input + 0.93 * micVolume;
+    if (micVolume < 0) micVolume = 0;
+    if (micVolume > 1) micVolume = 1;
+}
+double getMicVolume() { return micActive ? micVolume : 0; }
+
+void setMicActive(bool active) { micActive = active; }
+bool getMicActive() { return micActive; }
+void toggleMicActive() { micActive = !micActive; }
 
 /*
     drawLine
