@@ -24,29 +24,53 @@
 
 #include "utilities.hpp"
 
-double clamp(double value, double min, double max) {
-    value = value < min ? min : value;
-    value = value > max ? max : value;
-    return value;
-}
+namespace util {
+    double clamp(double value, double min, double max) {
+        value = value < min ? min : value;
+        value = value > max ? max : value;
+        return value;
+    }
 
-double lerp(double t, double min, double max, bool _clamp) {
-    double value = (1 - t) * min + t * max;
-    if (_clamp) { value = clamp(value, min, max); }
-    return value;
-}
+    double lerp(double t, double min, double max, bool _clamp) {
+        double value = (1 - t) * min + t * max;
+        if (_clamp) { value = clamp(value, min, max); }
+        return value;
+    }
 
-double invlerp(double value, double min, double max, bool _clamp) {
-    double t = (value - min) / (max - min);
-    if (_clamp) { t = clamp(t, 0, 1); }
-    return t;
-}
+    double invlerp(double value, double min, double max, bool _clamp) {
+        double t = (value - min) / (max - min);
+        if (_clamp) { t = clamp(t, 0, 1); }
+        return t;
+    }
 
-double map(double value, double in_min, double in_max, double out_min, double out_max, bool _clamp) {
-    double t = invlerp(value, in_min, in_max, _clamp);
-    return lerp(t, out_min, out_max);
-}
-
+    double map(double value, double in_min, double in_max, double out_min, double out_max, bool _clamp) {
+        double t = invlerp(value, in_min, in_max, _clamp);
+        return lerp(t, out_min, out_max);
+    }
+    
+    coord biclamp(coord point, coord min, coord max) {
+        point.x = clamp(point.x, min.x, max.x);
+        point.y = clamp(point.y, min.y, max.y);
+        return point;
+    }
+    
+    coord biclamp(coord point, rect limits) {
+        return biclamp(point, limits.min, limits.max);
+    }
+    
+    coord bilerp(double t, coord min, coord max, bool clamp) {
+        coord point;
+        point.x = lerp(t, min.x, max.x, clamp);
+        point.y = lerp(t, min.y, max.y, clamp);
+        return point;
+    }
+    
+    coord bimap(coord point, rect in, rect out, bool clamp) {
+        point.x = map(point.x, in.left, in.right, out.left, out.right, clamp);
+        point.y = map(point.y, in.top, in.bottom, out.top, out.bottom, clamp);
+        return point;
+    }
+};
 
 // clamp point inside rect
 coord BilinearClamp(coord point, rect region) {
