@@ -156,11 +156,26 @@ void setMicVolume(double input) {
     if (micVolume < 0) micVolume = 0;
     if (micVolume > 1) micVolume = 1;
 }
+
+#ifdef WIN32
+
+// if on Windows, the microphone is setup with stub methods -- STILL NEED TO TEST ON WINDOWS
+double getMicVolume() { return 0; }
+
+void setMicActive(bool active) { }
+bool getMicActive() { return false; }
+void toggleMicActive() { }
+
+#else
+
+// otherwise actually return the mic input properly
 double getMicVolume() { return micActive ? micVolume : 0; }
 
 void setMicActive(bool active) { micActive = active; }
 bool getMicActive() { return micActive; }
 void toggleMicActive() { micActive = !micActive; }
+
+#endif /* WIN32 */
 
 /*
     drawLine

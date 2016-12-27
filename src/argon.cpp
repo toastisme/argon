@@ -34,17 +34,8 @@ ROUTINE Initialise:
     needed for the app (images and fonts), and initialises the audio input stream.
 */
 void argon::Initialise() {
-    // openFrameworks initialisation
     setFramerate(60);
-    ofBackground(0, 0, 0);
     
-    
-    // Change root directory
-    ofSetDataPathRoot("../Resources/data/");
-#if defined(WIN32)
-    ofSetDataPathRoot("data");
-#endif
-
     // Load assets
     loading = true;
     

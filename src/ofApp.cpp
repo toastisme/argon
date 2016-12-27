@@ -30,6 +30,20 @@
 //--------------------------------------------------------------
 
 void ofApp::setup(){
+    // set target framerate to 60
+    ofSetFrameRate(60);
+    
+    // set background colour to black
+    ofBackground(0, 0, 0);
+    
+    // Set root directory for assets
+#ifdef WIN32
+    ofSetDataPathRoot("data");
+#else
+    ofSetDataPathRoot("../Resources/data/");
+#endif
+    
+    // call generic argon initialisation
     argon::Initialise();
     
 #ifndef WIN32
@@ -43,6 +57,7 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 
 void ofApp::update(){
+
 }
 
 //--------------------------------------------------------------
