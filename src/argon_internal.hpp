@@ -79,10 +79,10 @@ namespace argon {
      */
     
     // these all need to become ArgonFonts
-    ofTrueTypeFont uiFont14;
-    ofTrueTypeFont uiFont12;
-    ofTrueTypeFont uiFont10;
-    ofTrueTypeFont aboutFont12;
+    ArgonFont uiFont14;
+    ArgonFont uiFont12;
+    ArgonFont uiFont10;
+    ArgonFont aboutFont12;
     
     // these all need to become ArgonImages
     ArgonImage splashScreen;

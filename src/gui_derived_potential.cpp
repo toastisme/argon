@@ -34,7 +34,7 @@ namespace gui {
     
     // all locations stored as magic numbers for now
     // perhaps eventually store these as static variables in PotentialContainer? or work them out from the window dimensions?
-    PotentialContainer::PotentialContainer(md::MDContainer &system, ofTrueTypeFont &uiFont12, ofImage &ljThumbnail, ofImage &squareThumbnail, ofImage &morseThumbnail, ofImage &customThumbnail, ofImage &resetSplinePointsButton) : UIContainer(0, 0, 924, 500), theSystem(system) {
+    PotentialContainer::PotentialContainer(md::MDContainer &system, ArgonFont &uiFont12, ofImage &ljThumbnail, ofImage &squareThumbnail, ofImage &morseThumbnail, ofImage &customThumbnail, ofImage &resetSplinePointsButton) : UIContainer(0, 0, 924, 500), theSystem(system) {
         
         ofColor bgcolor = ofColor(80, 80, 80, 80);
         ofColor textcolor = ofColor(255, 255, 240);

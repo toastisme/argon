@@ -75,10 +75,10 @@ void argon::Initialise() {
     loganRight.loadPNG("img/david-logan-posing-right.png");
     
     // fonts
-    uiFont14.load("fonts/Montserrat-Bold.ttf", 14);
-    uiFont12.load("fonts/Montserrat-Bold.ttf", 12);
-    uiFont10.load("fonts/Montserrat-Bold.ttf", 10);
-    aboutFont12.load("fonts/Tahoma.ttf", 12);
+    uiFont14.loadTTF("fonts/Montserrat-Bold.ttf", 14);
+    uiFont12.loadTTF("fonts/Montserrat-Bold.ttf", 12);
+    uiFont10.loadTTF("fonts/Montserrat-Bold.ttf", 10);
+    aboutFont12.loadTTF("fonts/Tahoma.ttf", 12);
     
     
     // Initialise theSystem with 50 particles at 60K
