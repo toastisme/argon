@@ -78,10 +78,11 @@ namespace gui {
     // typically, this larger rectangle is ofBase::bounds
     void TextComponent::renderString(rect bounds, Position align) const {
         if (font) {                                                                       // font might be null, so check
-            ofSetColor(colour);
             rect drawRect = stringBounds;                                                 // make local copy of stringBounds
             drawRect.movePos(align, bounds.getPos(align));                                // align the string within the larger rectangle
-            font->drawText(drawRect.left, drawRect.bottom + descenderHeight, string);   // drawString takes the left position and the baseline height
+            union colour col;
+            col.setRGB(colour.r, colour.g, colour.b, colour.a);
+            font->drawText(drawRect.left, drawRect.bottom + descenderHeight, col, string);   // drawString takes the left position and the baseline height
         }
     }
     

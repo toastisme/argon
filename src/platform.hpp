@@ -225,18 +225,19 @@ public:
     double getAscenderHeight() const;                                   // distance from bottom of "o" to top of "d" in "dog"    (positive value)
     double getDescenderHeight() const;                                  // distance from bottom of "o" to bottom of "g" in "dog" (negative value)
     double getTextWidth(const std::string &text) const;                 // width of given text string
-    void drawText(double x, double y, const std::string &text) const;   // draw text string to screen, with left end of baseline at (x, y)
+    // draw text string to screen, with given colour, such that left end of baseline is at (x, y)
+    void drawText(double x, double y, colour colour, const std::string &text) const;
     
     // the rest are implemented in platform.cpp:
-    double getLineHeight() const;                                       // distance from bottom of "g" to top of "d" in "dog"    (positive value)
-    coord getTextSize(const std::string &text) const;                   // width and height of a given text string
-    rect getTextBounds(const std::string &text) const;                  // bounding box of a given text string, with origin (0, 0)
-    void drawText(coord pos, const std::string &text) const;            // draw text string to screen, with left end of baseline at pos
+    double getLineHeight() const;                                           // distance from bottom of "g" to top of "d" in "dog" (positive value)
+    coord getTextSize(const std::string &text) const;                       // width and height of a given text string
+    rect getTextBounds(const std::string &text) const;                      // bounding box of a given text string, with origin (0, 0)
+    void drawText(coord pos, colour colour, const std::string &text) const; // use coord for position
     
     // draw text string to screen, with a specified anchor point at a position
     // e.g. drawText(100, 100, TOP_RIGHT, "Hello World!") draws the string such that its top right corner is at (100, 100)
-    void drawText(double x, double y, Position anchor, const std::string &text) const;
-    void drawText(coord pos, Position anchor, const std::string &text) const;
+    void drawText(double x, double y, Position anchor, colour colour, const std::string &text) const;
+    void drawText(coord pos, Position anchor, colour colour, const std::string &text) const;
 };
 
 /*

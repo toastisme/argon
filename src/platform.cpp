@@ -199,12 +199,16 @@ double ArgonFont::getLineHeight() const { return getAscenderHeight() - getDescen
 coord ArgonFont::getTextSize(const std::string &text) const { return coord(getTextWidth(text), getLineHeight()); }
 rect ArgonFont::getTextBounds(const std::string &text) const { return rect(coord(0, 0), getTextSize(text)); }
 
-void ArgonFont::drawText(coord pos, const std::string &text) const { drawText(pos.x, pos.y, text); }
-void ArgonFont::drawText(coord pos, Position anchor, const std::string &text) const { drawText(pos.x, pos.y, anchor, text); }
-void ArgonFont::drawText(double x, double y, Position anchor, const std::string &text) const {
+void ArgonFont::drawText(coord pos, colour colour, const std::string &text) const {
+    drawText(pos.x, pos.y, colour, text);
+}
+void ArgonFont::drawText(double x, double y, Position anchor, colour colour, const std::string &text) const {
     rect bounds = getTextBounds(text);
     bounds.movePos(anchor, x, y);
-    drawText(bounds.left, bounds.top - getAscenderHeight(), text);
+    drawText(bounds.left, bounds.top - getAscenderHeight(), colour, text);
+}
+void ArgonFont::drawText(coord pos, Position anchor, colour colour, const std::string &text) const {
+    drawText(pos.x, pos.y, anchor, colour, text);
 }
 
 /*

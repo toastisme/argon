@@ -63,7 +63,8 @@ void ArgonFont::loadTTF(const string &filename, int size) { ((ofTrueTypeFont *)b
 double ArgonFont::getAscenderHeight()  const { ((ofTrueTypeFont *)base)->getAscenderHeight();  }
 double ArgonFont::getDescenderHeight() const { ((ofTrueTypeFont *)base)->getDescenderHeight(); }
 double ArgonFont::getTextWidth(const std::string &text) const { ((ofTrueTypeFont *)base)->stringWidth(text); }
-void ArgonFont::drawText(double x, double y, const std::string &text) const {
+void ArgonFont::drawText(double x, double y, colour colour, const std::string &text) const {
+    ofSetColor(ofConvertColour(colour));
     ((ofTrueTypeFont *)base)->drawString(text, x, y);
 }
 
