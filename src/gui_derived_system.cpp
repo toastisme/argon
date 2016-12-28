@@ -280,7 +280,7 @@ namespace gui {
     /*
         GaussianAtom
      */
-    GaussianAtom::GaussianAtom(md::MDContainer& _theSystem, ofImage& _circGradient, int _gaussianID, ofTrueTypeFont* uiFont10, ofImage* closeButton, ofImage* audioOnButton, ofImage* audioOffButton, int x, int y, double _radius) : theSystem(_theSystem), circGradient(_circGradient), gaussianID(_gaussianID), selected(false), radius(_radius), mouseFocus(false), audioOn(true),
+    GaussianAtom::GaussianAtom(md::MDContainer& _theSystem, ArgonImage& _circGradient, int _gaussianID, ofTrueTypeFont* uiFont10, ArgonImage* closeButton, ArgonImage* audioOnButton, ArgonImage* audioOffButton, int x, int y, double _radius) : theSystem(_theSystem), circGradient(_circGradient), gaussianID(_gaussianID), selected(false), radius(_radius), mouseFocus(false), audioOn(true),
         UIAtom(x - _radius, y - _radius, 2*_radius, 2*_radius)
     { }
 
@@ -426,7 +426,7 @@ namespace gui {
         GaussianContainer 
      */
     
-    GaussianContainer::GaussianContainer(md::MDContainer& _system, ofImage& _circGradient, ofTrueTypeFont* _uiFont10, ofImage* _closeButton, ofImage* _audioOnButton, ofImage* _audioOffButton, double _radius, double x, double y, double width, double height) : system(_system), circGradient(_circGradient), uiFont10(_uiFont10), closeButton(_closeButton), audioOnButton(_audioOnButton), audioOffButton(_audioOffButton), radius(_radius), selectedGaussian(-1), UIContainer(x, y, width, height)
+    GaussianContainer::GaussianContainer(md::MDContainer& _system, ArgonImage& _circGradient, ofTrueTypeFont* _uiFont10, ArgonImage* _closeButton, ArgonImage* _audioOnButton, ArgonImage* _audioOffButton, double _radius, double x, double y, double width, double height) : system(_system), circGradient(_circGradient), uiFont10(_uiFont10), closeButton(_closeButton), audioOnButton(_audioOnButton), audioOffButton(_audioOffButton), radius(_radius), selectedGaussian(-1), UIContainer(x, y, width, height)
     { }
     
     // Work out if there is already a Gaussian near (x, y) to avoid putting them on top of one another

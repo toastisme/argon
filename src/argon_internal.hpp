@@ -91,39 +91,39 @@ namespace argon {
     ArgonImage loganLeft;
     ArgonImage loganRight;
     ArgonImage argonLogo;
-    ofImage stargonautsLogo;
-    ofImage tmcsLogo;
-    ofImage circGradient;
+    ArgonImage stargonautsLogo;
+    ArgonImage tmcsLogo;
+    ArgonImage circGradient;
     
-    ofImage playButton;
-    ofImage pauseButton;
-    ofImage resetButton;
-    ofImage tutorialButton;
-    ofImage audioOnButton;
-    ofImage audioOffButton;
-    ofImage menuButton;
-    //ofImage addPointsButton;
-    //ofImage removePointsButton;
-    //ofImage movePointsButton;
-    //ofImage changeSlopeButton;
+    ArgonImage playButton;
+    ArgonImage pauseButton;
+    ArgonImage resetButton;
+    ArgonImage tutorialButton;
+    ArgonImage audioOnButton;
+    ArgonImage audioOffButton;
+    ArgonImage menuButton;
+    //ArgonImage addPointsButton;
+    //ArgonImage removePointsButton;
+    //ArgonImage movePointsButton;
+    //ArgonImage changeSlopeButton;
     
-    ofImage optionsButtonUp;
-    ofImage optionsButtonDown;
-    ofImage optionsEnergyButton;
-    ofImage optionsMainMenuButton;
-    ofImage optionsPotentialButton;
-    ofImage optionsControlsButton;
-    ofImage optionsAboutButton;
+    ArgonImage optionsButtonUp;
+    ArgonImage optionsButtonDown;
+    ArgonImage optionsEnergyButton;
+    ArgonImage optionsMainMenuButton;
+    ArgonImage optionsPotentialButton;
+    ArgonImage optionsControlsButton;
+    ArgonImage optionsAboutButton;
     
-    ofImage closeButton;
-    ofImage nextButton;
-    ofImage previousButton;
+    ArgonImage closeButton;
+    ArgonImage nextButton;
+    ArgonImage previousButton;
     
-    ofImage ljThumbnail;
-    ofImage squareThumbnail;
-    ofImage morseThumbnail;
-    ofImage customThumbnail;
-    ofImage resetSplinePointsButton;
+    ArgonImage ljThumbnail;
+    ArgonImage squareThumbnail;
+    ArgonImage morseThumbnail;
+    ArgonImage customThumbnail;
+    ArgonImage resetSplinePointsButton;
 }
 
 

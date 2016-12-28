@@ -160,30 +160,14 @@ namespace gui {
      ImageAtom
      */
     
+    
     ImageAtom::ImageAtom() : UIAtom(), image(NULL) {}
-    
-    ImageAtom::ImageAtom(const ofImage &_image, double x, double y, double width, double height)
-    : UIAtom(x, y, width, height), image(&_image)
-    { }
-    
-    // render just draws the image
-    void ImageAtom::render() {
-        if (image) { image->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
-    }
-
-    // resize with the smaller of xScale and yScale
-    void ImageAtom::resize(float xScale, float yScale) {
-        float scale = xScale < yScale ? xScale : yScale;
-        bounds.setXYWH(bounds.left*xScale, bounds.top*yScale, bounds.width()*scale, bounds.height()*scale);
-    }
-    
-    ImageAtom2::ImageAtom2() : UIAtom(), image(NULL) {}
-    ImageAtom2::ImageAtom2(const ArgonImage &_image, double x, double y, double width, double height)
+    ImageAtom::ImageAtom(const ArgonImage &_image, double x, double y, double width, double height)
     : UIAtom(x, y, width, height), image(&_image) {}
-    void ImageAtom2::render() {
+    void ImageAtom::render() {
         if (image) { image->draw(bounds); }
     }
-    void ImageAtom2::resize(float xScale, float yScale) {
+    void ImageAtom::resize(float xScale, float yScale) {
         float scale = xScale < yScale ? xScale : yScale;
         bounds.setXYWH(bounds.left*xScale, bounds.top*yScale, bounds.width()*scale, bounds.height()*scale);
     }
@@ -343,7 +327,7 @@ namespace gui {
     
     ButtonAtom::ButtonAtom() : UIAtom(), image(NULL) {}
     
-    ButtonAtom::ButtonAtom(FuncAction _doAction, const ofImage &_image, double x, double y, double width, double height)
+    ButtonAtom::ButtonAtom(FuncAction _doAction, const ArgonImage &_image, double x, double y, double width, double height)
         : UIAtom(x, y, width, height), doAction(_doAction), image(&_image)
     { }
     
@@ -370,7 +354,7 @@ namespace gui {
     
     ButtonToggleAtom::ButtonToggleAtom() : UIAtom(), imageOn(NULL), imageOff(NULL) {}
     
-    ButtonToggleAtom::ButtonToggleAtom(FuncGetterBool _getBool, FuncSetterBool _setBool, const ofImage &_imageOn, const ofImage &_imageOff, double x, double y, double width, double height)
+    ButtonToggleAtom::ButtonToggleAtom(FuncGetterBool _getBool, FuncSetterBool _setBool, const ArgonImage &_imageOn, const ArgonImage &_imageOff, double x, double y, double width, double height)
         : UIAtom(x, y, width, height), getBool(_getBool), setBool(_setBool), imageOn(&_imageOn), imageOff(&_imageOff) {}
     
     // render button image based on the value of getBool

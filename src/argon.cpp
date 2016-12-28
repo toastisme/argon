@@ -40,36 +40,36 @@ void argon::Initialise() {
     // graphics
     //splashScreen.load("img/argonsplash.png");
     splashScreen.loadPNG("img/argonsplash.png");
-    circGradient.load("img/circ_gradient.png");
-    tutorialButton.load("img/ButtonTutorial.png");
-    playButton.load("img/ButtonPlay.png");
-    pauseButton.load("img/ButtonPause.png");
-    resetButton.load("img/ButtonReset.png");
-    audioOnButton.load("img/ButtonMic.png");
-    audioOffButton.load("img/ButtonNoMic.png");
-    optionsButtonUp.load("img/OptionsButtonUp.png");
-    optionsButtonDown.load("img/OptionsButtonDown.png");
-    optionsEnergyButton.load("img/OptionsEnergyButton.png");
-    optionsMainMenuButton.load("img/OptionsMainMenuButton.png");
-    optionsPotentialButton.load("img/OptionsPotentialButton.png");
-    optionsControlsButton.load("img/OptionsControlsButton.png");
-    optionsAboutButton.load("img/OptionsAboutButton2.png");
-    closeButton.load("img/CloseButton.png");
-    nextButton.load("img/NextButton.png");
-    previousButton.load("img/PreviousButton.png");
-    tmcsLogo.load("img/tmcslogo.png");
-    stargonautsLogo.load("img/stargonautslogo.png");
+    circGradient.loadPNG("img/circ_gradient.png");
+    tutorialButton.loadPNG("img/ButtonTutorial.png");
+    playButton.loadPNG("img/ButtonPlay.png");
+    pauseButton.loadPNG("img/ButtonPause.png");
+    resetButton.loadPNG("img/ButtonReset.png");
+    audioOnButton.loadPNG("img/ButtonMic.png");
+    audioOffButton.loadPNG("img/ButtonNoMic.png");
+    optionsButtonUp.loadPNG("img/OptionsButtonUp.png");
+    optionsButtonDown.loadPNG("img/OptionsButtonDown.png");
+    optionsEnergyButton.loadPNG("img/OptionsEnergyButton.png");
+    optionsMainMenuButton.loadPNG("img/OptionsMainMenuButton.png");
+    optionsPotentialButton.loadPNG("img/OptionsPotentialButton.png");
+    optionsControlsButton.loadPNG("img/OptionsControlsButton.png");
+    optionsAboutButton.loadPNG("img/OptionsAboutButton2.png");
+    closeButton.loadPNG("img/CloseButton.png");
+    nextButton.loadPNG("img/NextButton.png");
+    previousButton.loadPNG("img/PreviousButton.png");
+    tmcsLogo.loadPNG("img/tmcslogo.png");
+    stargonautsLogo.loadPNG("img/stargonautslogo.png");
     boatLeft.loadPNG("img/boatleft.png");
     boatRight.loadPNG("img/boatright.png");
     argonLogo.loadPNG("img/argonlogo.png");
-    resetSplinePointsButton.load("img/ResetSplinePointsButton.png");
+    resetSplinePointsButton.loadPNG("img/ResetSplinePointsButton.png");
     
     // potential graphics
     
-    ljThumbnail.load("img/LJThumbnail.png");
-    squareThumbnail.load("img/SquareThumbnail.png");
-    morseThumbnail.load("img/MorseThumbnail.png");
-    customThumbnail.load("img/CustomThumbnail.png");
+    ljThumbnail.loadPNG("img/LJThumbnail.png");
+    squareThumbnail.loadPNG("img/SquareThumbnail.png");
+    morseThumbnail.loadPNG("img/MorseThumbnail.png");
+    customThumbnail.loadPNG("img/CustomThumbnail.png");
     
     loganLeft.loadPNG("img/david-logan-posing-left.png");
     loganRight.loadPNG("img/david-logan-posing-right.png");
@@ -312,7 +312,7 @@ void argon::Initialise() {
     //aboutUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 610, 300));
     aboutUI.addChild(new gui::RectAtom2(colour(80, 80, 80, 180), 0, 0, 610, 300));
     aboutUI.addChild(new gui::SetColour(textcolor));
-    aboutUI.addChild(new gui::ImageAtom2(argonLogo, 0, 5, 390, 170));
+    aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170));
     aboutUI.addChild(new gui::ButtonAtom([&] () {
         gui::SystemAtom* sys = (gui::SystemAtom*) systemUI.getChild(systemAtomIndex);
         sys->sailTheHighSeas(); },

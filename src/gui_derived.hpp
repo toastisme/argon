@@ -157,32 +157,13 @@ namespace gui {
     };
     
     
-    class ImageAtom : public UIAtom
-    {
-        /*
-         UI Atom for an image
-         */
-        
-    private:
-        virtual void render();   // draws the image to the screen
-        
-        const ofImage *image;    // pointer to image asset
-        
-    public:
-        ImageAtom();
-        ImageAtom(const ofImage &image, double x, double y, double width, double height);
-        
-        // Override resize method so that button does not distort
-        virtual void resize(float xScale, float yScale);
-    };
-    
-    class ImageAtom2 : public UIAtom {
+    class ImageAtom : public UIAtom {
     private:
         virtual void render();
         const ArgonImage *image;
     public:
-        ImageAtom2();
-        ImageAtom2(const ArgonImage &image, double x, double y, double width, double height);
+        ImageAtom();
+        ImageAtom(const ArgonImage &image, double x, double y, double width, double height);
         virtual void resize(float xScale, float yScale);
     };
 
@@ -295,11 +276,11 @@ namespace gui {
         virtual void render();   // draws the button image to the screen
         
         FuncAction doAction;     // function (void -> void) called when the button is pressed
-        const ofImage *image;    // pointer to image asset
+        const ArgonImage *image;    // pointer to image asset
         
     public:
         ButtonAtom();
-        ButtonAtom(FuncAction doAction, const ofImage &image, double x, double y, double width, double height);
+        ButtonAtom(FuncAction doAction, const ArgonImage &image, double x, double y, double width, double height);
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
@@ -320,12 +301,12 @@ namespace gui {
         FuncGetterBool getBool;    // getter function (void -> bool) for the boolean represented by the button
         FuncSetterBool setBool;    // setter function (bool -> void) for the boolean represented by the button
         
-        const ofImage *imageOn;    // pointer to 'on' image asset
-        const ofImage *imageOff;   // pointer to 'off' image asset
+        const ArgonImage *imageOn;    // pointer to 'on' image asset
+        const ArgonImage *imageOff;   // pointer to 'off' image asset
         
     public:
         ButtonToggleAtom();
-        ButtonToggleAtom(FuncGetterBool getBool, FuncSetterBool setBool, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
+        ButtonToggleAtom(FuncGetterBool getBool, FuncSetterBool setBool, const ArgonImage &imageOn, const ArgonImage &imageOff, double x, double y, double width, double height);
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
@@ -345,14 +326,14 @@ namespace gui {
         bool status;               // boolean for whether in the 'on' (true) or 'off' (false) state
         
         FuncAction doActionOn;     // function to call when clicked in 'on' state
-        const ofImage *imageOn;    // pointer to 'on' image asset
+        const ArgonImage *imageOn;    // pointer to 'on' image asset
         
         FuncAction doActionOff;    // function to call when clicked in 'off' state
-        const ofImage *imageOff;   // pointer to 'off' image asset
+        const ArgonImage *imageOff;   // pointer to 'off' image asset
         
     public:
         ButtonPairAtom();
-        ButtonPairAtom(FuncAction doActionOn, const ofImage &imageOn, FuncAction doActionOff, const ofImage &imageOff, double x, double y, double width, double height);
+        ButtonPairAtom(FuncAction doActionOn, const ArgonImage &imageOn, FuncAction doActionOff, const ArgonImage &imageOff, double x, double y, double width, double height);
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
@@ -440,7 +421,7 @@ namespace gui {
         int resetPotentialIndex;    // index of a child UI container containing the reset custom spline points button
         
     public:
-        PotentialContainer(md::MDContainer &system, ofTrueTypeFont &uiFont12, ofImage &ljThumbnail, ofImage &squareThumbnail, ofImage &morseThumbnail, ofImage &customThumbnail, ofImage &resetButton);
+        PotentialContainer(md::MDContainer &system, ofTrueTypeFont &uiFont12, ArgonImage &ljThumbnail, ArgonImage &squareThumbnail, ArgonImage &morseThumbnail, ArgonImage &customThumbnail, ArgonImage &resetButton);
         
         // sets the potential, calling system.setPotential and setting things visible/invisible as needed
         void setPotential(Potential potential);
@@ -508,7 +489,7 @@ namespace gui {
     private:
         
         md::MDContainer& theSystem;
-        ofImage& circGradient;
+        ArgonImage& circGradient;
         
         int gaussianID;
         double radius;
@@ -522,7 +503,7 @@ namespace gui {
         void moveGaussian(double x, double y);
         
     public:
-        GaussianAtom( md::MDContainer& theSystem, ofImage& circGradient, int gaussianID, ofTrueTypeFont* uiFont10, ofImage* closeButton, ofImage* audioOnButton, ofImage* audioOffButton, int x, int y, double radius);
+        GaussianAtom( md::MDContainer& theSystem, ArgonImage& circGradient, int gaussianID, ofTrueTypeFont* uiFont10, ArgonImage* closeButton, ArgonImage* audioOnButton, ArgonImage* audioOffButton, int x, int y, double radius);
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
@@ -683,13 +664,13 @@ namespace gui {
         
     private:
         md::MDContainer &system;
-        ofImage& circGradient;
+        ArgonImage& circGradient;
         
         // For Gaussian control panel
         ofTrueTypeFont* uiFont10;
-        ofImage* closeButton;
-        ofImage* audioOnButton;
-        ofImage* audioOffButton;
+        ArgonImage* closeButton;
+        ArgonImage* audioOnButton;
+        ArgonImage* audioOffButton;
         
         double radius;
         int selectedGaussian;
@@ -707,7 +688,7 @@ namespace gui {
         void selectGaussian(int id);
         
     public:
-        GaussianContainer(md::MDContainer& system, ofImage& circGradient, ofTrueTypeFont* uiFont10, ofImage* closeButton, ofImage* audioOnButton, ofImage* audioOffButton, double radius, double x, double y, double width, double height);
+        GaussianContainer(md::MDContainer& system, ArgonImage& circGradient, ofTrueTypeFont* uiFont10, ArgonImage* closeButton, ArgonImage* audioOnButton, ArgonImage* audioOffButton, double radius, double x, double y, double width, double height);
         
         // Returns true if mouse event caused Gaussians to be updated
         bool mousePressed(int x, int y, int button);
@@ -727,7 +708,7 @@ namespace gui {
     class TutorialContainer : public UIContainer
     {
     public:
-        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &_tutorialUI, UIContainer &_tutorialHighlightUI, UIContainer &_tutorialBlockUI, md::MDContainer &system, UIContainer &_graphUI, UIContainer &_controlsUI, UIContainer &_potentialUI, UIContainer &_systemUI, int &_gaussianContainerIndex);
+        TutorialContainer(int x, int y, int width, int height,ofTrueTypeFont &font, ArgonImage &nextButton, ArgonImage &previousButton, ArgonImage &closeButton, UIContainer &_tutorialUI, UIContainer &_tutorialHighlightUI, UIContainer &_tutorialBlockUI, md::MDContainer &system, UIContainer &_graphUI, UIContainer &_controlsUI, UIContainer &_potentialUI, UIContainer &_systemUI, int &_gaussianContainerIndex);
         
         int tutorialCounter;
         int textBoxx;
@@ -740,9 +721,9 @@ namespace gui {
     
     protected:
         ofTrueTypeFont& aboutFont12;
-        ofImage& nextButton;
-        ofImage& previousButton;
-        ofImage& closeButton;
+        ArgonImage& nextButton;
+        ArgonImage& previousButton;
+        ArgonImage& closeButton;
         UIContainer& tutorialUI;
         UIContainer& tutorialHighlightUI;
         UIContainer& tutorialBlockUI;
