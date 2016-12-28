@@ -80,7 +80,6 @@ namespace gui {
         
     private:
         std::string string;          // string to be drawn
-        rect stringBounds;           // bounding box of the string itself (which is different to ofBase::bounds)
         
         const ArgonFont *font;       // pointer to font asset
         ofColor colour;              // text colour
@@ -96,9 +95,6 @@ namespace gui {
         // setters for colour and font of the drawn string
         void setColour(const ofColor &colour);
         void setFont(const ArgonFont &font);
-        
-        // return the bounding box of the string
-        rect getStringBounds() const;
         
         // render the string to the screen, align within a rectangle
         void renderString(rect bounds, Position align) const;

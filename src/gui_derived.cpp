@@ -36,14 +36,11 @@ namespace gui {
     // set everything and make sure stringBounds is the bounding box for the string
     TextComponent::TextComponent(const std::string &_string, const ArgonFont &_font, const ofColor &_colour)
         : string(_string), font(&_font), colour(_colour)
-    {
-        stringBounds = font->getTextBounds(string);
-    }
+    {}
     
     // set the string and make sure the bounds are correct
     void TextComponent::setString(const std::string &_string) {
         string = _string;
-        stringBounds = font->getTextBounds(string);
     }
     
     // set string using value and number of decimal places
@@ -53,18 +50,14 @@ namespace gui {
         drawstr.setf(std::ios::fixed);   // use precision based on number of decimal places (fixed point)
         drawstr << value;
         string = drawstr.str();
-        stringBounds = font->getTextBounds(string);
     }
     
     // changing the font changes the size, so recalculate string bounds
     void TextComponent::setFont(const ArgonFont &_font) {
         font = &_font;
-        stringBounds = font->getTextBounds(string);
     }
     
     void TextComponent::setColour(const ofColor &_colour) { colour = _colour; }
-    
-    rect TextComponent::getStringBounds() const { return stringBounds; }
     
     // actually draw the string to the screen, aligned within a larger rectangle
     // typically, this larger rectangle is ofBase::bounds
