@@ -23,6 +23,7 @@
  */
 
 #include "platform.hpp"
+#include <cmath>
 
 /*
     coord
@@ -37,12 +38,62 @@ void coord::setXY(double _x, double _y) { x = _x; y = _y; }
     colour
  */
 
+colour colour::fromName(COLOURNAME colourname) {
+    switch (colourname) {
+        case COL_WHITE:         return colour(255, 255, 255, 255);
+        case COL_BLACK:         return colour(  0,   0,   0, 255);
+        case COL_RED:           return colour(255,   0,   0, 255);
+        case COL_GREEN:         return colour(  0, 255,   0, 255);
+        case COL_BLUE:          return colour(  0,   0, 255, 255);
+        case COL_BG:            return colour( 80,  80,  80,  80);
+        case COL_TEXT:          return colour(255, 255, 240, 255);
+        case COL_BLUEHL:        return colour( 82, 225, 247, 255);
+        case COL_BLUEHL_DARK:   return colour( 10, 174, 199, 255);
+        case COL_VIOLINGRAPH:   return colour(186, 255, 163,  80);
+    }
+}
+
 colour::colour() : r(0), g(0), b(0), a(255) {}
 colour::colour(unsigned char _r, unsigned char _g, unsigned char _b) : r(_r), g(_g), b(_b), a(255) {}
 colour::colour(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) : r(_r), g(_g), b(_b), a(_a) {}
 
 void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b) { r = _r; g = _g; b = _b; }
 void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) { r = _r; g = _g; b = _b; a = _a; }
+
+void colour::setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness) {
+    setHSB(hue, saturation, brightness, 255);
+}
+
+void colour::setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness, unsigned char _alpha) {
+    // HSV algorithm from wikipedia: https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
+    double S = saturation / 255.0;  // S in [0, 1]
+    double V = brightness / 255.0;  // L in [0, 1]
+    double H = hue * 3 / 128.0;     // H in [0, 6), equivalent to H = (hue / 256) * 6
+    
+    double C = S * V;
+    double X = C * (1 - fabs(fmod(H, 2) - 1));
+    
+    double R, G, B; // R, G, B components in [0, 1]
+    switch (int(H)) {
+        case 0:  R = C; G = X; B = 0; break;
+        case 1:  R = X; G = C; B = 0; break;
+        case 2:  R = 0; G = C; B = X; break;
+        case 3:  R = 0; G = X; B = C; break;
+        case 4:  R = X; G = 0; B = C; break;
+        case 5:  R = C; G = 0; B = X; break;
+        default: R = 0; G = 0; B = 0;
+    }
+    R += V - C;
+    G += V - C;
+    B += V - C;
+    
+    // round to unsigned char
+    r = 255 * R + 0.5;
+    g = 255 * G + 0.5;
+    b = 255 * B + 0.5;
+    a = _alpha;
+}
+
 /*
     rect
  */

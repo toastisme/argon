@@ -48,6 +48,7 @@ void ArgonImage::loadPNG(const string &filename) { ((ofImage *)base)->load(filen
 double ArgonImage::getWidth()  const { return ((ofImage *)base)->getWidth();  }
 double ArgonImage::getHeight() const { return ((ofImage *)base)->getHeight(); }
 void ArgonImage::draw(double x, double y, double width, double height) const {
+    ofSetColor(255, 255, 255);
     ((ofImage *)base)->draw(x, y, width, height);
 }
 

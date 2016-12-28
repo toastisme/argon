@@ -64,6 +64,22 @@ union coord
     void setXY(double x, double y);
 };
 
+enum COLOURNAME {
+    /*
+        Enum defining named colours. Their specific colour values are defined by the fromName
+        static method of colour, which converts this enum to a usable colour
+     */
+    
+    // standard pure colours
+    COL_WHITE, COL_BLACK,
+    COL_RED, COL_BLUE, COL_GREEN,
+    
+    COL_BG,             // transparent window backgrounds
+    COL_TEXT,           // off-white text colour
+    COL_BLUEHL,         // light blue highlight
+    COL_BLUEHL_DARK,    // darker blue highlight
+    COL_VIOLINGRAPH     // green violin graph colour
+};
 
 /*
  colour contains 4 unsigned chars, which are the red, green, blue and alpha components
@@ -89,6 +105,8 @@ union colour
         unsigned char alpha;
     };
     unsigned char rgba[4];
+    
+    static colour fromName(COLOURNAME colourname);
     
     colour();
     colour(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);

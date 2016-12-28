@@ -102,10 +102,6 @@ namespace argon {
     ofImage audioOnButton;
     ofImage audioOffButton;
     ofImage menuButton;
-    //ofImage addPointsButton;
-    //ofImage removePointsButton;
-    //ofImage movePointsButton;
-    //ofImage changeSlopeButton;
     
     ofImage optionsButtonUp;
     ofImage optionsButtonDown;
