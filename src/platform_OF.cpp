@@ -60,9 +60,9 @@ ArgonFont::ArgonFont()  { base = new ofTrueTypeFont(); }
 ArgonFont::~ArgonFont() { delete (ofTrueTypeFont *)base; }
 
 void ArgonFont::loadTTF(const string &filename, int size) { ((ofTrueTypeFont *)base)->load(filename, size); }
-double ArgonFont::getAscenderHeight()  const { ((ofTrueTypeFont *)base)->getAscenderHeight();  }
-double ArgonFont::getDescenderHeight() const { ((ofTrueTypeFont *)base)->getDescenderHeight(); }
-double ArgonFont::getTextWidth(const std::string &text) const { ((ofTrueTypeFont *)base)->stringWidth(text); }
+double ArgonFont::getAscenderHeight()  const { return ((ofTrueTypeFont *)base)->getAscenderHeight();  }
+double ArgonFont::getDescenderHeight() const { return ((ofTrueTypeFont *)base)->getDescenderHeight(); }
+double ArgonFont::getTextWidth(const std::string &text) const { return ((ofTrueTypeFont *)base)->stringWidth(text); }
 void ArgonFont::drawText(double x, double y, colour colour, const std::string &text) const {
     ofSetColor(ofConvertColour(colour));
     ((ofTrueTypeFont *)base)->drawString(text, x, y);

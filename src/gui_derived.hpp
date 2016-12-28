@@ -81,13 +81,9 @@ namespace gui {
     private:
         std::string string;          // string to be drawn
         rect stringBounds;           // bounding box of the string itself (which is different to ofBase::bounds)
-        double descenderHeight;      // size of descender (maximum size glyphs can go below baseline of text)
         
         const ArgonFont *font;       // pointer to font asset
         ofColor colour;              // text colour
-        
-        // reset the bounding box of the string and the descender height if the string is changed
-        void resetBounds();
         
     protected:
         TextComponent();

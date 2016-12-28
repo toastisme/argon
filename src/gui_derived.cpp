@@ -37,21 +37,13 @@ namespace gui {
     TextComponent::TextComponent(const std::string &_string, const ArgonFont &_font, const ofColor &_colour)
         : string(_string), font(&_font), colour(_colour)
     {
-        resetBounds();
-    }
-    
-    // set the string bounds and descender height properly - stringBounds only needs the width and height of the string
-    void TextComponent::resetBounds() {
-        descenderHeight = font->getDescenderHeight();
-        double width = font->getTextWidth(string);
-        double height = font->getLineHeight();
-        stringBounds.setXYWH(0, 0, width, height);
+        stringBounds = font->getTextBounds(string);
     }
     
     // set the string and make sure the bounds are correct
     void TextComponent::setString(const std::string &_string) {
         string = _string;
-        resetBounds();
+        stringBounds = font->getTextBounds(string);
     }
     
     // set string using value and number of decimal places
@@ -61,13 +53,13 @@ namespace gui {
         drawstr.setf(std::ios::fixed);   // use precision based on number of decimal places (fixed point)
         drawstr << value;
         string = drawstr.str();
-        resetBounds();
+        stringBounds = font->getTextBounds(string);
     }
     
     // changing the font changes the size, so recalculate string bounds
     void TextComponent::setFont(const ArgonFont &_font) {
         font = &_font;
-        resetBounds();
+        stringBounds = font->getTextBounds(string);
     }
     
     void TextComponent::setColour(const ofColor &_colour) { colour = _colour; }
@@ -77,12 +69,11 @@ namespace gui {
     // actually draw the string to the screen, aligned within a larger rectangle
     // typically, this larger rectangle is ofBase::bounds
     void TextComponent::renderString(rect bounds, Position align) const {
-        if (font) {                                                                       // font might be null, so check
-            rect drawRect = stringBounds;                                                 // make local copy of stringBounds
-            drawRect.movePos(align, bounds.getPos(align));                                // align the string within the larger rectangle
+        if (font) {                                                 // font might be null, so check
+            coord pos = bounds.getPos(align);                       // get position to draw string at
             union colour col;
-            col.setRGB(colour.r, colour.g, colour.b, colour.a);
-            font->drawText(drawRect.left, drawRect.bottom + descenderHeight, col, string);   // drawString takes the left position and the baseline height
+            col.setRGB(colour.r, colour.g, colour.b, colour.a);     // convert ofColour to our colour
+            font->drawText(pos, align, col, string);                // draw aligned string
         }
     }
     

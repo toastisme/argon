@@ -196,7 +196,15 @@ void ArgonImage::draw(rect pos) const { draw(pos.left, pos.top, pos.width(), pos
  */
 
 double ArgonFont::getLineHeight() const { return getAscenderHeight() - getDescenderHeight(); }
-coord ArgonFont::getTextSize(const std::string &text) const { return coord(getTextWidth(text), getLineHeight()); }
+//coord ArgonFont::getTextSize(const std::string &text) const { return coord(getTextWidth(text), getLineHeight()); }
+coord ArgonFont::getTextSize(const std::string &text) const {
+    coord size;
+    double asc = getAscenderHeight();
+    double dec = getDescenderHeight();
+    size.x = getTextWidth(text);
+    size.y = getLineHeight();
+    return size;
+}
 rect ArgonFont::getTextBounds(const std::string &text) const { return rect(coord(0, 0), getTextSize(text)); }
 
 void ArgonFont::drawText(coord pos, colour colour, const std::string &text) const {
@@ -205,7 +213,7 @@ void ArgonFont::drawText(coord pos, colour colour, const std::string &text) cons
 void ArgonFont::drawText(double x, double y, Position anchor, colour colour, const std::string &text) const {
     rect bounds = getTextBounds(text);
     bounds.movePos(anchor, x, y);
-    drawText(bounds.left, bounds.top - getAscenderHeight(), colour, text);
+    drawText(bounds.left, bounds.top + getAscenderHeight(), colour, text);
 }
 void ArgonFont::drawText(coord pos, Position anchor, colour colour, const std::string &text) const {
     drawText(pos.x, pos.y, anchor, colour, text);
