@@ -117,7 +117,7 @@ void argon::Initialise() {
     
     infoUI = gui::UIContainer(256, 310, 750, 380);
     infoUI.addChild(new gui::RectAtom(colour(80, 80, 80, 180), 0, 0, 750, 380));
-    infoUI.addChild(new gui::SetColour(textcolor));
+    //infoUI.addChild(new gui::SetColour(textcolor));
     infoUI.addChild(new gui::ButtonAtom([&] () { infoUI.makeInvisible(); }, closeButton, 710, 10, 30, 30));
     infoTextIndex = infoUI.addIndexedChild(new gui::TextAtom("Some text goes here", aboutFont12, textcolor, POS_TOP_LEFT, 25, 25, 720, 320));
     infoUI.makeInvisible();
@@ -172,9 +172,11 @@ void argon::Initialise() {
     
     gui::UIContainer* energyGraphContainer = new gui::UIContainer(-45, 0, 514, 169);
     energyGraphContainer->addChild(new gui::EnergyGraphAtom(theSystem, 0, 0, 514, 161));
-    energyGraphContainer->addChild(new gui::TextAtom("Kinetic Energy", uiFont10, ofColor(200, 0, 0),
+    colour KEColour = colour(200, 0, 0);
+    colour PEColour = colour(255, 255, 255);
+    energyGraphContainer->addChild(new gui::TextAtom("Kinetic Energy", uiFont10, KEColour,
                                                      POS_TOP_LEFT,   5, 166, 100, 20));
-    energyGraphContainer->addChild(new gui::TextAtom("Potential Energy", uiFont10, ofColor(255, 255, 255),
+    energyGraphContainer->addChild(new gui::TextAtom("Potential Energy", uiFont10, PEColour,
                                                      POS_TOP_LEFT, 125, 166, 100, 20));
 
     options->addOption("Energy graphs", [&] () {
@@ -206,10 +208,10 @@ void argon::Initialise() {
     //Options menu
     
     optionsUI = gui::UIContainer(0, 0, 250, 370);
-    optionsUI.addChild(new gui::RectAtom(bgcolor2, 0, 0, 250, 370));
+    optionsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 250, 370));
     
     // buttons
-    optionsUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
+    //optionsUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
     
     optionsUI.addChild(
         new gui::ButtonAtom([&] () {
@@ -296,7 +298,7 @@ void argon::Initialise() {
     optionsUI.mouseReleased(0, 0, 0);
     
     optionsOffUI = gui::UIContainer(0, 0, 40, 40);
-    optionsOffUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
+    //optionsOffUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
     optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); optionsOffUI.makeInvisible(); potentialUI.makeInvisible(); }, optionsMainMenuButton,
                                            10, 10, 30, 30));
     optionsOffUI.addChild(new gui::ButtonAtom([&] () {
@@ -311,7 +313,7 @@ void argon::Initialise() {
     aboutUI = gui::UIContainer(257, 150, 610, 300);
     //aboutUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 610, 300));
     aboutUI.addChild(new gui::RectAtom(colour(80, 80, 80, 180), 0, 0, 610, 300));
-    aboutUI.addChild(new gui::SetColour(textcolor));
+    //aboutUI.addChild(new gui::SetColour(textcolor));
     aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170));
     aboutUI.addChild(new gui::ButtonAtom([&] () {
         gui::SystemAtom* sys = (gui::SystemAtom*) systemUI.getChild(systemAtomIndex);

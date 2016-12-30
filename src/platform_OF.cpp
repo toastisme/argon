@@ -59,31 +59,23 @@ void ArgonImage::draw(double x, double y, double width, double height) const {
     ArgonFont
  */
 
-ArgonFont::ArgonFont() : filename(NULL), size(0){base = new ofTrueTypeFont(); }
+ArgonFont::ArgonFont() {base = new ofTrueTypeFont(); }
 ArgonFont::~ArgonFont(){delete (ofTrueTypeFont *)base; }
 
-void ArgonFont::loadText(const string &_filename, int &_size) {
+void ArgonFont::loadText(const string &_filename, int _size) {
     ((ofTrueTypeFont *)base)->load(_filename, _size);
-    filename = _filename;
-    size = _size;
 }
 
-double ArgonFont::getDescenderHeight() const{ofTrueTypeFont ofFont = ofConvertFont(*this);
-    return ofFont.getDescenderHeight();}
+double ArgonFont::getDescenderHeight() const{return ((ofTrueTypeFont *)base)->getDescenderHeight();}
 
-double ArgonFont::stringWidth(std::string &_string) const{ofTrueTypeFont ofFont = ofConvertFont(*this);
-    return ofFont.stringWidth(_string);
-}
+double ArgonFont::stringWidth(std::string &_string) const{return ((ofTrueTypeFont *)base)->stringWidth(_string);}
 
-double ArgonFont::getLineHeight() const{ofTrueTypeFont ofFont = ofConvertFont(*this);
-    return ofFont.getLineHeight();
-}
+double ArgonFont::getLineHeight() const{return ((ofTrueTypeFont *)base)->getLineHeight();}
 
-void ArgonFont::drawString(const std::string &_string, double x0, double y0, colour colour) const{
+
+void ArgonFont::drawString(const std::string &_string, double x0, double y0, colour colour) const {
     ofSetColor(ofConvertColour(colour));
-    ofTrueTypeFont ofFont = ofConvertFont(*this);
-    ofFont.drawString(_string, x0, y0);
-}
+    ((ofTrueTypeFont *)base)->drawString(_string, x0, y0);}
 
 
 /*
@@ -105,6 +97,18 @@ void drawTextString(const std::string &_string, double x0, double y0, ArgonFont 
     ofSetColor(ofConvertColour(colour));
     ofTrueTypeFont ofFont = ofConvertFont(font);
     ofFont.drawString(_string, x0, y0);
+}
+
+void drawCircle(double x, double y, double r, colour colour, int resolution){
+    ofSetColor(ofConvertColour(colour));
+    ofSetCircleResolution(resolution);
+    ofDrawCircle(x, y, r);
+}
+
+void drawEllipse(double x, double y, double rx, double ry, colour colour, int resolution){
+    ofSetColor(ofConvertColour(colour));
+    ofSetCircleResolution(resolution);
+    ofDrawEllipse(x, y, rx, ry);
 }
 
 int windowWidth()  { return ofGetWidth();  }

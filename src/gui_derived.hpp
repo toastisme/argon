@@ -522,8 +522,8 @@ namespace gui {
         virtual void render();
         
         // Helper functions for drawing particles
-        void drawParticle(int index, double radius_x, double radius_y, colour color, int nframes = 0);
-        void drawParticle(int index, double radius, colour color, int nframes = 0);
+        void drawParticle(int index, double radius_x, double radius_y, colour color, int nframes = 0, int resolution = 20);
+        void drawParticle(int index, double radius, colour color, int nframes = 0, int resolution = 20);
         void drawParticle(int index, double radius_x, double radius_y, int nframes = 0);
         void drawParticle(int index, double radius, int nframes = 0);
         

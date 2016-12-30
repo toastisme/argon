@@ -37,12 +37,18 @@ void coord::setXY(double _x, double _y) { x = _x; y = _y; }
     colour
  */
 
-colour::colour() : r(0), g(0), b(0), a(255) {}
+colour::colour() : r(0), g(0), b(0), a(255), hue(0), saturation(0), brightness(255) {}
 colour::colour(unsigned char _r, unsigned char _g, unsigned char _b) : r(_r), g(_g), b(_b), a(255) {}
 colour::colour(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) : r(_r), g(_g), b(_b), a(_a) {}
 
 void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b) { r = _r; g = _g; b = _b; }
 void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) { r = _r; g = _g; b = _b; a = _a; }
+
+void colour::setHSB(unsigned char _hue, unsigned char _saturation, unsigned char _brightness){
+    hue = _hue; saturation = _saturation; brightness = _brightness;}
+
+void colour::setHSB(unsigned char _hue, unsigned char _saturation, unsigned char _brightness, unsigned char _alpha){
+    hue = _hue; saturation = _saturation; brightness = _brightness; alpha = _alpha;}
 /*
     rect
  */

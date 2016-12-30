@@ -40,7 +40,7 @@ namespace gui {
     
     void SystemAtom::render() {
         // Setup temporary placeholders
-        ofColor particleColor;
+        colour particleColor;
         coord tempVel;
         coord tempAcc;
         
@@ -64,14 +64,14 @@ namespace gui {
             tempAcc = theSystem.getForce(i);
             
             hue = ofMap(abs(tempVel.x) + abs(tempVel.y), 0, 3 * v_avg, 170, 210, true);
-            particleColor.setHsb(hue, 255, 255);
+            particleColor.setHSB(hue, 255, 255);
             
             radius_x = ofMap(log(1.0 + abs(tempAcc.x)), 0, 10, 10, 25);
             radius_y = ofMap(log(1.0 + abs(tempAcc.y)), 0, 10, 10, 25);
             radius = (radius_x + radius_y) / 2;
             
             if (inflictTorture || setSail) {
-                ofSetColor(particleColor);
+                //ofSetColor(particleColor);
                 coord screenpos = util::bimap(theSystem.getPos(i), theSystem.getBox(), windowSize());
                 rect drawpos;
                 drawpos.setXYWH(screenpos.x - loganShiftx, screenpos.y - loganShifty, radius_x * 4, radius_y * 4);
@@ -111,16 +111,17 @@ namespace gui {
      Optional: set the colour before drawing
      Optional: draws the particle with position nframes frames in the past
      */
-    void SystemAtom::drawParticle(int index, double radius_x, double radius_y, ofColor color, int nframes) {
-        ofSetColor(color);
-        drawParticle(index, radius_x, radius_y, nframes);
+    void SystemAtom::drawParticle(int index, double radius_x, double radius_y, colour colour, int nframes, int resolution) {
+        coord screenpos = util::bimap(theSystem.getPos(index, nframes), theSystem.getBox(), windowSize());
+        drawEllipse(screenpos.x, screenpos.y, radius_x * 2, radius_y * 2, colour, resolution);
+
     }
     
-    void SystemAtom::drawParticle(int index, double radius, ofColor color, int nframes) {
-        ofSetColor(color);
-        drawParticle(index, radius, nframes);
+    void SystemAtom::drawParticle(int index, double radius, colour colour, int nframes, int resolution) {
+        coord screenpos = util::bimap(theSystem.getPos(index, nframes), theSystem.getBox(), windowSize());
+        drawCircle(screenpos.x, screenpos.y, radius, colour, resolution);
     }
-    
+    /*
     void SystemAtom::drawParticle(int index, double radius_x, double radius_y, int nframes) {
         coord screenpos = util::bimap(theSystem.getPos(index, nframes), theSystem.getBox(), windowSize());
         ofDrawEllipse(screenpos.x, screenpos.y, radius_x * 2, radius_y * 2);
@@ -132,7 +133,7 @@ namespace gui {
         ofDrawCircle(screenpos.x, screenpos.y, radius);
         //ofDrawCircle(box2screen(pos.x, pos.y, 0.0, 0.0, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius);
     }
-
+    */
     void SystemAtom::toggleTheHorrors() {
         inflictTorture = !inflictTorture;
         setSail = false;
@@ -277,7 +278,7 @@ namespace gui {
     /*
         GaussianAtom
      */
-    GaussianAtom::GaussianAtom(md::MDContainer& _theSystem, ArgonImage& _circGradient, int _gaussianID, ofTrueTypeFont* uiFont10, ArgonImage* closeButton, ArgonImage* audioOnButton, ArgonImage* audioOffButton, int x, int y, double _radius) : theSystem(_theSystem), circGradient(_circGradient), gaussianID(_gaussianID), selected(false), radius(_radius), mouseFocus(false), audioOn(true),
+    GaussianAtom::GaussianAtom(md::MDContainer& _theSystem, ArgonImage& _circGradient, int _gaussianID, ArgonFont* uiFont10, ArgonImage* closeButton, ArgonImage* audioOnButton, ArgonImage* audioOffButton, int x, int y, double _radius) : theSystem(_theSystem), circGradient(_circGradient), gaussianID(_gaussianID), selected(false), radius(_radius), mouseFocus(false), audioOn(true),
         UIAtom(x - _radius, y - _radius, 2*_radius, 2*_radius)
     { }
 
@@ -423,7 +424,7 @@ namespace gui {
         GaussianContainer 
      */
     
-    GaussianContainer::GaussianContainer(md::MDContainer& _system, ArgonImage& _circGradient, ofTrueTypeFont* _uiFont10, ArgonImage* _closeButton, ArgonImage* _audioOnButton, ArgonImage* _audioOffButton, double _radius, double x, double y, double width, double height) : system(_system), circGradient(_circGradient), uiFont10(_uiFont10), closeButton(_closeButton), audioOnButton(_audioOnButton), audioOffButton(_audioOffButton), radius(_radius), selectedGaussian(-1), UIContainer(x, y, width, height)
+    GaussianContainer::GaussianContainer(md::MDContainer& _system, ArgonImage& _circGradient, ArgonFont* _uiFont10, ArgonImage* _closeButton, ArgonImage* _audioOnButton, ArgonImage* _audioOffButton, double _radius, double x, double y, double width, double height) : system(_system), circGradient(_circGradient), uiFont10(_uiFont10), closeButton(_closeButton), audioOnButton(_audioOnButton), audioOffButton(_audioOffButton), radius(_radius), selectedGaussian(-1), UIContainer(x, y, width, height)
     { }
     
     // Work out if there is already a Gaussian near (x, y) to avoid putting them on top of one another

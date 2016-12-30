@@ -290,9 +290,9 @@ namespace gui {
         ofMesh defaultMesh = makeThickLine(defaultPath, LINE_WIDTH);
         ofMesh highlightMesh = makeThickLine(highlightPath, LINE_WIDTH);
         
-        ofSetColor(DEFAULT_COLOR);
+        //ofSetColor(DEFAULT_COLOR);
         defaultMesh.draw();
-        ofSetColor(HIGHLIGHT_COLOR);
+        //ofSetColor(HIGHLIGHT_COLOR);
         highlightMesh.draw();
         
         

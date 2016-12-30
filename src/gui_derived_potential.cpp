@@ -34,16 +34,14 @@ namespace gui {
     
     // all locations stored as magic numbers for now
     // perhaps eventually store these as static variables in PotentialContainer? or work them out from the window dimensions?
-    PotentialContainer::PotentialContainer(md::MDContainer &system, ofTrueTypeFont &uiFont12, ArgonImage &ljThumbnail, ArgonImage &squareThumbnail, ArgonImage &morseThumbnail, ArgonImage &customThumbnail, ArgonImage &resetSplinePointsButton) : UIContainer(0, 0, 924, 500), theSystem(system) {
+    PotentialContainer::PotentialContainer(md::MDContainer &system, ArgonFont &uiFont12, ArgonImage &ljThumbnail, ArgonImage &squareThumbnail, ArgonImage &morseThumbnail, ArgonImage &customThumbnail, ArgonImage &resetSplinePointsButton) : UIContainer(0, 0, 924, 500), theSystem(system) {
         
-        ofColor bgcolor = ofColor(80, 80, 80, 80);
-        colour bgcolor2 = colour(80, 80, 80, 80);
-        ofColor textcolor = ofColor(255, 255, 240);
-        colour textcolor2 = colour(255, 255, 240);
+        colour bgcolor = colour(80, 80, 80, 80);
+        colour textcolor = colour(255, 255, 240);
         
-        addChild(new RectAtom(bgcolor2, 0, 0, 924, 500));
-        addChild(new RectAtom(bgcolor2, 150, 0, 774, 500));
-        highlightAtomIndex = addIndexedChild(new RectAtom(bgcolor2, 0, 0, 150, 125));
+        addChild(new RectAtom(bgcolor, 0, 0, 924, 500));
+        addChild(new RectAtom(bgcolor, 150, 0, 774, 500));
+        highlightAtomIndex = addIndexedChild(new RectAtom(bgcolor, 0, 0, 150, 125));
         
         // Setup potential atoms
         addChild(new PotentialAtom(theSystem, 300, 0.95, 3.0, -2, 2, 150, 0, 774, 500));
@@ -51,7 +49,7 @@ namespace gui {
             new SplineContainer(theSystem, 0.95, 3.0, -2, 2, 15, 150, 0, 774, 500)
         );
         
-        addChild(new gui::SetColour(ofColor(255, 255, 240)));
+        //addChild(new gui::SetColour(ofColor(255, 255, 240)));
         
         // add the first four buttons and text
         addChild(new ButtonAtom([&] () { setPotential(LENNARD_JONES); }, ljThumbnail, 25, 0, 100, 100));
