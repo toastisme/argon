@@ -49,9 +49,9 @@ namespace gui {
         
         // All children in the TutorialContainer are deleted and redrawn in the positions for a given tutorialCounter value
         
-        ofColor textBoxColor = ofColor(0, 0, 0, 100);
-        ofColor textColor = ofColor(255, 255, 240);
-        ofColor notHighlightedColor = ofColor(50, 50, 50, 210);
+        colour textBoxColor = colour(0, 0, 0, 100);
+        colour textColor = colour(255, 255, 240);
+        colour notHighlightedColor = colour(50, 50, 50, 210);
         
         // Highlight UI Container positions
         ofRectangle offScreen(-50, 50, 30, 30);

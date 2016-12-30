@@ -223,9 +223,6 @@ namespace gui {
          Draws the Maxwell-Boltzmann distribution.
          */
         
-        //ofSetColor(80, 80, 80, 80);
-        //ofDrawRectangle(bounds.ofRect());
-        
         double maxSpeed = 10;
         
         rect maxwellSpace;

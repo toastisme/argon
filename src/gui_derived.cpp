@@ -34,7 +34,7 @@ namespace gui {
     TextComponent::TextComponent() : font(NULL) {}
     
     // set everything and make sure stringBounds is the bounding box for the string
-    TextComponent::TextComponent(const std::string &_string, const ofTrueTypeFont &_font, const ofColor &_colour)
+    TextComponent::TextComponent(const std::string &_string, const ArgonFont &_font, union colour &_colour)
         : string(_string), font(&_font), colour(_colour)
     {
         resetBounds();
@@ -65,12 +65,12 @@ namespace gui {
     }
     
     // changing the font changes the size, so recalculate string bounds
-    void TextComponent::setFont(const ofTrueTypeFont &_font) {
+    void TextComponent::setFont(const ArgonFont &_font) {
         font = &_font;
         resetBounds();
     }
     
-    void TextComponent::setColour(const ofColor &_colour) { colour = _colour; }
+    void TextComponent::setColour(union colour &_colour) { colour = _colour; }
     
     rect TextComponent::getStringBounds() const { return stringBounds; }
     
@@ -78,10 +78,10 @@ namespace gui {
     // typically, this larger rectangle is ofBase::bounds
     void TextComponent::renderString(rect bounds, Position align) const {
         if (font) {                                                                       // font might be null, so check
-            ofSetColor(colour);
+            //ofSetColor(colour);
             rect drawRect = stringBounds;                                                 // make local copy of stringBounds
             drawRect.movePos(align, bounds.getPos(align));                                // align the string within the larger rectangle
-            font->drawString(string, drawRect.left, drawRect.bottom + descenderHeight);   // drawString takes the left position and the baseline height
+            font->drawString(string, drawRect.left, drawRect.bottom + descenderHeight, colour);   // drawString takes the left position and the baseline height
         }
     }
     
@@ -89,7 +89,7 @@ namespace gui {
     
     /*
         SetColour
-     */
+    
     
     // all this class does is set the draw colour using ofSetColor
     SetColour::SetColour() : UIAtom(), colour(ofColor(0, 0, 0)) {}
@@ -97,27 +97,15 @@ namespace gui {
     SetColour::SetColour(const ofColor &_colour) : UIAtom(), colour(_colour) {}
     
     void SetColour::render() { ofSetColor(colour); }
+     /*
     
     /*
         RectAtom
      */
     
-    // defaults to black rect at UIAtom default constructor values: left 0, top 0, width 0, height 0
-    RectAtom::RectAtom() : UIAtom(), colour(ofColor(0, 0, 0)) {}
-    
-    // store the size in ofBase::bounds
-    RectAtom::RectAtom(const ofColor &_colour, double x, double y, double width, double height)
-        : UIAtom(x, y, width, height), colour(_colour) {}
-    
-    // draw the rect
-    void RectAtom::render() {
-        ofSetColor(colour);
-        ofDrawRectangle(bounds.left, bounds.top, bounds.width(), bounds.height());
-    }
-    
-    RectAtom2::RectAtom2() : UIAtom(), colour() {}
-    RectAtom2::RectAtom2(union colour _colour, double x, double y, double width, double height) : gui::UIAtom(x, y, width, height), colour(_colour) {}
-    void RectAtom2::render() { drawRect(bounds, colour); }
+    RectAtom::RectAtom() : UIAtom(), colour() {}
+    RectAtom::RectAtom(union colour _colour, double x, double y, double width, double height) : gui::UIAtom(x, y, width, height), colour(_colour) {}
+    void RectAtom::render() { drawRect(bounds, colour); }
     
     /*
         TextAtom
@@ -126,7 +114,7 @@ namespace gui {
     TextAtom::TextAtom() : UIAtom(), TextComponent(), align(POS_TOP_LEFT) {}
     
     // pass things through to TextComponent, and store align
-    TextAtom::TextAtom(const std::string &string, const ofTrueTypeFont &font, const ofColor &colour, Position _align, double x, double y, double width, double height)
+    TextAtom::TextAtom(const std::string &string, const ArgonFont &font, union colour &colour, Position _align, double x, double y, double width, double height)
         : UIAtom(x, y, width, height), TextComponent(string, font, colour), align(_align)
     {}
     
@@ -142,7 +130,7 @@ namespace gui {
     ValueAtom::ValueAtom() : UIAtom(), TextComponent() {}
     
     // pass stuff into TextComponent, set the function, precision and align, and set the string using getValue
-    ValueAtom::ValueAtom(FuncGetter _getValue, int _precision, const ofTrueTypeFont &font, const ofColor &colour, Position _align, double x, double y, double width, double height)
+    ValueAtom::ValueAtom(FuncGetter _getValue, int _precision, const ArgonFont &font, union colour &colour, Position _align, double x, double y, double width, double height)
         : UIAtom(x, y, width, height), TextComponent("", font, colour), getValue(_getValue), precision(_precision), align(_align)
     {
         setString(getValue(), precision);
@@ -202,23 +190,21 @@ namespace gui {
     
     void SliderAtom::render() {
         // slider body
-        ofSetColor(BODY_COLOR);
         // set size of body using bounds and BODY_HEIGHT
         double left = bounds.left;
         double top = bounds.centreY() - SliderAtom::BODY_HEIGHT / 2;
         double width = bounds.width();
         double height = SliderAtom::BODY_HEIGHT;
-        ofDrawRectangle(left, top, width, height);
+        drawRect(left, top, width, height, BODY_COLOR);
         
         // slider height
-        ofSetColor(HANDLE_COLOR);
         // set size of handle using its x-position, HANDLE_WIDTH and HANDLE_HEIGHT
         left = getSliderPos();
         top = bounds.centreY() - SliderAtom::HANDLE_HEIGHT / 2;
         width = SliderAtom::HANDLE_WIDTH;
         height = SliderAtom::HANDLE_HEIGHT;
-        ofDrawRectangle(int(left), top, width, height);   // int(left) stops the slider handle from being
-                                                          // blurry due to being drawn off the pixel grid
+        drawRect(int(left), top, width, height, HANDLE_COLOR);// int(left) stops the slider handle from being
+                                                              // blurry due to being drawn off the pixel grid
     }
     
     // if the mouse is left-clicked inside the slider, take mouse focus and update the slider's position
@@ -245,8 +231,8 @@ namespace gui {
     // some static varaibles to ensure sliders are drawn the same
     // these could be customised on a per-slider basis, but the slider constructor is long
     // enough already and we probably want sliders to look the same anyway
-    ofColor SliderAtom::BODY_COLOR = ofColor(255, 255, 255);
-    ofColor SliderAtom::HANDLE_COLOR = ofColor(80, 80, 80);
+    colour SliderAtom::BODY_COLOR = colour(255, 255, 255);
+    colour SliderAtom::HANDLE_COLOR = colour(80, 80, 80);
     
     int SliderAtom::BODY_HEIGHT = 10;
     int SliderAtom::HANDLE_WIDTH = 7;
@@ -317,8 +303,8 @@ namespace gui {
         UIAtom::resize(xScale, yScale);
     }
     
-    ofColor CircularSliderAtom::DEFAULT_COLOR = ofColor(80, 80, 80);
-    ofColor CircularSliderAtom::HIGHLIGHT_COLOR = ofColor(10, 174, 199);
+    colour CircularSliderAtom::DEFAULT_COLOR = colour(80, 80, 80);
+    colour CircularSliderAtom::HIGHLIGHT_COLOR = colour(10, 174, 199);
     float CircularSliderAtom::LINE_WIDTH = 12.0;
     
     /*
@@ -382,7 +368,7 @@ namespace gui {
         OptionsListAtom
      */
 
-    OptionsListAtom::OptionsListAtom(const ofTrueTypeFont &_font, const ofColor &textColour, double _buttonWidth, double x, double y, double width, double height) : UIAtom(x, y, width, height), font(&_font), textcolor(textColour), selectedOption(-1), buttonWidth(_buttonWidth), buttonHeight(OPTION_HEIGHT) {}
+    OptionsListAtom::OptionsListAtom(const ArgonFont &_font, union colour &textColour, double _buttonWidth, double x, double y, double width, double height) : UIAtom(x, y, width, height), font(&_font), textcolor(textColour), selectedOption(-1), buttonWidth(_buttonWidth), buttonHeight(OPTION_HEIGHT) {}
     
     OptionsListAtom::~OptionsListAtom() {
         for (int i = 0; i < options.size(); i++) {
@@ -395,16 +381,16 @@ namespace gui {
         for (int i = 0; i < options.size(); i++) {
             
             if (i != selectedOption) {
-                ofSetColor(DEFAULT_COLOR);
                 ofDrawRectangle(bounds.left, options[i]->getRect().top, buttonWidth, buttonHeight);
+                drawRect(bounds.left, options[i]->getRect().top, buttonWidth, buttonHeight, DEFAULT_COLOR);
                 options[i]->draw();
             }
             
         }
         
         if (selectedOption > -1) {
-            ofSetColor(HIGHLIGHT_COLOR);
             ofDrawRectangle(bounds.left, options[selectedOption]->getRect().top, buttonWidth, buttonHeight);
+            drawRect(bounds.left, options[selectedOption]->getRect().top, buttonWidth, buttonHeight, HIGHLIGHT_COLOR);
             options[selectedOption]->draw();
         }
         
@@ -451,15 +437,15 @@ namespace gui {
         }
     }
     
-    ofColor OptionsListAtom::DEFAULT_COLOR = ofColor(80, 80, 80);
-    ofColor OptionsListAtom::HIGHLIGHT_COLOR = ofColor(10, 174, 199);
+    colour OptionsListAtom::DEFAULT_COLOR = colour(80, 80, 80);
+    colour OptionsListAtom::HIGHLIGHT_COLOR = colour(10, 174, 199);
     double OptionsListAtom::OPTION_HEIGHT = 28;
     
     /*
      AtomsListAtom
      */
     
-    AtomsListAtom::AtomsListAtom(const ofTrueTypeFont &font, const ofColor &textcolor, double x, double y, double optionsWidth, double _widgetWidth, double height, double padding) : OptionsListAtom(font, textcolor, optionsWidth, x, y, optionsWidth+_widgetWidth+3*padding, height), widgetWidth(_widgetWidth)
+    AtomsListAtom::AtomsListAtom(const ArgonFont &font, union colour &textcolor, double x, double y, double optionsWidth, double _widgetWidth, double height, double padding) : OptionsListAtom(font, textcolor, optionsWidth, x, y, optionsWidth+_widgetWidth+3*padding, height), widgetWidth(_widgetWidth)
     {
         // Work out x position of the widget bit
         widgetX = x - 2*padding - optionsWidth;
@@ -562,7 +548,7 @@ namespace gui {
     SliderContainer::SliderContainer() {}
     
     // big constructor which sets everything up, the behaviour is all in the individual components
-    SliderContainer::SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &colour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double padding, double height)
+    SliderContainer::SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ArgonFont &font, union colour &colour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double padding, double height)
     {
         // set the left position of each element from x + the widths of the previous elements, plus any padding
         double sliderLeft = x + labelWidth + padding;
@@ -585,7 +571,7 @@ namespace gui {
      */
     
     // big constructor which sets everything up, the behaviour is all in the individual components
-    CircularSliderContainer::CircularSliderContainer(FuncGetter getValue, FuncSetter setValue, double min, double max, const ofTrueTypeFont &font, const ofColor &textcolour, int precision, double x, double y, double sliderRadius, double valueWidth, double valueHeight, double padding)
+    CircularSliderContainer::CircularSliderContainer(FuncGetter getValue, FuncSetter setValue, double min, double max, const ArgonFont &font, union colour &textcolour, int precision, double x, double y, double sliderRadius, double valueWidth, double valueHeight, double padding)
     {
         
         

@@ -75,10 +75,10 @@ void argon::Initialise() {
     loganRight.loadPNG("img/david-logan-posing-right.png");
     
     // fonts
-    uiFont14.load("fonts/Montserrat-Bold.ttf", 14);
-    uiFont12.load("fonts/Montserrat-Bold.ttf", 12);
-    uiFont10.load("fonts/Montserrat-Bold.ttf", 10);
-    aboutFont12.load("fonts/Tahoma.ttf", 12);
+    uiFont14.loadText("fonts/Montserrat-Bold.ttf", 14);
+    uiFont12.loadText("fonts/Montserrat-Bold.ttf", 12);
+    uiFont10.loadText("fonts/Montserrat-Bold.ttf", 10);
+    aboutFont12.loadText("fonts/Tahoma.ttf", 12);
     
     
     // Initialise theSystem with 50 particles at 60K
@@ -100,8 +100,8 @@ void argon::Initialise() {
     theSystem.resetSystem();
     
     // colours
-    ofColor bgcolor = ofColor(80, 80, 80, 80);
-    ofColor textcolor = ofColor(255, 255, 240);
+    colour bgcolor = colour(80, 80, 80, 80);
+    colour textcolor = colour(255, 255, 240);
 
     // Setup system UI
     systemUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
@@ -116,7 +116,7 @@ void argon::Initialise() {
     // Info UI
     
     infoUI = gui::UIContainer(256, 310, 750, 380);
-    infoUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 750, 380));
+    infoUI.addChild(new gui::RectAtom(colour(80, 80, 80, 180), 0, 0, 750, 380));
     infoUI.addChild(new gui::SetColour(textcolor));
     infoUI.addChild(new gui::ButtonAtom([&] () { infoUI.makeInvisible(); }, closeButton, 710, 10, 30, 30));
     infoTextIndex = infoUI.addIndexedChild(new gui::TextAtom("Some text goes here", aboutFont12, textcolor, POS_TOP_LEFT, 25, 25, 720, 320));
@@ -206,7 +206,7 @@ void argon::Initialise() {
     //Options menu
     
     optionsUI = gui::UIContainer(0, 0, 250, 370);
-    optionsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 250, 370));
+    optionsUI.addChild(new gui::RectAtom(bgcolor2, 0, 0, 250, 370));
     
     // buttons
     optionsUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
@@ -310,7 +310,7 @@ void argon::Initialise() {
     
     aboutUI = gui::UIContainer(257, 150, 610, 300);
     //aboutUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 610, 300));
-    aboutUI.addChild(new gui::RectAtom2(colour(80, 80, 80, 180), 0, 0, 610, 300));
+    aboutUI.addChild(new gui::RectAtom(colour(80, 80, 80, 180), 0, 0, 610, 300));
     aboutUI.addChild(new gui::SetColour(textcolor));
     aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170));
     aboutUI.addChild(new gui::ButtonAtom([&] () {

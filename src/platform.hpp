@@ -192,8 +192,22 @@ public:
     void draw(rect pos) const;
 };
 
+
+
 class ArgonFont {
-    
+private:
+    void *base;
+public:
+    ArgonFont();
+    ~ArgonFont();
+    std::string filename;
+    int size;
+    void loadText(const std::string &_filename, int &_size);
+    double getDescenderHeight() const;
+    double stringWidth(std::string &_string) const;
+    double getLineHeight() const;
+    void drawString(const std::string &_string, double x0, double y0, colour colour) const;
+
 };
 
 /*
@@ -220,6 +234,7 @@ void drawLine(coord start, coord end, double width, colour colour);
 void drawRect(double x0, double y0, double x1, double y1, colour colour);
 void drawRect(rect r, colour colour);
 // ...and more overloads for convenience
+void drawTextString(const std::string &_string, double x0, double y0, colour colour);
 
 /*
     Other functions

@@ -37,6 +37,10 @@ ofColor ofConvertColour(colour colour) {
     return ofColor(colour.r, colour.g, colour.b, colour.a);
 }
 
+ofTrueTypeFont ofConvertFont(ArgonFont font){
+    ofTrueTypeFont ofFont;
+    ofFont.load(font.filename, font.size);
+    return ofFont;}
 /*
     ArgonImage
  */
@@ -55,6 +59,33 @@ void ArgonImage::draw(double x, double y, double width, double height) const {
     ArgonFont
  */
 
+ArgonFont::ArgonFont() : filename(NULL), size(0){base = new ofTrueTypeFont(); }
+ArgonFont::~ArgonFont(){delete (ofTrueTypeFont *)base; }
+
+void ArgonFont::loadText(const string &_filename, int &_size) {
+    ((ofTrueTypeFont *)base)->load(_filename, _size);
+    filename = _filename;
+    size = _size;
+}
+
+double ArgonFont::getDescenderHeight() const{ofTrueTypeFont ofFont = ofConvertFont(*this);
+    return ofFont.getDescenderHeight();}
+
+double ArgonFont::stringWidth(std::string &_string) const{ofTrueTypeFont ofFont = ofConvertFont(*this);
+    return ofFont.stringWidth(_string);
+}
+
+double ArgonFont::getLineHeight() const{ofTrueTypeFont ofFont = ofConvertFont(*this);
+    return ofFont.getLineHeight();
+}
+
+void ArgonFont::drawString(const std::string &_string, double x0, double y0, colour colour) const{
+    ofSetColor(ofConvertColour(colour));
+    ofTrueTypeFont ofFont = ofConvertFont(*this);
+    ofFont.drawString(_string, x0, y0);
+}
+
+
 /*
     Drawing functions
  */
@@ -65,9 +96,15 @@ void drawLine(double x0, double y0, double x1, double y1, double width, colour c
     ofDrawLine(x0, y0, x1, y1);
 }
 
-void drawRect(double x0, double y0, double x1, double y1, colour colour) {
+void drawRect(double x0, double y0, double width, double height, colour colour) {
     ofSetColor(ofConvertColour(colour));
-    ofDrawRectangle(x0, y0, x1 - x0, y1 - y0);
+    ofDrawRectangle(x0, y0, width, height);
+}
+
+void drawTextString(const std::string &_string, double x0, double y0, ArgonFont font, colour colour){
+    ofSetColor(ofConvertColour(colour));
+    ofTrueTypeFont ofFont = ofConvertFont(font);
+    ofFont.drawString(_string, x0, y0);
 }
 
 int windowWidth()  { return ofGetWidth();  }
