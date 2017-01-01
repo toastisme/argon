@@ -97,7 +97,6 @@ union colour
     void setRGB(unsigned char red, unsigned char green, unsigned char blue);
     void setRGB(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
     
-    // YET TO BE IMPLEMENTED
     void setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness);
     void setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness, unsigned char alpha);
 };
@@ -210,6 +209,22 @@ public:
 
 };
 
+class polyline{
+private:
+    void *base;
+public:
+    polyline();
+    ~polyline();
+    void addVertex(float x, float y);
+    void lineTo(float x, float y);
+    void arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, int circleResolution = 20);
+    void arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, bool blockwise, int circleResolution = 20);
+    void arc(float x, float y, float rx, float ry, float angleBegin, float angleEnd, int circleResolution = 20);
+    void draw();
+    void draw(colour _colour, float _lineWidth);
+    
+};
+
 /*
     Mic input functions
  */
@@ -226,16 +241,16 @@ void toggleMicActive();
  */
 
 // only need to implement the first of these in the platform-specific file
-void drawLine(double x0, double y0, double x1, double y1, double width, colour colour);
+void drawLine(double x0, double y0, double x1, double y1, double width, colour _colour);
 void drawLine(coord start, coord end, double width, colour colour);
 // ...and more overloads for convenience
 
 // again, only need to implement the first of these in platform_OF.hpp
-void drawRect(double x0, double y0, double x1, double y1, colour colour);
+void drawRect(double x0, double y0, double x1, double y1, colour _colour);
 void drawRect(rect r, colour colour);
 // ...and more overloads for convenience
-void drawCircle(double x, double y, double r, colour colour, int resolution);
-void drawEllipse(double x, double y, double rx, double ry, colour, int resolution);
+void drawCircle(double x, double y, double r, colour _colour, int resolution);
+void drawEllipse(double x, double y, double rx, double ry, colour _colour, int resolution);
 
 /*
     Other functions

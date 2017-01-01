@@ -267,7 +267,7 @@ namespace gui {
 
     void CircularSliderAtom::render() {
         // centre point of circle
-        ofPoint centre(bounds.centreX(), bounds.bottom);
+        coord centre(bounds.centreX(), bounds.bottom);
         
         // Set line width
         ofSetLineWidth(LINE_WIDTH);
@@ -275,7 +275,7 @@ namespace gui {
         float sliderPos = getSliderPos();
         
         // draw circle sections
-        ofPolyline highlightPath, defaultPath, maskingPath;
+        polyline highlightPath, defaultPath, maskingPath;
         
         if (sliderPos == 0) {
             defaultPath.arc(centre, radius, radius, 180, 360, true, 50);

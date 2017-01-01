@@ -172,7 +172,7 @@ namespace gui {
         // Plot the potential
         ofSetLineWidth(3.5);
         ofSetColor(255,255,255,220);
-        ofPolyline line;
+        polyline line;
         for (int i = 0; i < potPoints.size(); i++){
             line.lineTo(potPoints[i].x, potPoints[i].y);
         }

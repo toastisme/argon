@@ -56,7 +56,6 @@ namespace gui {
         ArgonImage* rightImage = inflictTorture ? &loganRight : &boatRight;
         
         double v_avg = theSystem.getVAvg(); // Get average velocity for scaling purposes
-        ofSetCircleResolution(20);
         
         // Draw all the particles and trails
         for (int i = 0; i < theSystem.getN(); ++i) {
@@ -177,7 +176,7 @@ namespace gui {
         energySpace.setLRTB(0, 119, top, bottom); // 119 is max number of energy points - 1
         
         coord point;
-        ofPolyline Ekin, Epot;
+        polyline Ekin, Epot;
         for (int i = 0; i < numPoints; ++i) {
             point = {(double)i, theSystem.getPreviousEkin(i)};
             point = util::bimap(point, energySpace, bounds);
@@ -235,7 +234,7 @@ namespace gui {
         }
         
         coord point;
-        ofPolyline MBcurve;
+        polyline MBcurve;
         MBcurve.addVertex(bounds.left, bounds.bottom);
         double currMaxHeight = 0.0;
         

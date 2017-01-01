@@ -23,6 +23,7 @@
  */
 
 #include "platform.hpp"
+#include <math.h>
 
 /*
     coord
@@ -37,18 +38,50 @@ void coord::setXY(double _x, double _y) { x = _x; y = _y; }
     colour
  */
 
-colour::colour() : r(0), g(0), b(0), a(255), hue(0), saturation(0), brightness(255) {}
+colour::colour() : r(0), g(0), b(0), a(255){}
 colour::colour(unsigned char _r, unsigned char _g, unsigned char _b) : r(_r), g(_g), b(_b), a(255) {}
 colour::colour(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) : r(_r), g(_g), b(_b), a(_a) {}
+
 
 void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b) { r = _r; g = _g; b = _b; }
 void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) { r = _r; g = _g; b = _b; a = _a; }
 
 void colour::setHSB(unsigned char _hue, unsigned char _saturation, unsigned char _brightness){
-    hue = _hue; saturation = _saturation; brightness = _brightness;}
+    
+    double h = _hue;
+    double s = _saturation;
+    double br = _brightness;
+    h /= 255.0;
+    s /= 255.0;
+    br /= 255.0;
+    
+    double _r, _g, _b;
+    int i = floor(h * 6);
+    double f = h * 6 - i;
+    double p = br * (1 - f * s);
+    double q = br * (1 - f * s);
+    double t = br * (1 - (1 - f) * s);
+    
+    switch(i % 6){
+        case 0: _r = br, _g = t, _b = p; break;
+        case 1: _r = q, _g = br, _b = p; break;
+        case 2: _r = p, _g = br, _b = t; break;
+        case 3: _r = p, _g = q, _b = br; break;
+        case 4: _r = t, _g = p, _b = br; break;
+        case 5: _r = br, _g = p, _b = q; break;
+    }
+    
+    r = _r * 255; g = _g * 255; b = _b * 255;
+    
+}
 
 void colour::setHSB(unsigned char _hue, unsigned char _saturation, unsigned char _brightness, unsigned char _alpha){
-    hue = _hue; saturation = _saturation; brightness = _brightness; alpha = _alpha;}
+    
+    a = _alpha;
+    setHSB(_hue, _saturation, _brightness);
+    }
+
+
 /*
     rect
  */

@@ -37,10 +37,6 @@ ofColor ofConvertColour(colour colour) {
     return ofColor(colour.r, colour.g, colour.b, colour.a);
 }
 
-ofTrueTypeFont ofConvertFont(ArgonFont font){
-    ofTrueTypeFont ofFont;
-    ofFont.load(font.filename, font.size);
-    return ofFont;}
 /*
     ArgonImage
  */
@@ -73,40 +69,58 @@ double ArgonFont::stringWidth(std::string &_string) const{return ((ofTrueTypeFon
 double ArgonFont::getLineHeight() const{return ((ofTrueTypeFont *)base)->getLineHeight();}
 
 
-void ArgonFont::drawString(const std::string &_string, double x0, double y0, colour colour) const {
-    ofSetColor(ofConvertColour(colour));
+void ArgonFont::drawString(const std::string &_string, double x0, double y0, colour _colour) const {
+    ofSetColor(ofConvertColour(_colour));
     ((ofTrueTypeFont *)base)->drawString(_string, x0, y0);}
+
+/*
+ polyline
+ */
+
+polyline::polyline(){base = new ofPolyline(); }
+polyline::~polyline(){delete (ofPolyline *)base; }
+
+void polyline::addVertex(float x, float y){((ofPolyline *)base)->addVertex(x, y);}
+void polyline::lineTo(float x, float y){((ofPolyline *)base)->lineTo(x, y);}
+void polyline::draw(){((ofPolyline *)base)->draw();}
+void polyline::draw(colour _colour, float _lineWdith){ofSetColor(ofConvertColour(_colour)); ofSetLineWidth(_lineWdith); ((ofPolyline *)base)->draw();}
+
+void polyline::arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, int circleResolution){
+    ofPoint _ofPoint(point.x, point.y);
+    ((ofPolyline *)base)->arc(_ofPoint, rx, ry, angleBegin, angleEnd, circleResolution);
+}
+void polyline::arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, bool blockwise, int circleResolution){
+    ofPoint _ofPoint(point.x, point.y);
+    ((ofPolyline *)base)->arc(_ofPoint, rx, ry, angleBegin, angleEnd, blockwise, circleResolution);
+}
+void polyline::arc(float x, float y, float rx, float ry, float angleBegin, float angleEnd, int circleResolution){
+    ((ofPolyline *)base)->arc(x, y, rx, ry, angleBegin, angleEnd, circleResolution);
+}
 
 
 /*
     Drawing functions
  */
 
-void drawLine(double x0, double y0, double x1, double y1, double width, colour colour) {
-    ofSetColor(ofConvertColour(colour));
+void drawLine(double x0, double y0, double x1, double y1, double width, colour _colour) {
+    ofSetColor(ofConvertColour(_colour));
     ofSetLineWidth(width);
     ofDrawLine(x0, y0, x1, y1);
 }
 
-void drawRect(double x0, double y0, double width, double height, colour colour) {
-    ofSetColor(ofConvertColour(colour));
+void drawRect(double x0, double y0, double width, double height, colour _colour) {
+    ofSetColor(ofConvertColour(_colour));
     ofDrawRectangle(x0, y0, width, height);
 }
 
-void drawTextString(const std::string &_string, double x0, double y0, ArgonFont font, colour colour){
-    ofSetColor(ofConvertColour(colour));
-    ofTrueTypeFont ofFont = ofConvertFont(font);
-    ofFont.drawString(_string, x0, y0);
-}
-
-void drawCircle(double x, double y, double r, colour colour, int resolution){
-    ofSetColor(ofConvertColour(colour));
+void drawCircle(double x, double y, double r, colour _colour, int resolution){
+    ofSetColor(ofConvertColour(_colour));
     ofSetCircleResolution(resolution);
     ofDrawCircle(x, y, r);
 }
 
-void drawEllipse(double x, double y, double rx, double ry, colour colour, int resolution){
-    ofSetColor(ofConvertColour(colour));
+void drawEllipse(double x, double y, double rx, double ry, colour _colour, int resolution){
+    ofSetColor(ofConvertColour(_colour));
     ofSetCircleResolution(resolution);
     ofDrawEllipse(x, y, rx, ry);
 }
