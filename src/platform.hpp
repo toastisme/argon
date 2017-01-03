@@ -26,6 +26,7 @@
 #define platform_hpp
 
 #include <string>
+#include <vector>
 
 enum Position
 {
@@ -62,6 +63,15 @@ union coord
     coord(double x, double y);
     
     void setXY(double x, double y);
+};
+/*
+ vector3 contains three floats. Used as a replacement for ofPoint
+ */
+
+struct vector3{
+    float x, y, z;
+    vector3();
+    vector3(float x, float y, float z);
 };
 
 
@@ -160,7 +170,24 @@ union rect
     bool inside(coord point) const;
 };
 
+//enums for the openGL primitive modes used by mesh objects
 
+enum primitiveMode{
+    GL_PRIMITIVE_TRIANGLES,
+    GL_PRIMITIVE_TRIANGLE_STRIP,
+    GL_PRIMITIVE_TRIANGLE_FAN,
+    GL_PRIMITIVE_LINES,
+    GL_PRIMITIVE_LINE_STRIP,
+    GL_PRIMITIVE_LINE_LOOP,
+    GL_PRIMITIVE_POINTS,
+#ifndef TARGET_OPENGLES
+    GL_PRIMITIVE_LINES_ADJACENCY,
+    GL_PRIMITIVE_LINE_STRIP_ADJACENCY,
+    GL_PRIMITIVE_TRIANGLES_ADJACENCY,
+    GL_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY,
+    GL_PRIMITIVE_PATCHES
+#endif
+};
 
 /*
     Classes for images and fonts
@@ -182,16 +209,18 @@ public:
     double getWidth() const;                                            // return image width
     double getHeight() const;                                           // return image height
     void draw(double x, double y, double width, double height) const;   // draw image to screen
-   
-    // the rest is implemented in platform.cpp as calls to the above four functions
+    void draw(double x, double y, double width, double height, colour _colour) const;
+    // the rest is implemented in platform.cpp as calls to the above five functions
     coord getSize() const;
     void draw(double x, double y, coord size) const;
+    void draw(double x, double y, coord size, colour _colour) const;
     void draw(coord size, double width, double height) const;
+    void draw(coord size, double width, double height, colour _colour) const;
     void draw(coord pos, coord size) const;
+    void draw(coord pos, coord size, colour _colour) const;
     void draw(rect pos) const;
+    void draw(rect pos, colour _colour) const;
 };
-
-
 
 class ArgonFont {
 private:
@@ -216,6 +245,7 @@ public:
     polyline();
     ~polyline();
     void addVertex(float x, float y);
+    std::vector<vector3> getVertices();
     void lineTo(float x, float y);
     void arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, int circleResolution = 20);
     void arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, bool blockwise, int circleResolution = 20);
@@ -224,6 +254,19 @@ public:
     void draw(colour _colour, float _lineWidth);
     
 };
+
+class mesh{
+
+public:
+    void *base;
+    mesh();
+    ~mesh();
+    void setMode(primitiveMode _primitiveMode) const;
+    void addVertex(float x, float y, float z);
+    void draw(colour _colour);
+    void makeThickLine(polyline &_line, float widthSmooth);
+};
+
 
 /*
     Mic input functions

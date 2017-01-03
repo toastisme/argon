@@ -143,10 +143,11 @@ namespace gui {
     class ImageAtom : public UIAtom {
     private:
         virtual void render();
+        colour colour;
         const ArgonImage *image;
     public:
         ImageAtom();
-        ImageAtom(const ArgonImage &image, double x, double y, double width, double height);
+        ImageAtom(const ArgonImage &image, double x, double y, double width, double height, union colour _colour);
         virtual void resize(float xScale, float yScale);
     };
 
@@ -259,11 +260,13 @@ namespace gui {
         virtual void render();   // draws the button image to the screen
         
         FuncAction doAction;     // function (void -> void) called when the button is pressed
-        const ArgonImage *image;    // pointer to image asset
+        const ArgonImage *image;
+        // pointer to image asset
+        colour colour;
         
     public:
         ButtonAtom();
-        ButtonAtom(FuncAction doAction, const ArgonImage &image, double x, double y, double width, double height);
+        ButtonAtom(FuncAction doAction, const ArgonImage &image, union colour _colour, double x, double y, double width, double height);
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
@@ -286,10 +289,11 @@ namespace gui {
         
         const ArgonImage *imageOn;    // pointer to 'on' image asset
         const ArgonImage *imageOff;   // pointer to 'off' image asset
+        colour colour;
         
     public:
         ButtonToggleAtom();
-        ButtonToggleAtom(FuncGetterBool getBool, FuncSetterBool setBool, const ArgonImage &imageOn, const ArgonImage &imageOff, double x, double y, double width, double height);
+        ButtonToggleAtom(FuncGetterBool getBool, FuncSetterBool setBool, const ArgonImage &imageOn, const ArgonImage &imageOff, union colour _colour, double x, double y, double width, double height);
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);

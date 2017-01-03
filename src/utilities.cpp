@@ -111,6 +111,7 @@ namespace util {
 };
 
 // Make a thick line because openFrameworks is stupid and doesn't have a default method to do this
+/*
 ofMesh makeThickLine(ofPolyline& line, float widthSmooth)
 {
     ofMesh meshy;
@@ -144,3 +145,4 @@ ofMesh makeThickLine(ofPolyline& line, float widthSmooth)
     
     return meshy;
 }
+ */

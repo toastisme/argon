@@ -100,8 +100,9 @@ void argon::Initialise() {
     theSystem.resetSystem();
     
     // colours
-    colour bgcolor = colour(80, 80, 80, 80);
-    colour textcolor = colour(255, 255, 240);
+    colour bgcolour = colour(80, 80, 80, 80);
+    colour textcolour = colour(255, 255, 240);
+    colour optionsColour = colour(255, 255, 255);
 
     // Setup system UI
     systemUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
@@ -117,9 +118,8 @@ void argon::Initialise() {
     
     infoUI = gui::UIContainer(256, 310, 750, 380);
     infoUI.addChild(new gui::RectAtom(colour(80, 80, 80, 180), 0, 0, 750, 380));
-    //infoUI.addChild(new gui::SetColour(textcolor));
-    infoUI.addChild(new gui::ButtonAtom([&] () { infoUI.makeInvisible(); }, closeButton, 710, 10, 30, 30));
-    infoTextIndex = infoUI.addIndexedChild(new gui::TextAtom("Some text goes here", aboutFont12, textcolor, POS_TOP_LEFT, 25, 25, 720, 320));
+    infoUI.addChild(new gui::ButtonAtom([&] () { infoUI.makeInvisible(); }, closeButton, textcolour, 710, 10, 30, 30));
+    infoTextIndex = infoUI.addIndexedChild(new gui::TextAtom("Some text goes here", aboutFont12, textcolour, POS_TOP_LEFT, 25, 25, 720, 320));
     infoUI.makeInvisible();
     infoUI.mouseReleased(0, 0, 0);
     
@@ -131,10 +131,10 @@ void argon::Initialise() {
     controlsUI = gui::UIContainer(250, 0, 774, 209);
     
     // menu background
-    controlsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 774, 209));
+    controlsUI.addChild(new gui::RectAtom(bgcolour, 0, 0, 774, 209));
     
     // sliders
-    optionsIndex = controlsUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolor, 554, 20, 200, 514, 169, 20));
+    optionsIndex = controlsUI.addIndexedChild(new gui::AtomsListAtom(uiFont12, textcolour, 554, 20, 200, 514, 169, 20));
     
     gui::AtomsListAtom* options = (gui::AtomsListAtom *) controlsUI.getChild(optionsIndex);
     options->addOption("Temperature", [&] () {
@@ -142,21 +142,21 @@ void argon::Initialise() {
         t->setText(CONTROLS_INFO_TEMP);
     }, new gui::CircularSliderContainer([&] () { return theSystem.getTemp() * 120; },
                                                                                    [&] (double set) { theSystem.setTemp(set / 120.0); },
-                                                                                   0, 1000, uiFont14, textcolor, 1, -75, 0, 150, 60, 60, 120));
+                                                                                   0, 1000, uiFont14, textcolour, 1, -75, 0, 150, 60, 60, 120));
     
     options->addOption("Particles", [&] () {
         gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
         t->setText(CONTROLS_INFO_PART);
     }, new gui::CircularSliderContainer([&] () { return theSystem.getNAfterReset(); },
                                                                                  [&] (double set) { theSystem.setNAfterReset(set + 0.5); theSystem.resetSystem(); },
-                                                                                 2, 200, uiFont14, textcolor, 0, -75, 0, 150, 60, 60, 120));
+                                                                                 2, 200, uiFont14, textcolour, 0, -75, 0, 150, 60, 60, 120));
     
     options->addOption("Simulation speed", [&] () {
         gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
         t->setText(CONTROLS_INFO_SIM);
     }, new gui::CircularSliderContainer([&] () { return theSystem.getStepsPerUpdate(); },
                                                                             [&] (double set) { theSystem.setStepsPerUpdate(set + 0.5); },
-                                                                            1, 20, uiFont14, textcolor, 0,
+                                                                            1, 20, uiFont14, textcolour, 0,
                                                                             -75, 0, 150, 60, 60, 120));
     
     options->addOption("Gaussian", [&] () {
@@ -168,7 +168,7 @@ void argon::Initialise() {
                                                                                 [&] (double set) { gui::GaussianContainer* gaussian = (gui::GaussianContainer *) systemUI.getChild(gaussianContainerIndex);
                                                                                     int gaussianID = gaussian->getSelectedID();
                                                                                     if (gaussianID > -1) { theSystem.updateGaussian(gaussianID, 50 - set*100, 0.8 - 0.5*set, theSystem.getGaussianX0(gaussianID), theSystem.getGaussianY0(gaussianID)); } },
-                                                                                0.0, 1.0, uiFont10, textcolor, 0, -75, 0, 150, 60, 60, 120));
+                                                                                0.0, 1.0, uiFont10, textcolour, 0, -75, 0, 150, 60, 60, 120));
     
     gui::UIContainer* energyGraphContainer = new gui::UIContainer(-45, 0, 514, 169);
     energyGraphContainer->addChild(new gui::EnergyGraphAtom(theSystem, 0, 0, 514, 161));
@@ -191,7 +191,7 @@ void argon::Initialise() {
     controlsUI.addChild(new gui::ButtonAtom([&] () {
         gui::TextAtom* t = (gui::TextAtom*) infoUI.getChild(infoTextIndex);
         SetInfoText();
-        if (!tutorialUI.getVisible()) infoUI.toggleVisible(); }, optionsAboutButton, 10, 10, 30, 30));
+        if (!tutorialUI.getVisible()) infoUI.toggleVisible(); }, optionsAboutButton, optionsColour, 10, 10, 30, 30));
     
     controlsUI.makeInvisible();
     controlsUI.mouseReleased(0, 0, 0);
@@ -208,10 +208,9 @@ void argon::Initialise() {
     //Options menu
     
     optionsUI = gui::UIContainer(0, 0, 250, 370);
-    optionsUI.addChild(new gui::RectAtom(bgcolor, 0, 0, 250, 370));
+    optionsUI.addChild(new gui::RectAtom(bgcolour, 0, 0, 250, 370));
     
     // buttons
-    //optionsUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
     
     optionsUI.addChild(
         new gui::ButtonAtom([&] () {
@@ -222,18 +221,18 @@ void argon::Initialise() {
             aboutUI.makeInvisible();
             infoUI.makeInvisible();
             optionsOffUI.makeVisible();
-        }, optionsMainMenuButton, 10, 10, 30, 30));
+        }, optionsMainMenuButton, optionsColour, 10, 10, 30, 30));
     
-    optionsUI.addChild(new gui::TextAtom("Controls", uiFont12, textcolor, POS_LEFT, 20, 55, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Controls", uiFont12, textcolour, POS_LEFT, 20, 55, 100, 25));
     optionsUI.addChild(
         new gui::ButtonAtom([&] () {
             potentialUI.makeInvisible();
             aboutUI.makeInvisible();
             infoUI.makeInvisible();
             controlsUI.toggleVisible();
-        }, optionsControlsButton, 200, 50, 30, 30));
+        }, optionsControlsButton, optionsColour, 200, 50, 30, 30));
     
-    optionsUI.addChild(new gui::TextAtom("Potentials", uiFont12, textcolor, POS_LEFT, 20, 95, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Potentials", uiFont12, textcolour, POS_LEFT, 20, 95, 100, 25));
     optionsUI.addChild(
         new gui::ButtonAtom([&] () {
             controlsUI.makeInvisible();
@@ -243,9 +242,9 @@ void argon::Initialise() {
             optionsOffUI.makeVisible();
             graphUI.makeInvisible();
             potentialUI.toggleVisible();
-        }, optionsPotentialButton, 200, 90, 30, 30));
+        }, optionsPotentialButton, optionsColour, 200, 90, 30, 30));
     
-    optionsUI.addChild(new gui::TextAtom("About", uiFont12, textcolor, POS_LEFT, 20, 135, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("About", uiFont12, textcolour, POS_LEFT, 20, 135, 100, 25));
     optionsUI.addChild(
         new gui::ButtonAtom([&] () {
                 controlsUI.makeInvisible();
@@ -253,9 +252,9 @@ void argon::Initialise() {
                 graphUI.makeInvisible();
                 aboutUI.toggleVisible();
                 infoUI.makeInvisible();
-            }, optionsAboutButton, 200, 130, 30, 30));
+            }, optionsAboutButton, optionsColour, 200, 130, 30, 30));
 
-    optionsUI.addChild(new gui::TextAtom("Tutorial", uiFont12, textcolor, POS_LEFT, 20, 175, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Tutorial", uiFont12, textcolour, POS_LEFT, 20, 175, 100, 25));
     optionsUI.addChild(
         new gui::ButtonAtom([&] () {
             controlsUI.makeInvisible();
@@ -265,64 +264,62 @@ void argon::Initialise() {
             infoUI.makeInvisible();
             tutorialUI.toggleVisible();
             tutorialHighlightUI.toggleVisible();
-        }, tutorialButton, 200, 170, 30, 30));
+        }, tutorialButton, optionsColour, 200, 170, 30, 30));
     
-    optionsUI.addChild(new gui::TextAtom("Reset gaussians", uiFont12, textcolor, POS_LEFT, 20, 215, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Reset gaussians", uiFont12, textcolour, POS_LEFT, 20, 215, 100, 25));
     optionsUI.addChild(
         new gui::ButtonAtom(
             [&] () {
                 ((gui::GaussianContainer *)systemUI.getChild(gaussianContainerIndex))->destroyAllGaussians();
-            }, resetButton, 200, 210, 30, 30));
+            }, resetButton, optionsColour, 200, 210, 30, 30));
     
-    optionsUI.addChild(new gui::TextAtom("Mic on/off", uiFont12, textcolor, POS_LEFT, 20, 255, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Mic on/off", uiFont12, textcolour, POS_LEFT, 20, 255, 100, 25));
     optionsUI.addChild(
         new gui::ButtonToggleAtom(
             [&] () { return getMicActive(); },
             [&] (bool set) { setMicActive(set); },
-            audioOnButton, audioOffButton, 200, 250, 30, 30));
+            audioOnButton, audioOffButton, optionsColour, 200, 250, 30, 30));
     
-    optionsUI.addChild(new gui::TextAtom("Reset system", uiFont12, textcolor, POS_LEFT, 20, 295, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Reset system", uiFont12, textcolour, POS_LEFT, 20, 295, 100, 25));
     optionsUI.addChild(
         new gui::ButtonAtom(
             [&] () { theSystem.resetSystem(); },
-            resetButton, 200, 290, 30, 30));
+            resetButton, optionsColour, 200, 290, 30, 30));
     
-    optionsUI.addChild(new gui::TextAtom("Play / pause", uiFont12, textcolor, POS_LEFT, 20, 335, 100, 25));
+    optionsUI.addChild(new gui::TextAtom("Play / pause", uiFont12, textcolour, POS_LEFT, 20, 335, 100, 25));
     optionsUI.addChild(
         new gui::ButtonToggleAtom(
             [&] () { return theSystem.getRunning(); },
             [&] (bool set) { theSystem.setRunning(set); },
-            playButton, pauseButton, 200, 330, 30, 30));
+            playButton, pauseButton, optionsColour, 200, 330, 30, 30));
     
     optionsUI.makeInvisible();
     optionsUI.mouseReleased(0, 0, 0);
     
     optionsOffUI = gui::UIContainer(0, 0, 40, 40);
-    //optionsOffUI.addChild(new gui::SetColour(ofColor(255, 255, 255)));
-    optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); optionsOffUI.makeInvisible(); potentialUI.makeInvisible(); }, optionsMainMenuButton,
+    optionsOffUI.addChild(new gui::ButtonAtom([&] () { optionsUI.makeVisible(); optionsOffUI.makeInvisible(); potentialUI.makeInvisible(); }, optionsMainMenuButton, optionsColour,
                                            10, 10, 30, 30));
     optionsOffUI.addChild(new gui::ButtonAtom([&] () {
         SetInfoText();
         if (!tutorialUI.getVisible()) infoUI.toggleVisible();
-    }, optionsAboutButton, 50, 10, 30, 30));
+    }, optionsAboutButton, optionsColour, 50, 10, 30, 30));
     
     optionsOffUI.makeVisible();
     
     // About UI
     
     aboutUI = gui::UIContainer(257, 150, 610, 300);
-    //aboutUI.addChild(new gui::RectAtom(ofColor(80, 80, 80, 180), 0, 0, 610, 300));
     aboutUI.addChild(new gui::RectAtom(colour(80, 80, 80, 180), 0, 0, 610, 300));
     //aboutUI.addChild(new gui::SetColour(textcolor));
-    aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170));
+    aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170, textcolour));
     aboutUI.addChild(new gui::ButtonAtom([&] () {
         gui::SystemAtom* sys = (gui::SystemAtom*) systemUI.getChild(systemAtomIndex);
         sys->sailTheHighSeas(); },
-                                         stargonautsLogo, 395, 5, 205, 170));
-    aboutUI.addChild(new gui::TextAtom("A molecular dynamics simulation with interactive external and", aboutFont12, textcolor, POS_LEFT, 25, 195, 600, 20));
-    aboutUI.addChild(new gui::TextAtom("interatomic potentials. www.argonmd.co.uk", aboutFont12, textcolor, POS_LEFT, 25, 215, 600, 20));
-    aboutUI.addChild(new gui::TextAtom("Copyright 2016 David McDonagh, Robert Shaw, Staszek Welsh", aboutFont12, textcolor, POS_LEFT, 25, 255, 600, 20));
-    aboutUI.addChild(new gui::TextAtom("Version 1.0.1", uiFont14, textcolor, POS_CENTRE, 202, 120, 195, 20));
+                                         stargonautsLogo, optionsColour, 395, 5, 205, 170));
+    aboutUI.addChild(new gui::TextAtom("A molecular dynamics simulation with interactive external and", aboutFont12, textcolour, POS_LEFT, 25, 195, 600, 20));
+    aboutUI.addChild(new gui::TextAtom("interatomic potentials. www.argonmd.co.uk", aboutFont12, textcolour, POS_LEFT, 25, 215, 600, 20));
+    aboutUI.addChild(new gui::TextAtom("Copyright 2016 David McDonagh, Robert Shaw, Staszek Welsh", aboutFont12, textcolour, POS_LEFT, 25, 255, 600, 20));
+    aboutUI.addChild(new gui::TextAtom("Version 1.0.1", uiFont14, textcolour, POS_CENTRE, 202, 120, 195, 20));
     //aboutUI.addChild(new gui::ImageAtom(tmcsLogo, 129, 138, 164, 95));
     
     aboutUI.makeInvisible();
@@ -338,13 +335,13 @@ void argon::Initialise() {
     
     // TutorialHighlight UI
     tutorialHighlightUI = gui::UIContainer(-50, 50, 30, 30);
-    //tutorialHighlightUI.addChild(new gui::RectAtom(ofColor(255,255,255, 80), 0, 0, 30, 30));
+    //tutorialHighlightUI.addChild(new gui::RectAtom(colour(255,255,255, 80), 0, 0, 30, 30));
     tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, dynamic_cast<gui::TutorialContainer*>(tutorialUI.getChild(0)), tutorialHighlightUI));
     tutorialHighlightUI.makeInvisible();
     tutorialHighlightUI.mouseReleased(0, 0, 0);
     
     tutorialBlockUI = gui::UIContainer(-50, 50, 30, 30);
-    //tutorialBlockUI.addChild(new gui::RectAtom(ofColor(255,0,255, 80), 0, 0, 30, 30));
+    //tutorialBlockUI.addChild(new gui::RectAtom(colour(255,0,255, 80), 0, 0, 30, 30));
     tutorialBlockUI.mouseReleased(0, 0, 0);
     
 }
@@ -379,10 +376,10 @@ void argon::Run() {
     }
     
     // If the screen size has changed, resize the UI
-    if ( screenWidth != ofGetWidth() || screenHeight != ofGetHeight() ) {
+    if ( screenWidth != windowWidth() || screenHeight != windowHeight() ) {
         
-        float xScale =  ofGetWidth() / ( (float) screenWidth  );
-        float yScale = ofGetHeight() / ( (float) screenHeight );
+        float xScale =  windowWidth() / ( (float) screenWidth  );
+        float yScale = windowHeight() / ( (float) screenHeight );
         
         controlsUI.resize(xScale, yScale);
         potentialUI.resize(xScale, yScale);
@@ -396,8 +393,8 @@ void argon::Run() {
         tutorialHighlightUI.resize(xScale, yScale);
         tutorialBlockUI.resize(xScale, yScale);
         
-        screenWidth = ofGetWidth();
-        screenHeight = ofGetHeight();
+        screenWidth = windowWidth();
+        screenHeight = windowHeight();
     }
     
     // draw the UI
@@ -414,13 +411,12 @@ void argon::Run() {
     tutorialBlockUI.draw();
     
     if (loading) {
-        ofColor splashColour = ofColor(255, 255, 255);
+        colour splashColour = colour(255, 255, 255);
         splashColour.a = ofMap(ofGetElapsedTimef(), 3,5, 255, 0, true);
         if ( splashColour.a < 1 ) {
             loading = false;
         }
-        ofSetColor(splashColour);
-        splashScreen.draw(0, 0, ofGetWidth(), ofGetHeight());
+        splashScreen.draw(0, 0, windowWidth(), windowHeight(), splashColour);
     }
 }
 

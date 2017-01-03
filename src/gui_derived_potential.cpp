@@ -49,25 +49,25 @@ namespace gui {
             new SplineContainer(theSystem, 0.95, 3.0, -2, 2, 15, 150, 0, 774, 500)
         );
         
-        //addChild(new gui::SetColour(ofColor(255, 255, 240)));
+        colour thumbnailColour = colour(255, 255, 240);
         
         // add the first four buttons and text
-        addChild(new ButtonAtom([&] () { setPotential(LENNARD_JONES); }, ljThumbnail, 25, 0, 100, 100));
+        addChild(new ButtonAtom([&] () { setPotential(LENNARD_JONES); }, ljThumbnail, thumbnailColour, 25, 0, 100, 100));
         addChild(new TextAtom("Lennard-Jones", uiFont12, textcolor, POS_TOP, 0, 100, 150, 25));
         
-        addChild(new ButtonAtom([&] () { setPotential(SQUARE_WELL); }, squareThumbnail, 25, 125, 100, 100));
+        addChild(new ButtonAtom([&] () { setPotential(SQUARE_WELL); }, squareThumbnail, thumbnailColour, 25, 125, 100, 100));
         addChild(new TextAtom("Square Well", uiFont12, textcolor, POS_TOP, 0, 225, 150, 25));
         
-        addChild(new ButtonAtom([&] () { setPotential(MORSE); }, morseThumbnail, 25, 250, 100, 100));
+        addChild(new ButtonAtom([&] () { setPotential(MORSE); }, morseThumbnail, thumbnailColour, 25, 250, 100, 100));
         addChild(new TextAtom("Morse", uiFont12, textcolor, POS_TOP, 0, 350, 150, 25));
         
-        customPotentialIndex = addIndexedChild(new ButtonAtom([&] () { setPotential(CUSTOM); }, customThumbnail, 25, 375, 100, 100));
+        customPotentialIndex = addIndexedChild(new ButtonAtom([&] () { setPotential(CUSTOM); }, customThumbnail, thumbnailColour, 25, 375, 100, 100));
         addChild(new TextAtom("Custom", uiFont12, textcolor, POS_TOP, 0, 475, 150, 25));
         
         // reset potentials button + text
         UIContainer* resetContainer = new UIContainer(0, 375, 100, 100);
         resetContainer->addChild(new ButtonAtom([&] () { ((gui::SplineContainer *)getChild(splineContainerIndex))->destroyAllPoints(); },
-                                                 resetSplinePointsButton, 45, 5, 60, 60));
+                                                 resetSplinePointsButton, thumbnailColour, 45, 5, 60, 60));
         resetContainer->addChild(new TextAtom("Reset Points", uiFont12, textcolor, POS_TOP, 0, 65, 150, 65));
         resetContainer->makeInvisible();
         resetPotentialIndex = addIndexedChild(resetContainer);
@@ -170,8 +170,6 @@ namespace gui {
         }
         
         // Plot the potential
-        ofSetLineWidth(3.5);
-        ofSetColor(255,255,255,220);
         polyline line;
         for (int i = 0; i < potPoints.size(); i++){
             line.lineTo(potPoints[i].x, potPoints[i].y);
@@ -180,14 +178,16 @@ namespace gui {
         // draw potential, clipping to rectangle of size bounds
         glScissor(bounds.left, bounds.top, bounds.width(), bounds.height());
         glEnable(GL_SCISSOR_TEST);
-        line.draw();
+        colour potentialColour = colour(255, 255, 255, 220);
+        float potentialLineWidth = 3.5;
+        line.draw(potentialColour, potentialLineWidth);
         
         //// Plot the particles along the curve
-        //ofSetCircleResolution(10);
-        //ofSetColor(186, 255, 163, 220);
+        //int particleResolution = 10;
+        //colour particleColour = colour(186, 255, 163, 220);
         //for (int i = 0; i < particlePoints.size(); i++){
         //    pos = particlePoints[i];
-        //    if (bounds.inside(pos)) { ofDrawCircle(pos.x, pos.y, 6); }
+        //    if (bounds.inside(pos)) { drawCircle(pos.x, pos.y, 6, particleColour, particleResolution); }
         //}
         
         // Plot the RDF
@@ -198,10 +198,10 @@ namespace gui {
             prevRDF.pop_front();
         }
         
-        ofSetColor(186, 255, 163, 80);
         
-        ofMesh violin;
-        violin.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+        mesh violin;
+        colour violinColour = colour(186, 255, 163, 80);
+        violin.setMode(GL_PRIMITIVE_TRIANGLE_STRIP);
         
         rect violinSpaceUpper, violinSpaceLower;
         violinSpaceUpper.setLRTB(bounds.left, bounds.right, bounds.top,    bounds.centreY());
@@ -216,17 +216,15 @@ namespace gui {
             coord pointUpper = util::bimap(point, RDFspace, violinSpaceUpper);
             coord pointLower = util::bimap(point, RDFspace, violinSpaceLower);
             
-            //ofDrawCircle(pointUpper.x, pointUpper.y, 2);
-            //ofDrawCircle(pointLower.x, pointLower.y, 2);
-            
-            violin.addVertex(ofPoint(pointUpper.x, pointUpper.y, 0));
-            violin.addVertex(ofPoint(pointLower.x, pointLower.y, 0));
+            violin.addVertex(pointUpper.x, pointUpper.y, 0);
+            violin.addVertex(pointLower.x, pointLower.y, 0);
             //violin.addIndex(2 * i);
             //violin.addIndex(2 * i + 1);
         }
         //violin.addIndex(2 * numBins);
         //violin.addIndex(2 * numBins + 1);
-        violin.draw();
+        
+        violin.draw(violinColour);
         
         glDisable(GL_SCISSOR_TEST);
     }
@@ -239,13 +237,12 @@ namespace gui {
     {}
     
     void SplineControlPoint::render() {
-        ofSetCircleResolution(20);
         
-        ofSetColor(10, 174, 199);
-        ofDrawCircle(bounds.centreX(), bounds.centreY(), radius);
-        
-        ofSetColor(82, 225, 247);
-        ofDrawCircle(bounds.centreX(), bounds.centreY(), radius - 3);
+        int controlPointResolution = 20;
+        colour outerColour = colour(10, 174, 199);
+        colour innerColour = colour(82, 255, 247);
+        drawCircle(bounds.centreX(), bounds.centreY(), radius, outerColour, controlPointResolution);
+        drawCircle(bounds.centreX(), bounds.centreY(), radius - 3, innerColour, controlPointResolution);
     }
     
     void SplineControlPoint::movePoint(double x, double y) {

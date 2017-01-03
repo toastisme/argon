@@ -34,6 +34,11 @@ coord::coord(double _x, double _y) : x(_x), y(_y) {}
 
 void coord::setXY(double _x, double _y) { x = _x; y = _y; }
 
+vector3::vector3() : x(0), y(0), z(0){}
+vector3::vector3(float _x, float _y, float _z){
+    x = _x; y = _y; z = _z;}
+
+
 /*
     colour
  */
@@ -177,10 +182,13 @@ coord ArgonImage::getSize() const {
 }
 
 void ArgonImage::draw(double x, double y, coord size) const { draw(x, y, size.x, size.y); }
+void ArgonImage::draw(double x, double y, coord size, colour _colour) const { draw(x, y, size.x, size.y, _colour); }
 void ArgonImage::draw(coord pos, double width, double height) const { draw(pos.x, pos.y, width, height); }
+void ArgonImage::draw(coord pos, double width, double height, colour _colour) const { draw(pos.x, pos.y, width, height, _colour); }
 void ArgonImage::draw(coord pos, coord size) const { draw(pos.x, pos.y, size.x, size.y); }
+void ArgonImage::draw(coord pos, coord size, colour _colour) const { draw(pos.x, pos.y, size.x, size.y, _colour); }
 void ArgonImage::draw(rect pos) const { draw(pos.left, pos.top, pos.width(), pos.height()); }
-
+void ArgonImage::draw(rect pos, colour _colour) const { draw(pos.left, pos.top, pos.width(), pos.height(), _colour); }
 /*
     Audio
  */
@@ -238,4 +246,39 @@ void drawRect(rect r, colour colour) {
  */
 
 coord windowSize() { return coord(windowWidth(), windowHeight()); }
+/*
+mesh makeThickLine(polyline& _line, float widthSmooth){
+    mesh meshy;
+    meshy.setMode(GL_PRIMITIVE_TRIANGLE_STRIP);
+    
+    float angleSmooth;
+    
+    for (int i = 0;  i < _line.getVertices().size(); i++){
+        
+        int me_m_one = i-1;
+        int me_p_one = i+1;
+        if (me_m_one < 0) me_m_one = 0;
+        if (me_p_one ==  _line.getVertices().size()) me_p_one =  _line.getVertices().size()-1;
+        
+        vector3 diff = _line.getVertices()[me_p_one] - _line.getVertices()[me_m_one];
+        float angle = atan2(diff.y, diff.x);
+        
+        if (i == 0) angleSmooth = angle;
+        else {
+            angleSmooth = ofLerpDegrees(angleSmooth, angle, 1.0);
+        }
+        
+        vector3 offset;
+        offset.x = cos(angleSmooth + PI/2) * widthSmooth;
+        offset.y = sin(angleSmooth + PI/2) * widthSmooth;
+        
+        meshy.addVertex(  _line.getVertices()[i] +  offset );
+        meshy.addVertex(  _line.getVertices()[i] -  offset );
+        
+    }
+    return meshy;
+    
+    
+}
 
+*/

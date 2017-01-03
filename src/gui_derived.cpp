@@ -78,26 +78,12 @@ namespace gui {
     // typically, this larger rectangle is ofBase::bounds
     void TextComponent::renderString(rect bounds, Position align) const {
         if (font) {                                                                       // font might be null, so check
-            //ofSetColor(colour);
             rect drawRect = stringBounds;                                                 // make local copy of stringBounds
             drawRect.movePos(align, bounds.getPos(align));                                // align the string within the larger rectangle
             font->drawString(string, drawRect.left, drawRect.bottom + descenderHeight, colour);   // drawString takes the left position and the baseline height
         }
     }
     
-    
-    
-    /*
-        SetColour
-    
-    
-    // all this class does is set the draw colour using ofSetColor
-    SetColour::SetColour() : UIAtom(), colour(ofColor(0, 0, 0)) {}
-    
-    SetColour::SetColour(const ofColor &_colour) : UIAtom(), colour(_colour) {}
-    
-    void SetColour::render() { ofSetColor(colour); }
-     /*
     
     /*
         RectAtom
@@ -149,11 +135,11 @@ namespace gui {
      */
     
     
-    ImageAtom::ImageAtom() : UIAtom(), image(NULL) {}
-    ImageAtom::ImageAtom(const ArgonImage &_image, double x, double y, double width, double height)
-    : UIAtom(x, y, width, height), image(&_image) {}
+    ImageAtom::ImageAtom() : UIAtom(), image(NULL), colour() {}
+    ImageAtom::ImageAtom(const ArgonImage &_image, double x, double y, double width, double height, union colour _colour)
+    : UIAtom(x, y, width, height), image(&_image), colour(_colour) {}
     void ImageAtom::render() {
-        if (image) { image->draw(bounds); }
+        if (image) { image->draw(bounds, colour); }
     }
     void ImageAtom::resize(float xScale, float yScale) {
         float scale = xScale < yScale ? xScale : yScale;
@@ -175,7 +161,7 @@ namespace gui {
     // slider handle stay within the slider body. Without subtracting, the right
     // side of the slider handle moves past the right side of the slider body
     double SliderAtom::getSliderPos() {
-        return ofMap(getValue(), min, max, bounds.left, bounds.right - SliderAtom::HANDLE_WIDTH, true);
+        return util::map(getValue(), min, max, bounds.left, bounds.right - SliderAtom::HANDLE_WIDTH, true);
     }
     
     // set the value using setValue, obtained by mapping the x-coordinate of the
@@ -185,7 +171,7 @@ namespace gui {
     void SliderAtom::setFromSliderPos(double x, double y) {
         x -= SliderAtom::HANDLE_WIDTH / 2;
         
-        setValue(ofMap(x, bounds.left, bounds.right - SliderAtom::HANDLE_WIDTH, min, max, true));
+        setValue(util::map(x, bounds.left, bounds.right - SliderAtom::HANDLE_WIDTH, min, max, true));
     }
     
     void SliderAtom::render() {
@@ -247,7 +233,7 @@ namespace gui {
     
     // get the value of getValue, and map it to the angle (in degrees) on the semicircle
     double CircularSliderAtom::getSliderPos() {
-        return ofMap(getValue(), min, max, 0, 180, true);
+        return util::map(getValue(), min, max, 0, 180, true);
     }
     
     // set the value using setValue, obtained by mapping the distance round the circle of the
@@ -262,16 +248,13 @@ namespace gui {
         double angle = atan2(y, x) * 180 / PI;
         
         // Map this onto the value range
-        setValue(ofMap(angle, 0, 180, min, max, true));
+        setValue(util::map(angle, 0, 180, min, max, true));
     }
 
     void CircularSliderAtom::render() {
         // centre point of circle
         coord centre(bounds.centreX(), bounds.bottom);
-        
-        // Set line width
-        ofSetLineWidth(LINE_WIDTH);
-        
+                
         float sliderPos = getSliderPos();
         
         // draw circle sections
@@ -287,13 +270,11 @@ namespace gui {
         }
     
         // Turn the polylines into thick lines, 'cos openFrameworks sucks
-        ofMesh defaultMesh = makeThickLine(defaultPath, LINE_WIDTH);
-        ofMesh highlightMesh = makeThickLine(highlightPath, LINE_WIDTH);
+        //mesh defaultMesh = makeThickLine(defaultPath, LINE_WIDTH);
+        //mesh highlightMesh = makeThickLine(highlightPath, LINE_WIDTH);
         
-        //ofSetColor(DEFAULT_COLOR);
-        defaultMesh.draw();
-        //ofSetColor(HIGHLIGHT_COLOR);
-        highlightMesh.draw();
+        //defaultMesh.draw(DEFAULT_COLOR);
+        //highlightMesh.draw(HIGHLIGHT_COLOR);
         
         
     }
@@ -311,15 +292,15 @@ namespace gui {
         ButtonAtom
      */
     
-    ButtonAtom::ButtonAtom() : UIAtom(), image(NULL) {}
+    ButtonAtom::ButtonAtom() : UIAtom(), image(NULL), colour() {}
     
-    ButtonAtom::ButtonAtom(FuncAction _doAction, const ArgonImage &_image, double x, double y, double width, double height)
-        : UIAtom(x, y, width, height), doAction(_doAction), image(&_image)
+    ButtonAtom::ButtonAtom(FuncAction _doAction, const ArgonImage &_image, union colour _colour, double x, double y, double width, double height)
+        : UIAtom(x, y, width, height), doAction(_doAction), image(&_image), colour(_colour)
     { }
     
     // render just draws the button image
     void ButtonAtom::render() {
-        if (image) { image->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
+        if (image) { image->draw(bounds.left, bounds.top, bounds.width(), bounds.height(), colour); }
     }
     
     // if the mouse is left-clicked inside the button, do its action
@@ -338,17 +319,17 @@ namespace gui {
         ButtonToggleAtom
      */
     
-    ButtonToggleAtom::ButtonToggleAtom() : UIAtom(), imageOn(NULL), imageOff(NULL) {}
+    ButtonToggleAtom::ButtonToggleAtom() : UIAtom(), imageOn(NULL), imageOff(NULL), colour() {}
     
-    ButtonToggleAtom::ButtonToggleAtom(FuncGetterBool _getBool, FuncSetterBool _setBool, const ArgonImage &_imageOn, const ArgonImage &_imageOff, double x, double y, double width, double height)
-        : UIAtom(x, y, width, height), getBool(_getBool), setBool(_setBool), imageOn(&_imageOn), imageOff(&_imageOff) {}
+    ButtonToggleAtom::ButtonToggleAtom(FuncGetterBool _getBool, FuncSetterBool _setBool, const ArgonImage &_imageOn, const ArgonImage &_imageOff, union colour _colour, double x, double y, double width, double height)
+        : UIAtom(x, y, width, height), getBool(_getBool), setBool(_setBool), imageOn(&_imageOn), imageOff(&_imageOff), colour(_colour) {}
     
     // render button image based on the value of getBool
     void ButtonToggleAtom::render() {
         if (getBool()) {
-            if (imageOn)  {  imageOn->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
+            if (imageOn)  {  imageOn->draw(bounds.left, bounds.top, bounds.width(), bounds.height(), colour); }
         } else {
-            if (imageOff) { imageOff->draw(bounds.left, bounds.top, bounds.width(), bounds.height()); }
+            if (imageOff) { imageOff->draw(bounds.left, bounds.top, bounds.width(), bounds.height(), colour); }
         }
     }
     
@@ -381,7 +362,6 @@ namespace gui {
         for (int i = 0; i < options.size(); i++) {
             
             if (i != selectedOption) {
-                ofDrawRectangle(bounds.left, options[i]->getRect().top, buttonWidth, buttonHeight);
                 drawRect(bounds.left, options[i]->getRect().top, buttonWidth, buttonHeight, DEFAULT_COLOR);
                 options[i]->draw();
             }
@@ -389,7 +369,6 @@ namespace gui {
         }
         
         if (selectedOption > -1) {
-            ofDrawRectangle(bounds.left, options[selectedOption]->getRect().top, buttonWidth, buttonHeight);
             drawRect(bounds.left, options[selectedOption]->getRect().top, buttonWidth, buttonHeight, HIGHLIGHT_COLOR);
             options[selectedOption]->draw();
         }

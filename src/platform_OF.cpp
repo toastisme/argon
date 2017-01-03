@@ -50,7 +50,10 @@ double ArgonImage::getHeight() const { return ((ofImage *)base)->getHeight(); }
 void ArgonImage::draw(double x, double y, double width, double height) const {
     ((ofImage *)base)->draw(x, y, width, height);
 }
-
+void ArgonImage::draw(double x, double y, double width, double height, colour _colour) const {
+    ofSetColor(ofConvertColour(_colour));
+    ((ofImage *)base)->draw(x, y, width, height);
+}
 /*
     ArgonFont
  */
@@ -68,19 +71,24 @@ double ArgonFont::stringWidth(std::string &_string) const{return ((ofTrueTypeFon
 
 double ArgonFont::getLineHeight() const{return ((ofTrueTypeFont *)base)->getLineHeight();}
 
-
 void ArgonFont::drawString(const std::string &_string, double x0, double y0, colour _colour) const {
     ofSetColor(ofConvertColour(_colour));
     ((ofTrueTypeFont *)base)->drawString(_string, x0, y0);}
 
 /*
- polyline
+ polyline functions
  */
 
 polyline::polyline(){base = new ofPolyline(); }
 polyline::~polyline(){delete (ofPolyline *)base; }
 
 void polyline::addVertex(float x, float y){((ofPolyline *)base)->addVertex(x, y);}
+std::vector<vector3> polyline::getVertices(){
+    std::vector<vector3> vertices;
+    for (int i=0; i<((ofPolyline *)base)->getVertices().size(); i++){
+        ofPoint vertex = ((ofPolyline *)base)->getVertices().at(i);
+        vertices.push_back(vector3(vertex.x, vertex.y, vertex.z));}
+    return vertices;}
 void polyline::lineTo(float x, float y){((ofPolyline *)base)->lineTo(x, y);}
 void polyline::draw(){((ofPolyline *)base)->draw();}
 void polyline::draw(colour _colour, float _lineWdith){ofSetColor(ofConvertColour(_colour)); ofSetLineWidth(_lineWdith); ((ofPolyline *)base)->draw();}
@@ -95,6 +103,46 @@ void polyline::arc(const coord &point, float rx, float ry, float angleBegin, flo
 }
 void polyline::arc(float x, float y, float rx, float ry, float angleBegin, float angleEnd, int circleResolution){
     ((ofPolyline *)base)->arc(x, y, rx, ry, angleBegin, angleEnd, circleResolution);
+}
+
+/*
+ mesh functions
+ */
+
+
+mesh::mesh(){base = new ofMesh();}
+mesh::~mesh(){delete (ofMesh *)base;}
+
+void mesh::setMode(primitiveMode _primitiveMode) const {
+    ofPrimitiveMode mode;
+    
+    switch (_primitiveMode) {
+        case GL_PRIMITIVE_TRIANGLES:                {mode =  OF_PRIMITIVE_TRIANGLES;} break;
+        case GL_PRIMITIVE_TRIANGLE_STRIP:           {mode = OF_PRIMITIVE_TRIANGLE_STRIP;} break;
+        case GL_PRIMITIVE_TRIANGLE_FAN:             {mode = OF_PRIMITIVE_TRIANGLE_FAN;} break;
+        case GL_PRIMITIVE_LINES:                    {mode = OF_PRIMITIVE_LINES; } break;
+        case GL_PRIMITIVE_LINE_STRIP:               {mode = OF_PRIMITIVE_LINE_STRIP;} break;
+        case GL_PRIMITIVE_LINE_LOOP:                {mode = OF_PRIMITIVE_LINE_LOOP;} break;
+        case GL_PRIMITIVE_POINTS:                   {mode = OF_PRIMITIVE_POINTS;} break;
+        case GL_PRIMITIVE_LINES_ADJACENCY:          {mode = OF_PRIMITIVE_LINES_ADJACENCY;} break;
+        case GL_PRIMITIVE_LINE_STRIP_ADJACENCY:     {mode = OF_PRIMITIVE_LINE_STRIP_ADJACENCY;} break;
+        case GL_PRIMITIVE_TRIANGLES_ADJACENCY:      {mode = OF_PRIMITIVE_TRIANGLES_ADJACENCY;} break;
+        case GL_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY: {mode = OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY;} break;
+        case GL_PRIMITIVE_PATCHES:                  {mode = OF_PRIMITIVE_PATCHES;} break;
+        default:                                    {mode = OF_PRIMITIVE_TRIANGLES;} break;
+    }
+    
+    ((ofMesh *)base)->setMode(mode);
+}
+
+void mesh::addVertex(float x, float y, float z){
+    ofVec3f v;
+    v.set(x, y, z);
+    ((ofMesh *)base)->addVertex(v);
+}
+void mesh::draw(colour _colour){
+    ofSetColor(ofConvertColour(_colour));
+    ((ofMesh *)base)->draw();
 }
 
 
