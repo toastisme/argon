@@ -25,6 +25,8 @@
 #include "gui_derived.hpp"
 #include <cmath>
 
+#include "ofMain.h"
+
 // implements SystemAtom, EnergyGraphAtom, GaussianAtom, GaussianContainer
 
 namespace gui {
@@ -40,7 +42,7 @@ namespace gui {
     
     void SystemAtom::render() {
         // Setup temporary placeholders
-        ofColor particleColor;
+        colour particleColor;
         coord tempVel;
         coord tempAcc;
         
@@ -56,31 +58,29 @@ namespace gui {
         ArgonImage* rightImage = inflictTorture ? &loganRight : &boatRight;
         
         double v_avg = theSystem.getVAvg(); // Get average velocity for scaling purposes
-        ofSetCircleResolution(20);
         
         // Draw all the particles and trails
         for (int i = 0; i < theSystem.getN(); ++i) {
             tempVel = theSystem.getVel(i);
             tempAcc = theSystem.getForce(i);
             
-            hue = ofMap(abs(tempVel.x) + abs(tempVel.y), 0, 3 * v_avg, 170, 210, true);
-            particleColor.setHsb(hue, 255, 255);
+            hue = util::map(fabs(tempVel.x) + fabs(tempVel.y), 0, 3 * v_avg, 170, 210, true);
+            particleColor.setHSB(hue, 255, 255);
             
-            radius_x = ofMap(log(1.0 + abs(tempAcc.x)), 0, 10, 10, 25);
-            radius_y = ofMap(log(1.0 + abs(tempAcc.y)), 0, 10, 10, 25);
+            radius_x = util::map(log(1.0 + fabs(tempAcc.x)), 0, 10, 10, 25);
+            radius_y = util::map(log(1.0 + fabs(tempAcc.y)), 0, 10, 10, 25);
             radius = (radius_x + radius_y) / 2;
             
             if (inflictTorture || setSail) {
-                ofSetColor(particleColor);
                 coord screenpos = util::bimap(theSystem.getPos(i), theSystem.getBox(), windowSize());
                 rect drawpos;
                 drawpos.setXYWH(screenpos.x - loganShiftx, screenpos.y - loganShifty, radius_x * 4, radius_y * 4);
                 if (tempVel.x >= 0)
                     //rightImage->draw(box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
-                    rightImage->draw(drawpos);
+                    rightImage->draw(drawpos, particleColor);
                 else
                     //leftImage->draw( box2screen(pos.x, pos.y, loganShiftx, loganShifty, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 4, radius_y * 4);
-                    leftImage->draw(drawpos);
+                    leftImage->draw(drawpos, particleColor);
             } else {
                 //trail
                 if (theSystem.getNPrevPos() >= 15) {
@@ -111,26 +111,15 @@ namespace gui {
      Optional: set the colour before drawing
      Optional: draws the particle with position nframes frames in the past
      */
-    void SystemAtom::drawParticle(int index, double radius_x, double radius_y, ofColor color, int nframes) {
-        ofSetColor(color);
-        drawParticle(index, radius_x, radius_y, nframes);
-    }
-    
-    void SystemAtom::drawParticle(int index, double radius, ofColor color, int nframes) {
-        ofSetColor(color);
-        drawParticle(index, radius, nframes);
-    }
-    
-    void SystemAtom::drawParticle(int index, double radius_x, double radius_y, int nframes) {
+    void SystemAtom::drawParticle(int index, double radius_x, double radius_y, colour colour, int nframes, int resolution) {
         coord screenpos = util::bimap(theSystem.getPos(index, nframes), theSystem.getBox(), windowSize());
-        ofDrawEllipse(screenpos.x, screenpos.y, radius_x * 2, radius_y * 2);
-        //ofDrawEllipse(box2screen(pos.x, pos.y, 0.0, 0.0, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius_x * 2, radius_y * 2);
+        drawEllipse(screenpos.x, screenpos.y, radius_x * 2, radius_y * 2, colour, resolution);
+
     }
     
-    void SystemAtom::drawParticle(int index, double radius, int nframes) {
+    void SystemAtom::drawParticle(int index, double radius, colour colour, int nframes, int resolution) {
         coord screenpos = util::bimap(theSystem.getPos(index, nframes), theSystem.getBox(), windowSize());
-        ofDrawCircle(screenpos.x, screenpos.y, radius);
-        //ofDrawCircle(box2screen(pos.x, pos.y, 0.0, 0.0, ofGetWidth(), ofGetHeight(), theSystem.getWidth(), theSystem.getHeight()), radius);
+        drawCircle(screenpos.x, screenpos.y, radius, colour, resolution);
     }
 
     void SystemAtom::toggleTheHorrors() {
@@ -176,13 +165,13 @@ namespace gui {
         energySpace.setLRTB(0, 119, top, bottom); // 119 is max number of energy points - 1
         
         coord point;
-        ofPolyline Ekin, Epot;
+        polyline Ekin, Epot;
         for (int i = 0; i < numPoints; ++i) {
             point = {(double)i, theSystem.getPreviousEkin(i)};
             point = util::bimap(point, energySpace, bounds);
             Ekin.addVertex(point.x, point.y);
             
-            ofSetColor(255, 255, 255);
+            //ofSetColor(255, 255, 255); not sure if this does anything..but commenting out for now in case it does
             point = {(double)i, theSystem.getPreviousEpot(i)};
             point = util::bimap(point, energySpace, bounds);
             Epot.addVertex(point.x, point.y);
@@ -195,21 +184,16 @@ namespace gui {
         double yEnergy = ceil(bottom / tickSpacing) * tickSpacing;
         double yScreen;
         
-        ofSetLineWidth(1);
-        ofSetColor(60, 60, 60);
         while (true) {
-            yScreen = round(ofMap(yEnergy, energySpace.bottom, energySpace.top, bounds.bottom, bounds.top));
-            ofDrawLine(bounds.left, yScreen, bounds.right, yScreen);
+            yScreen = round(util::map(yEnergy, energySpace.bottom, energySpace.top, bounds.bottom, bounds.top));
+            drawLine(bounds.left, yScreen, bounds.right, yScreen, 1, colour(60, 60, 60));
             yEnergy += tickSpacing;
             if (yEnergy > energySpace.top) { break; }
         }
         
         // plot energies
-        ofSetLineWidth(2);
-        ofSetColor(200, 0, 0);
-        Ekin.draw();
-        ofSetColor(255, 255, 255);
-        Epot.draw();
+        Ekin.draw(colour(200, 0, 0), 2);
+        Epot.draw(colour(255, 255, 255), 2);
     }
     
     /*
@@ -223,9 +207,6 @@ namespace gui {
          Draws the Maxwell-Boltzmann distribution.
          */
         
-        //ofSetColor(80, 80, 80, 80);
-        //ofDrawRectangle(bounds.ofRect());
-        
         double maxSpeed = 10;
         
         rect maxwellSpace;
@@ -237,7 +218,7 @@ namespace gui {
         }
         
         coord point;
-        ofPolyline MBcurve;
+        polyline MBcurve;
         MBcurve.addVertex(bounds.left, bounds.bottom);
         double currMaxHeight = 0.0;
         
@@ -257,21 +238,17 @@ namespace gui {
         
         maxHeight = currMaxHeight > 0.1 ? currMaxHeight : 0.1;
         
-        glScissor(bounds.left, ofGetHeight() - 1 - bounds.bottom, bounds.width(), bounds.height() + 2);
+        glScissor(bounds.left, windowHeight() - 1 - bounds.bottom, bounds.width(), bounds.height() + 2);
         glEnable(GL_SCISSOR_TEST);
         
         // draw tick lines
-        ofSetLineWidth(1);
-        ofSetColor(60, 60, 60);
         for (int i = 0; i < 5; ++i) {
             int height = bounds.top + bounds.height() * i / 4;
-            ofDrawLine(bounds.left, height, bounds.right, height);
+            drawLine(bounds.left, height, bounds.right, height, 1, colour(60, 60, 60));
         }
         
         // plot energies
-        ofSetLineWidth(2);
-        ofSetColor(255, 255, 255);
-        MBcurve.draw();
+        MBcurve.draw(colour(255, 255, 255), 2);
         
         glDisable(GL_SCISSOR_TEST);
     }
@@ -280,7 +257,7 @@ namespace gui {
     /*
         GaussianAtom
      */
-    GaussianAtom::GaussianAtom(md::MDContainer& _theSystem, ofImage& _circGradient, int _gaussianID, ArgonFont* uiFont10, ofImage* closeButton, ofImage* audioOnButton, ofImage* audioOffButton, int x, int y, double _radius) : theSystem(_theSystem), circGradient(_circGradient), gaussianID(_gaussianID), selected(false), radius(_radius), mouseFocus(false), audioOn(true),
+    GaussianAtom::GaussianAtom(md::MDContainer& _theSystem, ArgonImage& _circGradient, int _gaussianID, ArgonFont* uiFont10, ArgonImage* closeButton, ArgonImage* audioOnButton, ArgonImage* audioOffButton, int x, int y, double _radius) : theSystem(_theSystem), circGradient(_circGradient), gaussianID(_gaussianID), selected(false), radius(_radius), mouseFocus(false), audioOn(true),
         UIAtom(x - _radius, y - _radius, 2*_radius, 2*_radius)
     { }
 
@@ -300,11 +277,11 @@ namespace gui {
         double gy = g.getgey0();
         
         // Rescale between box size and window size
-        double xscale = ofGetWidth() / theSystem.getWidth();
-        double yscale = ofGetHeight() / theSystem.getHeight();
+        double xscale = windowWidth() / theSystem.getWidth();
+        double yscale = windowHeight() / theSystem.getHeight();
         
         // Determine the colour of the Gaussian, based on the amplitude
-        ofColor color;
+        colour colour;
         unsigned char hue = 200;
         unsigned char saturation = gA > 0 ? 255 : 0;
         unsigned char brightness = 180;
@@ -314,9 +291,8 @@ namespace gui {
             brightness = 255;
         }
         
-        color.setHsb(hue, saturation, brightness);
-        color.a = ofMap(abs(gA), 0, 50, 100, 255);
-        ofSetColor(color);
+        colour.setHSB(hue, saturation, brightness);
+        colour.a = util::map(fabs(gA), 0, 50, 100, 255);
         
         // Rescale the width and height of the Gaussian
         double scaleFactor = 2.5;
@@ -327,7 +303,7 @@ namespace gui {
         double y = gy * yscale - height / 2;
         
         // Draw as circGradient
-        circGradient.draw(x, y, width, height);
+        circGradient.draw(x, y, width, height, colour);
         
     }
     
@@ -335,8 +311,8 @@ namespace gui {
         
         // Rescale the (x, y) coordinates of the mouse input so that they
         // are within the dimensions of the box
-        double scaled_x = x * theSystem.getWidth()/ofGetWidth();
-        double scaled_y = y * theSystem.getHeight()/ofGetHeight();
+        double scaled_x = x * theSystem.getWidth()/windowWidth();
+        double scaled_y = y * theSystem.getHeight()/windowHeight();
         
         // Update position of Gaussian
         Gaussian& g = theSystem.getGaussian(gaussianID);
@@ -396,9 +372,9 @@ namespace gui {
         if ( mouseFocus ) {
             // if trying to move it off-screen, move it to the screen edge
             x = x < 0 ? 0 : x;
-            x = x > ofGetWidth() ? ofGetWidth() : x;
+            x = x > windowWidth() ? windowWidth() : x;
             y = y < 0 ? 0 : y;
-            y = y > ofGetHeight() ? ofGetHeight() : y;
+            y = y > windowHeight() ? windowHeight() : y;
             
             moveGaussian(x, y);
             retVal = true;
@@ -426,7 +402,7 @@ namespace gui {
         GaussianContainer 
      */
     
-    GaussianContainer::GaussianContainer(md::MDContainer& _system, ofImage& _circGradient, ArgonFont* _uiFont10, ofImage* _closeButton, ofImage* _audioOnButton, ofImage* _audioOffButton, double _radius, double x, double y, double width, double height) : system(_system), circGradient(_circGradient), uiFont10(_uiFont10), closeButton(_closeButton), audioOnButton(_audioOnButton), audioOffButton(_audioOffButton), radius(_radius), selectedGaussian(-1), UIContainer(x, y, width, height)
+    GaussianContainer::GaussianContainer(md::MDContainer& _system, ArgonImage& _circGradient, ArgonFont* _uiFont10, ArgonImage* _closeButton, ArgonImage* _audioOnButton, ArgonImage* _audioOffButton, double _radius, double x, double y, double width, double height) : system(_system), circGradient(_circGradient), uiFont10(_uiFont10), closeButton(_closeButton), audioOnButton(_audioOnButton), audioOffButton(_audioOffButton), radius(_radius), selectedGaussian(-1), UIContainer(x, y, width, height)
     { }
     
     // Work out if there is already a Gaussian near (x, y) to avoid putting them on top of one another
@@ -481,8 +457,8 @@ namespace gui {
                             }
                             // Rescale the (x, y) coordinates of the mouse input so that they
                             // are within the dimensions of the box
-                            double scaled_x = x * system.getWidth()/ofGetWidth();
-                            double scaled_y = y * system.getHeight()/ofGetHeight();
+                            double scaled_x = x * system.getWidth()/windowWidth();
+                            double scaled_y = y * system.getHeight()/windowHeight();
                             // Add the new Gaussian to the system
                             system.addGaussian(scaled_x, scaled_y);
                             

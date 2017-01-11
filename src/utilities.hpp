@@ -68,7 +68,7 @@ namespace util {
     std::vector <double> histogram(std::vector <double> &data, double min, double max, int bins);
 };
 
-ofMesh makeThickLine(ofPolyline& line, float widthSmooth);
+//ofMesh makeThickLine(ofPolyline& line, float widthSmooth);
 
 
 #endif /* utilities_hpp */

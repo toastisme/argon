@@ -78,48 +78,48 @@ namespace argon {
         ASSETS
      */
     
-    // these all need to become ArgonFonts
+    // Fonts
     ArgonFont uiFont14;
     ArgonFont uiFont12;
     ArgonFont uiFont10;
     ArgonFont aboutFont12;
     
-    // these all need to become ArgonImages
+    // Images
     ArgonImage splashScreen;
     ArgonImage boatLeft;
     ArgonImage boatRight;
     ArgonImage loganLeft;
     ArgonImage loganRight;
     ArgonImage argonLogo;
-    ofImage stargonautsLogo;
-    ofImage tmcsLogo;
-    ofImage circGradient;
+    ArgonImage stargonautsLogo;
+    ArgonImage tmcsLogo;
+    ArgonImage circGradient;
     
-    ofImage playButton;
-    ofImage pauseButton;
-    ofImage resetButton;
-    ofImage tutorialButton;
-    ofImage audioOnButton;
-    ofImage audioOffButton;
-    ofImage menuButton;
+    ArgonImage playButton;
+    ArgonImage pauseButton;
+    ArgonImage resetButton;
+    ArgonImage tutorialButton;
+    ArgonImage audioOnButton;
+    ArgonImage audioOffButton;
+    ArgonImage menuButton;
     
-    ofImage optionsButtonUp;
-    ofImage optionsButtonDown;
-    ofImage optionsEnergyButton;
-    ofImage optionsMainMenuButton;
-    ofImage optionsPotentialButton;
-    ofImage optionsControlsButton;
-    ofImage optionsAboutButton;
+    ArgonImage optionsButtonUp;
+    ArgonImage optionsButtonDown;
+    ArgonImage optionsEnergyButton;
+    ArgonImage optionsMainMenuButton;
+    ArgonImage optionsPotentialButton;
+    ArgonImage optionsControlsButton;
+    ArgonImage optionsAboutButton;
     
-    ofImage closeButton;
-    ofImage nextButton;
-    ofImage previousButton;
+    ArgonImage closeButton;
+    ArgonImage nextButton;
+    ArgonImage previousButton;
     
-    ofImage ljThumbnail;
-    ofImage squareThumbnail;
-    ofImage morseThumbnail;
-    ofImage customThumbnail;
-    ofImage resetSplinePointsButton;
+    ArgonImage ljThumbnail;
+    ArgonImage squareThumbnail;
+    ArgonImage morseThumbnail;
+    ArgonImage customThumbnail;
+    ArgonImage resetSplinePointsButton;
 }
 
 

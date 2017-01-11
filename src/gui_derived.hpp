@@ -47,7 +47,7 @@
  
     For example, the parameters for SliderConstructor (label + slider + value) are in the following order:
  
-        SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ArgonFont &font, const ofColor &colour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
+        SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ArgonFont &font, union colour &colour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double height);
  
         1. What:  label text, value to track (getter, setter, min, max)
         2. How:   font, colour, precision of value
@@ -81,19 +81,19 @@ namespace gui {
     private:
         std::string string;          // string to be drawn
         
-        const ArgonFont *font;       // pointer to font asset
-        ofColor colour;              // text colour
+        const ArgonFont *font;  // pointer to font asset
+        colour colour;              // text colour
         
     protected:
         TextComponent();
-        TextComponent(const std::string &string, const ArgonFont &font, const ofColor &colour);
+        TextComponent(const std::string &string, const ArgonFont &font, union colour &colour);
         
         // set the string either directly or by formatting a double into a string with precision decimal places
         void setString(const std::string &string);
         void setString(double value, int precision);
         
         // setters for colour and font of the drawn string
-        void setColour(const ofColor &colour);
+        void setColour(union colour &colour);
         void setFont(const ArgonFont &font);
         
         // render the string to the screen, align within a rectangle
@@ -106,75 +106,40 @@ namespace gui {
     /*
         Atoms
      */
-    
+    /*
     class SetColour : public UIAtom
     {
-        /*
+        
             UIAtom which doesn't draw anything, but sets the draw colour
-         */
+         
         
     private:
         virtual void render();   // call ofSetColor(colour);
-        ofColor colour;
+        colour colour;
         
     public:
         SetColour();
-        SetColour(const ofColor &colour);
+        SetColour(union colour &colour);
     };
-    
-    class RectAtom : public UIAtom
-    {
-        /*
-            UI Atom for a plain rectangle.
-         */
-        
-    private:
-        virtual void render();   // draw a rectangle of size bounds
-        ofColor colour;          // colour of rect
-        
-    public:
-        RectAtom();
-        RectAtom(const ofColor &colour, double x, double y, double width, double height);
-    };
-    
-    
-    // example of platform layer - with the idea that this will replace RectAtom eventually
-    class RectAtom2 : public UIAtom {
+    */
+    class RectAtom : public UIAtom {
     private:
         virtual void render();
         colour colour;
     public:
-        RectAtom2();
-        RectAtom2(union colour colour, double x, double y, double width, double height);
+        RectAtom();
+        RectAtom(union colour colour, double x, double y, double width, double height);
     };
     
     
-    class ImageAtom : public UIAtom
-    {
-        /*
-         UI Atom for an image
-         */
-        
-    private:
-        virtual void render();   // draws the image to the screen
-        
-        const ofImage *image;    // pointer to image asset
-        
-    public:
-        ImageAtom();
-        ImageAtom(const ofImage &image, double x, double y, double width, double height);
-        
-        // Override resize method so that button does not distort
-        virtual void resize(float xScale, float yScale);
-    };
-    
-    class ImageAtom2 : public UIAtom {
+    class ImageAtom : public UIAtom {
     private:
         virtual void render();
+        colour colour;
         const ArgonImage *image;
     public:
-        ImageAtom2();
-        ImageAtom2(const ArgonImage &image, double x, double y, double width, double height);
+        ImageAtom();
+        ImageAtom(const ArgonImage &image, double x, double y, double width, double height, union colour _colour);
         virtual void resize(float xScale, float yScale);
     };
 
@@ -191,7 +156,7 @@ namespace gui {
         
     public:
         TextAtom();
-        TextAtom(const std::string &string, const ArgonFont &font, const ofColor &colour, Position align, double x, double y, double width, double height);
+        TextAtom(const std::string &string, const ArgonFont &font, union colour &colour, Position align, double x, double y, double width, double height);
         
         void setText(const std::string &string);
     };
@@ -211,7 +176,7 @@ namespace gui {
         
     public:
         ValueAtom();
-        ValueAtom(FuncGetter getValue, int precision, const ArgonFont &font, const ofColor &colour, Position align, double x, double y, double width, double height);
+        ValueAtom(FuncGetter getValue, int precision, const ArgonFont &font, union colour &colour, Position align, double x, double y, double width, double height);
     };
     
     class SliderAtom : public UIAtom
@@ -245,11 +210,11 @@ namespace gui {
         bool mouseReleased(int x, int y, int button);
         
         static int BODY_HEIGHT;            // height of slider body (the background rectangle) - set to 10
-        static ofColor BODY_COLOR;         // colour of slider body - set to white (255, 255, 255)
+        static colour BODY_COLOR;         // colour of slider body - set to white (255, 255, 255)
         
         static int HANDLE_WIDTH;           // width of slider handle (the rectangle representing the position of the slider) - set to 7
         static int HANDLE_HEIGHT;          // height of slider handle - set to 20
-        static ofColor HANDLE_COLOR;       // colour of slider handle - set to grey (80, 80, 80)
+        static colour HANDLE_COLOR;       // colour of slider handle - set to grey (80, 80, 80)
     };
     
     class CircularSliderAtom : public SliderAtom
@@ -269,8 +234,8 @@ namespace gui {
     public:
         CircularSliderAtom(FuncGetter getValue, FuncSetter setValue, double min, double max, double x, double y, double radius);
         
-        static ofColor DEFAULT_COLOR;   // Color of `unslid' part of circle
-        static ofColor HIGHLIGHT_COLOR; // Color of `slid' part of circle
+        static colour DEFAULT_COLOR;   // Color of `unslid' part of circle
+        static colour HIGHLIGHT_COLOR; // Color of `slid' part of circle
         static float LINE_WIDTH; // Width of circle line
         
         void resize(float xScale, float yScale);
@@ -287,11 +252,13 @@ namespace gui {
         virtual void render();   // draws the button image to the screen
         
         FuncAction doAction;     // function (void -> void) called when the button is pressed
-        const ofImage *image;    // pointer to image asset
+        const ArgonImage *image;
+        // pointer to image asset
+        colour colour;
         
     public:
         ButtonAtom();
-        ButtonAtom(FuncAction doAction, const ofImage &image, double x, double y, double width, double height);
+        ButtonAtom(FuncAction doAction, const ArgonImage &image, union colour _colour, double x, double y, double width, double height);
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
@@ -312,12 +279,13 @@ namespace gui {
         FuncGetterBool getBool;    // getter function (void -> bool) for the boolean represented by the button
         FuncSetterBool setBool;    // setter function (bool -> void) for the boolean represented by the button
         
-        const ofImage *imageOn;    // pointer to 'on' image asset
-        const ofImage *imageOff;   // pointer to 'off' image asset
+        const ArgonImage *imageOn;    // pointer to 'on' image asset
+        const ArgonImage *imageOff;   // pointer to 'off' image asset
+        colour colour;
         
     public:
         ButtonToggleAtom();
-        ButtonToggleAtom(FuncGetterBool getBool, FuncSetterBool setBool, const ofImage &imageOn, const ofImage &imageOff, double x, double y, double width, double height);
+        ButtonToggleAtom(FuncGetterBool getBool, FuncSetterBool setBool, const ArgonImage &imageOn, const ArgonImage &imageOff, union colour _colour, double x, double y, double width, double height);
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
@@ -337,14 +305,14 @@ namespace gui {
         bool status;               // boolean for whether in the 'on' (true) or 'off' (false) state
         
         FuncAction doActionOn;     // function to call when clicked in 'on' state
-        const ofImage *imageOn;    // pointer to 'on' image asset
+        const ArgonImage *imageOn;    // pointer to 'on' image asset
         
         FuncAction doActionOff;    // function to call when clicked in 'off' state
-        const ofImage *imageOff;   // pointer to 'off' image asset
+        const ArgonImage *imageOff;   // pointer to 'off' image asset
         
     public:
         ButtonPairAtom();
-        ButtonPairAtom(FuncAction doActionOn, const ofImage &imageOn, FuncAction doActionOff, const ofImage &imageOff, double x, double y, double width, double height);
+        ButtonPairAtom(FuncAction doActionOn, const ArgonImage &imageOn, FuncAction doActionOff, const ArgonImage &imageOff, double x, double y, double width, double height);
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
@@ -360,7 +328,7 @@ namespace gui {
          */
     private:
         const ArgonFont *font;
-        ofColor textcolor;
+        colour textcolor;
         double buttonWidth, buttonHeight;
      
     protected:
@@ -371,7 +339,7 @@ namespace gui {
         std::vector<FuncAction> actions;
         
     public:
-        OptionsListAtom(const ArgonFont &font, const ofColor &textColour, double buttonWidth, double x, double y, double width, double height);
+        OptionsListAtom(const ArgonFont &font, union colour &textColour, double buttonWidth, double x, double y, double width, double height);
         ~OptionsListAtom();
         
         virtual void addOption(const std::string &label, FuncAction onSelect);
@@ -380,8 +348,8 @@ namespace gui {
         
         virtual void resize(float xScale, float yScale);
         
-        static ofColor DEFAULT_COLOR;
-        static ofColor HIGHLIGHT_COLOR;
+        static colour DEFAULT_COLOR;
+        static colour HIGHLIGHT_COLOR;
         static double OPTION_HEIGHT;
         
     };
@@ -403,7 +371,7 @@ namespace gui {
         
     public:
         
-        AtomsListAtom(const ArgonFont &font, const ofColor &textcolor, double x, double y, double optionsWidth, double widgetWidth, double height, double padding);
+        AtomsListAtom(const ArgonFont &font, union colour &textcolor, double x, double y, double optionsWidth, double widgetWidth, double height, double padding);
         ~AtomsListAtom();
         
         void addOption(const std::string &label, FuncAction doAction, UIBase *widget);
@@ -432,7 +400,7 @@ namespace gui {
         int resetPotentialIndex;    // index of a child UI container containing the reset custom spline points button
         
     public:
-        PotentialContainer(md::MDContainer &system, ArgonFont &uiFont12, ofImage &ljThumbnail, ofImage &squareThumbnail, ofImage &morseThumbnail, ofImage &customThumbnail, ofImage &resetButton);
+        PotentialContainer(md::MDContainer &system, ArgonFont &uiFont12, ArgonImage &ljThumbnail, ArgonImage &squareThumbnail, ArgonImage &morseThumbnail, ArgonImage &customThumbnail, ArgonImage &resetButton);
         
         // sets the potential, calling system.setPotential and setting things visible/invisible as needed
         void setPotential(Potential potential);
@@ -500,7 +468,7 @@ namespace gui {
     private:
         
         md::MDContainer& theSystem;
-        ofImage& circGradient;
+        ArgonImage& circGradient;
         
         int gaussianID;
         double radius;
@@ -514,7 +482,7 @@ namespace gui {
         void moveGaussian(double x, double y);
         
     public:
-        GaussianAtom( md::MDContainer& theSystem, ofImage& circGradient, int gaussianID, ArgonFont* uiFont10, ofImage* closeButton, ofImage* audioOnButton, ofImage* audioOffButton, int x, int y, double radius);
+        GaussianAtom( md::MDContainer& theSystem, ArgonImage& circGradient, int gaussianID, ArgonFont* uiFont10, ArgonImage* closeButton, ArgonImage* audioOnButton, ArgonImage* audioOffButton, int x, int y, double radius);
         
         // handle mouse events
         bool mousePressed(int x, int y, int button);
@@ -550,8 +518,8 @@ namespace gui {
         virtual void render();
         
         // Helper functions for drawing particles
-        void drawParticle(int index, double radius_x, double radius_y, ofColor color, int nframes = 0);
-        void drawParticle(int index, double radius, ofColor color, int nframes = 0);
+        void drawParticle(int index, double radius_x, double radius_y, colour color, int nframes = 0, int resolution = 20);
+        void drawParticle(int index, double radius, colour color, int nframes = 0, int resolution = 20);
         void drawParticle(int index, double radius_x, double radius_y, int nframes = 0);
         void drawParticle(int index, double radius, int nframes = 0);
         
@@ -608,7 +576,7 @@ namespace gui {
     public:
         SliderContainer();
         // a whole bunch of stuff to pass through to the individual elements
-        SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ArgonFont &font, const ofColor &textColour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double padding, double height);
+        SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ArgonFont &font, union colour &textColour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double padding, double height);
 
         static int PADDING;
     };
@@ -620,7 +588,7 @@ namespace gui {
          */
         
     public:
-        CircularSliderContainer(FuncGetter getValue, FuncSetter setValue, double min, double max, const ArgonFont &font, const ofColor &textColor, int precision, double x, double y, double sliderRadius, double valueWidth, double valueHeight, double padding);
+        CircularSliderContainer(FuncGetter getValue, FuncSetter setValue, double min, double max, const ArgonFont &font, union colour &textColor, int precision, double x, double y, double sliderRadius, double valueWidth, double valueHeight, double padding);
     };
     
     
@@ -675,13 +643,13 @@ namespace gui {
         
     private:
         md::MDContainer &system;
-        ofImage& circGradient;
+        ArgonImage& circGradient;
         
         // For Gaussian control panel
         ArgonFont* uiFont10;
-        ofImage* closeButton;
-        ofImage* audioOnButton;
-        ofImage* audioOffButton;
+        ArgonImage* closeButton;
+        ArgonImage* audioOnButton;
+        ArgonImage* audioOffButton;
         
         double radius;
         int selectedGaussian;
@@ -699,7 +667,7 @@ namespace gui {
         void selectGaussian(int id);
         
     public:
-        GaussianContainer(md::MDContainer& system, ofImage& circGradient, ArgonFont* uiFont10, ofImage* closeButton, ofImage* audioOnButton, ofImage* audioOffButton, double radius, double x, double y, double width, double height);
+        GaussianContainer(md::MDContainer& system, ArgonImage& circGradient, ArgonFont* uiFont10, ArgonImage* closeButton, ArgonImage* audioOnButton, ArgonImage* audioOffButton, double radius, double x, double y, double width, double height);
         
         // Returns true if mouse event caused Gaussians to be updated
         bool mousePressed(int x, int y, int button);
@@ -719,7 +687,7 @@ namespace gui {
     class TutorialContainer : public UIContainer
     {
     public:
-        TutorialContainer(int x, int y, int width, int height,ArgonFont &font, ofImage &nextButton, ofImage &previousButton, ofImage &closeButton, UIContainer &_tutorialUI, UIContainer &_tutorialHighlightUI, UIContainer &_tutorialBlockUI, md::MDContainer &system, UIContainer &_graphUI, UIContainer &_controlsUI, UIContainer &_potentialUI, UIContainer &_systemUI, int &_gaussianContainerIndex);
+        TutorialContainer(int x, int y, int width, int height, ArgonFont &font, ArgonImage &nextButton, ArgonImage &previousButton, ArgonImage &closeButton, UIContainer &_tutorialUI, UIContainer &_tutorialHighlightUI, UIContainer &_tutorialBlockUI, md::MDContainer &system, UIContainer &_graphUI, UIContainer &_controlsUI, UIContainer &_potentialUI, UIContainer &_systemUI, int &_gaussianContainerIndex);
         
         int tutorialCounter;
         int textBoxx;
@@ -732,9 +700,9 @@ namespace gui {
     
     protected:
         ArgonFont& aboutFont12;
-        ofImage& nextButton;
-        ofImage& previousButton;
-        ofImage& closeButton;
+        ArgonImage& nextButton;
+        ArgonImage& previousButton;
+        ArgonImage& closeButton;
         UIContainer& tutorialUI;
         UIContainer& tutorialHighlightUI;
         UIContainer& tutorialBlockUI;

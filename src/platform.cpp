@@ -23,7 +23,7 @@
  */
 
 #include "platform.hpp"
-#include <cmath>
+#include <math.h>
 
 /*
     coord
@@ -33,6 +33,11 @@ coord::coord() : x(0), y(0) {}
 coord::coord(double _x, double _y) : x(_x), y(_y) {}
 
 void coord::setXY(double _x, double _y) { x = _x; y = _y; }
+
+vector3::vector3() : x(0), y(0), z(0){}
+vector3::vector3(float _x, float _y, float _z){
+    x = _x; y = _y; z = _z;}
+
 
 /*
     colour
@@ -54,6 +59,7 @@ colour colour::fromName(COLOURNAME colourname) {
 }
 
 colour::colour() : r(0), g(0), b(0), a(255) {}
+
 colour::colour(unsigned char _r, unsigned char _g, unsigned char _b) : r(_r), g(_g), b(_b), a(255) {}
 colour::colour(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) : r(_r), g(_g), b(_b), a(_a) {}
 
@@ -61,10 +67,6 @@ void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b) { r = 
 void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) { r = _r; g = _g; b = _b; a = _a; }
 
 void colour::setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness) {
-    setHSB(hue, saturation, brightness, 255);
-}
-
-void colour::setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness, unsigned char _alpha) {
     // HSV algorithm from wikipedia: https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
     double S = saturation / 255.0;  // S in [0, 1]
     double V = brightness / 255.0;  // L in [0, 1]
@@ -91,6 +93,10 @@ void colour::setHSB(unsigned char hue, unsigned char saturation, unsigned char b
     r = 255 * R + 0.5;
     g = 255 * G + 0.5;
     b = 255 * B + 0.5;
+}
+
+void colour::setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness, unsigned char _alpha) {
+    setHSB(hue, saturation, brightness);
     a = _alpha;
 }
 
@@ -186,25 +192,22 @@ bool rect::inside(coord point) const {
 
 coord ArgonImage::getSize() const { return coord(getWidth(), getHeight()); }
 
+void ArgonImage::draw(double x, double y, double width, double height) const { draw(x, y, width, height, colour(255, 255, 255)); }
 void ArgonImage::draw(double x, double y, coord size) const { draw(x, y, size.x, size.y); }
+void ArgonImage::draw(double x, double y, coord size, colour _colour) const { draw(x, y, size.x, size.y, _colour); }
 void ArgonImage::draw(coord pos, double width, double height) const { draw(pos.x, pos.y, width, height); }
+void ArgonImage::draw(coord pos, double width, double height, colour _colour) const { draw(pos.x, pos.y, width, height, _colour); }
 void ArgonImage::draw(coord pos, coord size) const { draw(pos.x, pos.y, size.x, size.y); }
+void ArgonImage::draw(coord pos, coord size, colour _colour) const { draw(pos.x, pos.y, size.x, size.y, _colour); }
 void ArgonImage::draw(rect pos) const { draw(pos.left, pos.top, pos.width(), pos.height()); }
+void ArgonImage::draw(rect pos, colour _colour) const { draw(pos.left, pos.top, pos.width(), pos.height(), _colour); }
 
 /*
     ArgonFont
  */
 
 double ArgonFont::getLineHeight() const { return getAscenderHeight() - getDescenderHeight(); }
-//coord ArgonFont::getTextSize(const std::string &text) const { return coord(getTextWidth(text), getLineHeight()); }
-coord ArgonFont::getTextSize(const std::string &text) const {
-    coord size;
-    double asc = getAscenderHeight();
-    double dec = getDescenderHeight();
-    size.x = getTextWidth(text);
-    size.y = getLineHeight();
-    return size;
-}
+coord ArgonFont::getTextSize(const std::string &text) const { return coord(getTextWidth(text), getLineHeight()); }
 rect ArgonFont::getTextBounds(const std::string &text) const { return rect(coord(0, 0), getTextSize(text)); }
 
 void ArgonFont::drawText(coord pos, colour colour, const std::string &text) const {
@@ -278,3 +281,37 @@ void drawRect(rect r, colour colour) {
 coord windowSize()   { return coord(windowWidth(), windowHeight()); }
 rect  windowBounds() { return rect(coord(0, 0), windowSize()); }
 
+/*
+mesh makeThickLine(polyline& _line, float widthSmooth){
+    mesh meshy;
+    meshy.setMode(GL_PRIMITIVE_TRIANGLE_STRIP);
+    
+    float angleSmooth;
+    
+    for (int i = 0;  i < _line.getVertices().size(); i++){
+        
+        int me_m_one = i-1;
+        int me_p_one = i+1;
+        if (me_m_one < 0) me_m_one = 0;
+        if (me_p_one ==  _line.getVertices().size()) me_p_one =  _line.getVertices().size()-1;
+        
+        vector3 diff = _line.getVertices()[me_p_one] - _line.getVertices()[me_m_one];
+        float angle = atan2(diff.y, diff.x);
+        
+        if (i == 0) angleSmooth = angle;
+        else {
+            angleSmooth = ofLerpDegrees(angleSmooth, angle, 1.0);
+        }
+        
+        vector3 offset;
+        offset.x = cos(angleSmooth + PI/2) * widthSmooth;
+        offset.y = sin(angleSmooth + PI/2) * widthSmooth;
+        
+        meshy.addVertex(  _line.getVertices()[i] +  offset );
+        meshy.addVertex(  _line.getVertices()[i] -  offset );
+        
+    }
+    return meshy;
+}
+
+*/

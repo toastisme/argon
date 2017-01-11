@@ -26,6 +26,7 @@
 #define platform_hpp
 
 #include <string>
+#include <vector>
 
 enum Position
 {
@@ -63,6 +64,15 @@ union coord
     
     void setXY(double x, double y);
 };
+/*
+ vector3 contains three floats. Used as a replacement for ofPoint
+ */
+
+struct vector3{
+    float x, y, z;
+    vector3();
+    vector3(float x, float y, float z);
+};
 
 enum COLOURNAME {
     /*
@@ -93,7 +103,7 @@ enum COLOURNAME {
 union colour
 {
     struct {
-        unsigned char r, g, b, a;
+        unsigned char r, g, b, a, hue, saturation, brightness;
     };
     struct {
         union {
@@ -115,7 +125,6 @@ union colour
     void setRGB(unsigned char red, unsigned char green, unsigned char blue);
     void setRGB(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
     
-    // YET TO BE IMPLEMENTED
     void setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness);
     void setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness, unsigned char alpha);
 };
@@ -181,7 +190,24 @@ union rect
     bool inside(coord point) const;
 };
 
+//enums for the openGL primitive modes used by mesh objects
 
+enum primitiveMode{
+    GL_PRIMITIVE_TRIANGLES,
+    GL_PRIMITIVE_TRIANGLE_STRIP,
+    GL_PRIMITIVE_TRIANGLE_FAN,
+    GL_PRIMITIVE_LINES,
+    GL_PRIMITIVE_LINE_STRIP,
+    GL_PRIMITIVE_LINE_LOOP,
+    GL_PRIMITIVE_POINTS,
+#ifndef TARGET_OPENGLES
+    GL_PRIMITIVE_LINES_ADJACENCY,
+    GL_PRIMITIVE_LINE_STRIP_ADJACENCY,
+    GL_PRIMITIVE_TRIANGLES_ADJACENCY,
+    GL_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY,
+    GL_PRIMITIVE_PATCHES
+#endif
+};
 
 /*
     Classes for images and fonts
@@ -201,14 +227,19 @@ public:
     void loadPNG(const std::string &filename);                          // load a PNG file
     double getWidth() const;                                            // return image width
     double getHeight() const;                                           // return image height
-    void draw(double x, double y, double width, double height) const;   // draw image to screen
-   
-    // the rest are implemented in platform.cpp as calls to the above four functions:
+    void draw(double x, double y, double width, double height, colour _colour) const;
+    
+    // the rest is implemented in platform.cpp as calls to the above five functions
     coord getSize() const;
+    void draw(double x, double y, double width, double height) const;   // draw image to screen
     void draw(double x, double y, coord size) const;
+    void draw(double x, double y, coord size, colour _colour) const;
     void draw(coord size, double width, double height) const;
+    void draw(coord size, double width, double height, colour _colour) const;
     void draw(coord pos, coord size) const;
+    void draw(coord pos, coord size, colour _colour) const;
     void draw(rect pos) const;
+    void draw(rect pos, colour _colour) const;
 };
 
 class ArgonFont {
@@ -240,6 +271,35 @@ public:
     void drawText(coord pos, Position anchor, colour colour, const std::string &text) const;
 };
 
+class polyline{
+private:
+    void *base;
+public:
+    polyline();
+    ~polyline();
+    void addVertex(float x, float y);
+    std::vector<vector3> getVertices();
+    void lineTo(float x, float y);
+    void arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, int circleResolution = 20);
+    void arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, bool blockwise, int circleResolution = 20);
+    void arc(float x, float y, float rx, float ry, float angleBegin, float angleEnd, int circleResolution = 20);
+    void draw();
+    void draw(colour _colour, float _lineWidth);
+};
+
+class mesh{
+
+public:
+    void *base;
+    mesh();
+    ~mesh();
+    void setMode(primitiveMode _primitiveMode) const;
+    void addVertex(float x, float y, float z);
+    void draw(colour _colour);
+    void makeThickLine(polyline &_line, float widthSmooth);
+};
+
+
 /*
     Mic input functions
  */
@@ -256,14 +316,16 @@ void toggleMicActive();
  */
 
 // only need to implement the first of these in the platform-specific file
-void drawLine(double x0, double y0, double x1, double y1, double width, colour colour);
+void drawLine(double x0, double y0, double x1, double y1, double width, colour _colour);
 void drawLine(coord start, coord end, double width, colour colour);
 // ...and more overloads for convenience
 
 // again, only need to implement the first of these in platform_OF.hpp
-void drawRect(double x0, double y0, double x1, double y1, colour colour);
+void drawRect(double x0, double y0, double x1, double y1, colour _colour);
 void drawRect(rect r, colour colour);
 // ...and more overloads for convenience
+void drawCircle(double x, double y, double r, colour _colour, int resolution);
+void drawEllipse(double x, double y, double rx, double ry, colour _colour, int resolution);
 
 /*
     Other functions

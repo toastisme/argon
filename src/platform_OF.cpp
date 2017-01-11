@@ -47,8 +47,8 @@ ArgonImage::~ArgonImage() { delete (ofImage *)base; }
 void ArgonImage::loadPNG(const string &filename) { ((ofImage *)base)->load(filename); }
 double ArgonImage::getWidth()  const { return ((ofImage *)base)->getWidth();  }
 double ArgonImage::getHeight() const { return ((ofImage *)base)->getHeight(); }
-void ArgonImage::draw(double x, double y, double width, double height) const {
-    ofSetColor(255, 255, 255);
+void ArgonImage::draw(double x, double y, double width, double height, colour _colour) const {
+    ofSetColor(ofConvertColour(_colour));
     ((ofImage *)base)->draw(x, y, width, height);
 }
 
@@ -68,20 +68,102 @@ void ArgonFont::drawText(double x, double y, colour colour, const std::string &t
     ((ofTrueTypeFont *)base)->drawString(text, x, y);
 }
 
+/*
+ polyline functions
+ */
+
+polyline::polyline()  { base = new ofPolyline(); }
+polyline::~polyline() { delete (ofPolyline *)base; }
+
+void polyline::addVertex(float x, float y){((ofPolyline *)base)->addVertex(x, y);}
+std::vector<vector3> polyline::getVertices(){
+    std::vector<vector3> vertices;
+    for (int i=0; i<((ofPolyline *)base)->getVertices().size(); i++){
+        ofPoint vertex = ((ofPolyline *)base)->getVertices().at(i);
+        vertices.push_back(vector3(vertex.x, vertex.y, vertex.z));}
+    return vertices;}
+void polyline::lineTo(float x, float y){((ofPolyline *)base)->lineTo(x, y);}
+void polyline::draw(){((ofPolyline *)base)->draw();}
+void polyline::draw(colour _colour, float _lineWdith){ofSetColor(ofConvertColour(_colour)); ofSetLineWidth(_lineWdith); ((ofPolyline *)base)->draw();}
+
+void polyline::arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, int circleResolution){
+    ofPoint _ofPoint(point.x, point.y);
+    ((ofPolyline *)base)->arc(_ofPoint, rx, ry, angleBegin, angleEnd, circleResolution);
+}
+void polyline::arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, bool blockwise, int circleResolution){
+    ofPoint _ofPoint(point.x, point.y);
+    ((ofPolyline *)base)->arc(_ofPoint, rx, ry, angleBegin, angleEnd, blockwise, circleResolution);
+}
+void polyline::arc(float x, float y, float rx, float ry, float angleBegin, float angleEnd, int circleResolution){
+    ((ofPolyline *)base)->arc(x, y, rx, ry, angleBegin, angleEnd, circleResolution);
+}
+
+/*
+ mesh functions
+ */
+
+
+mesh::mesh(){base = new ofMesh();}
+mesh::~mesh(){delete (ofMesh *)base;}
+
+void mesh::setMode(primitiveMode _primitiveMode) const {
+    ofPrimitiveMode mode;
+    
+    switch (_primitiveMode) {
+        case GL_PRIMITIVE_TRIANGLES:                {mode = OF_PRIMITIVE_TRIANGLES;} break;
+        case GL_PRIMITIVE_TRIANGLE_STRIP:           {mode = OF_PRIMITIVE_TRIANGLE_STRIP;} break;
+        case GL_PRIMITIVE_TRIANGLE_FAN:             {mode = OF_PRIMITIVE_TRIANGLE_FAN;} break;
+        case GL_PRIMITIVE_LINES:                    {mode = OF_PRIMITIVE_LINES; } break;
+        case GL_PRIMITIVE_LINE_STRIP:               {mode = OF_PRIMITIVE_LINE_STRIP;} break;
+        case GL_PRIMITIVE_LINE_LOOP:                {mode = OF_PRIMITIVE_LINE_LOOP;} break;
+        case GL_PRIMITIVE_POINTS:                   {mode = OF_PRIMITIVE_POINTS;} break;
+        case GL_PRIMITIVE_LINES_ADJACENCY:          {mode = OF_PRIMITIVE_LINES_ADJACENCY;} break;
+        case GL_PRIMITIVE_LINE_STRIP_ADJACENCY:     {mode = OF_PRIMITIVE_LINE_STRIP_ADJACENCY;} break;
+        case GL_PRIMITIVE_TRIANGLES_ADJACENCY:      {mode = OF_PRIMITIVE_TRIANGLES_ADJACENCY;} break;
+        case GL_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY: {mode = OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY;} break;
+        case GL_PRIMITIVE_PATCHES:                  {mode = OF_PRIMITIVE_PATCHES;} break;
+        default:                                    {mode = OF_PRIMITIVE_TRIANGLES;} break;
+    }
+    
+    ((ofMesh *)base)->setMode(mode);
+}
+
+void mesh::addVertex(float x, float y, float z){
+    ofVec3f v;
+    v.set(x, y, z);
+    ((ofMesh *)base)->addVertex(v);
+}
+void mesh::draw(colour _colour){
+    ofSetColor(ofConvertColour(_colour));
+    ((ofMesh *)base)->draw();
+}
+
 
 /*
     Drawing functions
  */
 
-void drawLine(double x0, double y0, double x1, double y1, double width, colour colour) {
-    ofSetColor(ofConvertColour(colour));
+void drawLine(double x0, double y0, double x1, double y1, double width, colour _colour) {
+    ofSetColor(ofConvertColour(_colour));
     ofSetLineWidth(width);
     ofDrawLine(x0, y0, x1, y1);
 }
 
-void drawRect(double x0, double y0, double x1, double y1, colour colour) {
-    ofSetColor(ofConvertColour(colour));
-    ofDrawRectangle(x0, y0, x1 - x0, y1 - y0);
+void drawRect(double x0, double y0, double width, double height, colour _colour) {
+    ofSetColor(ofConvertColour(_colour));
+    ofDrawRectangle(x0, y0, width, height);
+}
+
+void drawCircle(double x, double y, double r, colour _colour, int resolution){
+    ofSetColor(ofConvertColour(_colour));
+    ofSetCircleResolution(resolution);
+    ofDrawCircle(x, y, r);
+}
+
+void drawEllipse(double x, double y, double rx, double ry, colour _colour, int resolution){
+    ofSetColor(ofConvertColour(_colour));
+    ofSetCircleResolution(resolution);
+    ofDrawEllipse(x, y, rx, ry);
 }
 
 int windowWidth()  { return ofGetWidth();  }
