@@ -271,7 +271,7 @@ void drawLine(coord start, coord end, double width, colour colour) {
  */
 
 void drawRect(rect r, colour colour) {
-    drawRect(r.left, r.top, r.right, r.bottom, colour);
+    drawRect(r.left, r.top, r.width(), r.height(), colour);
 }
 
 /*

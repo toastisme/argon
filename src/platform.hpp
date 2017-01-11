@@ -321,7 +321,7 @@ void drawLine(coord start, coord end, double width, colour colour);
 // ...and more overloads for convenience
 
 // again, only need to implement the first of these in platform_OF.hpp
-void drawRect(double x0, double y0, double x1, double y1, colour _colour);
+void drawRect(double x, double y, double width, double height, colour _colour);
 void drawRect(rect r, colour colour);
 // ...and more overloads for convenience
 void drawCircle(double x, double y, double r, colour _colour, int resolution);
