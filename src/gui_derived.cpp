@@ -238,33 +238,42 @@ namespace gui {
     }
 
     void CircularSliderAtom::render() {
-        /*
         // centre point of circle
         coord centre(bounds.centreX(), bounds.bottom);
-                
         float sliderPos = getSliderPos();
         
-        // draw circle sections
-        polyline highlightPath, defaultPath, maskingPath;
+        int precision = 50; // number of segments to draw in arc
+        int pos = roundf(util::map(sliderPos, 0, 180, 0, precision));
         
-        if (sliderPos == 0) {
-            defaultPath.arc(centre, radius, radius, 180, 360, true, 50);
-        } else if (sliderPos == 180) { // So that it doesn't glitch at 180 degrees
-            highlightPath.arc(centre, radius, radius, 180, 360, true, 50);
-        } else {
-            defaultPath.arc(centre, radius, radius, 180 + sliderPos, 360, true, 50);
-            highlightPath.arc(centre, radius, radius, 180, 180 + sliderPos, true, 50);
+        // create meshes for the filled and empty regions of the slider
+        ArgonMesh filledMesh, emptyMesh;
+        
+        for (int i = 0; i <= pos; ++i) {
+            float theta = 3.14159265f * (i / float(precision) - 1);
+            
+            float x = centre.x + (radius - LINE_WIDTH) * cosf(theta);
+            float y = centre.y + (radius - LINE_WIDTH) * sinf(theta);
+            filledMesh.addVertex(x, y);
+            
+            x = centre.x + (radius + LINE_WIDTH) * cosf(theta);
+            y = centre.y + (radius + LINE_WIDTH) * sinf(theta);
+            filledMesh.addVertex(x, y);
         }
-    
-        // Turn the polylines into thick lines, 'cos openFrameworks sucks
-        //mesh defaultMesh = makeThickLine(defaultPath, LINE_WIDTH);
-        //mesh highlightMesh = makeThickLine(highlightPath, LINE_WIDTH);
         
-        //defaultMesh.draw(DEFAULT_COLOR);
-        //highlightMesh.draw(HIGHLIGHT_COLOR);
-         */
+        for (int i = pos; i <= precision; ++i) {
+            float theta = 3.14159265f * (i / float(precision) - 1);
+            
+            float x = centre.x + (radius - LINE_WIDTH) * cosf(theta);
+            float y = centre.y + (radius - LINE_WIDTH) * sinf(theta);
+            emptyMesh.addVertex(x, y);
+            
+            x = centre.x + (radius + LINE_WIDTH) * cosf(theta);
+            y = centre.y + (radius + LINE_WIDTH) * sinf(theta);
+            emptyMesh.addVertex(x, y);
+        }
         
-        
+        filledMesh.draw(HIGHLIGHT_COLOR, PRIMITIVE_TRIANGLE_STRIP);
+        emptyMesh.draw(DEFAULT_COLOR, PRIMITIVE_TRIANGLE_STRIP);
     }
     
     void CircularSliderAtom::resize(float xScale, float yScale) {

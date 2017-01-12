@@ -260,11 +260,16 @@ public:
 
 class ArgonMesh {
     // A class to emulate an OpenGL mesh
-    // Contains a public std::vector, so use all the usual push_back etc. methods to create a series of points
+    // Create a series of points using addVertex
     // Then draw them to the screen as an OpenGL primitive
-public:
+private:
     std::vector<coord> points;
-    void draw(RGB colour, primitiveMode primitive, double linewidth = 1);
+    
+public:
+    void draw(RGB colour, primitiveMode primitive, double linewidth = 1) const;
+    
+    void addVertex(double x, double y);
+    void addVertex(coord pos);
 };
 
 /*

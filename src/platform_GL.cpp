@@ -48,13 +48,13 @@ static int glColorRGB(RGB colour) {
     ArgonMesh
  */
 
-void ArgonMesh::draw(RGB colour, primitiveMode primitive, double linewidth) {
+void ArgonMesh::draw(RGB colour, primitiveMode primitive, double linewidth) const {
     glColorRGB(colour);                                 // set the colour
     glLineWidth(linewidth);                             // set the linewidth
     
     glEnableClientState(GL_VERTEX_ARRAY);               // ensure we can send OpenGL a vertex array
     glVertexPointer(2, GL_DOUBLE, 0, points.data());    // send the pointer to the array with two doubles per point and 0 padding
-    int prim = glArgonPrimitive(primitive);                // translate our primitive into an openGL primitive
+    int prim = glArgonPrimitive(primitive);             // translate our primitive into an openGL primitive
     glDrawArrays(prim, 0, points.size());               // pass the coordinates as a direct array to openGL
 }
 

@@ -208,6 +208,13 @@ void ArgonFont::drawText(coord pos, Position anchor, RGB colour, const std::stri
 }
 
 /*
+    ArgonMesh
+ */
+
+void ArgonMesh::addVertex(coord pos) { points.push_back(pos); }
+void ArgonMesh::addVertex(double x, double y) { addVertex(coord(x, y)); }
+
+/*
     Audio
  */
 
@@ -273,38 +280,3 @@ void setScissorClip(rect r) {
 
 coord windowSize()   { return coord(windowWidth(), windowHeight()); }
 rect  windowBounds() { return rect(coord(0, 0), windowSize()); }
-
-/*
-mesh makeThickLine(polyline& _line, float widthSmooth){
-    mesh meshy;
-    meshy.setMode(GL_PRIMITIVE_TRIANGLE_STRIP);
-    
-    float angleSmooth;
-    
-    for (int i = 0;  i < _line.getVertices().size(); i++){
-        
-        int me_m_one = i-1;
-        int me_p_one = i+1;
-        if (me_m_one < 0) me_m_one = 0;
-        if (me_p_one ==  _line.getVertices().size()) me_p_one =  _line.getVertices().size()-1;
-        
-        vector3 diff = _line.getVertices()[me_p_one] - _line.getVertices()[me_m_one];
-        float angle = atan2(diff.y, diff.x);
-        
-        if (i == 0) angleSmooth = angle;
-        else {
-            angleSmooth = ofLerpDegrees(angleSmooth, angle, 1.0);
-        }
-        
-        vector3 offset;
-        offset.x = cos(angleSmooth + PI/2) * widthSmooth;
-        offset.y = sin(angleSmooth + PI/2) * widthSmooth;
-        
-        meshy.addVertex(  _line.getVertices()[i] +  offset );
-        meshy.addVertex(  _line.getVertices()[i] -  offset );
-        
-    }
-    return meshy;
-}
-
-*/
