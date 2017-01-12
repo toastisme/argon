@@ -74,7 +74,7 @@ void drawLine(double x0, double y0, double x1, double y1, double width, RGB colo
 
 void drawRect(double x0, double y0, double width, double height, RGB colour) {
     glColorRGB(colour);
-    glRectd(x0, y0, x0 + width, y0 + width);
+    glRectd(x0, y0, x0 + width, y0 + height);
 }
 
 void drawCircle(double x, double y, double r, RGB colour, int resolution) {
