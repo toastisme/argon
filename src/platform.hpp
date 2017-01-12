@@ -273,39 +273,6 @@ public:
 };
 
 /*
-
-class polyline{
-private:
-    void *base;
-public:
-    polyline();
-    ~polyline();
-    void addVertex(float x, float y);
-    std::vector<vector3> getVertices();
-    void lineTo(float x, float y);
-    void arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, int circleResolution = 20);
-    void arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, bool blockwise, int circleResolution = 20);
-    void arc(float x, float y, float rx, float ry, float angleBegin, float angleEnd, int circleResolution = 20);
-    void draw();
-    void draw(RGB colour, float _lineWidth);
-};
-
-class mesh{
-
-public:
-    void *base;
-    mesh();
-    ~mesh();
-    void setMode(primitiveMode _primitiveMode) const;
-    void addVertex(float x, float y, float z);
-    void draw(RGB colour);
-    void makeThickLine(polyline &_line, float widthSmooth);
-};
- 
- */
-
-
-/*
     Mic input functions
  */
 
@@ -323,19 +290,19 @@ void toggleMicActive();
 // only need to implement the first of these in the platform-specific file
 void drawLine(double x0, double y0, double x1, double y1, double width, RGB colour);
 void drawLine(coord start, coord end, double width, RGB colour);
-// ...and more overloads for convenience
 
 // again, only need to implement the first of these in platform_OF.hpp
 void drawRect(double x, double y, double width, double height, RGB colour);
 void drawRect(rect r, RGB colour);
-// ...and more overloads for convenience
+
 void drawCircle(double x, double y, double r, RGB colour, int resolution);
 void drawEllipse(double x, double y, double rx, double ry, RGB colour, int resolution);
 
-// set a region to clip drawing to (basically just a call to glScissor)
+// set a region that restricts where the draw functions can draw
+// don't forget to call setScissorClip() with no arguments at the end to reset it!
 void setScissorClip(double x, double y, double width, double height);
 void setScissorClip(rect r);
-void setScissorClip(); // overload with no arguments is equivalent to disabling scissor test
+void setScissorClip(); // overload with no arguments disables the scissor clip
 
 /*
     Other functions

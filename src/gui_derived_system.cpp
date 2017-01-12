@@ -162,9 +162,8 @@ namespace gui {
         rect energySpace;
         energySpace.setLRTB(0, 119, top, bottom); // 119 is max number of energy points - 1
         
-        /*
         coord point;
-        polyline Ekin, Epot;
+        ArgonMesh Ekin, Epot;
         for (int i = 0; i < numPoints; ++i) {
             point = {(double)i, theSystem.getPreviousEkin(i)};
             point = util::bimap(point, energySpace, bounds);
@@ -175,7 +174,6 @@ namespace gui {
             point = util::bimap(point, energySpace, bounds);
             Epot.addVertex(point.x, point.y);
         }
-         */
        
         // draw tick lines
         // the log_2 scaling means that, if too many are drawn, it removes every second line
@@ -192,10 +190,8 @@ namespace gui {
         }
         
         // plot energies
-        /*
-        Ekin.draw(RGB(200, 0, 0), 2);
-        Epot.draw(RGB(255, 255, 255), 2);
-         */
+        Ekin.draw(RGB(200, 0, 0), PRIMITIVE_LINE_STRIP, 2);
+        Epot.draw(RGB(255, 255, 255), PRIMITIVE_LINE_STRIP, 2);
     }
     
     /*
@@ -209,7 +205,6 @@ namespace gui {
          Draws the Maxwell-Boltzmann distribution.
          */
         
-        /*
         double maxSpeed = 10;
         
         rect maxwellSpace;
@@ -221,7 +216,7 @@ namespace gui {
         }
         
         coord point;
-        polyline MBcurve;
+        ArgonMesh MBcurve;
         MBcurve.addVertex(bounds.left, bounds.bottom);
         double currMaxHeight = 0.0;
         
@@ -242,7 +237,6 @@ namespace gui {
         maxHeight = currMaxHeight > 0.1 ? currMaxHeight : 0.1;
         
         setScissorClip(bounds.left, windowHeight() - 1 - bounds.bottom, bounds.width(), bounds.height() + 2);
-        //glEnable(GL_SCISSOR_TEST);
         
         // draw tick lines
         for (int i = 0; i < 5; ++i) {
@@ -251,11 +245,9 @@ namespace gui {
         }
         
         // plot energies
-        MBcurve.draw(RGB(255, 255, 255), 2);
+        MBcurve.draw(RGB(255, 255, 255), PRIMITIVE_LINE_STRIP, 2);
         
         setScissorClip();
-        //glDisable(GL_SCISSOR_TEST);
-         */
     }
     
     
