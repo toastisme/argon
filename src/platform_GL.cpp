@@ -23,25 +23,28 @@
  */
 
 #include "platform.hpp"
+
+// include a file which
 #include "ofMain.h"
 
+// convert our primitive enum to the openGL primitive value
 static int glArgonPrimitive(primitiveMode primitive) {
     int glPrim;
     switch (primitive) {
-        case PRIMITIVE_POINTS:                   {glPrim = GL_POINTS;} break;
-        case PRIMITIVE_LINES:                    {glPrim = GL_LINES; } break;
-        case PRIMITIVE_LINE_STRIP:               {glPrim = GL_LINE_STRIP;} break;
-        case PRIMITIVE_LINE_LOOP:                {glPrim = GL_LINE_LOOP;} break;
-        case PRIMITIVE_TRIANGLES:                {glPrim = GL_TRIANGLES;} break;
-        case PRIMITIVE_TRIANGLE_STRIP:           {glPrim = GL_TRIANGLE_STRIP;} break;
-        case PRIMITIVE_TRIANGLE_FAN:             {glPrim = GL_TRIANGLE_FAN;} break;
-        default:                                 {glPrim = GL_POINTS;} break;
+        case PRIMITIVE_POINTS:         { glPrim = GL_POINTS;         } break;
+        case PRIMITIVE_LINES:          { glPrim = GL_LINES;          } break;
+        case PRIMITIVE_LINE_STRIP:     { glPrim = GL_LINE_STRIP;     } break;
+        case PRIMITIVE_LINE_LOOP:      { glPrim = GL_LINE_LOOP;      } break;
+        case PRIMITIVE_TRIANGLES:      { glPrim = GL_TRIANGLES;      } break;
+        case PRIMITIVE_TRIANGLE_STRIP: { glPrim = GL_TRIANGLE_STRIP; } break;
+        case PRIMITIVE_TRIANGLE_FAN:   { glPrim = GL_TRIANGLE_FAN;   } break;
+        default:                       { glPrim = GL_POINTS;         } break;
     }
     return glPrim;
 }
 
 static int glColorRGB(RGB colour) {
-    glColor4ub(colour.r, colour.g, colour.b, colour.a);
+    glColor4ub(colour.r, colour.g, colour.b, colour.a);     // set the openGL draw colour
 }
 
 /*
@@ -63,48 +66,50 @@ void ArgonMesh::draw(RGB colour, primitiveMode primitive, double linewidth) cons
  */
 
 void drawLine(double x0, double y0, double x1, double y1, double width, RGB colour) {
-    glColorRGB(colour);
-    glLineWidth(width);
+    glColorRGB(colour);     // set the draw colour
+    glLineWidth(width);     // set the line width
     
-    glBegin(GL_LINES);
+    glBegin(GL_LINES);      // draw a line from (x0, y0) to (x1, y1)
     glVertex2d(x0, y0);
     glVertex2d(x1, y1);
     glEnd();
 }
 
 void drawRect(double x0, double y0, double width, double height, RGB colour) {
-    glColorRGB(colour);
-    glRectd(x0, y0, x0 + width, y0 + height);
+    glColorRGB(colour);                         // set the draw colour
+    glRectd(x0, y0, x0 + width, y0 + height);   // draw the rectangle
 }
 
 
-void drawEllipse(double x, double y, double rx, double ry, RGB colour, int resolution){
+void drawEllipse(double x, double y, double rx, double ry, RGB colour, int resolution) {
     glColorRGB(colour);
     
+    // draw a polygon with (resolution) number of sides
     float theta = 2.0f * 3.14159265f / float(resolution);
     float cos_t = cosf(theta);
     float sin_t = sinf(theta);
     
-    float dx = 1;
+    float dx = 1;                               // (dx, dy) is a point on the outside of a unit circle
     float dy = 0;
     
     glBegin(GL_TRIANGLE_FAN);
-    glVertex2d(x, y);
-    for (int i = 0; i <= resolution; ++i) {
-        glVertex2f(x + rx * dx, y + ry * dy);
+    glVertex2d(x, y);                           // add point at centre of circle for triangles to fan out from
+    for (int i = 0; i < resolution; ++i) {
+        glVertex2f(x + rx * dx, y + ry * dy);   // scale dx and dy to ellipse size and add vertex on outside of circle
         
-        float temp = dx;
+        float temp = dx;                        // rotate dx about (0, 0) by angle theta
         dx = cos_t * dx   - sin_t * dy;
         dy = sin_t * temp + cos_t * dy;
     }
+    glVertex2d(x + rx, y);                      // add final point to complete circle
     glEnd();
 }
 
 void setScissorClip(double x, double y, double width, double height) {
-    glEnable(GL_SCISSOR_TEST);
-    glScissor(x, y, width, height);
+    glEnable(GL_SCISSOR_TEST);          // enable scissor clipping
+    glScissor(x, y, width, height);     // set scissor region to given rectangle
 }
 
 void setScissorClip() {
-    glDisable(GL_SCISSOR_TEST);
+    glDisable(GL_SCISSOR_TEST);         // if called with no arguments, disable scissor clipping
 }
