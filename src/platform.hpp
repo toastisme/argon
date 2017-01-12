@@ -74,33 +74,16 @@ struct vector3{
     vector3(float x, float y, float z);
 };
 
-enum COLOURNAME {
-    /*
-        Enum defining named colours. Their specific colour values are defined by the fromName
-        static method of colour, which converts this enum to a usable colour
-     */
-    
-    // standard pure colours
-    COL_WHITE, COL_BLACK,
-    COL_RED, COL_BLUE, COL_GREEN,
-    
-    COL_BG,             // transparent window backgrounds
-    COL_TEXT,           // off-white text colour
-    COL_BLUEHL,         // light blue highlight
-    COL_BLUEHL_DARK,    // darker blue highlight
-    COL_VIOLINGRAPH     // green violin graph colour
-};
-
 /*
- colour contains 4 unsigned chars, which are the red, green, blue and alpha components
+ RGB contains 4 unsigned chars, which are the red, green, blue and alpha components
  of the colour and can be referred to in the following ways:
-    colour.r, colour.g, colour.b, colour.a
-    colour.red, colour.green, colour.blue, colour.alpha
-    colour.rgb[0], colour.rgb[1], colour.rgb[2], colour.a
-    colour.rgba[0], colour.rgba[1], colour.rgba[2], colour.rgba[3]
+    RGB.r, RGB.g, RGB.b, RGB.a
+    RGB.red, RGB.green, RGB.blue, RGB.alpha
+    RGB.rgb[0], RGB.rgb[1], RGB.rgb[2], RGB.a
+    RGB.rgba[0], RGB.rgba[1], RGB.rgba[2], RGB.rgba[3]
  */
 
-union colour
+union RGB
 {
     struct {
         unsigned char r, g, b, a, hue, saturation, brightness;
@@ -116,11 +99,9 @@ union colour
     };
     unsigned char rgba[4];
     
-    static colour fromName(COLOURNAME colourname);
-    
-    colour();
-    colour(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
-    colour(unsigned char red, unsigned char green, unsigned char blue);
+    RGB();
+    RGB(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
+    RGB(unsigned char red, unsigned char green, unsigned char blue);
     
     void setRGB(unsigned char red, unsigned char green, unsigned char blue);
     void setRGB(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
@@ -128,6 +109,19 @@ union colour
     void setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness);
     void setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness, unsigned char alpha);
 };
+
+// Some standard colours to avoid having to redefine these every time
+static const RGB RGB_WHITE         = RGB(255, 255, 255, 255);
+static const RGB RGB_BLACK         = RGB(  0,   0,   0, 255);
+static const RGB RGB_RED           = RGB(255,   0,   0, 255);
+static const RGB RGB_GREEN         = RGB(  0, 255,   0, 255);
+static const RGB RGB_BLUE          = RGB(  0,   0, 255, 255);
+
+static const RGB RGB_BACKGROUND    = RGB( 80,  80,  80,  80);
+static const RGB RGB_TEXT          = RGB(255, 255, 240, 255);
+static const RGB RGB_HIGHLIGHT     = RGB( 82, 225, 247, 255);
+static const RGB RGB_HIGHLIGHT_ALT = RGB( 10, 174, 199, 255);
+static const RGB RGB_VIOLINGRAPH   = RGB(186, 255, 163,  80);
 
 union rect
 {
@@ -227,19 +221,19 @@ public:
     void loadPNG(const std::string &filename);                          // load a PNG file
     double getWidth() const;                                            // return image width
     double getHeight() const;                                           // return image height
-    void draw(double x, double y, double width, double height, colour _colour) const;
+    void draw(double x, double y, double width, double height, RGB colour) const;
     
     // the rest is implemented in platform.cpp as calls to the above five functions
     coord getSize() const;
     void draw(double x, double y, double width, double height) const;   // draw image to screen
     void draw(double x, double y, coord size) const;
-    void draw(double x, double y, coord size, colour _colour) const;
+    void draw(double x, double y, coord size, RGB colour) const;
     void draw(coord size, double width, double height) const;
-    void draw(coord size, double width, double height, colour _colour) const;
+    void draw(coord size, double width, double height, RGB colour) const;
     void draw(coord pos, coord size) const;
-    void draw(coord pos, coord size, colour _colour) const;
+    void draw(coord pos, coord size, RGB colour) const;
     void draw(rect pos) const;
-    void draw(rect pos, colour _colour) const;
+    void draw(rect pos, RGB colour) const;
 };
 
 class ArgonFont {
@@ -257,18 +251,18 @@ public:
     double getDescenderHeight() const;                                  // distance from bottom of "o" to bottom of "g" in "dog" (negative value)
     double getTextWidth(const std::string &text) const;                 // width of given text string
     // draw text string to screen, with given colour, such that left end of baseline is at (x, y)
-    void drawText(double x, double y, colour colour, const std::string &text) const;
+    void drawText(double x, double y, RGB colour, const std::string &text) const;
     
     // the rest are implemented in platform.cpp:
     double getLineHeight() const;                                           // distance from bottom of "g" to top of "d" in "dog" (positive value)
     coord getTextSize(const std::string &text) const;                       // width and height of a given text string
     rect getTextBounds(const std::string &text) const;                      // bounding box of a given text string, with origin (0, 0)
-    void drawText(coord pos, colour colour, const std::string &text) const; // use coord for position
+    void drawText(coord pos, RGB colour, const std::string &text) const;    // use coord for position
     
     // draw text string to screen, with a specified anchor point at a position
     // e.g. drawText(100, 100, TOP_RIGHT, "Hello World!") draws the string such that its top right corner is at (100, 100)
-    void drawText(double x, double y, Position anchor, colour colour, const std::string &text) const;
-    void drawText(coord pos, Position anchor, colour colour, const std::string &text) const;
+    void drawText(double x, double y, Position anchor, RGB colour, const std::string &text) const;
+    void drawText(coord pos, Position anchor, RGB colour, const std::string &text) const;
 };
 
 class polyline{
@@ -284,7 +278,7 @@ public:
     void arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, bool blockwise, int circleResolution = 20);
     void arc(float x, float y, float rx, float ry, float angleBegin, float angleEnd, int circleResolution = 20);
     void draw();
-    void draw(colour _colour, float _lineWidth);
+    void draw(RGB colour, float _lineWidth);
 };
 
 class mesh{
@@ -295,7 +289,7 @@ public:
     ~mesh();
     void setMode(primitiveMode _primitiveMode) const;
     void addVertex(float x, float y, float z);
-    void draw(colour _colour);
+    void draw(RGB colour);
     void makeThickLine(polyline &_line, float widthSmooth);
 };
 
@@ -316,16 +310,16 @@ void toggleMicActive();
  */
 
 // only need to implement the first of these in the platform-specific file
-void drawLine(double x0, double y0, double x1, double y1, double width, colour _colour);
-void drawLine(coord start, coord end, double width, colour colour);
+void drawLine(double x0, double y0, double x1, double y1, double width, RGB colour);
+void drawLine(coord start, coord end, double width, RGB colour);
 // ...and more overloads for convenience
 
 // again, only need to implement the first of these in platform_OF.hpp
-void drawRect(double x, double y, double width, double height, colour _colour);
-void drawRect(rect r, colour colour);
+void drawRect(double x, double y, double width, double height, RGB colour);
+void drawRect(rect r, RGB colour);
 // ...and more overloads for convenience
-void drawCircle(double x, double y, double r, colour _colour, int resolution);
-void drawEllipse(double x, double y, double rx, double ry, colour _colour, int resolution);
+void drawCircle(double x, double y, double r, RGB colour, int resolution);
+void drawEllipse(double x, double y, double rx, double ry, RGB colour, int resolution);
 
 // set a region to clip drawing to (basically just a call to glScissor)
 void setScissorClip(double x, double y, double width, double height);

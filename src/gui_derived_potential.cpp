@@ -36,8 +36,8 @@ namespace gui {
     // perhaps eventually store these as static variables in PotentialContainer? or work them out from the window dimensions?
     PotentialContainer::PotentialContainer(md::MDContainer &system, ArgonFont &uiFont12, ArgonImage &ljThumbnail, ArgonImage &squareThumbnail, ArgonImage &morseThumbnail, ArgonImage &customThumbnail, ArgonImage &resetSplinePointsButton) : UIContainer(0, 0, 924, 500), theSystem(system) {
         
-        colour bgcolor = colour(80, 80, 80, 80);
-        colour textcolor = colour(255, 255, 240);
+        RGB bgcolor = RGB(80, 80, 80, 80);
+        RGB textcolor = RGB(255, 255, 240);
         
         addChild(new RectAtom(bgcolor, 0, 0, 924, 500));
         addChild(new RectAtom(bgcolor, 150, 0, 774, 500));
@@ -49,7 +49,7 @@ namespace gui {
             new SplineContainer(theSystem, 0.95, 3.0, -2, 2, 15, 150, 0, 774, 500)
         );
         
-        colour thumbnailColour = colour(255, 255, 240);
+        RGB thumbnailColour = RGB(255, 255, 240);
         
         // add the first four buttons and text
         addChild(new ButtonAtom([&] () { setPotential(LENNARD_JONES); }, ljThumbnail, thumbnailColour, 25, 0, 100, 100));
@@ -177,17 +177,9 @@ namespace gui {
         
         // draw potential, clipping to rectangle of size bounds
         setScissorClip(bounds);
-        colour potentialColour = colour(255, 255, 255, 220);
+        RGB potentialColour = RGB(255, 255, 255, 220);
         float potentialLineWidth = 3.5;
         line.draw(potentialColour, potentialLineWidth);
-        
-        //// Plot the particles along the curve
-        //int particleResolution = 10;
-        //colour particleColour = colour(186, 255, 163, 220);
-        //for (int i = 0; i < particlePoints.size(); i++){
-        //    pos = particlePoints[i];
-        //    if (bounds.inside(pos)) { drawCircle(pos.x, pos.y, 6, particleColour, particleResolution); }
-        //}
         
         // Plot the RDF
         rect RDFspace;
@@ -199,7 +191,7 @@ namespace gui {
         
         
         mesh violin;
-        colour violinColour = colour(186, 255, 163, 80);
+        RGB violinColour = RGB(186, 255, 163, 80);
         violin.setMode(GL_PRIMITIVE_TRIANGLE_STRIP);
         
         rect violinSpaceUpper, violinSpaceLower;
@@ -238,8 +230,8 @@ namespace gui {
     void SplineControlPoint::render() {
         
         int controlPointResolution = 20;
-        colour outerColour = colour(10, 174, 199);
-        colour innerColour = colour(82, 255, 247);
+        RGB outerColour = RGB(10, 174, 199);
+        RGB innerColour = RGB(82, 255, 247);
         drawCircle(bounds.centreX(), bounds.centreY(), radius, outerColour, controlPointResolution);
         drawCircle(bounds.centreX(), bounds.centreY(), radius - 3, innerColour, controlPointResolution);
     }

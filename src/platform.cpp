@@ -40,33 +40,18 @@ vector3::vector3(float _x, float _y, float _z){
 
 
 /*
-    colour
+    RGB
  */
 
-colour colour::fromName(COLOURNAME colourname) {
-    switch (colourname) {
-        case COL_WHITE:         return colour(255, 255, 255, 255);
-        case COL_BLACK:         return colour(  0,   0,   0, 255);
-        case COL_RED:           return colour(255,   0,   0, 255);
-        case COL_GREEN:         return colour(  0, 255,   0, 255);
-        case COL_BLUE:          return colour(  0,   0, 255, 255);
-        case COL_BG:            return colour( 80,  80,  80,  80);
-        case COL_TEXT:          return colour(255, 255, 240, 255);
-        case COL_BLUEHL:        return colour( 82, 225, 247, 255);
-        case COL_BLUEHL_DARK:   return colour( 10, 174, 199, 255);
-        case COL_VIOLINGRAPH:   return colour(186, 255, 163,  80);
-    }
-}
+RGB::RGB() : r(0), g(0), b(0), a(255) {}
 
-colour::colour() : r(0), g(0), b(0), a(255) {}
+RGB::RGB(unsigned char _r, unsigned char _g, unsigned char _b) : r(_r), g(_g), b(_b), a(255) {}
+RGB::RGB(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) : r(_r), g(_g), b(_b), a(_a) {}
 
-colour::colour(unsigned char _r, unsigned char _g, unsigned char _b) : r(_r), g(_g), b(_b), a(255) {}
-colour::colour(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) : r(_r), g(_g), b(_b), a(_a) {}
+void RGB::setRGB(unsigned char _r, unsigned char _g, unsigned char _b) { r = _r; g = _g; b = _b; }
+void RGB::setRGB(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) { r = _r; g = _g; b = _b; a = _a; }
 
-void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b) { r = _r; g = _g; b = _b; }
-void colour::setRGB(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a) { r = _r; g = _g; b = _b; a = _a; }
-
-void colour::setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness) {
+void RGB::setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness) {
     // HSV algorithm from wikipedia: https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
     double S = saturation / 255.0;  // S in [0, 1]
     double V = brightness / 255.0;  // L in [0, 1]
@@ -95,7 +80,7 @@ void colour::setHSB(unsigned char hue, unsigned char saturation, unsigned char b
     b = 255 * B + 0.5;
 }
 
-void colour::setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness, unsigned char _alpha) {
+void RGB::setHSB(unsigned char hue, unsigned char saturation, unsigned char brightness, unsigned char _alpha) {
     setHSB(hue, saturation, brightness);
     a = _alpha;
 }
@@ -192,15 +177,15 @@ bool rect::inside(coord point) const {
 
 coord ArgonImage::getSize() const { return coord(getWidth(), getHeight()); }
 
-void ArgonImage::draw(double x, double y, double width, double height) const { draw(x, y, width, height, colour(255, 255, 255)); }
+void ArgonImage::draw(double x, double y, double width, double height) const { draw(x, y, width, height, RGB(255, 255, 255)); }
 void ArgonImage::draw(double x, double y, coord size) const { draw(x, y, size.x, size.y); }
-void ArgonImage::draw(double x, double y, coord size, colour _colour) const { draw(x, y, size.x, size.y, _colour); }
+void ArgonImage::draw(double x, double y, coord size, RGB colour) const { draw(x, y, size.x, size.y, colour); }
 void ArgonImage::draw(coord pos, double width, double height) const { draw(pos.x, pos.y, width, height); }
-void ArgonImage::draw(coord pos, double width, double height, colour _colour) const { draw(pos.x, pos.y, width, height, _colour); }
+void ArgonImage::draw(coord pos, double width, double height, RGB colour) const { draw(pos.x, pos.y, width, height, colour); }
 void ArgonImage::draw(coord pos, coord size) const { draw(pos.x, pos.y, size.x, size.y); }
-void ArgonImage::draw(coord pos, coord size, colour _colour) const { draw(pos.x, pos.y, size.x, size.y, _colour); }
+void ArgonImage::draw(coord pos, coord size, RGB colour) const { draw(pos.x, pos.y, size.x, size.y, colour); }
 void ArgonImage::draw(rect pos) const { draw(pos.left, pos.top, pos.width(), pos.height()); }
-void ArgonImage::draw(rect pos, colour _colour) const { draw(pos.left, pos.top, pos.width(), pos.height(), _colour); }
+void ArgonImage::draw(rect pos, RGB colour) const { draw(pos.left, pos.top, pos.width(), pos.height(), colour); }
 
 /*
     ArgonFont
@@ -210,15 +195,15 @@ double ArgonFont::getLineHeight() const { return getAscenderHeight() - getDescen
 coord ArgonFont::getTextSize(const std::string &text) const { return coord(getTextWidth(text), getLineHeight()); }
 rect ArgonFont::getTextBounds(const std::string &text) const { return rect(coord(0, 0), getTextSize(text)); }
 
-void ArgonFont::drawText(coord pos, colour colour, const std::string &text) const {
+void ArgonFont::drawText(coord pos, RGB colour, const std::string &text) const {
     drawText(pos.x, pos.y, colour, text);
 }
-void ArgonFont::drawText(double x, double y, Position anchor, colour colour, const std::string &text) const {
+void ArgonFont::drawText(double x, double y, Position anchor, RGB colour, const std::string &text) const {
     rect bounds = getTextBounds(text);
     bounds.movePos(anchor, x, y);
     drawText(bounds.left, bounds.top + getAscenderHeight(), colour, text);
 }
-void ArgonFont::drawText(coord pos, Position anchor, colour colour, const std::string &text) const {
+void ArgonFont::drawText(coord pos, Position anchor, RGB colour, const std::string &text) const {
     drawText(pos.x, pos.y, anchor, colour, text);
 }
 
@@ -262,7 +247,7 @@ void toggleMicActive() { micActive = !micActive; }
     drawLine
  */
 
-void drawLine(coord start, coord end, double width, colour colour) {
+void drawLine(coord start, coord end, double width, RGB colour) {
     drawLine(start.x, start.y, end.x, end.y, width, colour);
 }
 
@@ -270,7 +255,7 @@ void drawLine(coord start, coord end, double width, colour colour) {
     drawRect
  */
 
-void drawRect(rect r, colour colour) {
+void drawRect(rect r, RGB colour) {
     drawRect(r.left, r.top, r.width(), r.height(), colour);
 }
 

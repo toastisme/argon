@@ -49,10 +49,10 @@ namespace gui {
         
         // All children in the TutorialContainer are deleted and redrawn in the positions for a given tutorialCounter value
         
-        colour textBoxColor = colour(0, 0, 0, 100);
-        colour textColor = colour(255, 255, 240);
-        colour notHighlightedColor = colour(50, 50, 50, 210);
-        colour buttonColour = colour(255, 255, 255);
+        RGB textBoxColor = RGB(0, 0, 0, 100);
+        RGB textColor = RGB(255, 255, 240);
+        RGB notHighlightedColor = RGB(50, 50, 50, 210);
+        RGB buttonColour = RGB(255, 255, 255);
         
         // Highlight UI Container positions
         rect offScreen(-50, 50, 30, 30);

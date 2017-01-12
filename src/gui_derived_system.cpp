@@ -40,7 +40,7 @@ namespace gui {
     
     void SystemAtom::render() {
         // Setup temporary placeholders
-        colour particleColor;
+        RGB particleColor;
         coord tempVel;
         coord tempAcc;
         
@@ -109,13 +109,13 @@ namespace gui {
      Optional: set the colour before drawing
      Optional: draws the particle with position nframes frames in the past
      */
-    void SystemAtom::drawParticle(int index, double radius_x, double radius_y, colour colour, int nframes, int resolution) {
+    void SystemAtom::drawParticle(int index, double radius_x, double radius_y, RGB colour, int nframes, int resolution) {
         coord screenpos = util::bimap(theSystem.getPos(index, nframes), theSystem.getBox(), windowSize());
         drawEllipse(screenpos.x, screenpos.y, radius_x * 2, radius_y * 2, colour, resolution);
 
     }
     
-    void SystemAtom::drawParticle(int index, double radius, colour colour, int nframes, int resolution) {
+    void SystemAtom::drawParticle(int index, double radius, RGB colour, int nframes, int resolution) {
         coord screenpos = util::bimap(theSystem.getPos(index, nframes), theSystem.getBox(), windowSize());
         drawCircle(screenpos.x, screenpos.y, radius, colour, resolution);
     }
@@ -184,14 +184,14 @@ namespace gui {
         
         while (true) {
             yScreen = round(util::map(yEnergy, energySpace.bottom, energySpace.top, bounds.bottom, bounds.top));
-            drawLine(bounds.left, yScreen, bounds.right, yScreen, 1, colour(60, 60, 60));
+            drawLine(bounds.left, yScreen, bounds.right, yScreen, 1, RGB(60, 60, 60));
             yEnergy += tickSpacing;
             if (yEnergy > energySpace.top) { break; }
         }
         
         // plot energies
-        Ekin.draw(colour(200, 0, 0), 2);
-        Epot.draw(colour(255, 255, 255), 2);
+        Ekin.draw(RGB(200, 0, 0), 2);
+        Epot.draw(RGB(255, 255, 255), 2);
     }
     
     /*
@@ -242,11 +242,11 @@ namespace gui {
         // draw tick lines
         for (int i = 0; i < 5; ++i) {
             int height = bounds.top + bounds.height() * i / 4;
-            drawLine(bounds.left, height, bounds.right, height, 1, colour(60, 60, 60));
+            drawLine(bounds.left, height, bounds.right, height, 1, RGB(60, 60, 60));
         }
         
         // plot energies
-        MBcurve.draw(colour(255, 255, 255), 2);
+        MBcurve.draw(RGB(255, 255, 255), 2);
         
         setScissorClip();
         //glDisable(GL_SCISSOR_TEST);
@@ -280,7 +280,7 @@ namespace gui {
         double yscale = windowHeight() / theSystem.getHeight();
         
         // Determine the colour of the Gaussian, based on the amplitude
-        colour colour;
+        RGB colour;
         unsigned char hue = 200;
         unsigned char saturation = gA > 0 ? 255 : 0;
         unsigned char brightness = 180;

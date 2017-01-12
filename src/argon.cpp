@@ -99,9 +99,9 @@ void argon::Initialise() {
     theSystem.resetSystem();
     
     // colours
-    colour bgcolour = colour(80, 80, 80, 80);
-    colour textcolour = colour(255, 255, 240);
-    colour optionsColour = colour(255, 255, 255);
+    RGB bgcolour = RGB(80, 80, 80, 80);
+    RGB textcolour = RGB(255, 255, 240);
+    RGB optionsColour = RGB(255, 255, 255);
 
     // Setup system UI
     systemUI = gui::UIContainer(0, 0, screenWidth, screenHeight);
@@ -116,7 +116,7 @@ void argon::Initialise() {
     // Info UI
     
     infoUI = gui::UIContainer(256, 310, 750, 380);
-    infoUI.addChild(new gui::RectAtom(colour(80, 80, 80, 180), 0, 0, 750, 380));
+    infoUI.addChild(new gui::RectAtom(RGB(80, 80, 80, 180), 0, 0, 750, 380));
     infoUI.addChild(new gui::ButtonAtom([&] () { infoUI.makeInvisible(); }, closeButton, textcolour, 710, 10, 30, 30));
     infoTextIndex = infoUI.addIndexedChild(new gui::TextAtom("Some text goes here", aboutFont12, textcolour, POS_TOP_LEFT, 25, 25, 720, 320));
     infoUI.makeInvisible();
@@ -171,8 +171,8 @@ void argon::Initialise() {
     
     gui::UIContainer* energyGraphContainer = new gui::UIContainer(-45, 0, 514, 169);
     energyGraphContainer->addChild(new gui::EnergyGraphAtom(theSystem, 0, 0, 514, 161));
-    colour KEColour = colour(200, 0, 0);
-    colour PEColour = colour(255, 255, 255);
+    RGB KEColour = RGB(200, 0, 0);
+    RGB PEColour = RGB(255, 255, 255);
     energyGraphContainer->addChild(new gui::TextAtom("Kinetic Energy", uiFont10, KEColour,
                                                      POS_TOP_LEFT,   5, 166, 100, 20));
     energyGraphContainer->addChild(new gui::TextAtom("Potential Energy", uiFont10, PEColour,
@@ -308,7 +308,7 @@ void argon::Initialise() {
     // About UI
     
     aboutUI = gui::UIContainer(257, 150, 610, 300);
-    aboutUI.addChild(new gui::RectAtom(colour(80, 80, 80, 180), 0, 0, 610, 300));
+    aboutUI.addChild(new gui::RectAtom(RGB(80, 80, 80, 180), 0, 0, 610, 300));
     //aboutUI.addChild(new gui::SetColour(textcolor));
     aboutUI.addChild(new gui::ImageAtom(argonLogo, 0, 5, 390, 170, textcolour));
     aboutUI.addChild(new gui::ButtonAtom([&] () {
@@ -334,13 +334,13 @@ void argon::Initialise() {
     
     // TutorialHighlight UI
     tutorialHighlightUI = gui::UIContainer(-50, 50, 30, 30);
-    //tutorialHighlightUI.addChild(new gui::RectAtom(colour(255,255,255, 80), 0, 0, 30, 30));
+    //tutorialHighlightUI.addChild(new gui::RectAtom(RGB(255,255,255, 80), 0, 0, 30, 30));
     tutorialHighlightUI.addChild(new gui::TutorialHighlightAtom(0, 0, 30, 30, dynamic_cast<gui::TutorialContainer*>(tutorialUI.getChild(0)), tutorialHighlightUI));
     tutorialHighlightUI.makeInvisible();
     tutorialHighlightUI.mouseReleased(0, 0, 0);
     
     tutorialBlockUI = gui::UIContainer(-50, 50, 30, 30);
-    //tutorialBlockUI.addChild(new gui::RectAtom(colour(255,0,255, 80), 0, 0, 30, 30));
+    //tutorialBlockUI.addChild(new gui::RectAtom(RGB(255,0,255, 80), 0, 0, 30, 30));
     tutorialBlockUI.mouseReleased(0, 0, 0);
     
 }
@@ -410,7 +410,7 @@ void argon::Run() {
     tutorialBlockUI.draw();
     
     if (loading) {
-        colour splashColour = colour(255, 255, 255);
+        RGB splashColour = RGB(255, 255, 255);
         splashColour.a = util::map(timeElapsed(), 3, 5, 255, 0, true);
         if ( splashColour.a < 1 ) {
             loading = false;

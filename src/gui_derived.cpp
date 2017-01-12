@@ -36,7 +36,7 @@ namespace gui {
     TextComponent::TextComponent() : font(NULL) {}
     
     // set everything and make sure stringBounds is the bounding box for the string
-    TextComponent::TextComponent(const std::string &_string, const ArgonFont &_font, union colour &_colour)
+    TextComponent::TextComponent(const std::string &_string, const ArgonFont &_font, RGB &_colour)
         : string(_string), font(&_font), colour(_colour)
     {}
     
@@ -59,7 +59,7 @@ namespace gui {
         font = &_font;
     }
     
-    void TextComponent::setColour(union colour &_colour) { colour = _colour; }
+    void TextComponent::setColour(RGB &_colour) { colour = _colour; }
     
     // actually draw the string to the screen, aligned within a larger rectangle
     // typically, this larger rectangle is ofBase::bounds
@@ -76,7 +76,7 @@ namespace gui {
      */
     
     RectAtom::RectAtom() : UIAtom(), colour() {}
-    RectAtom::RectAtom(union colour _colour, double x, double y, double width, double height) : gui::UIAtom(x, y, width, height), colour(_colour) {}
+    RectAtom::RectAtom(RGB _colour, double x, double y, double width, double height) : gui::UIAtom(x, y, width, height), colour(_colour) {}
     void RectAtom::render() { drawRect(bounds, colour); }
     
     /*
@@ -86,7 +86,7 @@ namespace gui {
     TextAtom::TextAtom() : UIAtom(), TextComponent(), align(POS_TOP_LEFT) {}
     
     // pass things through to TextComponent, and store align
-    TextAtom::TextAtom(const std::string &string, const ArgonFont &font, union colour &colour, Position _align, double x, double y, double width, double height)
+    TextAtom::TextAtom(const std::string &string, const ArgonFont &font, RGB &colour, Position _align, double x, double y, double width, double height)
         : UIAtom(x, y, width, height), TextComponent(string, font, colour), align(_align)
     {}
     
@@ -102,7 +102,7 @@ namespace gui {
     ValueAtom::ValueAtom() : UIAtom(), TextComponent() {}
     
     // pass stuff into TextComponent, set the function, precision and align, and set the string using getValue
-    ValueAtom::ValueAtom(FuncGetter _getValue, int _precision, const ArgonFont &font, union colour &colour, Position _align, double x, double y, double width, double height)
+    ValueAtom::ValueAtom(FuncGetter _getValue, int _precision, const ArgonFont &font, RGB &colour, Position _align, double x, double y, double width, double height)
         : UIAtom(x, y, width, height), TextComponent("", font, colour), getValue(_getValue), precision(_precision), align(_align)
     {
         setString(getValue(), precision);
@@ -122,7 +122,7 @@ namespace gui {
     
     
     ImageAtom::ImageAtom() : UIAtom(), image(NULL), colour() {}
-    ImageAtom::ImageAtom(const ArgonImage &_image, double x, double y, double width, double height, union colour _colour)
+    ImageAtom::ImageAtom(const ArgonImage &_image, double x, double y, double width, double height, RGB _colour)
     : UIAtom(x, y, width, height), image(&_image), colour(_colour) {}
     void ImageAtom::render() {
         if (image) { image->draw(bounds, colour); }
@@ -203,8 +203,8 @@ namespace gui {
     // some static varaibles to ensure sliders are drawn the same
     // these could be customised on a per-slider basis, but the slider constructor is long
     // enough already and we probably want sliders to look the same anyway
-    colour SliderAtom::BODY_COLOR = colour(255, 255, 255);
-    colour SliderAtom::HANDLE_COLOR = colour(80, 80, 80);
+    RGB SliderAtom::BODY_COLOR = RGB(255, 255, 255);
+    RGB SliderAtom::HANDLE_COLOR = RGB(80, 80, 80);
     
     int SliderAtom::BODY_HEIGHT = 10;
     int SliderAtom::HANDLE_WIDTH = 7;
@@ -270,8 +270,8 @@ namespace gui {
         UIAtom::resize(xScale, yScale);
     }
     
-    colour CircularSliderAtom::DEFAULT_COLOR = colour(80, 80, 80);
-    colour CircularSliderAtom::HIGHLIGHT_COLOR = colour(10, 174, 199);
+    RGB CircularSliderAtom::DEFAULT_COLOR = RGB(80, 80, 80);
+    RGB CircularSliderAtom::HIGHLIGHT_COLOR = RGB(10, 174, 199);
     float CircularSliderAtom::LINE_WIDTH = 12.0;
     
     /*
@@ -280,7 +280,7 @@ namespace gui {
     
     ButtonAtom::ButtonAtom() : UIAtom(), image(NULL), colour() {}
     
-    ButtonAtom::ButtonAtom(FuncAction _doAction, const ArgonImage &_image, union colour _colour, double x, double y, double width, double height)
+    ButtonAtom::ButtonAtom(FuncAction _doAction, const ArgonImage &_image, RGB _colour, double x, double y, double width, double height)
         : UIAtom(x, y, width, height), doAction(_doAction), image(&_image), colour(_colour)
     { }
     
@@ -307,7 +307,7 @@ namespace gui {
     
     ButtonToggleAtom::ButtonToggleAtom() : UIAtom(), imageOn(NULL), imageOff(NULL), colour() {}
     
-    ButtonToggleAtom::ButtonToggleAtom(FuncGetterBool _getBool, FuncSetterBool _setBool, const ArgonImage &_imageOn, const ArgonImage &_imageOff, union colour _colour, double x, double y, double width, double height)
+    ButtonToggleAtom::ButtonToggleAtom(FuncGetterBool _getBool, FuncSetterBool _setBool, const ArgonImage &_imageOn, const ArgonImage &_imageOff, RGB _colour, double x, double y, double width, double height)
         : UIAtom(x, y, width, height), getBool(_getBool), setBool(_setBool), imageOn(&_imageOn), imageOff(&_imageOff), colour(_colour) {}
     
     // render button image based on the value of getBool
@@ -335,7 +335,7 @@ namespace gui {
         OptionsListAtom
      */
 
-    OptionsListAtom::OptionsListAtom(const ArgonFont &_font, union colour &textColour, double _buttonWidth, double x, double y, double width, double height) : UIAtom(x, y, width, height), font(&_font), textcolor(textColour), selectedOption(-1), buttonWidth(_buttonWidth), buttonHeight(OPTION_HEIGHT) {}
+    OptionsListAtom::OptionsListAtom(const ArgonFont &_font, RGB &textColour, double _buttonWidth, double x, double y, double width, double height) : UIAtom(x, y, width, height), font(&_font), textcolor(textColour), selectedOption(-1), buttonWidth(_buttonWidth), buttonHeight(OPTION_HEIGHT) {}
     
     OptionsListAtom::~OptionsListAtom() {
         for (int i = 0; i < options.size(); i++) {
@@ -402,15 +402,15 @@ namespace gui {
         }
     }
     
-    colour OptionsListAtom::DEFAULT_COLOR = colour(80, 80, 80);
-    colour OptionsListAtom::HIGHLIGHT_COLOR = colour(10, 174, 199);
+    RGB OptionsListAtom::DEFAULT_COLOR = RGB(80, 80, 80);
+    RGB OptionsListAtom::HIGHLIGHT_COLOR = RGB(10, 174, 199);
     double OptionsListAtom::OPTION_HEIGHT = 28;
     
     /*
      AtomsListAtom
      */
     
-    AtomsListAtom::AtomsListAtom(const ArgonFont &font, union colour &textcolor, double x, double y, double optionsWidth, double _widgetWidth, double height, double padding) : OptionsListAtom(font, textcolor, optionsWidth, x, y, optionsWidth+_widgetWidth+3*padding, height), widgetWidth(_widgetWidth)
+    AtomsListAtom::AtomsListAtom(const ArgonFont &font, RGB &textcolor, double x, double y, double optionsWidth, double _widgetWidth, double height, double padding) : OptionsListAtom(font, textcolor, optionsWidth, x, y, optionsWidth+_widgetWidth+3*padding, height), widgetWidth(_widgetWidth)
     {
         // Work out x position of the widget bit
         widgetX = x - 2*padding - optionsWidth;
@@ -513,7 +513,7 @@ namespace gui {
     SliderContainer::SliderContainer() {}
     
     // big constructor which sets everything up, the behaviour is all in the individual components
-    SliderContainer::SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ArgonFont &font, union colour &colour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double padding, double height)
+    SliderContainer::SliderContainer(const std::string &label, FuncGetter getValue, FuncSetter setValue, double min, double max, const ArgonFont &font, RGB &colour, int precision, double x, double y, double labelWidth, double sliderWidth, double valueWidth, double padding, double height)
     {
         // set the left position of each element from x + the widths of the previous elements, plus any padding
         double sliderLeft = x + labelWidth + padding;
@@ -536,7 +536,7 @@ namespace gui {
      */
     
     // big constructor which sets everything up, the behaviour is all in the individual components
-    CircularSliderContainer::CircularSliderContainer(FuncGetter getValue, FuncSetter setValue, double min, double max, const ArgonFont &font, union colour &textcolour, int precision, double x, double y, double sliderRadius, double valueWidth, double valueHeight, double padding)
+    CircularSliderContainer::CircularSliderContainer(FuncGetter getValue, FuncSetter setValue, double min, double max, const ArgonFont &font, RGB &textcolour, int precision, double x, double y, double sliderRadius, double valueWidth, double valueHeight, double padding)
     {
         
         

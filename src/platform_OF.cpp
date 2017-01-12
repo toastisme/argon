@@ -33,7 +33,7 @@ ofRectangle ofConvertRect(rect r) {
     return ofRectangle(r.x, r.y, r.width(), r.height());
 }
 
-ofColor ofConvertColour(colour colour) {
+ofColor ofConvertColour(RGB colour) {
     return ofColor(colour.r, colour.g, colour.b, colour.a);
 }
 
@@ -47,8 +47,8 @@ ArgonImage::~ArgonImage() { delete (ofImage *)base; }
 void ArgonImage::loadPNG(const string &filename) { ((ofImage *)base)->load(filename); }
 double ArgonImage::getWidth()  const { return ((ofImage *)base)->getWidth();  }
 double ArgonImage::getHeight() const { return ((ofImage *)base)->getHeight(); }
-void ArgonImage::draw(double x, double y, double width, double height, colour _colour) const {
-    ofSetColor(ofConvertColour(_colour));
+void ArgonImage::draw(double x, double y, double width, double height, RGB colour) const {
+    ofSetColor(ofConvertColour(colour));
     ((ofImage *)base)->draw(x, y, width, height);
 }
 
@@ -63,7 +63,7 @@ void ArgonFont::loadTTF(const string &filename, int size) { ((ofTrueTypeFont *)b
 double ArgonFont::getAscenderHeight()  const { return ((ofTrueTypeFont *)base)->getAscenderHeight();  }
 double ArgonFont::getDescenderHeight() const { return ((ofTrueTypeFont *)base)->getDescenderHeight(); }
 double ArgonFont::getTextWidth(const std::string &text) const { return ((ofTrueTypeFont *)base)->stringWidth(text); }
-void ArgonFont::drawText(double x, double y, colour colour, const std::string &text) const {
+void ArgonFont::drawText(double x, double y, RGB colour, const std::string &text) const {
     ofSetColor(ofConvertColour(colour));
     ((ofTrueTypeFont *)base)->drawString(text, x, y);
 }
@@ -84,7 +84,7 @@ std::vector<vector3> polyline::getVertices(){
     return vertices;}
 void polyline::lineTo(float x, float y){((ofPolyline *)base)->lineTo(x, y);}
 void polyline::draw(){((ofPolyline *)base)->draw();}
-void polyline::draw(colour _colour, float _lineWdith){ofSetColor(ofConvertColour(_colour)); ofSetLineWidth(_lineWdith); ((ofPolyline *)base)->draw();}
+void polyline::draw(RGB colour, float _lineWdith){ofSetColor(ofConvertColour(colour)); ofSetLineWidth(_lineWdith); ((ofPolyline *)base)->draw();}
 
 void polyline::arc(const coord &point, float rx, float ry, float angleBegin, float angleEnd, int circleResolution){
     ofPoint _ofPoint(point.x, point.y);
@@ -133,8 +133,8 @@ void mesh::addVertex(float x, float y, float z){
     v.set(x, y, z);
     ((ofMesh *)base)->addVertex(v);
 }
-void mesh::draw(colour _colour){
-    ofSetColor(ofConvertColour(_colour));
+void mesh::draw(RGB colour){
+    ofSetColor(ofConvertColour(colour));
     ((ofMesh *)base)->draw();
 }
 
@@ -143,25 +143,25 @@ void mesh::draw(colour _colour){
     Drawing functions
  */
 
-void drawLine(double x0, double y0, double x1, double y1, double width, colour _colour) {
-    ofSetColor(ofConvertColour(_colour));
+void drawLine(double x0, double y0, double x1, double y1, double width, RGB colour) {
+    ofSetColor(ofConvertColour(colour));
     ofSetLineWidth(width);
     ofDrawLine(x0, y0, x1, y1);
 }
 
-void drawRect(double x0, double y0, double width, double height, colour _colour) {
-    ofSetColor(ofConvertColour(_colour));
+void drawRect(double x0, double y0, double width, double height, RGB colour) {
+    ofSetColor(ofConvertColour(colour));
     ofDrawRectangle(x0, y0, width, height);
 }
 
-void drawCircle(double x, double y, double r, colour _colour, int resolution){
-    ofSetColor(ofConvertColour(_colour));
+void drawCircle(double x, double y, double r, RGB colour, int resolution){
+    ofSetColor(ofConvertColour(colour));
     ofSetCircleResolution(resolution);
     ofDrawCircle(x, y, r);
 }
 
-void drawEllipse(double x, double y, double rx, double ry, colour _colour, int resolution){
-    ofSetColor(ofConvertColour(_colour));
+void drawEllipse(double x, double y, double rx, double ry, RGB colour, int resolution){
+    ofSetColor(ofConvertColour(colour));
     ofSetCircleResolution(resolution);
     ofDrawEllipse(x, y, rx, ry);
 }
