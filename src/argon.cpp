@@ -417,6 +417,16 @@ void argon::Run() {
         }
         splashScreen.draw(0, 0, windowWidth(), windowHeight(), splashColour);
     }
+    
+    ArgonMesh meshTest;
+    
+    meshTest.points.push_back(coord(100, 100));
+    meshTest.points.push_back(coord(200, 100));
+    meshTest.points.push_back(coord(150, 150));
+    meshTest.points.push_back(coord(250, 150));
+    
+    meshTest.draw(RGB_BLUE, PRIMITIVE_TRIANGLE_STRIP);
+    meshTest.draw(RGB_RED,  PRIMITIVE_LINE_STRIP, 5);
 }
 
 /*

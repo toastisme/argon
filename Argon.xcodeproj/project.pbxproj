@@ -10,6 +10,7 @@
 		3F8461561D65FC1500D4C796 /* gui_derived_tutorial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F8461551D65FC1500D4C796 /* gui_derived_tutorial.cpp */; };
 		622BA4E91D8964A2008EF1C6 /* openFrameworks.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FF161571D4224FB0031019B /* openFrameworks.a */; };
 		623C212D1D07001B00944B11 /* utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 623C212C1D07001B00944B11 /* utilities.cpp */; };
+		623E069E1E27D77D00C1B050 /* platform_GL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 623E069D1E27D77D00C1B050 /* platform_GL.cpp */; };
 		624908FF1CF383C500625501 /* mdforces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 624908FD1CF383C500625501 /* mdforces.cpp */; };
 		624909041CF70FC100625501 /* potentials.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 624909011CF70FC100625501 /* potentials.cpp */; };
 		625D6F631DE461840039211F /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 625D6F611DE461840039211F /* platform.cpp */; };
@@ -59,6 +60,7 @@
 		621C697C1D422F3B007AE22A /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		622BA4E71D895957008EF1C6 /* openFrameworksDebug.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = openFrameworksDebug.a; path = ../../../libs/openFrameworksCompiled/lib/osx/openFrameworksDebug.a; sourceTree = "<group>"; };
 		623C212C1D07001B00944B11 /* utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utilities.cpp; sourceTree = "<group>"; };
+		623E069D1E27D77D00C1B050 /* platform_GL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform_GL.cpp; sourceTree = "<group>"; };
 		624908FD1CF383C500625501 /* mdforces.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mdforces.cpp; sourceTree = "<group>"; };
 		624908FE1CF383C500625501 /* mdforces.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = mdforces.hpp; sourceTree = "<group>"; };
 		624909011CF70FC100625501 /* potentials.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = potentials.cpp; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 				62AAB9451E1180FC0049A3E7 /* argon.cpp */,
 				625D6F621DE461840039211F /* platform.hpp */,
 				625D6F611DE461840039211F /* platform.cpp */,
+				623E069D1E27D77D00C1B050 /* platform_GL.cpp */,
 				625D6F661DE4AFD10039211F /* platform_OF.cpp */,
 				624909031CF70FC100625501 /* utilities.hpp */,
 				623C212C1D07001B00944B11 /* utilities.cpp */,
@@ -276,6 +279,7 @@
 				624909041CF70FC100625501 /* potentials.cpp in Sources */,
 				62E300C51CF0D73000AEAC39 /* gui_base.cpp in Sources */,
 				625D6F631DE461840039211F /* platform.cpp in Sources */,
+				623E069E1E27D77D00C1B050 /* platform_GL.cpp in Sources */,
 				62F48D7D1D33DB0400408736 /* gui_derived_system.cpp in Sources */,
 				625D6F671DE4AFD10039211F /* platform_OF.cpp in Sources */,
 				62E300AF1CE3196D00AEAC39 /* cubicspline.cpp in Sources */,

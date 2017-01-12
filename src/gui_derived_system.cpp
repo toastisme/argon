@@ -162,6 +162,7 @@ namespace gui {
         rect energySpace;
         energySpace.setLRTB(0, 119, top, bottom); // 119 is max number of energy points - 1
         
+        /*
         coord point;
         polyline Ekin, Epot;
         for (int i = 0; i < numPoints; ++i) {
@@ -174,6 +175,7 @@ namespace gui {
             point = util::bimap(point, energySpace, bounds);
             Epot.addVertex(point.x, point.y);
         }
+         */
        
         // draw tick lines
         // the log_2 scaling means that, if too many are drawn, it removes every second line
@@ -190,8 +192,10 @@ namespace gui {
         }
         
         // plot energies
+        /*
         Ekin.draw(RGB(200, 0, 0), 2);
         Epot.draw(RGB(255, 255, 255), 2);
+         */
     }
     
     /*
@@ -205,6 +209,7 @@ namespace gui {
          Draws the Maxwell-Boltzmann distribution.
          */
         
+        /*
         double maxSpeed = 10;
         
         rect maxwellSpace;
@@ -250,6 +255,7 @@ namespace gui {
         
         setScissorClip();
         //glDisable(GL_SCISSOR_TEST);
+         */
     }
     
     

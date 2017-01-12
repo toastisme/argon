@@ -187,20 +187,13 @@ union rect
 //enums for the openGL primitive modes used by mesh objects
 
 enum primitiveMode{
-    GL_PRIMITIVE_TRIANGLES,
-    GL_PRIMITIVE_TRIANGLE_STRIP,
-    GL_PRIMITIVE_TRIANGLE_FAN,
-    GL_PRIMITIVE_LINES,
-    GL_PRIMITIVE_LINE_STRIP,
-    GL_PRIMITIVE_LINE_LOOP,
-    GL_PRIMITIVE_POINTS,
-#ifndef TARGET_OPENGLES
-    GL_PRIMITIVE_LINES_ADJACENCY,
-    GL_PRIMITIVE_LINE_STRIP_ADJACENCY,
-    GL_PRIMITIVE_TRIANGLES_ADJACENCY,
-    GL_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY,
-    GL_PRIMITIVE_PATCHES
-#endif
+    PRIMITIVE_POINTS,
+    PRIMITIVE_LINES,
+    PRIMITIVE_LINE_STRIP,
+    PRIMITIVE_LINE_LOOP,
+    PRIMITIVE_TRIANGLES,
+    PRIMITIVE_TRIANGLE_STRIP,
+    PRIMITIVE_TRIANGLE_FAN
 };
 
 /*
@@ -265,6 +258,17 @@ public:
     void drawText(coord pos, Position anchor, RGB colour, const std::string &text) const;
 };
 
+class ArgonMesh {
+    // A class to emulate an OpenGL mesh
+    // Contains a public std::vector, so use all the usual push_back etc. methods to create a series of points
+    // Then draw them to the screen as an OpenGL primitive
+public:
+    std::vector<coord> points;
+    void draw(RGB colour, primitiveMode primitive, double linewidth = 1);
+};
+
+/*
+
 class polyline{
 private:
     void *base;
@@ -292,6 +296,8 @@ public:
     void draw(RGB colour);
     void makeThickLine(polyline &_line, float widthSmooth);
 };
+ 
+ */
 
 
 /*

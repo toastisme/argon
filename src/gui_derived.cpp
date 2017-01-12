@@ -238,6 +238,7 @@ namespace gui {
     }
 
     void CircularSliderAtom::render() {
+        /*
         // centre point of circle
         coord centre(bounds.centreX(), bounds.bottom);
                 
@@ -261,6 +262,7 @@ namespace gui {
         
         //defaultMesh.draw(DEFAULT_COLOR);
         //highlightMesh.draw(HIGHLIGHT_COLOR);
+         */
         
         
     }

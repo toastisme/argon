@@ -169,6 +169,7 @@ namespace gui {
             potPoints.push_back(pos);
         }
         
+        /*
         // Plot the potential
         polyline line;
         for (int i = 0; i < potPoints.size(); i++){
@@ -218,6 +219,7 @@ namespace gui {
         violin.draw(violinColour);
         
         setScissorClip();
+         */
     }
     
     /*

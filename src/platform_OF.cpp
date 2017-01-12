@@ -25,6 +25,7 @@
 #include "platform.hpp"
 #include "ofMain.h"
 
+// overload openFramework's setColor to take our RGB union
 void ofSetColor(RGB colour) {
     return ofSetColor(colour.r, colour.g, colour.b, colour.a);
 }
@@ -61,8 +62,9 @@ void ArgonFont::drawText(double x, double y, RGB colour, const std::string &text
 }
 
 /*
+/
  polyline functions
- */
+ /
 
 polyline::polyline()  { base = new ofPolyline(); }
 polyline::~polyline() { delete (ofPolyline *)base; }
@@ -90,9 +92,9 @@ void polyline::arc(float x, float y, float rx, float ry, float angleBegin, float
     ((ofPolyline *)base)->arc(x, y, rx, ry, angleBegin, angleEnd, circleResolution);
 }
 
-/*
+/
  mesh functions
- */
+ /
 
 
 mesh::mesh(){base = new ofMesh();}
@@ -129,43 +131,11 @@ void mesh::draw(RGB colour){
     ofSetColor(colour);
     ((ofMesh *)base)->draw();
 }
-
+*/
 
 /*
-    Drawing functions
+    Other functions
  */
-
-void drawLine(double x0, double y0, double x1, double y1, double width, RGB colour) {
-    ofSetColor(colour);
-    ofSetLineWidth(width);
-    ofDrawLine(x0, y0, x1, y1);
-}
-
-void drawRect(double x0, double y0, double width, double height, RGB colour) {
-    ofSetColor(colour);
-    ofDrawRectangle(x0, y0, width, height);
-}
-
-void drawCircle(double x, double y, double r, RGB colour, int resolution){
-    ofSetColor(colour);
-    ofSetCircleResolution(resolution);
-    ofDrawCircle(x, y, r);
-}
-
-void drawEllipse(double x, double y, double rx, double ry, RGB colour, int resolution){
-    ofSetColor(colour);
-    ofSetCircleResolution(resolution);
-    ofDrawEllipse(x, y, rx, ry);
-}
-
-void setScissorClip(double x, double y, double width, double height) {
-    glEnable(GL_SCISSOR_TEST);
-    glScissor(x, y, width, height);
-}
-
-void setScissorClip() {
-    glDisable(GL_SCISSOR_TEST);
-}
 
 int windowWidth()  { return ofGetWidth();  }
 int windowHeight() { return ofGetHeight(); }
