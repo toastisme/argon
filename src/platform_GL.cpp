@@ -77,30 +77,25 @@ void drawRect(double x0, double y0, double width, double height, RGB colour) {
     glRectd(x0, y0, x0 + width, y0 + height);
 }
 
-void drawCircle(double x, double y, double r, RGB colour, int resolution) {
-    glColorRGB(colour);
-    
-    glBegin(GL_TRIANGLE_FAN);
-    glVertex2d(x, y);
-    for (int i = 0; i <= resolution; ++i) {
-        float theta = 2.0f * 3.14159265f * i / float(resolution);
-        float dx = r * cosf(theta);
-        float dy = r * sinf(theta);
-        glVertex2f(x + dx, y + dy);
-    }
-    glEnd();
-}
 
 void drawEllipse(double x, double y, double rx, double ry, RGB colour, int resolution){
     glColorRGB(colour);
     
+    float theta = 2.0f * 3.14159265f / float(resolution);
+    float cos_t = cosf(theta);
+    float sin_t = sinf(theta);
+    
+    float dx = 1;
+    float dy = 0;
+    
     glBegin(GL_TRIANGLE_FAN);
     glVertex2d(x, y);
     for (int i = 0; i <= resolution; ++i) {
-        float theta = 2.0f * 3.14159265f * i / float(resolution);
-        float dx = rx * cosf(theta);
-        float dy = ry * sinf(theta);
-        glVertex2f(x + dx, y + dy);
+        glVertex2f(x + rx * dx, y + ry * dy);
+        
+        float temp = dx;
+        dx = cos_t * dx   - sin_t * dy;
+        dy = sin_t * temp + cos_t * dy;
     }
     glEnd();
 }

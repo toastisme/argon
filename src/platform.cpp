@@ -251,24 +251,20 @@ void toggleMicActive() { micActive = !micActive; }
 #endif /* WIN32 */
 
 /*
-    drawLine
+    draw functions
  */
 
 void drawLine(coord start, coord end, double width, RGB colour) {
     drawLine(start.x, start.y, end.x, end.y, width, colour);
 }
 
-/*
-    drawRect
- */
-
 void drawRect(rect r, RGB colour) {
     drawRect(r.left, r.top, r.width(), r.height(), colour);
 }
 
-/*
-    scissor clipping
- */
+void drawCircle(double x, double y, double r, RGB colour, int resolution) {
+    drawEllipse(x, y, r, r, colour, resolution);
+}
 
 void setScissorClip(rect r) {
     setScissorClip(r.x, r.y, r.width(), r.height());

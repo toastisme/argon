@@ -295,8 +295,8 @@ void drawLine(coord start, coord end, double width, RGB colour);
 void drawRect(double x, double y, double width, double height, RGB colour);
 void drawRect(rect r, RGB colour);
 
-void drawCircle(double x, double y, double r, RGB colour, int resolution);
 void drawEllipse(double x, double y, double rx, double ry, RGB colour, int resolution);
+void drawCircle(double x, double y, double r, RGB colour, int resolution);
 
 // set a region that restricts where the draw functions can draw
 // don't forget to call setScissorClip() with no arguments at the end to reset it!
