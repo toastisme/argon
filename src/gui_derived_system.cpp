@@ -111,7 +111,7 @@ namespace gui {
      */
     void SystemAtom::drawParticle(int index, double radius_x, double radius_y, RGB colour, int nframes, int resolution) {
         coord screenpos = util::bimap(theSystem.getPos(index, nframes), theSystem.getBox(), windowSize());
-        drawEllipse(screenpos.x, screenpos.y, radius_x * 2, radius_y * 2, colour, resolution);
+        drawEllipse(screenpos.x, screenpos.y, radius_x, radius_y, colour, resolution);
 
     }
     
