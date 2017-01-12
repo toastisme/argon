@@ -169,18 +169,17 @@ namespace gui {
             potPoints.push_back(pos);
         }
         
-        /*
         // Plot the potential
-        polyline line;
+        ArgonMesh line;
         for (int i = 0; i < potPoints.size(); i++){
-            line.lineTo(potPoints[i].x, potPoints[i].y);
+            line.addVertex(potPoints[i].x, potPoints[i].y);
         }
         
         // draw potential, clipping to rectangle of size bounds
         setScissorClip(bounds);
         RGB potentialColour = RGB(255, 255, 255, 220);
         float potentialLineWidth = 3.5;
-        line.draw(potentialColour, potentialLineWidth);
+        line.draw(potentialColour, PRIMITIVE_LINE_STRIP, potentialLineWidth);
         
         // Plot the RDF
         rect RDFspace;
@@ -190,10 +189,8 @@ namespace gui {
             prevRDF.pop_front();
         }
         
-        
-        mesh violin;
+        ArgonMesh violin;
         RGB violinColour = RGB(186, 255, 163, 80);
-        violin.setMode(GL_PRIMITIVE_TRIANGLE_STRIP);
         
         rect violinSpaceUpper, violinSpaceLower;
         violinSpaceUpper.setLRTB(bounds.left, bounds.right, bounds.top,    bounds.centreY());
@@ -208,18 +205,13 @@ namespace gui {
             coord pointUpper = util::bimap(point, RDFspace, violinSpaceUpper);
             coord pointLower = util::bimap(point, RDFspace, violinSpaceLower);
             
-            violin.addVertex(pointUpper.x, pointUpper.y, 0);
-            violin.addVertex(pointLower.x, pointLower.y, 0);
-            //violin.addIndex(2 * i);
-            //violin.addIndex(2 * i + 1);
+            violin.addVertex(pointUpper.x, pointUpper.y);
+            violin.addVertex(pointLower.x, pointLower.y);
         }
-        //violin.addIndex(2 * numBins);
-        //violin.addIndex(2 * numBins + 1);
         
-        violin.draw(violinColour);
+        violin.draw(violinColour, PRIMITIVE_TRIANGLE_STRIP);
         
         setScissorClip();
-         */
     }
     
     /*
