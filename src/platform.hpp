@@ -327,6 +327,11 @@ void drawRect(rect r, colour colour);
 void drawCircle(double x, double y, double r, colour _colour, int resolution);
 void drawEllipse(double x, double y, double rx, double ry, colour _colour, int resolution);
 
+// set a region to clip drawing to (basically just a call to glScissor)
+void setScissorClip(double x, double y, double width, double height);
+void setScissorClip(rect r);
+void setScissorClip(); // overload with no arguments is equivalent to disabling scissor test
+
 /*
     Other functions
  */

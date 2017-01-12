@@ -176,8 +176,7 @@ namespace gui {
         }
         
         // draw potential, clipping to rectangle of size bounds
-        glScissor(bounds.left, bounds.top, bounds.width(), bounds.height());
-        glEnable(GL_SCISSOR_TEST);
+        setScissorClip(bounds);
         colour potentialColour = colour(255, 255, 255, 220);
         float potentialLineWidth = 3.5;
         line.draw(potentialColour, potentialLineWidth);
@@ -226,7 +225,7 @@ namespace gui {
         
         violin.draw(violinColour);
         
-        glDisable(GL_SCISSOR_TEST);
+        setScissorClip();
     }
     
     /*

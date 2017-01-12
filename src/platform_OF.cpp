@@ -166,5 +166,14 @@ void drawEllipse(double x, double y, double rx, double ry, colour _colour, int r
     ofDrawEllipse(x, y, rx, ry);
 }
 
+void setScissorClip(double x, double y, double width, double height) {
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(x, y, width, height);
+}
+
+void setScissorClip() {
+    glDisable(GL_SCISSOR_TEST);
+}
+
 int windowWidth()  { return ofGetWidth();  }
 int windowHeight() { return ofGetHeight(); }

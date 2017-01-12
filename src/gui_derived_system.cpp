@@ -238,8 +238,8 @@ namespace gui {
         
         maxHeight = currMaxHeight > 0.1 ? currMaxHeight : 0.1;
         
-        glScissor(bounds.left, windowHeight() - 1 - bounds.bottom, bounds.width(), bounds.height() + 2);
-        glEnable(GL_SCISSOR_TEST);
+        setScissorClip(bounds.left, windowHeight() - 1 - bounds.bottom, bounds.width(), bounds.height() + 2);
+        //glEnable(GL_SCISSOR_TEST);
         
         // draw tick lines
         for (int i = 0; i < 5; ++i) {
@@ -250,7 +250,8 @@ namespace gui {
         // plot energies
         MBcurve.draw(colour(255, 255, 255), 2);
         
-        glDisable(GL_SCISSOR_TEST);
+        setScissorClip();
+        //glDisable(GL_SCISSOR_TEST);
     }
     
     

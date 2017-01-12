@@ -275,6 +275,14 @@ void drawRect(rect r, colour colour) {
 }
 
 /*
+    scissor clipping
+ */
+
+void setScissorClip(rect r) {
+    setScissorClip(r.x, r.y, r.width(), r.height());
+}
+
+/*
     Other functions
  */
 
