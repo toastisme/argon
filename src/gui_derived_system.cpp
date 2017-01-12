@@ -25,8 +25,6 @@
 #include "gui_derived.hpp"
 #include <cmath>
 
-#include "ofMain.h"
-
 // implements SystemAtom, EnergyGraphAtom, GaussianAtom, GaussianContainer
 
 namespace gui {

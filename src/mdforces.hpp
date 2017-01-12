@@ -180,10 +180,10 @@ namespace md{
         void run(int nthreads = 1);
 
         // calculate the radial distribution function
-        vector <double> rdf(double min, double max, int bins) const;
+        std::vector <double> rdf(double min, double max, int bins) const;
 
         // calculate the speed distribution (Maxwell-Boltzmann)
-        vector <double> maxwell(double min, double max, int bins) const;
+        std::vector <double> maxwell(double min, double max, int bins) const;
 
         // Thermostats
         coord randomVel() const;

@@ -177,3 +177,6 @@ void setScissorClip() {
 
 int windowWidth()  { return ofGetWidth();  }
 int windowHeight() { return ofGetHeight(); }
+
+double timeElapsed() { return ofGetElapsedTimef(); }
+

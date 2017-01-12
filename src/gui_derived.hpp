@@ -27,7 +27,6 @@
 
 #include <ios>
 #include <functional>
-#include "ofMain.h"
 #include "gui_base.hpp"
 #include "mdforces.hpp"
 #include "potentials.hpp"

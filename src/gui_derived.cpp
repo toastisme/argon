@@ -23,6 +23,8 @@
  */
 
 #include "gui_derived.hpp"
+#include <sstream>
+#include <math.h>
 
 namespace gui {
     
@@ -45,7 +47,7 @@ namespace gui {
     
     // set string using value and number of decimal places
     void TextComponent::setString(double value, int precision) {
-        stringstream drawstr;
+        std::stringstream drawstr;
         drawstr.precision(precision);    // set precision
         drawstr.setf(std::ios::fixed);   // use precision based on number of decimal places (fixed point)
         drawstr << value;
@@ -229,7 +231,7 @@ namespace gui {
         y = y > 0 ? y : 0;
         
         // Calculate angle of arc in degrees
-        double angle = atan2(y, x) * 180 / PI;
+        double angle = atan2(y, x) * 180 / M_PI;
         
         // Map this onto the value range
         setValue(util::map(angle, 0, 180, min, max, true));

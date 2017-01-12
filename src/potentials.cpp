@@ -23,7 +23,6 @@
  */
 
 #include "potentials.hpp"
-#include "ofApp.h"
 #include "gui_derived.hpp"
 
 

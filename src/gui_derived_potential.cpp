@@ -342,7 +342,7 @@ namespace gui {
     bool SplineContainer::controlPointNear(double x, int except) {
         for (int i = 0; i < children.size(); ++i) {
             if (i == except) { continue; }
-            if (abs(x - children[i]->getRect().centreX()) < 2*radius) { return true; }
+            if (fabs(x - children[i]->getRect().centreX()) < 2*radius) { return true; }
         }
         return false;
     }

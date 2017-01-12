@@ -25,7 +25,6 @@
 #ifndef utilities_hpp
 #define utilities_hpp
 
-#include "ofMain.h"
 #include "platform.hpp"
 
 namespace util {

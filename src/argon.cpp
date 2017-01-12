@@ -22,7 +22,6 @@
  SOFTWARE.
  */
 
-#include "ofMain.h"
 #include "argon.hpp"
 #include "argon_internal.hpp"
 
@@ -412,7 +411,7 @@ void argon::Run() {
     
     if (loading) {
         colour splashColour = colour(255, 255, 255);
-        splashColour.a = ofMap(ofGetElapsedTimef(), 3,5, 255, 0, true);
+        splashColour.a = util::map(timeElapsed(), 3, 5, 255, 0, true);
         if ( splashColour.a < 1 ) {
             loading = false;
         }
