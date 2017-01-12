@@ -34,11 +34,6 @@ coord::coord(double _x, double _y) : x(_x), y(_y) {}
 
 void coord::setXY(double _x, double _y) { x = _x; y = _y; }
 
-vector3::vector3() : x(0), y(0), z(0){}
-vector3::vector3(float _x, float _y, float _z){
-    x = _x; y = _y; z = _z;}
-
-
 /*
     RGB
  */

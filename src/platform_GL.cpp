@@ -23,25 +23,7 @@
  */
 
 #include "platform.hpp"
-
-// include a file which
 #include "ofMain.h"
-
-// convert our primitive enum to the openGL primitive value
-static int glArgonPrimitive(primitiveMode primitive) {
-    int glPrim;
-    switch (primitive) {
-        case PRIMITIVE_POINTS:         { glPrim = GL_POINTS;         } break;
-        case PRIMITIVE_LINES:          { glPrim = GL_LINES;          } break;
-        case PRIMITIVE_LINE_STRIP:     { glPrim = GL_LINE_STRIP;     } break;
-        case PRIMITIVE_LINE_LOOP:      { glPrim = GL_LINE_LOOP;      } break;
-        case PRIMITIVE_TRIANGLES:      { glPrim = GL_TRIANGLES;      } break;
-        case PRIMITIVE_TRIANGLE_STRIP: { glPrim = GL_TRIANGLE_STRIP; } break;
-        case PRIMITIVE_TRIANGLE_FAN:   { glPrim = GL_TRIANGLE_FAN;   } break;
-        default:                       { glPrim = GL_POINTS;         } break;
-    }
-    return glPrim;
-}
 
 static int glColorRGB(RGB colour) {
     glColor4ub(colour.r, colour.g, colour.b, colour.a);     // set the openGL draw colour
@@ -51,14 +33,26 @@ static int glColorRGB(RGB colour) {
     ArgonMesh
  */
 
-void ArgonMesh::draw(RGB colour, primitiveMode primitive, double linewidth) const {
+void ArgonMesh::draw(RGB colour, MeshPrimitive primitive, double linewidth) const {
     glColorRGB(colour);                                 // set the colour
     glLineWidth(linewidth);                             // set the linewidth
     
     glEnableClientState(GL_VERTEX_ARRAY);               // ensure we can send OpenGL a vertex array
-    glVertexPointer(2, GL_DOUBLE, 0, points.data());    // send the pointer to the array with two doubles per point and 0 padding
-    int prim = glArgonPrimitive(primitive);             // translate our primitive into an openGL primitive
-    glDrawArrays(prim, 0, points.size());               // pass the coordinates as a direct array to openGL
+    glVertexPointer(2, GL_DOUBLE, 0, points.data());    // set a pointer to the array with two doubles per point and 0 padding
+    
+    int glPrim;
+    switch (primitive) {                                // convert MeshPrimitive into the actual openGL primitive index
+        case PRIMITIVE_POINTS:         { glPrim = GL_POINTS;         } break;
+        case PRIMITIVE_LINES:          { glPrim = GL_LINES;          } break;
+        case PRIMITIVE_LINE_STRIP:     { glPrim = GL_LINE_STRIP;     } break;
+        case PRIMITIVE_LINE_LOOP:      { glPrim = GL_LINE_LOOP;      } break;
+        case PRIMITIVE_TRIANGLES:      { glPrim = GL_TRIANGLES;      } break;
+        case PRIMITIVE_TRIANGLE_STRIP: { glPrim = GL_TRIANGLE_STRIP; } break;
+        case PRIMITIVE_TRIANGLE_FAN:   { glPrim = GL_TRIANGLE_FAN;   } break;
+        default:                       { glPrim = GL_POINTS;         } break;
+    }
+    
+    glDrawArrays(glPrim, 0, points.size());             // pass the coordinates as a direct array to openGL
 }
 
 /*

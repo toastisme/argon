@@ -64,15 +64,6 @@ union coord
     
     void setXY(double x, double y);
 };
-/*
- vector3 contains three floats. Used as a replacement for ofPoint
- */
-
-struct vector3{
-    float x, y, z;
-    vector3();
-    vector3(float x, float y, float z);
-};
 
 /*
  RGB contains 4 unsigned chars, which are the red, green, blue and alpha components
@@ -184,23 +175,12 @@ union rect
     bool inside(coord point) const;
 };
 
-//enums for the openGL primitive modes used by mesh objects
-
-enum primitiveMode{
-    PRIMITIVE_POINTS,
-    PRIMITIVE_LINES,
-    PRIMITIVE_LINE_STRIP,
-    PRIMITIVE_LINE_LOOP,
-    PRIMITIVE_TRIANGLES,
-    PRIMITIVE_TRIANGLE_STRIP,
-    PRIMITIVE_TRIANGLE_FAN
-};
-
 /*
     Classes for images and fonts
  */
 
-class ArgonImage {
+class ArgonImage
+{
 private:
     // a generic pointer to the base image class for whatever backend we use
     // cast this to whatever type we need it to be, then call its methods
@@ -229,7 +209,8 @@ public:
     void draw(rect pos, RGB colour) const;
 };
 
-class ArgonFont {
+class ArgonFont
+{
 private:
     // pointer to backend class if needed
     void *base;
@@ -258,7 +239,20 @@ public:
     void drawText(coord pos, Position anchor, RGB colour, const std::string &text) const;
 };
 
-class ArgonMesh {
+// Enum defining the possible primitives for an ArgonMesh
+enum MeshPrimitive
+{
+    PRIMITIVE_POINTS,
+    PRIMITIVE_LINES,
+    PRIMITIVE_LINE_STRIP,
+    PRIMITIVE_LINE_LOOP,
+    PRIMITIVE_TRIANGLES,
+    PRIMITIVE_TRIANGLE_STRIP,
+    PRIMITIVE_TRIANGLE_FAN
+};
+
+class ArgonMesh
+{
     // A class to emulate an OpenGL mesh
     // Create a series of points using addVertex
     // Then draw them to the screen as an OpenGL primitive
@@ -266,7 +260,7 @@ private:
     std::vector<coord> points;
     
 public:
-    void draw(RGB colour, primitiveMode primitive, double linewidth = 1) const;
+    void draw(RGB colour, MeshPrimitive primitive, double linewidth = 1) const;
     
     void addVertex(double x, double y);
     void addVertex(coord pos);
